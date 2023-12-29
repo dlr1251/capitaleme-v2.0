@@ -1,0 +1,69 @@
+---
+const { heading } = Astro.props;
+
+---
+
+<li>
+  <a href={'#' + heading.slug} class="toc-link">
+    {heading.text}
+  </a>
+  {
+    heading.subheadings.length > 0 && (
+      <ul>
+        {heading.subheadings.map((subheading: any) => (
+          <Astro.self heading={subheading} />
+        ))}
+      </ul>
+    )
+  }
+</li>
+<style>
+  /* Style for the active TOC link */
+    .toc-link-active {
+      background-color: red; /* Change as needed */
+      padding-left: 10px; /* Optional: for better visibility */
+    }
+
+    /* Simple animation to highlight the change */
+    @keyframes highlightActive {
+      from {background-color: transparent;}
+      to {background-color: red;}
+    }
+
+    .toc-link-active {
+      animation: highlightActive 0.3s ease-in-out forwards; /* Apply animation to the active link */
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Function to remove all active classes
+        const removeAllActive = (): void => {
+            document.querySelectorAll('.toc-link').forEach((link: Element) => {
+                link.classList.remove('toc-link-active');
+            });
+        }
+
+        // Function to find and highlight the active section
+        const highlightActiveTOCLink = (): void => {
+            const scrollPosition: number = document.documentElement.scrollTop || document.body.scrollTop;
+            document.querySelectorAll('.heading-anchor').forEach((heading: Element) => {
+                if (heading instanceof HTMLElement && heading.offsetTop <= scrollPosition && (heading.offsetTop + heading.offsetHeight) > scrollPosition) {
+                    // Find the TOC link that corresponds to the heading
+                    const tocLink = document.querySelector(`a[href="#${heading.id}"]`);
+                    if (tocLink instanceof HTMLAnchorElement) {
+                        removeAllActive();
+                        tocLink.classList.add('toc-link-active');
+                    }
+                }
+            });
+        }
+
+        // Listen for scroll events
+        window.addEventListener('scroll', highlightActiveTOCLink);
+
+        // Initial call to highlight the TOC link
+        highlightActiveTOCLink();
+    });
+
+</script>

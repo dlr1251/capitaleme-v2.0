@@ -1,6 +1,36 @@
-import { defineCollection } from 'astro:content';
-import { docsSchema } from '@astrojs/starlight/schema';
+import { z, defineCollection } from "astro:content";
+
+const postsCollection = defineCollection({
+    type: 'content',
+    schema: z.object({
+      title: z.string(),
+      pubDate: z.date(),
+      description: z.string(),
+      author: z.string(),
+      image: z.object({
+        url: z.string(),
+        alt: z.string()
+      }),
+      tags: z.array(z.string())
+    })
+});
+
+
+const visas = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    type: z.string(),
+    beneficiaries: z.array(z.string()),
+    workPermit: z.array(z.string()),
+    sponsored: z.array(z.string()),
+    countries: z.array(z.string())    
+  })
+});
 
 export const collections = {
-  docs: defineCollection({ schema: docsSchema() }),
+  'posts': postsCollection,
+  
+  'visas': visas,
 };
+

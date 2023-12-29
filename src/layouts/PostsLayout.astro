@@ -1,0 +1,65 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+interface Props {
+	title: string;	
+	frontmatter: any;
+	headings: any;
+}
+
+const { title } = Astro.props.frontmatter || Astro.props 
+
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		
+		<Navbar />		
+		<aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+			<div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+			   <ul class="space-y-2 font-medium">                   
+				  <li>
+					 <a href="/blog" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+						<span class="flex-1 ms-3 whitespace-nowrap">Blog</span>                
+					 </a>
+				  </li>
+			   </ul>
+			</div>
+		 </aside>	
+		 <div class="flex min-h-screen p-4 sm:ml-64">
+			<!-- Main content container -->
+			<div class="flex-grow">
+				<div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14 prose md:prose-lg">
+					<h1>{title}</h1>
+					
+					<div class="max-w-screen-md mx-auto">
+						<slot />
+					</div>
+				</div>
+				<Footer/>
+			</div>
+			
+			<!-- Sticky TableOfContents -->
+			<div class="sticky top-0 h-screen">
+				<div class="h-full overflow-y-auto">
+					<TableOfContents headings={Astro.props.headings} />
+				</div>
+			</div>
+		</div>			
+			
+		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
+		
+	</body>
+</html>
+

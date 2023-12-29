@@ -1,0 +1,20 @@
+---
+import { getCollection } from "astro:content";
+import BlogLayout from "../layouts/BlogLayout.astro";
+const title = "All posts"
+const allPosts = await getCollection("posts");
+---
+
+<BlogLayout title={title}>
+
+    {
+        allPosts.map((post) => (
+            <a class="flex flex-col m-3 p-2 bg-white border border-gray-200 rounded-lg shadow" href={`/posts/${post.slug}/`}>
+                <h3 class="mt-2 pt-2">{post.data.title}</h3>      
+                <p class="">{post.data.description}</p>              
+            </a>
+            
+        ))
+    }
+
+</BlogLayout>

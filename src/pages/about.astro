@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const pageTitle = "About Me";
+
+const identity = {
+  firstName: "Sarah",
+  country: "Canada",
+  occupation: "Technical Writer",
+  hobbies: ["photography", "birdwatching", "baseball"],
+};
+
+const skills = ["HTML", "CSS", "JavaScript", "React", "Astro", "Writing Docs"];
+
+---
+<Layout title={pageTitle}>
+    <div class="mt-16 max-w-screen-lg mx-auto">
+        <p>We are local attorneys - *abogados -*. We understand the culture, language and common practices of the Colombian legal system</p>    
+        <p>We have practiced the Law accross different areas gaining valuable insights to protect your interests.</p>    
+        <p>We believe that understanding Colombian regulations and operating under the Colombian legal system shouldn't be hard.</p>    
+        <p>Our philosophy is to simplify the complexities of the legal world and prioritize open communication, trust, and the human aspect of all our interactions</p>
+        <p>Here are a few facts about me:</p>
+        <ul>
+          <li>My name is {identity.firstName}.</li>
+          <li>I live in {identity.country} and I work as a {identity.occupation}.</li>
+          {identity.hobbies.length >= 2 &&
+            <li>Two of my hobbies are: {identity.hobbies[0]} and {identity.hobbies[1]}</li>
+          }
+        </ul>
+        <p>My skills are:</p>
+        <ul>
+          {skills.map((skill) => <li>{skill}</li>)}
+        </ul>
+    
+    
+    </div>
+    
+</Layout>
