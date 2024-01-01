@@ -1,7 +1,7 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import Sidebar from '../components/Sidebar.astro';
-
+import Layout from './Layout.astro';
 interface Props {
 	title: string;	
 }
@@ -10,30 +10,15 @@ const { title } = Astro.props
 
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		
-		<Navbar />
-		
-		<Sidebar>			
+<Layout title={title}>
+
+	<Sidebar>			
 		<h1>{title}</h1>
 		<div class="max-w-screen-md mx-auto">
 			<slot />
 		</div>
 		
-		</Sidebar>		
+	</Sidebar>		
+</Layout>
 
-		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
-		
-	</body>
-</html>
 

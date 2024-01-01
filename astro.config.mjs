@@ -9,6 +9,10 @@ import mdx from "@astrojs/mdx";
 // https://astro.build/config
 export default defineConfig({
   output: 'hybrid',
+  // build: {
+  //   format: 'directory'
+  // },  
+  // trailingSlash: 'always',
   i18n: {
     defaultLocale: "en",
     locales: ["en", "es"],
@@ -25,7 +29,6 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: true,
       configFile: './tailwind.config.mjs',
-
     }),    
     
   ],

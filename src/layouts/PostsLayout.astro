@@ -1,7 +1,10 @@
 ---
-import Navbar from '../components/Navbar.astro';
+import Layout from './Layout.astro';
 import Footer from '../components/Footer.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import { getCollection } from 'astro:content';
+import { getRelativeLocaleUrl, getAbsoluteLocaleUrl,getRelativeLocaleUrlList, getAbsoluteLocaleUrlList  } from 'astro:i18n';
+import Navbar from '../components/Navbar.astro';
 
 interface Props {
 	title: string;	
@@ -10,14 +13,27 @@ interface Props {
 }
 
 const { title } = Astro.props.frontmatter || Astro.props 
+const locale = Astro.currentLocale
+
+const spanishPosts = await getCollection("posts",({ id }) => {
+  return id.startsWith('es/');
+});
+const sidebarPosts = await getCollection("posts",({ id }) => {
+	if (locale == "en") {
+		return id.startsWith('en/');
+	} else {
+		return id.startsWith('es/');
+	}
+});
+
+console.log(locale);
 
 ---
-
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<meta name="description" content="Capital M Law - Your Law Firm" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
 		<meta name="generator" content={Astro.generator} />
@@ -25,15 +41,22 @@ const { title } = Astro.props.frontmatter || Astro.props
 	</head>
 	<body>
 		
-		<Navbar />		
+		<Navbar />	
 		<aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
 			<div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
 			   <ul class="space-y-2 font-medium">                   
 				  <li>
-					 <a href="/blog" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+					 <a href={locale == "en" ? `/blog` : '/es/blog'} class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
 						<span class="flex-1 ms-3 whitespace-nowrap">Blog</span>                
 					 </a>
 				  </li>
+				  { sidebarPosts.map( (post) => (
+					<li>
+						<a href={locale == "en" ? `/posts/${post.slug.slice(3)}` : `/es/posts/${post.slug.slice(3)}` } class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+						<span class="flex-1 ms-3 whitespace-nowrap">{post.data.title}</span>                
+					 </a>
+					</li>
+				  )) }
 			   </ul>
 			</div>
 		 </aside>	
@@ -43,8 +66,8 @@ const { title } = Astro.props.frontmatter || Astro.props
 				<div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14 prose md:prose-lg">
 					<h1>{title}</h1>
 					
-					<div class="max-w-screen-md mx-auto">
-						<slot />
+					<div class="max-w-screen-md mx-auto">						
+						<slot/>
 					</div>
 				</div>
 				<Footer/>
@@ -62,4 +85,3 @@ const { title } = Astro.props.frontmatter || Astro.props
 		
 	</body>
 </html>
-

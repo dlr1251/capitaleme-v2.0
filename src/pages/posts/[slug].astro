@@ -3,17 +3,25 @@ import { getCollection } from 'astro:content';
 import PostsLayout from '../../layouts/PostsLayout.astro';
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection('posts');
-  return blogEntries.map(entry => ({
+
+  const englishBlogEntries = await getCollection('posts', ({ id }) => {
+    return id.startsWith('en/');
+  });
+
+  return englishBlogEntries.map(entry => ({
       params: { 
-          slug: entry.slug 
+          slug: entry.slug.slice(3) 
       }, 
       props: { entry },
   }));
 }
 
 const { entry } = Astro.props;
+
 const { Content, headings } = await entry.render();
+const { pathname } = Astro.url
+
+
 
 ---
 <PostsLayout title={entry.data.title} headings={headings} frontmatter={entry.data}>

@@ -1,0 +1,15 @@
+---
+import { getCollection } from "astro:content";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
+const allVisas = await getCollection('visas');
+
+---
+
+<BlogLayout title="All visa categories">
+    <div>
+        { 
+            allVisas.map((visa) => (            
+            <p><a href={`/visas/${visa.slug}`}>{visa.data.title}</a></p>
+          ))}
+    </div>
+</BlogLayout>

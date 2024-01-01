@@ -1,6 +1,29 @@
 ---
-const lang = Astro.currentLocale
 const faviconURL = "../../src/assets/logo/color-horizontal.svg"
+
+import { getRelativeLocaleUrl, getAbsoluteLocaleUrl,getRelativeLocaleUrlList, getAbsoluteLocaleUrlList  } from 'astro:i18n';
+
+
+const lang = Astro.currentLocale
+// const { pathname } = Astro.url;
+const { pathname } = Astro.url;
+
+const isSpanish = pathname.startsWith('/es');
+
+// Función para construir la URL en inglés
+function getEnglishURL(path :string) {
+  return path.startsWith('/') ? path.substring(3) : path;
+}
+
+// Función para construir la URL en español
+function getSpanishURL(path :string) {
+  return path.startsWith('/es') ? path : `/es${path}`;
+}
+
+const engURL = getEnglishURL(pathname);
+const espURL = getSpanishURL(pathname);
+
+
 ---
 
 <nav class="bg-white border-gray-200 fixed w-full z-50 top-0 dark:border-gray-600 dark:bg-gray-900">
@@ -20,7 +43,7 @@ const faviconURL = "../../src/assets/logo/color-horizontal.svg"
                         <div class="grid w-full px-4 py-5 mx-auto text-gray-900 dark:text-white sm:grid-cols-2 md:grid-cols-3 md:px-6">
                             <ul aria-labelledby="mega-menu-full-dropdown-button">
                                 <li>
-                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <a href="/visas" class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <div class="font-semibold">Visa Assistance Service</div>
                                         <span class="text-sm text-gray-500 dark:text-gray-400">Digital Nomad Visa</span>                                        
                                     </a>
@@ -66,14 +89,14 @@ const faviconURL = "../../src/assets/logo/color-horizontal.svg"
             <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700" id="language-dropdown-menu">
               <ul class="py-2 font-medium" role="none">
                 <li>
-                  <a href="/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                  <a href={engURL} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                     <div class="inline-flex items-center">             
                       English
                     </div>
                   </a>
                 </li>
                 <li>
-                  <a href="/es" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                  <a href={espURL} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                     <div class="inline-flex items-center">                    
                       Español
                     </div>
