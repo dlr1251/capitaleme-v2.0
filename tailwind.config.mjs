@@ -6,7 +6,15 @@ export default {
 		"./node_modules/flowbite/**/*.js"
 	],
 	theme: {
-		extend: {},
+		
+		extend: {
+			colors: {
+				primary: '#16345F',
+			  },
+			fontFamily: {
+				sans: ['Outfit', 'sans-serif'],
+			  },
+		},
 	},
 	plugins: [
 		require('flowbite/plugin'),
