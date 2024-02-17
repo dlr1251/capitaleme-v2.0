@@ -1,4 +1,13 @@
 ---
+import fetch from 'node-fetch';
+import { Image } from 'astro:assets';
+
+const response = await fetch(`${Astro.url}/api/google/reviews`);
+const rawData = await response.json();
+const isReviewArray = Array.isArray(rawData) && rawData.every(item => typeof item === 'object' && 'rating' in item);
+const data = isReviewArray ? rawData : [];
+// const data = await response.json();
+
 
 ---
 <section class="bg-white">
@@ -11,74 +20,20 @@
 
         <!-- Experieces -->
         <div id="experiences" class="grid grid-cols-1 md:grid-cols-2">
+            {data.map((r) => (
             <div id="experience" class="flex p-5">
                 <div class="w-64 flex flex-col items-center p-3 mx-auto">
-                    <div id="thumbnail" class="bg-primary rounded-full w-16 h-16"></div>
-                    <div id="star-rating">x x x x x</div>
-                    <div id="date-posted" class="text-xs text-center">2 months ago</div>
+                    <Image src={r.profile_photo_url}  class='rounded-full w-16 h-16' alt="Profile pic" width={64} height={64}/>
+                    <div id="star-rating">{'⭐️'.repeat(r.rating)}</div>
+                    <div id="date-posted" class="text-xs text-center">{r.relative_time_description}</div>
                 </div>
                 <div id="review-text" class="flex flex-col justify-center mx-3 text-gray-500">
-                    <div id="reviewer-name" class="font-bold text-primary">Myah Pacheco</div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde sequi cumque ipsum laborum! Quae harum a provident repellat aut, non praesentium aliquid saepe accusantium consequuntur cum, debitis ea, neque at?
+                    <div id="reviewer-name" class="font-bold text-primary">{r.author_name}</div>
+                    <p>{r.text}</p>
                 </div>
-            </div>            
-            <div id="experience" class="flex p-5">
-                <div class="w-64 flex flex-col items-center p-3 mx-auto">
-                    <div id="thumbnail" class="bg-primary rounded-full w-16 h-16"></div>
-                    <div id="star-rating">x x x x x</div>
-                    <div id="date-posted" class="text-xs text-center">2 months ago</div>
-                </div>
-                <div id="review-text" class="flex flex-col justify-center mx-3 text-gray-500">
-                    <div id="reviewer-name" class="font-bold text-primary">Myah Pacheco</div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde sequi cumque ipsum laborum! Quae harum a provident repellat aut, non praesentium aliquid saepe accusantium consequuntur cum, debitis ea, neque at?
-                </div>
-            </div>            
-            <div id="experience" class="flex p-5">
-                <div class="w-64 flex flex-col items-center p-3 mx-auto">
-                    <div id="thumbnail" class="bg-primary rounded-full w-16 h-16"></div>
-                    <div id="star-rating">x x x x x</div>
-                    <div id="date-posted" class="text-xs text-center">2 months ago</div>
-                </div>
-                <div id="review-text" class="flex flex-col justify-center mx-3 text-gray-500">
-                    <div id="reviewer-name" class="font-bold text-primary">Myah Pacheco</div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde sequi cumque ipsum laborum! Quae harum a provident repellat aut, non praesentium aliquid saepe accusantium consequuntur cum, debitis ea, neque at?
-                </div>
-            </div>            
-            <div id="experience" class="flex p-5">
-                <div class="w-64 flex flex-col items-center p-3 mx-auto">
-                    <div id="thumbnail" class="bg-primary rounded-full w-16 h-16"></div>
-                    <div id="star-rating">x x x x x</div>
-                    <div id="date-posted" class="text-xs text-center">2 months ago</div>
-                </div>
-                <div id="review-text" class="flex flex-col justify-center mx-3 text-gray-500">
-                    <div id="reviewer-name" class="font-bold text-primary">Myah Pacheco</div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde sequi cumque ipsum laborum! Quae harum a provident repellat aut, non praesentium aliquid saepe accusantium consequuntur cum, debitis ea, neque at?
-                </div>
-            </div>            
-            <div id="experience" class="flex p-5">
-                <div class="w-64 flex flex-col items-center p-3 mx-auto">
-                    <div id="thumbnail" class="bg-primary rounded-full w-16 h-16"></div>
-                    <div id="star-rating">x x x x x</div>
-                    <div id="date-posted" class="text-xs text-center">2 months ago</div>
-                </div>
-                <div id="review-text" class="flex flex-col justify-center mx-3 text-gray-500">
-                    <div id="reviewer-name" class="font-bold text-primary">Myah Pacheco</div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde sequi cumque ipsum laborum! Quae harum a provident repellat aut, non praesentium aliquid saepe accusantium consequuntur cum, debitis ea, neque at?
-                </div>
-            </div>            
-            <div id="experience" class="flex p-5">
-                <div class="w-64 flex flex-col items-center p-3 mx-auto">
-                    <div id="thumbnail" class="bg-primary rounded-full w-16 h-16"></div>
-                    <div id="star-rating">x x x x x</div>
-                    <div id="date-posted" class="text-xs text-center">2 months ago</div>
-                </div>
-                <div id="review-text" class="flex flex-col justify-center mx-3 text-gray-500">
-                    <div id="reviewer-name" class="font-bold text-primary">Myah Pacheco</div>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde sequi cumque ipsum laborum! Quae harum a provident repellat aut, non praesentium aliquid saepe accusantium consequuntur cum, debitis ea, neque at?
-                </div>
-            </div>            
-        </div>
-        
+            </div>  
+            ))}                     
+        </div>        
         
     </div>
 </section>
