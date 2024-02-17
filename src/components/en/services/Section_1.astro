@@ -1,6 +1,6 @@
 ---
 import VisaFilterWidget from "./VisaFilterWidget.jsx"
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 const allVisas = await getCollection('visas', ({ id }) => {
   return id.startsWith('en/');
 });
@@ -17,51 +17,5 @@ console.log(someVisas)
         There are over 45 visa categories. Each visa category correspond to an authorized activity that the foreigner will be performing in the country. Each category has its own requirements, benefits and restrictions. Here are some tips to find your ideal visa category 
     </p>    
     <VisaFilterWidget client:load/>
-    <!-- <div class="flex mb-12">
-        <div class="w-1/4 bg-slate-100 flex-cols ">
-            <div class="flex-col">
-                <form class="max-w-sm mx-auto px-4 pt-4">                    
-                    <select id="countries" class="bg-gray-50 border border-gray-300 text-primary text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-4 p-2.5">
-                      <option selected>Choose your country</option>
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                      <option value="FR">France</option>
-                      <option value="DE">Germany</option>
-                    </select>
-                </form>
-                <div class="flex items-center ps-4 rounded">
-                    <input id="bordered-checkbox-1" type="checkbox" value="" name="bordered-checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                    <label for="bordered-checkbox-1" class="w-full py-4 ms-2 text-sm font-medium text-primary">Bringing Spouse and Children?</label>
-                </div>
-                <div class="flex items-center ps-4 rounded">
-                    <input id="bordered-checkbox-2" type="checkbox" value="" name="bordered-checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                    <label for="bordered-checkbox-2" class="w-full py-4 ms-2 text-sm font-medium text-primary">Do you need a work permit?</label>
-                </div>
-                <div class="flex items-center ps-4 rounded">
-                    <input id="bordered-checkbox-2" type="checkbox" value="" name="bordered-checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                    <label for="bordered-checkbox-2" class="w-full py-4 ms-2 text-sm font-medium text-primary">Do you want to accrue time towards Residency?</label>
-                </div>
-            </div>
-        </div>
-        <div class="w-3/4">
-            <div class="w-full h-auto flex justify-center items-center">
-                <div class="flex flex-wrap w-auto max-w-4xl mb-6 mr-auto gap-4">
-                    {someVisas.map(p => (
-                        <a href={`/visas/${p.slug.slice(3)}`} class="w-2/5 p-2 mx-auto border text-primary rounded hover:bg-primary hover:text-white">
-
-                            <div class="block p-2 w-full text-lg">{p.data.title}</div>
-                            <div class="flex">
-                                <p class="text-slate-400">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>    
-                            </div>
-                            <div class="p-2 text-sm"><span class="font-bold">Beneficiaries: </span>{p.data.beneficiaries == 'yes' ? 'yes' : p.data.beneficiaries}</div>
-                            <div class="p-2 text-sm"><span class="font-bold">Work permit: </span>{p.data.workPermit}</div>
-                            <div class="p-2 text-sm"><span class="font-bold">Countries: </span>{p.data.countries}</div>
-                            
-                    </a>
-                    ))}
-                </div>
-            </div>
-        </div>
-    </div> -->
 
 </section>

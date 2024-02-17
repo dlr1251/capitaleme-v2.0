@@ -7,16 +7,15 @@ import { remarkReadingTime } from '../capitalm-website/src/components/RemarkRead
 
 import react from "@astrojs/react";
 
-// https://astro.build/config
 export default defineConfig({
+  
   output: 'hybrid',
+  image: {
+    domains: ["astro.build"],
+  },
   markdown: {
     remarkPlugins: [remarkReadingTime],
   },
-  // build: {
-  //   format: 'directory'
-  // },  
-  // trailingSlash: 'always',
   i18n: {
     defaultLocale: "en",
     locales: ["en", "es"],

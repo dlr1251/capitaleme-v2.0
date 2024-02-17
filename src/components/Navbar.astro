@@ -1,13 +1,8 @@
 ---
-const faviconURL = "../../src/assets/logo/color-horizontal.svg"
-
-import { getRelativeLocaleUrl, getAbsoluteLocaleUrl,getRelativeLocaleUrlList, getAbsoluteLocaleUrlList  } from 'astro:i18n';
-
-
+import { Image } from 'astro:assets';
+const faviconURL = `../../src/assets/logo/color-horizontal.svg`
 const lang = Astro.currentLocale
-// const { pathname } = Astro.url;
 const { pathname } = Astro.url;
-
 const isSpanish = pathname.startsWith('/es');
 
 // Función para construir la URL en inglés
@@ -28,8 +23,8 @@ const espURL = getSpanishURL(pathname);
 
 <nav class="bg-white border-gray-200 fixed w-full z-50 top-0">
     <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-        <a href="/" class=`px-4 flex items-center space-x-3 rtl:space-x-reverse ${pathname.endsWith('/') ? 'border rounded border-secondary ' : ''}`}>
-            <img src={faviconURL} class="h-8" alt="Capital M Logo" />
+        <a href="/" class=`px-4 flex items-center space-x-3 rtl:space-x-reverse h-8 ${pathname.endsWith('/') ? 'border rounded border-secondary ' : ''}`}>
+            <img src={faviconURL}  alt="Capital M Logo" />
         </a>
       
         <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto order-3 md:order-1">

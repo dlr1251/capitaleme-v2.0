@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import SectionOne from "../../components/en/resources/Section_1.astro";
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 const allPosts = await getCollection('posts', ({ id }) => {
   return id.startsWith('en/');
 });
