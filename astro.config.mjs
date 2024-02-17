@@ -7,7 +7,7 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'hybrid',
+  output: 'server',
   site: 'https://capitaleme.com',
   image: {
     domains: ["astro.build"]

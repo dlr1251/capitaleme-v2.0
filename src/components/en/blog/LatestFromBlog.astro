@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+const allPosts = await getCollection('posts', ({ id }) => {
+  return id.startsWith('en/');
+});
+const latestPosts = allPosts.slice(0,3)
+---
+<section>
+    <h2 class="text-2xl font-bold text-primary">Latest from Blog</h2>
+    {latestPosts.map((post) => (
+        <div>
+            {post.data.title}    
+        </div>
+    ))}
+
+</section>

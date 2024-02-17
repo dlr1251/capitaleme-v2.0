@@ -73,19 +73,18 @@ const url = Astro.url
 			   </ul>
 			</div>
 		 </aside>	
-		 <div class="flex min-h-screen p-4 sm:ml-64">
+		 <div class="flex min-h-screen p-0 sm:ml-64">
 			<!-- Main content container -->
-			<div class="flex-none">
-				<div class="p-4 rounded-lg mt-14 prose prose-slate md:prose-xl">					
-					<div class="max-w-screen-xl mx-auto">
-											
+			<div class="flex-none w-full">
+				<div class="p-4 rounded-lg mt-14 prose prose-slate prose-lg md:prose-xl prose-headings-color-primary">					
+					<div class="max-w-screen-sm md:max-w-screen-xl mx-auto">											
 						<slot/>
 					</div>
 				</div>
 			</div>
 			
 			<!-- Sticky TableOfContents -->
-			<div class="sticky top-0 h-screen ">
+			<div class="hidden md:block sticky top-0 h-screen ">
 				<div class="h-full overflow-y-auto">
 					{minutesRead}	
 					<TableOfContents headings={Astro.props.headings} />

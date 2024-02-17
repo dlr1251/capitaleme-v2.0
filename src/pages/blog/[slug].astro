@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import PostsLayout from '../../layouts/PostsLayout.astro';
+export const prerender = true;
 
 export async function getStaticPaths() {
-
   const englishBlogEntries = await getCollection('posts', ({ id }) => {
     return id.startsWith('en/');
   });
@@ -17,14 +17,10 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-
-const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+const { Content, headings } = await entry.render();
 const { pathname } = Astro.url
-
-
 
 ---
 <PostsLayout title={entry.data.title} headings={headings} frontmatter={entry.data}>
-  
   <Content />
 </PostsLayout>
