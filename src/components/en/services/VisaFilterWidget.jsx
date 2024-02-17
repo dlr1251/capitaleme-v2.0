@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCollection, getEntry } from 'astro:content';
+import cssesc from 'cssesc';
 
 import countries from '../../../content/countries/Countries.js'
 // Import the list of all the countries in JSON. 
@@ -121,8 +122,8 @@ const FilterVisaWidget = () => {
 
   return (
         <div>
-          <div className="flex mb-12">
-              <div className="w-1/4 bg-slate-100 flex-col p-4">
+          <div className="flex flex-col md:flex-row mb-12">
+              <div className="w-full md:w-1/4 bg-slate-100 flex-col p-4">
                 <form className="max-w-sm mx-auto">
                     <select
                       id="countries"                      
@@ -185,10 +186,10 @@ const FilterVisaWidget = () => {
                 </div>
               </div>
 
-              <div className="w-3/4">
-                <div className="w-full h-auto grid grid-cols-1 sm:grid-cols-2 justify-center items-center w-auto mb-6 gap-4">                  
+              <div className="w-full md:w-3/4">
+                <div className="w-full h-auto grid grid-cols-1 sm:grid-cols-2 justify-center items-center md:xw-auto mb-6 gap-4">                  
                     {currentItems.map((visa, index) => (
-                      <a key={index} href={`/visas/${visa.slug.slice(3)}`} className="w-full text-gray-900 rounded ml-2 border hover:bg-primary hover:text-white">
+                      <a key={index} href={`/visas/${visa.slug.slice(3)}`} className="w-auto p-4 text-gray-900 rounded mx-2 border hover:bg-primary hover:text-white">
                         <div className="block p-2 w-full text-lg h-16">{visa.data.title}</div>
                         <div className="flex">
                           <p className="px-2 text-slate-400">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
