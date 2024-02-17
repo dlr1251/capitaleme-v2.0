@@ -4,7 +4,7 @@ import SectionOne from '../components/en/home/Section_1.astro';
 import SectionTwo from '../components/en/home/Section_2.astro';
 import SectionThree from '../components/en/home/Section_3.astro';
 import SectionFour from '../components/en/home/Section_4.astro';
-import SectionFive from '../components/en/home/Section_5.astro';
+import ReviewsSection from '../components/en/home/ReviewsSection';
 ---
 
 <Layout title="Capital M.">
@@ -13,6 +13,7 @@ import SectionFive from '../components/en/home/Section_5.astro';
 		<SectionTwo/>
 		<SectionThree/>
 		<SectionFour/>
-		<!-- <SectionFive/> -->
+		<ReviewsSection client:load/>
 	</main>
 </Layout>
+../components/en/home/ReviewsSection.jsx
