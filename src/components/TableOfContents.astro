@@ -35,8 +35,8 @@ function buildToc(headings: Heading[]): Heading[] {
 
 ---
 
-<nav class="toc prose pt-20">
-    <ul>
+<nav class="toc prose prose-a:text-slate-500 0 pt-20">
+    <ul class="list-none">
       {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
     </ul>
 </nav>

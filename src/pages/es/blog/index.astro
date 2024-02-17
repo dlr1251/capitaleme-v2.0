@@ -1,25 +1,18 @@
 ---
-import { getCollection } from "astro:content";
-import { getAbsoluteLocaleUrl } from "astro:i18n";
-import BlogLayout from "../../../layouts/BlogLayout.astro";
-const title = "Bienvenido al blog"
-const spanishPosts = await getCollection("posts",({ id }) => {
+import Layout from "../../../layouts/Layout.astro";
+import SectionOne from "../../../components/en/resources/Section_1.astro";
+import { getCollection, getEntry } from 'astro:content';
+const allResources = await getCollection('posts', ({ id }) => {
   return id.startsWith('es/');
 });
-
-
 ---
 
-<BlogLayout title={title}>
+<Layout title="All resources">
+    <div class="mt-16">
+                <SectionOne/>
 
-    {
-        spanishPosts.map((post) => (
-            <a class="flex flex-col m-3 p-2 bg-white border border-gray-200 rounded-lg shadow" href={`/es/posts/${post.slug.slice(3)}/`}>
-                <h3 class="mt-2 pt-2">{post.data.title}</h3>      
-                <p class="">{post.data.description}</p>              
-            </a>
-            
-        ))
-    }
-
-</BlogLayout>
+                {allResources.map(p => (
+                    <a href={`/blog/${p.slug.slice(3)}`}>{p.data.title}</a><br>
+                  ))}
+    </div>
+</Layout>

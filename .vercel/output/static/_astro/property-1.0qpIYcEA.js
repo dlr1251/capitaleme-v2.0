@@ -1,0 +1,1 @@
+const e="en/property-1.mdx",t="properties",n="en/property-1",r="This is the first property",o={minutesRead:"1 min read"},s={type:"content",filePath:"/Users/danielluque/Projects/capitalm-website/src/content/properties/en/property-1.mdx",rawData:void 0};export{s as _internal,r as body,t as collection,o as data,e as id,n as slug};

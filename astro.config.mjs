@@ -2,13 +2,17 @@ import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import vercel from "@astrojs/vercel/serverless";
 import astroExpressiveCode from 'astro-expressive-code';
-
-
 import mdx from "@astrojs/mdx";
+import { remarkReadingTime } from '../capitalm-website/src/components/RemarkReadingTime.mjs';
+
+import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
   output: 'hybrid',
+  markdown: {
+    remarkPlugins: [remarkReadingTime],
+  },
   // build: {
   //   format: 'directory'
   // },  
@@ -23,14 +27,9 @@ export default defineConfig({
       prefixDefaultLocale: false
     }
   },
-  integrations: [
-    astroExpressiveCode(),
-    mdx(),
-    tailwind({
-      applyBaseStyles: true,
-      configFile: './tailwind.config.mjs',
-    }),    
-    
-  ],
+  integrations: [astroExpressiveCode(), mdx(), tailwind({
+    applyBaseStyles: true,
+    configFile: './tailwind.config.mjs'
+  }), react()],
   adapter: vercel()
 });

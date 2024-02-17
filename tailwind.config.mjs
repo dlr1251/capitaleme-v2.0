@@ -8,8 +8,17 @@ export default {
 	theme: {
 		
 		extend: {
+			typography: (theme) => ({
+				DEFAULT: {
+				  css: {
+					fontFamily: `'Outfit', ${theme('fontFamily.sans').join(', ')}`,
+					color:  '#16345F',
+				  },
+				}
+			}),
 			colors: {
 				primary: '#16345F',
+				secondary: '#00AA81',
 			  },
 			fontFamily: {
 				sans: ['Outfit', 'sans-serif'],

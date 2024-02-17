@@ -1,24 +1,47 @@
 ---
-import ContactTabs from "../common/ContactTabs.astro"
+import ContactTabs from "../common/ContactForm.astro"
 ---
 
-<section class="bg-white h-screen flex flex-row justify-center items-center max-w-screen-lg mx-auto">
+<section class="bg-white h-full mt-24 mb-16 pt-20 flex flex-col md:flex-row justify-center items-center max-w-screen-lg mx-auto">
     
-          <div class="">
-            <div class="text-5xl font-bold text-primary mb-12">WE ORGANIZE <br/>YOUR LEGAL STUFF<br/> IN COLOMBIA</div>
-            <div class="mb-5 text-xl">
-              From tiny inquiries to investment project consultations, Capital M is there for you.
+            <div class="w-full h-full">
+              <div class="text-5xl font-bold text-primary mb-8 flex flex-col justify-between">
+                <span class="mb-1.5">WE ORGANIZE <br/></span>
+                <span class="mb-1.5">YOUR LEGAL STUFF<br/> </span>
+                <span class="mb-1.5">IN COLOMBIA</span>
+              </div>
+              <div class="mb-5 text-xl text-primary text-light">
+                A legal boutique based in Medellín, Colombia. <br>
+                We provide legal advice to international clients
+              </div>
+              <ul>
+                <li class="mb-3 text-xl text-primary flex">
+                  <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
+                  </svg>
+  
+                  Visas & Immigration Services
+                </li>
+                <li class="mb-3 text-xl text-primary flex">
+                  <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
+                  </svg>
+  
+                  Business Incorporations
+                </li>
+                <li class="mb-3 text-xl text-primary flex">
+                  <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
+                  </svg>
+  
+                  Real Estate Agreements
+                </li>
+              </ul>
+              
             </div>
-            <ul>
-              <li class="mb-3">✅ Visa assistance services</li>
-              <li class="mb-3">✅ Immigration Law consultation</li>
-              <li class="mb-3">✅ Procedures before Migración Colombia</li>
-            </ul>
-            
-          </div>
         
-            <div class="">
-
+            <div class="w-full">
+              <div class="font-bold text-primary bg-slate-100 pl-3 pt-2">Contact now</div>
               <ContactTabs/>
             </div>
         

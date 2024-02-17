@@ -2,11 +2,18 @@
 
 import Layout from "../../layouts/Layout.astro";
 import SectionOne from "../../components/en/resources/Section_1.astro";
-
+import { getCollection, getEntry } from 'astro:content';
+const allResources = await getCollection('resources', ({ id }) => {
+  return id.startsWith('en/');
+});
 ---
 
 <Layout title="All resources">
     <div class="mt-16">
                 <SectionOne/>
+
+                {allResources.map(p => (
+                    <a href={`/resources/${p.slug.slice(3)}`}>{p.data.title}</a><br>
+                  ))}
     </div>
 </Layout>

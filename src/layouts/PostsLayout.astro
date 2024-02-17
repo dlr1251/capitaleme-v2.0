@@ -12,8 +12,12 @@ interface Props {
 	headings: any;
 }
 
-const { title } = Astro.props.frontmatter || Astro.props 
+const { title, headings } = Astro.props.frontmatter || Astro.props 
+
 const locale = Astro.currentLocale
+const { minutesRead } = Astro.props.frontmatter;
+
+
 
 const spanishPosts = await getCollection("posts",({ id }) => {
   return id.startsWith('es/');
@@ -26,6 +30,7 @@ const sidebarPosts = await getCollection("posts",({ id }) => {
 	}
 });
 
+const url = Astro.url
 
 ---
 <!doctype html>
@@ -36,49 +41,58 @@ const sidebarPosts = await getCollection("posts",({ id }) => {
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
 		<meta name="generator" content={Astro.generator} />
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 		<title>{title}</title>
 	</head>
 	<body>
 		
 		<Navbar />	
-		<aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
-			<div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+		<aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 -mt-2.5 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
+			<div class="h-full px-3 pb-4 overflow-y-auto bg-slate-100">
 			   <ul class="space-y-2 font-medium">                   
 				  <li>
-					 <a href={locale == "en" ? `/blog` : '/es/blog'} class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-						<span class="flex-1 ms-3 whitespace-nowrap">Blog</span>                
+					 <a href={locale == "en" ? `/blog` : '/es/blog'} class="flex items-center p-2 text-primary rounded-lg hover:bg-gray-100 group">
+						<span class="flex-1 ms-3 whitespace-nowrap">SERVICES</span>                
 					 </a>
 				  </li>
-				  { sidebarPosts.map( (post) => (
-					<li>
-						<a href={locale == "en" ? `/posts/${post.slug.slice(3)}` : `/es/posts/${post.slug.slice(3)}` } class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-						<span class="flex-1 ms-3 whitespace-nowrap">{post.data.title}</span>                
-					 </a>
-					</li>
-				  )) }
+				  <li>
+					<div class="flex items-center w-full p-2 text-base text-secondary transition duration-75 rounded-lg group hover:bg-gray-100">						  
+						  <span class="flex-1 ms-3 text-left rtl:text-right whitespace-wrap ">RELATED ARTICLES</span>
+					</div>
+					<ul class=" py-2 space-y-2">
+						{ sidebarPosts.map( (post) => (
+							<li class="">
+								<a href={locale == "en" ? `/blog/${post.slug.slice(3)}` : `/es/blog/${post.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/blog/' + post.slug.slice(3) ? 'underline bg-secondary text-white' : ''}`}>
+									<span class="flex-1 ms-3 whitespace-wrap">{post.data.title}</span>      
+							 	</a>
+							</li>
+						  )) }
+					</ul>
+				 </li>
+				  
 			   </ul>
 			</div>
 		 </aside>	
 		 <div class="flex min-h-screen p-4 sm:ml-64">
 			<!-- Main content container -->
-			<div class="flex-grow">
-				<div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14 prose md:prose-lg">
-					<h1>{title}</h1>
-					
-					<div class="max-w-screen-md mx-auto">						
+			<div class="flex-none">
+				<div class="p-4 rounded-lg mt-14 prose prose-slate md:prose-xl">					
+					<div class="max-w-screen-xl mx-auto">
+											
 						<slot/>
 					</div>
 				</div>
-				<Footer/>
 			</div>
 			
 			<!-- Sticky TableOfContents -->
-			<div class="sticky top-0 h-screen">
+			<div class="sticky top-0 h-screen ">
 				<div class="h-full overflow-y-auto">
+					{minutesRead}	
 					<TableOfContents headings={Astro.props.headings} />
 				</div>
 			</div>
 		</div>			
+		<Footer/>
 			
 		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
 		

@@ -1,13 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
-import VisasLayout from '../../../layouts/VisasLayout.astro';
+import PostsLayout from '../../../layouts/PostsLayout.astro';
 
 export async function getStaticPaths() {
-  const visasEntries = await getCollection('visas');
+  const resourcesEntries = await getCollection('resources',({ id }) => {
+    return id.startsWith('es/');
+  });
   
-  return visasEntries.map(entry => ({
+  return resourcesEntries.map(entry => ({
       params: { 
-          slug: entry.slug 
+          slug: entry.slug.slice(3) 
       }, 
       props: { entry },
   }));
@@ -15,9 +17,9 @@ export async function getStaticPaths() {
 
 
 const { entry } = Astro.props;
+const { Content, headings } = await entry.render()
 
-const { Content } = await entry.render();
 ---
-<VisasLayout title={entry.data.title} frontmatter={entry.data}>
+<PostsLayout title={entry.data.title} frontmatter={entry.data} headings={headings}>
   <Content></Content>
-</VisasLayout>
+</PostsLayout>

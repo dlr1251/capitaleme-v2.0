@@ -1,0 +1,43 @@
+const e="en/v-internship.mdx",n="visas",t="en/v-internship",i=`## Who can apply for this type of visa?
+
+The V-Internship Visa in Colombia is open to any passport holder of one of the short-stay visa exempted countries (like US, Canada, Australia, European Union, Israel, Argentina and many others)
+
+---
+
+## What are the benefits and restrictions for this visa?
+
+### **Up to one year validity**
+
+### **This visa admits beneficiaries**
+
+### **No work permit**
+
+### **No time accrue towards residency**
+
+Since it is a visitor-type (V) visa, this won’t allow you to add time in order to apply for a residency or (R) visa.
+
+---
+
+## Requirements
+
+This visa must be [sponsored and applied by a Colombian legal entity](https://www.notion.so/Visa-sponsored-by-a-legal-entity-1e1356d1166d48108b2ccce54e28eb1e?pvs=21).
+
+### 1. Internship contract
+
+You’ll be required to attach the apprenticeship or internship contract signed by the legal representative of the Colombian legal entity.
+
+### 2. Application letter
+
+You’ll be required to attach the apprenticeship or internship contract signed by the legal representative of the Colombian legal entity.
+
+## Costs
+
+The total costs vary greatly depending on the circumstances of the applicant.
+
+Here you will see an example of how much this can cost you.
+
+| Concept | Value |
+| --- | --- |
+| Visa study | $55USD |
+| Visa issuance | $232 USD |
+| Cédula de Extranjería | $55 USD* |`,a={title:"V - Internship",type:"Visitor",beneficiaries:["no"],workPermit:["authorized activity"],sponsored:["corporate"],countries:["Exempted"]},o={type:"content",filePath:"/Users/danielluque/Projects/capitalm-website/src/content/visas/en/v-internship.mdx",rawData:void 0};export{o as _internal,i as body,n as collection,a as data,e as id,t as slug};

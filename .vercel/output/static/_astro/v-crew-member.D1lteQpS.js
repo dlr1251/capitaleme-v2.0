@@ -1,0 +1,75 @@
+const e="en/v-crew-member.mdx",t="visas",n="en/v-crew-member",i=`## Foreword
+
+This visa is for people who work on the sea, in the jurisdictional waters of Colombia.
+
+To work in Colombian jurisdictional waters as a crew member on a vessel, dredger, or offshore platform
+
+---
+
+## What are the benefits and restrictions for this visa?
+
+### **Up to one year validity**
+
+One year counted from the day your visa was granted.
+
+### **This visa doesn’t admit beneficiaries**
+
+No beneficiaries with this visa.
+
+### **Limited work permit**
+
+This visa allows its holder to perform only the authorized activity for the sponsoring company
+
+### **No time accrue towards residency**
+
+Since it is a visitor-type (V) visa, this won’t allow you to add time in order to apply for a residency or (R) visa.
+
+---
+
+# **How to get it**
+
+As with [any visa application](https://www.notion.so/General-visa-application-rules-1dc2c565143e4adb95086f993f184e36?pvs=21), the process is done online, throuth the Ministry for Foreign Relationship’s website. on this form, other than providing your personal, professional and family information and data, you will be required to attach some documents that are described here below.
+
+## Specific Requirements
+
+Other than the general requirements for every visa application, you will need to attach evidence of the following:
+
+### Sponsoring letter
+
+Submit a motivated communication directly signed by the legal representative of the legal entity, acting on behalf of the entity, containing the following information:
+
+a. Full identification of the legal entity, including the Tax Identification Number (NIT) if registered in Colombia, and contact information.
+
+b. Complete identification of the foreigner.
+
+c. Letter from the legal representative of the legal entity supporting the application, indicating the activity the foreigner intends to carry out in Colombia, its duration, the type of relationship or connection between the legal entity and the foreigner, and indicating who assumes the financial responsibility for the expenses related to the foreigner's travel and stay in the national territory. This communication should also include the information of other foreign citizens supported by the company or legal entity. The legal entity must also commit to the National Government to guarantee the foreigner's return to their country of origin or to report if the foreigner remains irregular in the national territory.
+
+d. Explanation of the relationship or type of connection with the foreigner for whom the visa is requested and their special qualification or expertise, if applicable.
+
+e. Declaration of financial responsibility for the expenses related to the foreigner's travel and stay in Colombia. Additionally, the legal entity must undertake to inform the Visa and Immigration Authority immediately of any changes in the conditions for which the visa was granted, guarantee the foreigner's return to their country of origin, and report if the foreigner remains irregular in the national territory. This declaration must be handwritten and include the digital fingerprint of the right or left index finger, or right or left thumb. If signed before a foreign competent authority, it must be apostilled or legalized, as appropriate.
+
+If the supporting legal entity is a private entity incorporated abroad, a certificate of existence, incorporation, or constitution, and legal representation or equivalent document must be provided, with the apostille or legalization formality, according to the issuing or certifying authority, along with an official translation into Spanish if not already in this language.
+
+Demonstrate the economic solvency of the legal entity through bank statements for the three (3) months prior to the application. Public entities are not required to meet this requirement. In any case, the applicant must demonstrate through bank statements that they have minimum income equivalent to three (3) times the current legal monthly minimum wage (SMLMV).
+
+### **Crewbook**
+
+Copy of the crewbook or “libreta de tripulante”
+
+### Maritime authority permission
+
+Permission from the Colombian maritime, port, and fisheries authority, as applicable.
+
+## Costs
+
+The total costs vary greatly depending on the circumstances of the applicant. For example, if you have not bought your healht insurance and need to buy one for your visa application, that can be costly, depending on what you choose. There are other associated costs such as apostilles,  translations, and a visa assistance service from local attorneys such as ours.
+
+Here you will see an example of how much this can cost you.
+
+| Concept | Value |
+| --- | --- |
+| Visa study | $55USD |
+| Visa issuance | $232 USD |
+| Cédula de Extranjería | $55 USD* |
+
+## Application process`,o={title:"V - Crew member",type:"Visitor",beneficiaries:["no"],workPermit:["Authorized activity"],sponsored:["corporate"],countries:["Not exempted"]},a={type:"content",filePath:"/Users/danielluque/Projects/capitalm-website/src/content/visas/en/v-crew-member.mdx",rawData:void 0};export{a as _internal,i as body,t as collection,o as data,e as id,n as slug};

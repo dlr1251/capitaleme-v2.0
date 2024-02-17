@@ -1,0 +1,60 @@
+const e="en/v-cinematic-productions.mdx",n="visas",i="en/v-cinematic-productions",t=`## Who can apply for this visa?
+
+This visa allows its holder to participate in large format cinematic productions or documentaries.
+
+Passport holders from visa-exempt countries or territories who visit Colombia as part of a production, will be exempt from applying for this type of visa, as long as their stay in Colombia does not exceed 90 days, which can be extended up to a maximum of 180 consecutive or non-consecutive days within a calendar year, and as long as they do not receive any salary in Colombia.
+
+---
+
+## What are the benefits and restrictions for this visa?
+
+### **Up to one year validity**
+
+It will be issued for up to one year, depending on the length of the authorized activity, that is, the cinematic production 
+
+### **This visa doesn’t admits beneficiaries**
+
+No beneficiaries for this visa category.
+
+### **No open work permit**
+
+Please notice that this type of visa does not allow you to work in Colombia for Colombian companies, and you will only be allowed to performed the authorized activity on the Cinematic project.
+
+### **No time accrue towards residency**
+
+Since it is a visitor-type (V) visa, this won’t allow you to add time in order to apply for a residency (R) visa.
+
+---
+
+## Requirements
+
+This visa category is to be applied for [by a Colombian legal entity](https://www.notion.so/Visa-sponsored-by-a-legal-entity-1e1356d1166d48108b2ccce54e28eb1e?pvs=21). Other than the [general requirements](https://www.notion.so/General-visa-application-rules-1dc2c565143e4adb95086f993f184e36?pvs=21), you will need to have a valid health insurance policy
+
+### A valid **health insurance**
+
+You must have a health policy with coverage in the Colombian territory against all risks in case of *accident, illness, maternity, disability, hospitalization, death and repatriation*, for the time foreseen for your stay in the country. If you are buying a health insurance policy only for your visa application, get one in spanish. If your health insurance policy is not in Spanish, you'll need to have it officially translated.
+
+We recommend using [Genki](https://genki.world/?with=capitaleme). 
+
+Genki has the required coverage plus: 
+
+1. Has 2 years validity by default. 
+2. Can be paid monthly starting at 35 eur per month. 
+3. Can be cancelled anytime 
+4. The purchase is quick and online (one business day at the most) 
+5. They issue a health coverage summary in spanish (aswell as in english, german, italian…) 
+6. Has been successfully used by many of our clients who have gotten their visas approved.
+
+## Costs
+
+The total costs vary greatly depending on the circumstances of the applicant. 
+
+Here you will see an example of how much this can cost you.
+
+| Concept | Value |
+| --- | --- |
+| Visa study | $55USD |
+| Visa issuance | $232 USD |
+| Cédula de Extranjería | $55 USD* |
+
+**Other costs include apostilles and the certified translation of documents**`,a={title:"V - Cinematic productions or documentaries",type:"Visitor",beneficiaries:["no"],workPermit:["authorized activity"],sponsored:["corporate"],countries:["Exempted","Not exempted","Schengen visa"]},o={type:"content",filePath:"/Users/danielluque/Projects/capitalm-website/src/content/visas/en/v-cinematic-productions.mdx",rawData:void 0};export{o as _internal,t as body,n as collection,a as data,e as id,i as slug};

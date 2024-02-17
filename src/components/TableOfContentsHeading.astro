@@ -3,13 +3,13 @@ const { heading } = Astro.props;
 
 ---
 
-<li>
+<li class="text-primary">
   <a href={'#' + heading.slug} class="toc-link">
     {heading.text}
   </a>
   {
     heading.subheadings.length > 0 && (
-      <ul>
+      <ul class="list-none">
         {heading.subheadings.map((subheading: any) => (
           <Astro.self heading={subheading} />
         ))}
@@ -20,14 +20,14 @@ const { heading } = Astro.props;
 <style>
   /* Style for the active TOC link */
     .toc-link-active {
-      background-color: red; /* Change as needed */
+      color: black; /* Change as needed */
       padding-left: 10px; /* Optional: for better visibility */
     }
 
     /* Simple animation to highlight the change */
     @keyframes highlightActive {
-      from {background-color: transparent;}
-      to {background-color: red;}
+      from {color: transparent;}
+      to {color: black;}
     }
 
     .toc-link-active {
@@ -36,34 +36,41 @@ const { heading } = Astro.props;
 </style>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // Function to remove all active classes
-        const removeAllActive = (): void => {
-            document.querySelectorAll('.toc-link').forEach((link: Element) => {
-                link.classList.remove('toc-link-active');
-            });
-        }
-
-        // Function to find and highlight the active section
-        const highlightActiveTOCLink = (): void => {
-            const scrollPosition: number = document.documentElement.scrollTop || document.body.scrollTop;
-            document.querySelectorAll('.heading-anchor').forEach((heading: Element) => {
-                if (heading instanceof HTMLElement && heading.offsetTop <= scrollPosition && (heading.offsetTop + heading.offsetHeight) > scrollPosition) {
-                    // Find the TOC link that corresponds to the heading
-                    const tocLink = document.querySelector(`a[href="#${heading.id}"]`);
-                    if (tocLink instanceof HTMLAnchorElement) {
-                        removeAllActive();
-                        tocLink.classList.add('toc-link-active');
-                    }
-                }
-            });
-        }
-
-        // Listen for scroll events
-        window.addEventListener('scroll', highlightActiveTOCLink);
-
-        // Initial call to highlight the TOC link
-        highlightActiveTOCLink();
+document.addEventListener("DOMContentLoaded", function() {
+  // Función para eliminar todas las clases activas
+  const removeAllActive = function(): void {
+    document.querySelectorAll('.toc-link').forEach((link: Element) => {
+      link.classList.remove('toc-link-active');
     });
+  };
+
+  // Función para encontrar y resaltar la sección activa
+  const highlightActiveTOCLink = function(): void {
+    let scrollPosition: number = window.scrollY;
+    let closestHeadingAbove: HTMLElement | null = null;
+
+    document.querySelectorAll<HTMLElement>('h2, h3, h4').forEach((heading: HTMLElement) => {
+      console.log(closestHeadingAbove);
+      if (heading.offsetTop <= scrollPosition + window.innerHeight * 0.1) {
+        closestHeadingAbove = heading; // Este encabezado es el último que se desplazó hacia arriba
+      }
+    });
+
+    if (closestHeadingAbove) {
+      removeAllActive();
+      const tocLink = document.querySelector<HTMLAnchorElement>(`a[href="#${(closestHeadingAbove as HTMLElement).id}"]`);
+      if (tocLink) {
+        tocLink.classList.add('toc-link-active');
+      }
+    }
+  };
+
+  // Escuchar eventos de desplazamiento
+  window.addEventListener('scroll', highlightActiveTOCLink);
+});
+
+
+
+
 
 </script>
