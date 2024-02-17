@@ -14,6 +14,7 @@ export const GET: APIRoute = async () => {
     const response = await fetch(url);
 
     // First, check if the response is OK and Content-Type is application/json
+    
     if (!response.ok) {
       console.error('Failed to fetch:', response.statusText);
       return new Response('Error fetching reviews due to non-OK response from the API.', { status: response.status });
