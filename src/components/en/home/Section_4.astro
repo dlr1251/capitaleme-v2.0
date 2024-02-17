@@ -1,8 +1,11 @@
 ---
-import fetch from 'node-fetch';
 import { Image } from 'astro:assets';
 
-const response = await fetch(`${Astro.url}/api/google/reviews`);
+const baseUrl = import.meta.env.MODE === 'development'
+  ? 'http://localhost:4321/api/google/reviews' // Use your local dev server URL
+  : 'https://capitaleme.com/api/google/reviews';
+
+const response = await fetch(baseUrl);
 const rawData = await response.json();
 const isReviewArray = Array.isArray(rawData) && rawData.every(item => typeof item === 'object' && 'rating' in item);
 const data = isReviewArray ? rawData : [];

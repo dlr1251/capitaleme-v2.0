@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async () => {
   const placeId = 'ChIJcYiJq-kpRI4R1daaSuAwIz8';
-  const apiKey = import.meta.env.GOOGLE_PLACES_API_KEY; // Ensure your API key is stored securely in .env
+  const apiKey = import.meta.env.GOOGLE_PLACES_API_KEY || process.env.GOOGLE_PLACES_API_KEY; // Ensure your API key is stored securely in .env
 
   if (!apiKey) {
     return new Response("Google Places API key is not defined in the environment variables.", { status: 500 });

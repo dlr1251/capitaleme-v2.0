@@ -3,18 +3,17 @@ import tailwind from "@astrojs/tailwind";
 import vercel from "@astrojs/vercel/serverless";
 import astroExpressiveCode from 'astro-expressive-code';
 import mdx from "@astrojs/mdx";
-import { remarkReadingTime } from '../capitalm-website/src/components/RemarkReadingTime.mjs';
-
 import react from "@astrojs/react";
 
+// https://astro.build/config
 export default defineConfig({
-  
   output: 'hybrid',
+  site: 'https://capitaleme.com',
   image: {
-    domains: ["astro.build"],
+    domains: ["astro.build"]
   },
   markdown: {
-    remarkPlugins: [remarkReadingTime],
+    // remarkPlugins: [remarkReadingTime]
   },
   i18n: {
     defaultLocale: "en",
@@ -30,5 +29,7 @@ export default defineConfig({
     applyBaseStyles: true,
     configFile: './tailwind.config.mjs'
   }), react()],
-  adapter: vercel()
+  adapter: vercel({
+    edgeMiddleware: true,
+  })
 });
