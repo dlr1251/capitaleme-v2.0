@@ -1,10 +1,9 @@
 ---
-// import Layout from './Layout.astro';
 import Footer from '../components/Footer.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import { getCollection } from 'astro:content';
-// import { getRelativeLocaleUrl, getAbsoluteLocaleUrl,getRelativeLocaleUrlList, getAbsoluteLocaleUrlList  } from 'astro:i18n';
 import Navbar from '../components/Navbar.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 
 interface Props {
 	title: string;	
@@ -15,9 +14,6 @@ interface Props {
 const { title, headings } = Astro.props.frontmatter || Astro.props 
 
 const locale = Astro.currentLocale
-const { minutesRead } = Astro.props.frontmatter;
-
-
 
 const spanishPosts = await getCollection("posts",({ id }) => {
   return id.startsWith('es/');
@@ -45,7 +41,7 @@ const url = Astro.url
 		<title>{title}</title>
 	</head>
 	<body>
-		
+		<WhatsAppButton/>
 		<Navbar />	
 		<aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 -mt-2.5 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
 			<div class="h-full px-3 pb-4 overflow-y-auto bg-slate-100">
@@ -86,7 +82,6 @@ const url = Astro.url
 			<!-- Sticky TableOfContents -->
 			<div class="hidden sm:block sticky top-0 h-screen ">
 				<div class="h-full overflow-y-auto">
-					{minutesRead}	
 					<TableOfContents headings={Astro.props.headings} />
 				</div>
 			</div>
