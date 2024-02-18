@@ -5,12 +5,22 @@ const allPosts = await getCollection('posts', ({ id }) => {
 });
 const latestPosts = allPosts.slice(0,3)
 ---
-<section>
-    <h2 class="text-2xl font-bold text-primary">Latest from Blog</h2>
-    {latestPosts.map((post) => (
-        <div>
-            {post.data.title}    
-        </div>
-    ))}
+<section class="max-w-screen-lg mx-auto p-3 md:p-0">
+    <h2 class="text-3xl font-bold text-primary mb-4">Visit the Blog</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+
+        {latestPosts.map(p => (
+          
+          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  
+            <div class="flex justify-between">                          
+              <div class="text-sm text-slate-900">{p.data.author}</div>
+              <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
+              </div>                      
+              <div class="text-primary text-lg font-bold mt-2">{p.data.title}</div>
+              <div class="text-sm text-slate-700">{p.data.readTime}</div>
+              <p class="font-light py-4">{p.data.description}</p>   
+            </a>
+          ))}
+      </div>
 
 </section>

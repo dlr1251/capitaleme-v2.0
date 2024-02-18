@@ -54,6 +54,8 @@ const visas = defineCollection({
     beneficiaries: z.array(z.string()),
     workPermit: z.array(z.string()),
     sponsored: z.array(z.string()),
+    article: z.number().optional(),
+    popular: z.boolean().optional(),
     countries: z.array(z.string())    
   })
 });

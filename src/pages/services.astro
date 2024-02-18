@@ -4,21 +4,19 @@ import SectionOne from '../components/en/services/Section_1.astro';
 import SectionTwo from '../components/en/services/Section_2.astro';
 import SectionThree from '../components/en/services/Section_3.astro';
 import SectionFour from '../components/en/services/Section_4.astro';
-// import SectionFive from '../components/en/services/Section_5.astro';
+import LatestFromBlog from "../components/en/blog/LatestFromBlog.astro";
 
 const pageTitle = "Visas & Immigration";
 
 ---
 <Layout title={pageTitle}>
-    
-      <SectionOne/>
-      <SectionTwo/>
-      <SectionThree/>
-      <SectionFour/>
-      <!-- <SectionFive/> -->
- 
-        
+      <div class="mx-4 lg:mx-0">
 
-      
+            <SectionOne/>
+            <SectionTwo/>
+            <SectionThree/>
+            <SectionFour/>
+            <LatestFromBlog/>            
+      </div>
     
 </Layout>
