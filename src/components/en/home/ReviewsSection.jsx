@@ -6,7 +6,7 @@ function ReviewsSection() {
   useEffect(() => {
     const baseUrl = process.env.NODE_ENV === 'development'
       ? 'http://localhost:4321/api/google/reviews' // Use your local dev server URL
-      : 'https://capitaleme.com/api/google/reviews';
+      : 'https://www.capitaleme.com/api/google/reviews';
 
     async function fetchReviews() {
       try {
