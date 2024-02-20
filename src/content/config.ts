@@ -62,12 +62,10 @@ const visas = defineCollection({
 
 const authors = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     name: z.string(),
     email: z.string(),
-    whatsapp_phone: z.string(),
     photo: z.string(),
-    bio: z.string(),    
   })
 });
 

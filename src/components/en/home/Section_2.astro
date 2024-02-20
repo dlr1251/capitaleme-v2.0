@@ -1,11 +1,8 @@
 ---
-// import ContactTabs from "../common/ContactForm.astro"
-// import Layout from "../../../layouts/Layout.astro"
 import { getCollection } from 'astro:content';
 const allResources = await getCollection('visas', ({ id, data }) => {
   return id.startsWith('en/') ? data.popular !== false : true;
 });
-console.log(allResources);
 
 const someResources = allResources.reverse().slice(0,15)
 
