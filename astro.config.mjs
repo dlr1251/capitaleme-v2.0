@@ -33,7 +33,8 @@ export default defineConfig({
     configFile: './tailwind.config.mjs'
   }), react(), partytown({
     config: {
-      forward: ['dataLayer.push']
+      forward: ['dataLayer.push'],
+      debug: true,
     }
   }), sitemap()],
   adapter: vercel({
