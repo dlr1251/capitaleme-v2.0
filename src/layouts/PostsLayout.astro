@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import Navbar from '../components/Navbar.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
+import  SpeedInsights  from "@vercel/speed-insights/astro"
 
 interface Props {
 	title: string;	
@@ -41,6 +42,7 @@ const url = Astro.url
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 		<title>{title}</title>
 		<GoogleTag/>
+		<SpeedInsights/>
 
 	</head>
 	<body>
