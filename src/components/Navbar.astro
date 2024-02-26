@@ -31,7 +31,7 @@ const espURL = getSpanishURL(pathname);
             <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-6 rtl:space-x-reverse">
                 <li>
                     <a 
-                        href={lang == "en" ? "/about" : "/es/nosotros"} 
+                        href={lang == "en" ? "/about" : "/es/about"} 
                         class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('about') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "About" : "Nosotros"}</a>
                 </li>
                 <li>
@@ -46,14 +46,14 @@ const espURL = getSpanishURL(pathname);
                 </li>
                 <li>
                     <a 
-                        href={lang == "en" ? "/contact" : "/es/contacto"} 
+                        href={lang == "en" ? "/contact" : "/es/contact"} 
                         class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('contact') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Contact" : "Contacto"}</a>
                 </li>
             </ul>
         </div>
         
         <div class="flex items-center order-2 md:order-2 space-x-0 md:space-x-0 rtl:space-x-reverse">            
-            <button type="button" data-dropdown-toggle="language-dropdown-menu" class="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100">              
+            <button type="button" data-dropdown-toggle="language-dropdown-menu" class="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 rounded-lg cursor-pointer hover:bg-gray-100">              
               {lang == "es" ? "Español" : "English"} 
             </button>
             <!-- Dropdown -->

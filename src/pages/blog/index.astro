@@ -26,9 +26,7 @@ const allResources = await getCollection('resources', ({ id }) => {
       <div id="default-tab-content">
         <div class="hidden p-4 rounded-lg bg-gray-50" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-            {allPosts.map(p => (
-              
+            {allPosts.map(p => (              
               <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  
                 <div class="flex justify-between">                          
                   <div class="text-sm text-slate-900">{p.data.author}</div>
