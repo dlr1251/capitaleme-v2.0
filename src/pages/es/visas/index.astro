@@ -1,8 +1,8 @@
 ---
 
-import Layout from "../../layouts/Layout.astro";
-import SectionOne from "../../components/en/visas/Section_1.astro";
-import { getCollection, getEntry } from 'astro:content';
+import Layout from "../../../layouts/Layout.astro";
+import SectionOne from "../../../components/en/visas/Section_1.astro";
+import { getCollection } from 'astro:content';
 const allVisas = await getCollection('visas', ({ id }) => {
   return id.startsWith('en/');
 });
@@ -14,7 +14,7 @@ const allVisas = await getCollection('visas', ({ id }) => {
 
                 <div class="py-8 px-4 mx-auto max-w-screen-lg sm:py-16 lg:px-6 ">  
                   {allVisas.map(p => (
-                      <a href={`/visas/${p.slug.slice(3)}`}>{p.data.title}</a><br>
+                      <a href={`/es/visas/${p.slug.slice(3)}`}>{p.data.title}</a><br>
                     ))}
                 </div>
     </div>
