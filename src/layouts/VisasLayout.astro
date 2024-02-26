@@ -31,8 +31,8 @@ const { frontmatter } = Astro.props;
 		<WhatsAppButton/>
 		<Navbar />
 		<Sidebar>			
-		<h1>{title ? title : frontmatter.title}</h1>
-		<div class="max-w-screen-md mx-auto">
+			<h1>{title ? title : frontmatter.title}</h1>
+			<div class="max-w-screen-md mx-auto">
 			<slot />
 		</div>
 		</Sidebar>		
