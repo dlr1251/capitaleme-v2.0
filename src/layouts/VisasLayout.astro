@@ -1,6 +1,5 @@
 ---
 import Navbar from '../components/Navbar.astro';
-import Sidebar from '../components/Sidebar.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import  SpeedInsights  from "@vercel/speed-insights/astro"
@@ -30,12 +29,12 @@ const { frontmatter } = Astro.props;
 	<body>
 		<WhatsAppButton/>
 		<Navbar />
-		<Sidebar>			
+		
 			<h1>{title ? title : frontmatter.title}</h1>
 			<div class="max-w-screen-md mx-auto">
-			<slot />
-		</div>
-		</Sidebar>		
+				<slot />
+			</div>
+		
 
 		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
 		
