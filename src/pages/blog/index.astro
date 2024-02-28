@@ -44,7 +44,7 @@ const allResources = await getCollection('resources', ({ id }) => {
 
             {allResources.map(r => (
               
-              <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${r.slug.slice(3)}`}>  
+              <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/resources/${r.slug.slice(3)}`}>  
                 <div class="flex justify-between">                          
                   <div class="text-sm text-slate-900">{r.data.author}</div>
                   <div class="text-sm text-slate-500">{r.data.pubDate.toString().slice(0,10)}</div>
