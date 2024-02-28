@@ -3,7 +3,7 @@
 // import Layout from "../../../layouts/Layout.astro"
 import { getCollection } from 'astro:content';
 const allResources = await getCollection('visas', ({ id, data }) => {
-  return id.startsWith('en/') ? data.popular !== false : true;
+  return id.startsWith('es/') ? data.popular !== false : true;
 });
 console.log(allResources);
 
@@ -14,10 +14,10 @@ const someResources = allResources.reverse().slice(0,15)
 <section class="bg-white h-auto text-primary p-4 md:p-16 ">
     <div class="max-w-screen-lg mx-auto">
         <div class="text-sm font-bold text-white bg-secondary w-auto py-1.5 px-6 rounded inline mb-3">
-            Visas & Immigration
+            Visas y Migración
         </div>   
-        <div class="text-3xl mb-3 mt-6 font-bold">Colombian Visas Assistance Services</div>
-        <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
+        <div class="text-3xl mb-3 mt-6 font-bold">Servicios de Asistencia en Visas Colombianas</div>
+        <div class="font-light mb-3 text-lg">Con nuestros Servicios de Asistencia en Visas Colombianas, podrás tener el acompañamiento profesional de un abogado bilingüe en todo tu proceso migratorio.</div>
           <div class="w-full h-auto flex justify-center items-center">
             <div class="flex flex-wrap w-auto max-w-4xl mr-auto">
                 {someResources.map(p => (
@@ -27,8 +27,8 @@ const someResources = allResources.reverse().slice(0,15)
                 ))}
             </div>
         </div>        
-        <div class="text-3xl mb-3 mt-6 font-bold">Legal Assistance before Migración Colombia</div>
-        <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
+        <div class="text-3xl mb-3 mt-6 font-bold">Asistencia Legal ante Migración Colombia</div>
+        <div class="font-light mb-3 text-lg">Expertos en trámites y actuaciones ante esta entidad.</div>
           <div class="w-full h-auto flex justify-center items-center mb-12">
             <div class="flex flex-wrap flex-col w-auto max-w-4xl mr-auto">
                     <a href="#" class="w-auto py-2 flex justify-center">
@@ -38,12 +38,12 @@ const someResources = allResources.reverse().slice(0,15)
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Tourism Permit Extension
+                            Prórroga de Permiso de Turismo
                         </div>
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Certificate of Migratory Movements
+                            Certificado de Movimientos Migratorios
                         </div>
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
@@ -55,48 +55,48 @@ const someResources = allResources.reverse().slice(0,15)
             </div>
         </div>
         <div class="text-sm font-bold text-white bg-secondary w-auto py-1.5 mt-6 px-6 rounded inline mb-3">
-            Business & Real Estate
+            Negocios y Bienes Raíces
         </div>   
 
-        <div class="text-3xl mb-3 mt-6 font-bold">Business incorporation and Management</div>
+        <div class="text-3xl mb-3 mt-6 font-bold">Creación y gestión de empresa</div>
         <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
           <div class="w-full h-auto flex justify-center items-center ">
             <div class="flex flex-wrap flex-col w-auto max-w-4xl mr-auto">
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Articles of Incorporation
+                            Estatutos sociales
                         </div>
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Investment Agreements
+                            Acuerdos de inversión
                         </div>
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Contract Drafting and Reviewing
+                            Revisión y redacción de contratos
                         </div>
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Compliance and Disputes
+                            Complimiento y litigios
                         </div>
                     </a>
                 
             </div>
         </div>
-        <div class="text-3xl mb-3 mt-6 font-bold">Real Estate Agreements</div>
+        <div class="text-3xl mb-3 mt-6 font-bold">Acuerdos de Bienes Raíces</div>
         <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
           <div class="w-full h-auto flex justify-center items-center ">
             <div class="flex flex-wrap flex-col w-auto max-w-4xl mr-auto">
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Rental Agreements
+                            Contratos de Arrendamiento
                         </div>
                     </a>
                     <a href="#" class="w-auto py-2 flex justify-center">
                         <div class="block py-2 underline w-full text-lg hover:text-secondary">
-                            Purchase Agreements
+                            Contratos de compraventa
                         </div>
                     </a>                                    
             </div>

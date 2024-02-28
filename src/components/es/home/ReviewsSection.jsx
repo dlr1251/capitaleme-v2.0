@@ -27,7 +27,7 @@ function ReviewsSection() {
     <section className="bg-white">
       <div className="py-8 px-4 mx-auto max-w-screen-lg sm:py-16 lg:px-6">
         <div className="text-3xl font-bold text-primary mb-3">
-          Our Experience
+          Nuestra Experiencia
         </div>
         <div id="experiences" className="grid grid-cols-1 md:grid-cols-2">
           {data.map((r, index) => (
