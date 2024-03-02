@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import PostsLayout from '../../layouts/PostsLayout.astro';
+import VisasLayout from '../../layouts/VisasLayout.astro';
 export const prerender = true;
 
 export async function getStaticPaths() {
@@ -21,6 +21,6 @@ const { Content, headings } = await entry.render();
 const { pathname } = Astro.url
 
 ---
-<PostsLayout title={entry.data.title} frontmatter={entry.data} headings={headings}>
+<VisasLayout title={entry.data.title} frontmatter={entry.data} headings={headings}>
   <Content/>
-</PostsLayout>
+</VisasLayout>

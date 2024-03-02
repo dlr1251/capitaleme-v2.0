@@ -1,43 +1,101 @@
 ---
+import Footer from '../components/Footer.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { getCollection } from 'astro:content';
 import Navbar from '../components/Navbar.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import  SpeedInsights  from "@vercel/speed-insights/astro"
+
 interface Props {
 	title: string;	
 	frontmatter: any;
+	headings: any;
 }
 
-const { title } = Astro.props;
-const { frontmatter } = Astro.props;
+const { title, headings } = Astro.props.frontmatter || Astro.props 
+
+const locale = Astro.currentLocale
+
+const spanishPosts = await getCollection("posts",({ id }) => {
+  return id.startsWith('es/');
+});
+const sidebarVisas = await getCollection("visas",({ id }) => {
+	if (locale == "en") {
+		return id.startsWith('en/');
+	} else {
+		return id.startsWith('es/');
+	}
+});
+
+const url = Astro.url
 
 ---
-
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<meta name="description" content="Capital M Law - Your Law Firm" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
 		<meta name="generator" content={Astro.generator} />
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 		<title>{title}</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<GoogleTag/>
 		<SpeedInsights/>
+
 	</head>
 	<body>
 		<WhatsAppButton/>
-		<Navbar />
-		
-			<h1>{title ? title : frontmatter.title}</h1>
-			<div class="max-w-screen-md mx-auto">
-				<slot />
+		<Navbar />	
+		<div class="flex min-h-screen p-0 sm:ml-0">
+			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-64 h-[64rem] pt-20 -mt-2.5 sm:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
+				 <div class="h-full px-3 pb-4 overflow-y-auto bg-slate-100">
+					<ul class="space-y-2 font-medium">                   
+					   <li>
+						  <a href={locale == "en" ? `/blog` : '/es/blog'} class="flex items-center p-2 text-primary rounded-lg hover:bg-gray-100 group">
+							 <span class="flex-1 ms-3 whitespace-nowrap">Blog</span>                
+						  </a>
+					   </li>
+					   <li>
+						 <div class="flex items-center w-full p-2 text-base text-secondary transition duration-75 rounded-lg group hover:bg-gray-100">						  
+							   <span class="flex-1 ms-3 text-left rtl:text-right whitespace-wrap ">Todas las visas</span>
+						 </div>
+						 <ul class=" py-2 space-y-2">
+							 { sidebarVisas.map( (post) => (
+								 <li class="">
+									 <a href={locale == "en" ? `/visas/${post.slug.slice(3)}` : `/es/visas/${post.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/blog/' + post.slug.slice(3) ? 'underline bg-secondary text-white' : ''}`}>
+										 <span class="flex-1 ms-3 whitespace-wrap">{post.data.title}</span>      
+									  </a>
+								 </li>
+							   )) }
+						 </ul>
+					  </li>
+					   
+					</ul>
+				 </div>
+			  </aside>	
+			<!-- Main content container -->
+			<div class="flex-none w-full md:w-auto">
+				<div class="p-4 rounded-lg mt-14 prose prose-slate prose-lg md:prose-xl prose-headings:text-primary">					
+					<div class="max-w-screen-sm md:max-w-screen-xl mx-auto">											
+						<slot/>
+					</div>
+				</div>
 			</div>
+			
+			<!-- Sticky TableOfContents -->
+			<div class="hidden sm:block sticky top-0 h-screen ">
+				<div class="h-full overflow-y-auto">
+					<TableOfContents headings={Astro.props.headings} />
+				</div>
+			</div>
+		</div>			
 		
-
+		<Footer/>
+			
 		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
 		
 	</body>
 </html>
-
