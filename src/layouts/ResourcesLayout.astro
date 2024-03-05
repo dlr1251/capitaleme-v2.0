@@ -7,7 +7,7 @@ import Navbar from '../components/Navbar.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import  SpeedInsights  from "@vercel/speed-insights/astro"
-import BlogFeelBack from '../components/en/blog/BlogFeelBack.astro';
+
 interface Props {
 	title: string;	
 	frontmatter: any;
@@ -74,7 +74,7 @@ const url = Astro.url
 										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
 									</svg>
 							</button>
-							<ul id="dropdown-posts-list" class=" py-2 space-y-2">
+							<ul id="dropdown-posts-list" class="hidden py-2 space-y-2">
 								{ sidebarPosts.map( (post) => (
 									<li class="">
 										<a href={locale == "en" ? `/blog/${post.slug.slice(3)}` : `/es/blog/${post.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/blog/' + post.slug.slice(3) || url.pathname == '/es/blog/' + post.slug.slice(3) ? 'underline bg-secondary text-white' : ''}`}>
@@ -108,7 +108,7 @@ const url = Astro.url
 										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
 									</svg>
 							</button>
-							<ul id="dropdown-resources-list" class="hidden py-2 space-y-2">
+							<ul id="dropdown-resources-list" class=" py-2 space-y-2">
 								{ sidebarResources.map( (resource) => (
 									<li class="">
 										<a href={locale == "en" ? `/resources/${resource.slug.slice(3)}` : `/es/resources/${resource.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/resources/' + resource.slug.slice(3) || url.pathname == '/es/resources/' + resource.slug.slice(3) ? 'underline bg-secondary text-white' : ''}`}>
@@ -126,7 +126,6 @@ const url = Astro.url
 				<div class="p-4 rounded-lg mt-14 prose prose-slate prose-lg md:prose-xl prose-headings:text-primary">					
 					<div class="max-w-screen-sm md:max-w-screen-xl mx-auto">											
 						<slot/>
-						<BlogFeelBack/>
 					</div>
 				</div>
 			</div>

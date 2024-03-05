@@ -20,18 +20,18 @@ const { heading } = Astro.props;
 <style>
   /* Style for the active TOC link */
     .toc-link-active {
-      color: black; /* Change as needed */
-      padding-left: 10px; /* Optional: for better visibility */
+      color: #16345F; /* Change as needed */
+      padding-left: 0px; /* Optional: for better visibility */
     }
 
     /* Simple animation to highlight the change */
     @keyframes highlightActive {
       from {color: transparent;}
-      to {color: black;}
+      to {color: #16345F;}
     }
 
     .toc-link-active {
-      animation: highlightActive 0.3s ease-in-out forwards; /* Apply animation to the active link */
+      animation: highlightActive 0.2s ease-in-out forwards; /* Apply animation to the active link */
     }
 </style>
 

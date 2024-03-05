@@ -25,6 +25,7 @@
     "@vercel/speed-insights": "^1.0.10",
     "astro": "^4.4.1",
     "astro-expressive-code": "^0.30.1",
+    "astro-feelback": "^0.3.4",
     "flowbite": "^2.2.1",
     "formik": "^2.4.5",
     "mdast-util-to-string": "^4.0.0",
