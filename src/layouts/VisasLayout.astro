@@ -10,6 +10,7 @@ import BreadCrumb from '../components/BreadCrumb.astro'
 import  SpeedInsights  from "@vercel/speed-insights/astro"
 import VisaHeader from '../components/en/visas/VisaHeader.astro'
 import VisaAssistanceService from '../components/en/visas/VisaAssistanceService.astro'
+import { SEO } from "astro-seo";
 
 interface Props {
 	title: string;	
@@ -61,6 +62,10 @@ const url = Astro.url
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<GoogleTag/>
 		<SpeedInsights/>
+		<SEO 
+			title={title}
+			description="Learn about Colombian visas cateogories and current regulations."				      		
+		/>
 
 	</head>
 	<body>
