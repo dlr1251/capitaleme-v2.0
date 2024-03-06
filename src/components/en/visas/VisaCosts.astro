@@ -1,11 +1,11 @@
 ---
-const { studyFees, issuanceFees  } = Astro.props.frontmatter || Astro.props 
+const { studyFees, issuanceFees, apostille, translation  } = Astro.props.frontmatter || Astro.props 
 ---
 <div class="">
     <div class="font-bold text-2xl mt-4 text-secondary">Government Fees</div>
     <div class="my-4 border-b flex">
         <div class="w-3/4">
-            <div class="font-bold text-sm">Visa Study</div>
+            <div class="font-bold">Visa Study</div>
             <div class="text-sm">Government fee you pay once your visa is submitted.</div>
         </div>
         <div class="w-1/4 flex items-center">
@@ -30,8 +30,14 @@ const { studyFees, issuanceFees  } = Astro.props.frontmatter || Astro.props
             $246,000 COP
         </div>
     </div>
-    <div class="font-bold text-2xl mt-8 text-secondary">Associated Costs</div>
-        <div class="my-4 border-b flex">
+    
+    {
+        apostille || translation ? <div class="font-bold text-2xl mt-8 text-secondary">Associated Costs</div> : <div></div>
+    
+    } 
+        
+
+        <div class={`my-4 border-b ${apostille ? 'flex': 'hidden'}` }>
             <div class="w-3/4">
                 <div class="font-bold">Apostille</div>
                 <div class="text-sm">Official Seal issued by the country where the document was issued to make it valid in Colombia</div>
@@ -41,7 +47,7 @@ const { studyFees, issuanceFees  } = Astro.props.frontmatter || Astro.props
                 <div class="text-sm">*The price provided is an estimate and not final. Actual costs may vary</div>
             </div>
         </div>
-        <div class="my-4 border-b flex">
+        <div class={`my-4 border-b ${translation ? 'flex': 'hidden'}` }>
             <div class="w-3/4">
                 <div class="font-bold">Certified Translation</div>
                 <div class="text-sm">Translation of documents by a Cerfied Colombian translator</div>
