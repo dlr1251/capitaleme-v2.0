@@ -6,14 +6,19 @@ type: 'Visitor'
 sponsored: ["maybe"]
 countries: ["Exempted", "Not exempted", "Schengen visa"]
 popular: false
+visa_rara: true
 ---
+import VisaCosts from '../../../components/en/visas/VisaCosts.astro'
+
 ## Who can apply for this visa?
 
-This visa is for productive, innovative, or research activities aimed at adopting or adapting technologies that complement or develop products, processes, or services that contribute to strengthening the country's competitiveness; for activities that contribute to incorporating knowledge into the priorities of national, regional, and territorial development plans; or for activities or professions pre-established by the Directorate of Migration Affairs, Consular Affairs, and Citizen Services, which contribute to the internationalization of the country.
+This visa is for productive, innovative, or research activities aimed at adopting or adapting technologies that complement or develop products, processes, or services that contribute to strengthening the country's competitiveness. 
+
+Also for activities that contribute to incorporating knowledge into the priorities of national, regional, and territorial development plans; or for activities or professions pre-established by the Directorate of Migration Affairs, Consular Affairs, and Citizen Services, which contribute to the internationalization of the country.
 
 ---
 
-### What are the benefits and restrictions for this visa?
+### Benefits and Restrictions
 
 ### **Up to two years validity**
 
@@ -37,14 +42,13 @@ Since it is a visitor-type (V) visa, this won’t allow you to add time in order
 
 In order to apply for this visa, the foreigner must meet the professional profile established by the Directorate of Migration Affairs, Consular Affairs, and Citizen Services, in accordance with the recommendations of the Internationalization Mission.
 
+---
 ## Costs
 
-The total costs vary depending on the circumstances of the applicant.
-
-Here you will see an example of how much this can cost you.
-
-| Concept | Value |
-| --- | --- |
-| Visa study | $55USD |
-| Visa issuance | $232 USD |
-| Cédula de Extranjería | $55 USD* |
+<VisaCosts
+    studyFees="55"
+    issuanceFees="177"
+    apostille={true}
+    translation={true}
+/>
+---

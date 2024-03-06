@@ -6,21 +6,22 @@ type: 'Visitor'
 sponsored: ["corporate"]
 countries: ["Exempted", "Not exempted", "Schengen visa"]
 popular: false
+visa_rara: true
 ---
-## Who can apply for this type of visa?
+import VisaCosts from '../../../components/en/visas/VisaCosts.astro'
+
+## Who can apply for this visa?
 
 In some events, a foreigner might have to come to Colombia to work under a per project contract for a company, government agency or legal entity.
 
-<aside>
-💡 In Colombia, there are different hiring modalities, among them, a labor contract (contrato laboral) or a services agreement (prestación de servicios). These contracts have different regulations: Service agreements are ruled by the commerce Law and labor agreements by the labor Law. Under the labor contract, there is a specific modality called “obra o labor”, which can be roughly translated as “***specific project***”. This modality refers to a labor contract that doesn’t have a specific time of termination, and is valid until the project for which the worker was hired for is finished.
+> 💡 In Colombia, there are different hiring modalities, among them, a labor contract (contrato laboral) or a services agreement (prestación de servicios). These contracts have different regulations: Service agreements are ruled by the commerce Law and labor agreements by the labor Law. Under the labor contract, there is a specific modality called “obra o labor”, which can be roughly translated as “***specific project***”. This modality refers to a labor contract that doesn’t have a specific time of termination, and is valid until the project for which the worker was hired for is finished.
 
-</aside>
 
 This visa allows its holder to temporarily carry out tasks in Colombia under a services agreement or specific project contract.
 
 This visa is open to any passport holder.
 
-## What are the benefits and restrictions for this visa?
+## Benefits and Restrictions
 
 ### **Up to two years validity**
 
@@ -32,7 +33,7 @@ With this visa, the main holder can bring his-her spouse and children under 25 y
 
 ### Restricted **work permit**
 
-The work permit granted with under this visa category, is limited precesely to the activity the foreigner is allowed to do. This visa grants permission to work exclusively for the position, entity, profession, or activity for which it was granted. Meaning that if there’s any change on the circumstances, they must be reported to the authorities.
+The work permit granted under this visa category, is limited precesely to the activity the foreigner is allowed to do. This visa grants permission to work exclusively for the position, entity, profession, or activity for which it was granted. Meaning that if there’s any change on the circumstances, they must be reported to the authorities.
 
 ### **No time accrue towards residency**
 
@@ -40,13 +41,7 @@ This visa doesn’t accrue time towards residency.
 
 ---
 
-# **How to get it**
-
-As with [any visa application](https://www.notion.so/1dc2c565143e4adb95086f993f184e36?pvs=21), the process is done online, throuth the Ministry for Foreign Relationship’s website. on this form, other than providing your personal, professional and family information and data, you will be required to attach some documents that are described here below.
-
-## Specific Requirements
-
-Other than the general requirements for any visa application, you must submit the following documents:
+## Requirements
 
 ### 1. Summary Contract Form
 
@@ -79,18 +74,13 @@ Genki has the required coverage plus:
 5. They issue a health coverage summary in spanish (aswell as in english, german, italian…) 
 6. Has been successfully used by many of our clients who have gotten their visas approved.
 
-### 6. Mining title (if is a contract with a mining company)
-
-When dealing with companies in the mining and energy sector, the Visa and Immigration Authority will consult the National Mining Agency's platform to verify the existence and validity of the respective mining title. In the event that it is not possible to consult, the interested party will be required to provide it
-
+---
 ## Costs
 
-The total costs can vary greatly depending on the circumstances of the applicant. 
-
-Here you will see an example of how much this can cost you.
-
-| Concept | Value |
-| --- | --- |
-| Visa study | $55USD |
-| Visa issuance | $232 USD |
-| Cédula de Extranjería | $55 USD* |
+<VisaCosts
+    studyFees="55"
+    issuanceFees="177"
+    apostille={true}
+    translation={true}
+/>
+---

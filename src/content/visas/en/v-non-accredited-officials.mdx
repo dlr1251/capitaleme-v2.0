@@ -6,14 +6,18 @@ type: 'Visitor'
 sponsored: ["Gov sponsorhip"]
 countries: ["Exempted", "Not exempted", "Schengen visa"]
 popular: false
+visa_rara: true
 ---
+import VisaCosts from '../../../components/en/visas/VisaCosts.astro'
+
+
 ## Who can apply for this visa?
 
 To serve as a commercial representative officer of a foreign state or territory government or specialized governmental agency, on a mission that does not involve accreditation before the Ministry of Foreign Affairs.
 
 ---
 
-## What are the benefits and restrictions for this visa?
+## Benefits and Restrictions
 
 ### **Up to two years validity**
 
@@ -34,10 +38,11 @@ Since it is a visitor-type (V) visa, this won’t allow you to add time in order
 Official communication signed by the senior official or legal representative of the entity from the represented country.
 
 ---
+## How much does it cost?
 
-## Costs
-
-|  | COLOMBIA Y RESTO DEL MUNDO (USD) | EUROPA Y CUBA (EUR) |
-| --- | --- | --- |
-| Visa study | 54 | 42 |
-| Visa issuance | 252 | 101 |
+<VisaCosts
+    studyFees="54"
+    issuanceFees="252"
+    apostille={false}
+    translation={false}
+/>
