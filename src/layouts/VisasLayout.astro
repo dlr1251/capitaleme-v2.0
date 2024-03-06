@@ -21,9 +21,9 @@ const { title, headings, workPermit, beneficiaries, type, sponsored, countries }
 
 const locale = Astro.currentLocale
 
-const sidebarVisas = await getCollection("visas",({ id }) => {
+const sidebarVisas = await getCollection("visas",({ id, data }) => {
 	if (locale == "en") {
-		return id.startsWith('en/');
+		return id.startsWith('en/') && data.popular === true;
 	} else {
 		return id.startsWith('es/');
 	}

@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.querySelectorAll<HTMLElement>('h2, h3, h4').forEach((heading: HTMLElement) => {
       console.log(closestHeadingAbove);
-      if (heading.offsetTop <= scrollPosition + window.innerHeight * 0.1) {
+      if (heading.offsetTop <= scrollPosition + window.innerHeight * 0.133) {
         closestHeadingAbove = heading; // Este encabezado es el último que se desplazó hacia arriba
       }
     });
