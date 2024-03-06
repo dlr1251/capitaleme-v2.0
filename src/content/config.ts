@@ -58,7 +58,8 @@ const visas = defineCollection({
     popular: z.boolean().optional(),
     short_description: z.string().optional(),
     requirements: z.array(z.string()).optional(),
-    countries: z.array(z.string())    
+    countries: z.array(z.string()),
+    visa_rara: z.z.boolean().optional()
   })
 });
 

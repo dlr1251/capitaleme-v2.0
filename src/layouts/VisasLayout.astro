@@ -17,7 +17,7 @@ interface Props {
 	headings: any;
 }
 
-const { title, headings, workPermit, beneficiaries, type, sponsored, countries } = Astro.props.frontmatter || Astro.props 
+const { title, headings, workPermit, beneficiaries, type, sponsored, countries, visa_rara } = Astro.props.frontmatter || Astro.props 
 
 const locale = Astro.currentLocale
 
@@ -134,7 +134,7 @@ const url = Astro.url
 						<BreadCrumb/>
 						<VisaHeader title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/>						
 						<slot/>
-						<VisaAssistanceService/>
+						{ visa_rara == true ? <div></div> : <VisaAssistanceService/> }						
 					</div>
 				</div>
 			</div>
