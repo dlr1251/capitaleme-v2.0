@@ -6,8 +6,12 @@ type: 'Visitor'
 sponsored: ["corporate"]
 countries: ["Exempted", "Not exempted", "Schengen visa"]
 popular: false
+visa_rara: true
 ---
-## Foreword
+import VisaCosts from '../../../components/en/visas/VisaCosts.astro'
+
+
+## Who can apply for this visa?
 
 This visa allows its holder to perform seasonal agricultural tasks under programs established by the Ministry of Agriculture and Rural Development, or by the Regional Government authorities  in coordination with the agricultural sector, the Ministry of Labor, and the Ministry of Health and Social Protection. These programs will specify the estimated available quotas and the specific tasks that require labor support.
 
@@ -35,13 +39,7 @@ Since it is a visitor-type (V) visa, this won’t allow you to add time in order
 
 ---
 
-# **How to get it**
-
-As with [any visa application](https://www.notion.so/General-visa-application-rules-1dc2c565143e4adb95086f993f184e36?pvs=21), the process is done online, throuth the Ministry for Foreign Relationship’s website. on this form, other than providing your personal, professional and family information and data, you will be required to attach some documents that are described here below.
-
-## Specific Requirements
-
-Besides the general requirements for any visa application, you will need to submit the following documents:
+# Requirements
 
 ### 1. Form for temporary agricultural worker
 
@@ -57,18 +55,16 @@ Medical certificate issued by the health authority of the applicant's country of
 
 ### 4. A valid **health insurance**
 
-The hiring company will be responsible for acquiring a health insurance policy with coverage in the national territory, covering all risks in case of accidents, illness, maternity, disability, hospitalization, death, or repatriation, for the expected duration of the workers' stay in the country
+The hiring company will be responsible for acquiring a health insurance policy with coverage in the national territory, covering all risks in case of accidents, illness, maternity, disability, hospitalization, death, or repatriation, for the expected duration of the workers' stay in the country.
 
-## Costs
+---
+## How much does it cost?
 
-The total costs vary greatly depending on the circumstances of the applicant. For example, if you have not bought your healht insurance and need to buy one for your visa application, that can be costly, depending on what you choose. There are other associated costs such as apostilles,  translations, and a visa assistance service from local attorneys such as ours.
+<VisaCosts
+    studyFees="54"
+    issuanceFees="177"
+    apostille={false}
+    translation={false}
+/>
 
-Here you will see an example of how much this can cost you.
-
-| Concept | Value |
-| --- | --- |
-| Visa study | $55USD |
-| Visa issuance | $232 USD |
-| Cédula de Extranjería | $55 USD* |
-
-## Application process
+---
