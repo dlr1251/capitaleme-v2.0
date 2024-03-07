@@ -8,11 +8,14 @@ countries: ["Colombia"]
 popular: false
 visa_rara: true
 ---
+import VisaCosts from '../../../components/en/visas/VisaCosts.astro'
+ 
+
 ## Who can apply for this visa?
 
-For foreigners who, having been Colombian citizens by birth or adoption, renounced Colombian nationality.
+For foreigners who, having been Colombian citizens by birth or adoption, renounced their Colombian nationality.
 
-## What are the benefits and restrictions for this visa?
+## Benefits and restrictions
 
 ### Five **years validity - renewable**
 
@@ -30,7 +33,7 @@ This visa allows you to work in Colombia for any company or institution.
 
 ## Requirements
 
-### 1. Renunciation Document
+### 1.Nationality Renounce Certificate
 
 Provide a copy of the document confirming your renunciation of Colombian nationality.
 
@@ -42,9 +45,12 @@ If you lost Colombian nationality due to Article 9 of the 1886 Constitution, pre
 
 Write a letter applying for the Permanent Resident Visa (R). Explain your financial means in the foreign country that will support your stay in Colombia.
 
-## Costs
+---
+## How much does it cost?
 
-| TIPO | COLOMBIA Y RESTO DEL MUNDO (USD) | EUROPA Y CUBA (EUR) |
-| --- | --- | --- |
-| Estudio | 54 | 42 |
-| Visa | 400 | 135 |
+<VisaCosts
+    studyFees="54"
+    issuanceFees="400"
+    apostille={false}
+    translation={false}
+/>

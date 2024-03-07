@@ -1,5 +1,5 @@
 ---
-const { studyFees, issuanceFees, apostille, translation  } = Astro.props.frontmatter || Astro.props 
+const { studyFees, issuanceFees, apostille, translation, title  } = Astro.props.frontmatter || Astro.props 
 ---
 <div class="">
     <div class="font-bold text-2xl mt-4 text-secondary">Government Fees</div>
@@ -21,7 +21,7 @@ const { studyFees, issuanceFees, apostille, translation  } = Astro.props.frontma
             ${issuanceFees} USD
         </div>
     </div>
-    <div class="my-4 border-b flex">
+    <div class={`my-4 border-b ${title == 'V - Airport transit' ? 'hidden' : 'flex' } `}>
         <div class="w-3/4">
             <div class="font-bold">Cedula de Extranjería - Foreign ID Card</div>
             <div class="text-sm">Fee charged by Migración Colombia to issue your Card.</div>

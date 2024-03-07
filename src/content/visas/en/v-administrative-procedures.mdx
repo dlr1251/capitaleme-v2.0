@@ -8,13 +8,15 @@ countries: ["Exempted", "Not exempted", "Schengen visa"]
 popular: false
 visa_rara: true
 ---
+import VisaCosts from '../../../components/en/visas/VisaCosts.astro'
+
 ## Who can apply for this visa category?
 
 This visa is to expedite administrative or judicial procedures before entities or authorities in Colombia.
 
 ---
 
-## What are the benefits and restrictions for this visa?
+## Benefits and restrictions
 
 ### **Up to one year validity**
 
@@ -34,13 +36,7 @@ Since it is a visitor-type (V) visa, this won’t allow you to add time in order
 
 ---
 
-# **How to get it**
-
-As with [any visa application](https://www.notion.so/1dc2c565143e4adb95086f993f184e36?pvs=21), the process is done online, throuth the Ministry for Foreign Relationship’s website. on this form, other than providing your personal, professional and family information and data, you will be required to attach some documents that are described here below.
-
----
-
-## Special Requirements
+### Requirements
 
 ### 1. Motivation Letter
 
@@ -60,16 +56,23 @@ Official document that supports the process you are currently carrying out with 
 
 ### 5. A valid **health insurance**
 
-You must have a health policy with coverage in the Colombian territory against all risks in case of *accident, illness, maternity, disability, hospitalization, death and repatriation*, for the time foreseen for your stay in the country. If you are buying a health insurance policy only for your visa application, get one in spanish. If your health insurance policy is not in Spanish, you'll need to have it officially translated.
+You must have a health insurance policy that provides coverage in Colombia for risks including: *accident, illness, maternity, disability, hospitalization, death, and repatriation*, with at least one (1) year of validity.
 
-There are different options to comply with this requirement. Some of the (cheapests) health insurance providers that have the required coverage include: Genki, Terrawind, Mok, Travel Assist, Qualitas assistance and Travelkit.
+We recommend our partners, [Genki](https://genki.world/?with=capitaleme) to fulfill this requirement, as it offers:
 
-Your health insurance should cover you for at least one year. According to our experience, the visa authorities are setting the validity of the digital nomad visa based on the coverage period of the health insurance policy. Therefore, we recommend that you obtain a two-year policy if you want your visa to be valid for two years.
+1. A default validity of 2 years.
+2. Monthly payments starting at 65 EUR.
+3. The option to cancel at any time.
+4. Quick and online purchase process (within one business day).
+5. Issuance of a health coverage summary in Spanish.
+6. Successful use by many of our clients in obtaining their visas.
 
-We recommend using [Genki](https://genki.world/). Genki has the required coverage plus: 1) has 2 years validity by default. 2) Can be paid monthly starting at 35 eur per month. 3) Can be cancelled anytime 4) The purchase is quick and online (one business day at the most) 5) They issue a health coverage summary in spanish (aswell as in engligh, german, italian…) 6) has been successfully used by many of our clients who have gotten their visas approved.
+---
+## How much does it cost?
 
-## Costs
-
-The total costs vary greatly depending on the circumstances of the applicant. For example, if you have not bought your health insurance and need to buy one for your visa application, that can be costly, depending on what you choose. There are other associated costs such as apostilles,  translations, and a visa assistance service from local attorneys such as ours.
-
-Here you will see an example of how much this can cost you.
+<VisaCosts
+    studyFees="54"
+    issuanceFees="177"
+    apostille={false}
+    translation={false}
+/>
