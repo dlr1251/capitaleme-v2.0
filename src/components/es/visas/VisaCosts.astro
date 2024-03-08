@@ -1,0 +1,63 @@
+---
+const { studyFees, issuanceFees, apostille, translation, title  } = Astro.props.frontmatter || Astro.props 
+---
+
+<div class="">
+    <div class="font-bold text-2xl mt-4 text-secondary">Tasas Gubernamentales</div>
+    <div class="my-4 border-b flex">
+        <div class="w-3/4">
+            <div class="font-bold">Estudio de Visa</div>
+            <div class="text-sm">Tasa gubernamental que pagas una vez que tu visa es presentada.</div>
+        </div>
+        <div class="w-1/4 flex items-center">
+            ${studyFees} USD
+        </div>
+    </div>
+    <div class="my-4 border-b flex">
+        <div class="w-3/4">
+            <div class="font-bold">Tasa de emisión de visa</div>
+            <div class="text-sm">Tasa gubernamental que pagas una vez que tu visa es aprobada.</div>
+        </div>
+        <div class="w-1/4 flex items-center">
+            ${issuanceFees} USD
+        </div>
+    </div>
+    <div class={`my-4 border-b ${title == 'V - Tránsito aeroportuario' ? 'hidden' : 'flex' } `}>
+        <div class="w-3/4">
+            <div class="font-bold">Cédula de Extranjería</div>
+            <div class="text-sm">Tasa cobrada por Migración Colombia para emitir tu Cédula.</div>
+        </div>
+        <div class="w-1/4 flex items-center">
+            $246,000 COP
+        </div>
+    </div>
+
+        {
+            apostille || translation ? <div class="font-bold text-2xl mt-8 text-secondary">Costos Asociados</div> : <div></div>
+
+        } 
+    
+
+    <div class={`my-4 border-b ${apostille ? 'flex': 'hidden'}` }>
+        <div class="w-3/4">
+            <div class="font-bold">Apostilla</div>
+            <div class="text-sm">Sello oficial emitido por el país donde se expidió el documento para hacerlo válido en Colombia</div>
+        </div>
+        <div class="w-1/4 flex items-center flex-col justify-left">
+            <div class="justify-left mr-auto">$120 - 290 USD*</div>
+            <div class="text-sm">*El precio proporcionado es un estimado y no definitivo. Los costos reales pueden variar</div>
+        </div>
+    </div>
+    <div class={`my-4 border-b ${translation ? 'flex': 'hidden'}` }>
+        <div class="w-3/4">
+            <div class="font-bold">Traducción Certificada</div>
+            <div class="text-sm">Traducción de documentos por un traductor Colombiano Certificado</div>
+        </div>
+        <div class="w-1/4 flex items-center flex-col justify-left">
+            <div class="mr-auto">$300,000 COP*</div>
+            <div class="text-sm">*El precio proporcionado es un estimado y no definitivo. Los costos reales pueden variar</div>
+        </div>
+    </div>
+
+
+</div>

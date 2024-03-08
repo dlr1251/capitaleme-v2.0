@@ -1,27 +1,34 @@
 ---
-title: 'V - Unforeseen cases'
+title: 'V - Casos no previstos'
 beneficiaries: ['Exceptionally']
 workPermit: ['Exceptionally']
 type: 'Visitor'
 sponsored: ["Maybe"]
 countries: ["Exempted", "Not exempted", "Schengen visa"]
 popular: false
+visa_rara: true
 ---
-## Who can apply for this visa category?
+import VisaCosts from '../../../components/es/visas/VisaCosts.astro'
 
-This visa will be granted for situations and circumstances not covered in the other categories. It will be issued exceptionally and only after careful evaluation by the Visa and Immigration Authority.
+## ¿Quién puede solicitar esta visa?
 
-## What are the benefits and restrictions?
+Esta visa se otorgará para situaciones y circunstancias que no estén cubiertas en otras categorías. Se emitirá de manera excepcional y solo después de una cuidadosa evaluación por parte de la Autoridad de Visas e Inmigración.
 
-The chances to get a work permit, renewal and other considerations will be set on a case-per-case basis.
+## Beneficios y restricciones
 
-## Requirements
+Las posibilidades de obtener un permiso de trabajo, renovación y otras consideraciones se establecerán caso por caso.
 
-The requirements will be stablished by the Colombian authority. In any case, you need to show what you are doing in Colombia, supported with the proper documentation.
+## Requisitos
 
+Los requisitos serán establecidos por la autoridad colombiana. En cualquier caso, necesitas mostrar qué estás haciendo en Colombia, respaldado con la documentación adecuada.
+
+---
 ## Costs
 
-| TIPO | COLOMBIA Y RESTO DEL MUNDO (USD) | EUROPA Y CUBA (EUR) |
-| --- | --- | --- |
-| Estudio | 54 | 42 |
-| Visa | 177 | 101 |
+<VisaCosts
+    studyFees="55"
+    issuanceFees="177"
+    apostille={true}
+    translation={true}
+/>
+---

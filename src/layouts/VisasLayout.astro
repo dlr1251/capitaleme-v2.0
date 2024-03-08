@@ -10,6 +10,8 @@ import BreadCrumb from '../components/BreadCrumb.astro'
 import  SpeedInsights  from "@vercel/speed-insights/astro"
 import VisaHeader from '../components/en/visas/VisaHeader.astro'
 import VisaAssistanceService from '../components/en/visas/VisaAssistanceService.astro'
+import VisaHeaderEs from '../components/es/visas/VisaHeader.astro'
+import VisaAssistanceServiceEs from '../components/es/visas/VisaAssistanceService.astro'
 
 interface Props {
 	title: string;	
@@ -75,7 +77,7 @@ const url = Astro.url
 					<ul class="space-y-2 font-medium">                   					   
 					   <li>											  							   
 							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group hover:bg-gray-100 rounded-lg group hover:bg-gray-100" aria-controls="dropdown-posts-list" data-collapse-toggle="dropdown-posts-list">								
-									<span class="p-0 ms-3 text-secondary rounded-lg">All posts</span>
+									<span class="p-0 ms-3 text-secondary rounded-lg">{lang == 'en' ? 'Áll posts' : 'Todos los posts' }</span>
 										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
 										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
 									</svg>
@@ -132,9 +134,17 @@ const url = Astro.url
 				<div class="p-4 rounded-lg mt-14 prose prose-slate prose-lg md:prose-xl prose-headings:text-primary prose-h2:text-2xl prose-h3:text-xl">										
 					<div class="max-w-screen-sm md:max-w-screen-xl mx-auto">											
 						<BreadCrumb/>
-						<VisaHeader title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/>						
+						{ 
+							lang == "en" ? 
+							<VisaHeader title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/> :
+							<VisaHeaderEs title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/>
+						}
 						<slot/>
-						{ visa_rara == true ? <div></div> : <VisaAssistanceService/> }						
+						{ 
+							visa_rara !== true && lang == "en" ? <VisaAssistanceService/> : 
+							visa_rara !== true && lang == "es" ? <VisaAssistanceServiceEs/> :
+							<div></div>
+						}						
 					</div>
 				</div>
 			</div>
