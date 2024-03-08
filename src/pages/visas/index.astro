@@ -14,7 +14,8 @@ const allVisas = await getCollection('visas', ({ id }) => {
 
                 <div class="py-8 px-4 mx-auto max-w-screen-lg sm:py-16 lg:px-6 ">  
                   {allVisas.map(p => (
-                      <a href={`/visas/${p.slug.slice(3)}`}>{p.data.title}</a><br>
+                      <h2><a href={`/visas/${p.slug.slice(3)}`}>{p.data.title}</a></h2>
+                      <div>short_description: {p.data.short_description}</div>
                     ))}
                 </div>
     </div>

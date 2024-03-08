@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { getCollection, getEntry } from 'astro:content';
-import cssesc from 'cssesc';
 
 import countries from '../../../content/countries/Countries.js'
 // Import the list of all the countries in JSON. 
@@ -11,8 +10,8 @@ import countries from '../../../content/countries/Countries.js'
 //   "Treaties": "TLC",
 //   "airport transit": "No"
 // },
-
 // Assume this function is your adapted or existing fetch logic
+
 async function fetchVisas() {
     // Use your existing logic to fetch visa data
     // For demonstration, this will just return an empty array
@@ -185,18 +184,20 @@ const FilterVisaWidget = () => {
                   <label htmlFor="accrueResidency-checkbox" className="ml-2 text-sm font-medium text-gray-900">Accrue time towards Residency?</label>
                 </div>
               </div>
-
               <div className="w-full md:w-3/4">
                 <div className="w-full h-auto grid grid-cols-1 sm:grid-cols-2 justify-center items-center md:xw-auto mb-6 gap-4">                  
                     {currentItems.map((visa, index) => (
-                      <a key={index} href={`/visas/${visa.slug.slice(3)}`} className="w-auto p-4 text-gray-900 rounded mx-2 border hover:bg-primary hover:text-white">
-                        <div className="block p-2 w-full text-lg h-16">{visa.data.title}</div>
+                      <a key={index} href={`/visas/${visa.slug.slice(3)}`} className="w-auto p-4 text-gray-900 rounded mx-2 border hover:bg-primary hover:text-white group">
+                        <div className="block p-2 w-full text-lg h-16 text-primary group-hover:text-white font-bold">{visa.data.title}</div>
                         <div className="flex">
-                          <p className="px-2 text-slate-400">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
+                          <p className="px-2 text-slate-500 text-sm h-24 group-hover:text-slate-100">
+                            {visa.data.short_description}
+                          </p>
                         </div>
-                        <div className="p-2 text-sm"><span className="font-bold">Beneficiaries: </span>{visa.data.beneficiaries.includes('yes') ? 'Yes' : 'No'}</div>
-                        <div className="p-2 text-sm"><span className="font-bold">Work permit: </span>{visa.data.workPermit.includes('yes') ? 'Yes' : visa.data.workPermit}</div>
-                        {/* <div className="p-2 text-sm"><span className="font-bold">Countries: </span>{visa.data.countries.join(', ')}</div> */}
+                        <div className="flex justify-between">
+                          <div className="p-2 text-sm"><span className="font-bold text-secondary">Beneficiaries: </span>{visa.data.beneficiaries.includes('yes') ? 'Yes' : 'No'}</div>
+                          <div className="p-2 text-sm"><span className="font-bold text-secondary">Work permit: </span>{visa.data.workPermit.includes('yes') ? 'Yes' : visa.data.workPermit}</div>
+                        </div>
                       </a>
                     ))}                  
                 </div>

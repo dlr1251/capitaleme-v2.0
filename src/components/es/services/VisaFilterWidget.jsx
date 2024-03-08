@@ -17,7 +17,7 @@ async function fetchVisas() {
     // Use your existing logic to fetch visa data
     // For demonstration, this will just return an empty array
     return await getCollection('visas', ({ id }) => {
-                      return id.startsWith('en/');
+                      return id.startsWith('es/');
                   });
 }
 
@@ -134,7 +134,7 @@ const FilterVisaWidget = () => {
                         setShowCountrySelectorError(false); // Restablece el error cuando se selecciona un país
                       }}
                     >
-                      <option value="">Choose your country</option>
+                      <option value="">Selecciona tu nacionalidad</option>
                       {countries.map( (c, i) => <option key={i} value={c.Country}>{c.Country}</option>)}
                       
                     </select>
@@ -152,7 +152,7 @@ const FilterVisaWidget = () => {
                     }}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                   />
-                  <label htmlFor="beneficiaries-checkbox" className="ml-2 text-sm font-medium text-gray-900">Bringing Spouse and Children?</label>
+                  <label htmlFor="beneficiaries-checkbox" className="ml-2 text-sm font-medium text-gray-900">¿Que puedas traer a tu pareja e hijos?</label>
                 </div>
                 <div className="flex items-center p-4 rounded">
                   <input
@@ -167,7 +167,7 @@ const FilterVisaWidget = () => {
                     }}                    
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                   />
-                  <label htmlFor="workPermit-checkbox" className="ml-2 text-sm font-medium text-gray-900">Do you want an open work permit?</label>
+                  <label htmlFor="workPermit-checkbox" className="ml-2 text-sm font-medium text-gray-900">¿Con permiso abierto de trabajo?</label>
                 </div>
                 <div className="flex items-center p-4 rounded">
                   <input
@@ -182,21 +182,24 @@ const FilterVisaWidget = () => {
                     }}                        
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                   />
-                  <label htmlFor="accrueResidency-checkbox" className="ml-2 text-sm font-medium text-gray-900">Accrue time towards Residency?</label>
+                  <label htmlFor="accrueResidency-checkbox" className="ml-2 text-sm font-medium text-gray-900">¿Que permita acumular tiempo para la residencia?</label>
                 </div>
               </div>
 
               <div className="w-full md:w-3/4">
                 <div className="w-full h-auto grid grid-cols-1 sm:grid-cols-2 justify-center items-center md:xw-auto mb-6 gap-4">                  
                     {currentItems.map((visa, index) => (
-                      <a key={index} href={`/visas/${visa.slug.slice(3)}`} className="w-auto p-4 text-gray-900 rounded mx-2 border hover:bg-primary hover:text-white">
-                        <div className="block p-2 w-full text-lg h-16">{visa.data.title}</div>
+                      <a key={index} href={`/es/visas/${visa.slug.slice(3)}`} className="w-auto p-4 text-gray-900 rounded mx-2 border hover:bg-primary hover:text-white group">
+                        <div className="block p-2 w-full text-lg h-16 text-primary group-hover:text-white font-bold">{visa.data.title}</div>
                         <div className="flex">
-                          <p className="px-2 text-slate-400">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
+                          <p className="px-2 text-slate-500 text-sm h-24 group-hover:text-slate-100">
+                            {visa.data.short_description}
+                          </p>
                         </div>
-                        <div className="p-2 text-sm"><span className="font-bold">Beneficiaries: </span>{visa.data.beneficiaries.includes('yes') ? 'Yes' : 'No'}</div>
-                        <div className="p-2 text-sm"><span className="font-bold">Work permit: </span>{visa.data.workPermit.includes('yes') ? 'Yes' : visa.data.workPermit}</div>
-                        {/* <div className="p-2 text-sm"><span className="font-bold">Countries: </span>{visa.data.countries.join(', ')}</div> */}
+                        <div className="flex justify-between">
+                          <div className="p-2 text-sm"><span className="font-bold text-secondary">Beneficiarios: </span>{visa.data.beneficiaries.includes('yes') ? 'Si' : 'No'}</div>
+                          <div className="p-2 text-sm"><span className="font-bold text-secondary">Permiso de trabajo: </span>{visa.data.workPermit.includes('yes') ? 'Si' : visa.data.workPermit}</div>
+                        </div>
                       </a>
                     ))}                  
                 </div>
@@ -207,7 +210,7 @@ const FilterVisaWidget = () => {
                     disabled={currentPage === 1}
                     className={`mx-2 px-4 py-2 rounded-lg font-semibold ${currentPage === 1 ? 'bg-gray-200 text-gray-600' : 'bg-primary text-white hover:bg-secondary'}`}
                   >
-                    Previous
+                    Anterior
                   </button>
                   <span className="flex items-center text-sm font-semibold text-gray-700">
                     Page {currentPage} of {totalPages}
@@ -217,7 +220,7 @@ const FilterVisaWidget = () => {
                     disabled={currentPage === totalPages}
                     className={`mx-2 px-4 py-2 rounded-lg text-white font-semibold ${currentPage === totalPages ? 'bg-gray-200' : 'bg-primary hover:bg-secondary'}`}
                   >
-                    Next
+                    Siguiente
                   </button>
                 </div>
 
