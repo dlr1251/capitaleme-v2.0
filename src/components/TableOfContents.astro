@@ -36,6 +36,7 @@ function buildToc(headings: Heading[]): Heading[] {
 ---
 
 <nav class="toc prose prose-a:text-slate-500 0 pt-20">
+    <div class="ml-8 border-b font-bold">Table of Contents</div>
     <ul class="list-none">
       {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
     </ul>
@@ -45,9 +46,9 @@ function buildToc(headings: Heading[]): Heading[] {
 document.addEventListener("DOMContentLoaded", () => {
   // Select all TOC links
   const tocLinks: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('a.toc-link');
-
   // Add click event to each link
   tocLinks.forEach((link: HTMLAnchorElement) => {
+
     link.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault(); // Prevent the default anchor click behavior
 

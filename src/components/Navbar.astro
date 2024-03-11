@@ -37,12 +37,22 @@ const espURL = getSpanishURL(pathname);
                 <li>
                     <a 
                         href={lang == "en" ? "/services" : "/es/services"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('services') ? 'text-secondary underline' : ''}`}> {lang == "en" ? "Visas & Immigration" : "Visas y Migración"}</a>
+                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('services') ? 'text-secondary underline' : ''}`}> {lang == "en" ? "Services" : "Servicios"}</a>
+                </li>
+                <li>
+                    <a 
+                        href={lang == "en" ? "/visas" : "/es/visas"} 
+                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.includes('visas') ? 'text-secondary underline' : ''}`}> {lang == "en" ? "Colombian Visas" : "Visas Colombianas"}</a>
                 </li>
                 <li>
                     <a 
                         href={lang == "en" ? "/blog" : "/es/blog"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('blog') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Blog" : "Blog"}</a>
+                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.includes('blog') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Blog" : "Blog"}</a>
+                </li>
+                <li>
+                    <a 
+                        href={lang == "en" ? "/resources" : "/es/resources"} 
+                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.includes('resources') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Resources" : "Recursos"}</a>
                 </li>
                 <li>
                     <a 

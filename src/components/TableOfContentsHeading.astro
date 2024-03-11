@@ -4,7 +4,7 @@ const { heading } = Astro.props;
 ---
 
 <li class="text-primary">
-  <a href={'#' + heading.slug} class="toc-link">
+  <a href={'#' + heading.slug} class="no-underline hover:text-secondary toc-link">
     {heading.text}
   </a>
   {
@@ -27,11 +27,13 @@ const { heading } = Astro.props;
     /* Simple animation to highlight the change */
     @keyframes highlightActive {
       from {color: transparent;}
-      to {color: #16345F;}
+      to {color: #27B08E;}
     }
 
     .toc-link-active {
       animation: highlightActive 0.2s ease-in-out forwards; /* Apply animation to the active link */
+      text-decoration: underline;
+      margin-left: 8px;
     }
 </style>
 
@@ -49,16 +51,17 @@ document.addEventListener("DOMContentLoaded", function() {
     let scrollPosition: number = window.scrollY;
     let closestHeadingAbove: HTMLElement | null = null;
 
-    document.querySelectorAll<HTMLElement>('h2, h3, h4').forEach((heading: HTMLElement) => {
-      console.log(closestHeadingAbove);
-      if (heading.offsetTop <= scrollPosition + window.innerHeight * 0.133) {
+    document.querySelectorAll<HTMLElement>('h2, h3, h4').forEach((heading: HTMLElement) => {      
+      if (heading.offsetTop <= scrollPosition + window.innerHeight * 0.25) {
         closestHeadingAbove = heading; // Este encabezado es el último que se desplazó hacia arriba
       }
     });
+    // console.log(closestHeadingAbove);
 
     if (closestHeadingAbove) {
       removeAllActive();
       const tocLink = document.querySelector<HTMLAnchorElement>(`a[href="#${(closestHeadingAbove as HTMLElement).id}"]`);
+        // console.log(closestHeadingAbove);
       if (tocLink) {
         tocLink.classList.add('toc-link-active');
       }

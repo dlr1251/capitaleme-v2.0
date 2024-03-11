@@ -33,7 +33,7 @@ const FilterVisaWidget = () => {
   const [originalList, setOriginalList] = useState([]); // lista de las visas completa
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6); // Este valor puedes ajustarlo según necesites
+  const [itemsPerPage] = useState(50); // Este valor puedes ajustarlo según necesites
   const [totalPages, setTotalPages] = useState(0);
 
   const [showCountrySelectorError, setShowCountrySelectorError] = useState(false);
@@ -120,9 +120,9 @@ const FilterVisaWidget = () => {
 
   return (
         <div className='flex flex-col'>
-          <div className="flex flex-col md:flex-row mb-6">
-              <div className="w-full md:w-1/4 bg-slate-100 flex-col p-4">
-                <form className="max-w-sm mx-auto">
+          <div className="flex flex-col md:flex-col mb-6">
+              <div className="w-full bg-slate-100 flex flex-col sm:flex-row p-4 sticky top-16 rounded mb-4">
+                <form className="flex items-center p-4 rounded">
                     <select
                       id="countries"                      
                       className={`bg-gray-50 border ${showCountrySelectorError ? 'border-red-500' : 'border-gray-300'} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4`}
@@ -182,22 +182,19 @@ const FilterVisaWidget = () => {
                   />
                   <label htmlFor="accrueResidency-checkbox" className="ml-2 text-sm font-medium text-gray-900">Accrue time towards Residency?</label>
                 </div>
-                <div className="flex items-center p-4 rounded">
-                  <a className='bg-secondary p-2 text-white text-sm rounded shadow hover:bg-primary' href="/visas">Check all visa categories</a>
-                </div>
               </div>
-              <div className="w-full md:w-3/4 ">
-                <div className="w-100 h-auto grid grid-cols-1 sm:grid-cols-2 justify-center items-center md:xw-auto mb-6 gap-4">
+              <div className="w-full">
+                <div className="w-auto h-auto grid grid-cols-1 sm:grid-cols-1 justify-center items-center md:xw-auto mb-6 gap-4">
                     {
-                    currentItems.map((visa, index) => (
+                    currentItems.map((visa, index, arr) => (
                       <a key={index} href={`/visas/${visa.slug.slice(3)}`} className="w-auto p-4 text-gray-900 rounded mx-2 border hover:bg-primary hover:text-white group">
-                        <div className="block p-2 w-full text-lg h-16 text-primary group-hover:text-white font-bold">{visa.data.title}</div>
+                        <div className="block p-2 w-full text-lg h-auto text-primary group-hover:text-white font-bold">{index+1}/{arr.length} - {visa.data.title}</div>
                         <div className="flex">
-                          <p className="px-2 text-slate-500 text-sm h-24 group-hover:text-slate-100">
+                          <p className="px-2 text-slate-500 text-md h-auto group-hover:text-slate-100">
                             {visa.data.short_description}
                           </p>
                         </div>
-                        <div className="flex justify-between h-12">
+                        <div className="flex justify-left h-8">
                           <div className="p-2 text-sm"><span className="font-bold text-secondary">Beneficiaries: </span>{visa.data.beneficiaries.includes('yes') ? 'Yes' : 'No'}</div>
                           <div className="p-2 text-sm"><span className="font-bold text-secondary">Work permit: </span>{visa.data.workPermit.includes('yes') ? 'Yes' : visa.data.workPermit}</div>
                         </div>
@@ -207,7 +204,7 @@ const FilterVisaWidget = () => {
               </div>
            
           </div>
-                <div className="pagination-controls flex justify-center mt-4">
+                <div className="pagination-controls hidden justify-center mt-4">
                   <button 
                     onClick={() => setCurrentPage(prevPage => Math.max(prevPage - 1, 1))}
                     disabled={currentPage === 1}

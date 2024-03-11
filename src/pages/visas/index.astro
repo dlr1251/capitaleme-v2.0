@@ -3,6 +3,8 @@
 import Layout from "../../layouts/Layout.astro";
 import SectionOne from "../../components/en/visas/Section_1.astro";
 import { getCollection, getEntry } from 'astro:content';
+import AllVisaFilterWidget from '../../components/en/visas/AllVisaFilterWidget.jsx'
+
 const allVisas = await getCollection('visas', ({ id }) => {
   return id.startsWith('en/');
 });
@@ -11,12 +13,17 @@ const allVisas = await getCollection('visas', ({ id }) => {
 <Layout title="Todos los recursos">
     <div class="mt-16">
                 <SectionOne/>
-
+                <div class="max-w-screen-xl mx-auto">
+                  <AllVisaFilterWidget client:load />
+                </div>
+<!-- 
                 <div class="py-8 px-4 mx-auto max-w-screen-lg sm:py-16 lg:px-6 ">  
                   {allVisas.map(p => (
-                      <h2><a href={`/visas/${p.slug.slice(3)}`}>{p.data.title}</a></h2>
-                      <div>short_description: {p.data.short_description}</div>
+                      <a class=" text-primary h-auto group border rounded flex flex-col" href={`/visas/${p.slug.slice(3)}`}>
+                        <h2 class="p-3 font-bold group-hover:bg-secondary">{p.data.title}</h2>
+                        <div class="p-3 group-hover:bg-secondary">{p.data.short_description}</div>
+                      </a>
                     ))}
-                </div>
+                </div> -->
     </div>
 </Layout>

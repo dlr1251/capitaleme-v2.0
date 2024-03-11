@@ -2,33 +2,31 @@
 const { title, headings, workPermit, beneficiaries, type, sponsored, countries  } = Astro.props.frontmatter || Astro.props 
 ---
 <div class="mt-16">
-    <div class="flex flex-col md:flex-row bg-slate-100 p-4">
+    <div class="flex flex-col md:flex-row bg-slate-100 p-4 rounded rounded-lg">
 
-        <div class="text-4xl font-bold text-secondary w-full md:w-1/2">
+        <div class="text-4xl font-bold text-secondary w-full md:w-2/3 p-3">
             {title}
         </div>
-        <div class="w-full md:w-1/2 ">
-            <div class="text-sm flex flex-row">
-                <div class="w-1/3 font-bold">Type:</div>
-                <div class="w-2/3">{type}</div>
+        <div class="w-full md:w-1/3 py-3">
+            <div class="text-sm flex flex-row p-1">
+                <div class="w-1/2 font-bold">Type:</div>
+                <div class="w-1/2">{type}</div>
             </div>
-            <div class="text-sm flex flex-row">
-                <div class="w-1/3 font-bold">Work permit:</div>
-                 <div class="w-2/3">{workPermit}</div>
+            <div class="text-sm flex flex-row p-1">
+                <div class="w-1/2 font-bold">Work permit:</div>
+                <div class="w-1/2">{workPermit}</div>
             </div>
-            <div class="text-sm flex flex-row">
-                <div class="w-1/3 font-bold">Beneficiaries: </div>
-                <div class="w-2/3">{beneficiaries}</div>
-                    
+            <div class="text-sm flex flex-row p-1">
+                <div class="w-1/2 font-bold">Beneficiaries: </div>
+                <div class="w-1/2">{beneficiaries}</div>
             </div>
-            <div class="text-sm flex flex-row">
-                <div class="w-1/3 font-bold">Sponsored: </div>
-                <div class="w-2/3">{sponsored}</div>
-                    
+            <div class="text-sm flex flex-row p-1">
+                <div class="w-1/2 font-bold">Sponsored: </div>
+                <div class="w-1/2">{sponsored}</div>
             </div>
-            <div class="text-sm flex flex-row">
-                <div class="w-1/3 font-bold">Countries: </div>
-                <div class="w-2/3">
+            <div class="text-sm flex flex-row p-1">
+                <div class="w-1/2 font-bold">Countries: </div>
+                <div class="w-1/2">
                 
                 {
                     // Check if the array only includes "Exempted"

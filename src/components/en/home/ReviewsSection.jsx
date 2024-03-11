@@ -37,7 +37,7 @@ function ReviewsSection() {
                 <div id="star-rating">{'⭐️'.repeat(r.rating)}</div>
                 <div id="date-posted" className="text-xs text-center">{r.relative_time_description}</div>
               </div>
-              <div id="review-text" className="flex flex-col justify-center md:mx-3 text-gray-500">
+              <div id="review-text" className="flex flex-col justify-start md:mx-3 text-gray-500">
                 <div id="reviewer-name" className="font-bold text-primary">{r.author_name}</div>
                 <p>{r.text}</p>
               </div>
