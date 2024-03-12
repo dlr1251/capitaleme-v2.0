@@ -22,7 +22,7 @@ async function fetchVisas() {
 
 
 
-const FilterVisaWidget = () => {
+const FilterVisaWidget = ({locale}) => {
   // Inicio de las variables que van a guardar el estado
   const [country, setCountry] = useState(''); // Pais
   const [beneficiaries, setBeneficiaries] = useState(false); // Beneficairios - true o false
@@ -133,7 +133,7 @@ const FilterVisaWidget = () => {
                       }}
                     >
                       <option value="">Choose your country</option>
-                      {countries.map( (c, i) => <option key={i} value={c.Country}>{c.Country}</option>)}
+                      {countries.map( (c, i) => <option key={i} value={c.Country}>{locale == 'es' ? c.Country : c.CountryEn}</option>)}
                       
                     </select>
                 </form>

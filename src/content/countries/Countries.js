@@ -1,1166 +1,1367 @@
 export default [
-    {
-        "Country": "Afganistán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Albania",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Alemania",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Andorra",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Angola",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Antigua y Barbuda",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Arabia Saudita",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Argelia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Argentina",
-        "Excempted?": "Yes",
-        "Treaties": "Mercosur, TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Armenia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Australia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Austria",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Azerbaiyán",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bahamas",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bahréin",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bangladesh",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Barbados",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bélgica",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Belice",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Benin",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bielorrusia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bolivia",
-        "Excempted?": "Yes",
-        "Treaties": "CAN, TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bosnia y Herzegovina",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Botsuana",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Brasil",
-        "Excempted?": "Yes",
-        "Treaties": "Mercosur, TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Brunei Darussalam",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bulgaria",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Burkina Faso",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Burundi",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Bután",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Cabo Verde",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Camboya",
-        "Excempted?": "Schengen Visa",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Camerún",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Canadá",
-        "Excempted?": "Yes",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Chad",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Checa República",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Chile",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, Working holidays",
-        "airport transit": "No"
-    },
-    {
-        "Country": "China República Popular",
-        "Excempted?": "Schengen Visa",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Chipre",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Comoras",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Congo",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Congo República Democrática",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Corea República",
-        "Excempted?": "Yes",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Corea República Popular Dem.",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Costa de Marfil",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Costa Rica",
-        "Excempted?": "Yes",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Croacia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Cuba",
-        "Excempted?": "No",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Dinamarca",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Djibouti",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Dominica",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Ecuador",
-        "Excempted?": "Yes",
-        "Treaties": "CAN, TLC, Mercosur",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Egipto",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "El Salvador",
-        "Excempted?": "Yes",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Emiratos Árabes Unidos",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Eritrea",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Eslovaquia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Eslovenia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "España",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Estados Unidos de América",
-        "Excempted?": "Yes",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Estonia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Etiopía",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Fiji",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Filipinas",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Finlandia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Francia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE, Working holidays",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Gabón",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Gambia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Georgia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Ghana",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Grecia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Grenada",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Guatemala",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Guinea",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Guinea Ecuatorial",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Guinea-Bissau",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Guyana",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Haití",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Honduras",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Hungría",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "India",
-        "Excempted?": "Schengen Visa",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Indonesia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Irán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Iraq",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Irlanda",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Islandia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Islas Marshall",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Islas Salomón",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Israel",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Italia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Jamaica",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Japón",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Jordania",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Kazajstán",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Kenya",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Kirguistán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Kiribati",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Kosovo",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Kuwait",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Laos República Democrática P",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Lesotho",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Letonia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Líbano",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Liberia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Libia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Liechtenstein",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Lituania",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Luxemburgo",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Macedonia del Norte",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Madagascar",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Malasia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Malawi",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Maldivas",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Mali",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Malta",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Marruecos",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Mauricio",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Mauritania",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "México",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, Working holidays",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Micronesia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Moldavia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Mónaco",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Mongolia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Montenegro",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Mozambique",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Myanmar",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Namibia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Nauru",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Nepal",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Nicaragua",
-        "Excempted?": "Schengen Visa",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Níger",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Nigeria",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Noruega",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Nueva Zelanda",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Omán",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Países Bajos",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Pakistán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Palau",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Panamá",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Papua Nueva Guinea",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Paraguay",
-        "Excempted?": "Yes",
-        "Treaties": "Mercosur, TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Perú",
-        "Excempted?": "Yes",
-        "Treaties": "CAN, TLC, Working holidays",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Polonia",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Portugal",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Qatar",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Reino Unido Gran Bretaña e Irlanda del Norte",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "República Centroafricana",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "República Dominicana",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Rumania",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Rusia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Rwanda",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Saint Kitts y Nevis",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Samoa",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "San Marino",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "San Vicente y las Granadinas",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Santa Lucía",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Santo Tomé y Príncipe",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Senegal",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Serbia",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Seychelles",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Sierra Leona",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Singapur",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Siria",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Somalia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Sri Lanka",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Suazilandia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Sudáfrica",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Sudán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Sudán del Sur",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Suriname",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Sweden",
-        "Excempted?": "Yes",
-        "Treaties": "TLC, UE",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Switzerland",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Tailandia",
-        "Excempted?": "Schengen Visa",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Tanzania",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Tayikistán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Timor Oriental",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Togo",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Tonga",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Trinidad y Tobago",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Túnez",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Turkmenistán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Turquía",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Tuvalu",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Ucrania",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Uganda",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Uruguay",
-        "Excempted?": "Yes",
-        "Treaties": "Mercosur, TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Uzbekistán",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "Yes"
-    },
-    {
-        "Country": "Vanuatu",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Vatican",
-        "Excempted?": "Yes",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Venezuela",
-        "Excempted?": "Yes",
-        "Treaties": "TLC",
-        "airport transit": "No"
-    },
-    {
-        "Country": "Vietnam",
-        "Excempted?": "Schengen Visa",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Yemen",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Zambia",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    },
-    {
-        "Country": "Zimbabwe",
-        "Excempted?": "No",
-        "Treaties": null,
-        "airport transit": "No"
-    }
-]
+  {
+    "Country": "Afganistán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Afghanistan",
+  },
+  {
+    "Country": "Albania",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Albania",
+  },
+  {
+    "Country": "Alemania",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Germany",
+  },
+  {
+    "Country": "Andorra",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Andorra",
+  },
+  {
+    "Country": "Angola",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Angola",
+  },
+  {
+    "Country": "Antigua y Barbuda",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Antigua and Barbuda",
+  },
+  {
+    "Country": "Arabia Saudita",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Saudi Arabia",
+  },
+  {
+    "Country": "Argelia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Algeria",
+  },
+  {
+    "Country": "Argentina",
+    "Excempted?": "Yes",
+    "Treaties": "Mercosur, TLC",
+    "airport transit": "No",
+    "CountryEn": "Argentina",
+  },
+  {
+    "Country": "Armenia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Armenia",
+  },
+  {
+    "Country": "Australia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Australia",
+  },
+  {
+    "Country": "Austria",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Austria",
+  },
+  {
+    "Country": "Azerbaiyán",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Azerbaijan",
+  },
+  {
+    "Country": "Bahamas",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Bahamas",
+  },
+  {
+    "Country": "Bahréin",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Bahrain",
+  },
+  {
+    "Country": "Bangladesh",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Bangladesh",
+  },
+  {
+    "Country": "Barbados",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Barbados",
+  },
+  {
+    "Country": "Bélgica",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Belgium",
+  },
+  {
+    "Country": "Belice",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Belize",
+  },
+  {
+    "Country": "Benin",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Benin",
+  },
+  {
+    "Country": "Bielorrusia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Belarus",
+  },
+  {
+    "Country": "Bolivia",
+    "Excempted?": "Yes",
+    "Treaties": "CAN, TLC",
+    "airport transit": "No",
+    "CountryEn": "Bolivia",
+  },
+  {
+    "Country": "Bosnia y Herzegovina",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Bosnia and Herzegovina",
+  },
+  {
+    "Country": "Botsuana",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Botswana",
+  },
+  {
+    "Country": "Brasil",
+    "Excempted?": "Yes",
+    "Treaties": "Mercosur, TLC",
+    "airport transit": "No",
+    "CountryEn": "Brazil",
+  },
+  {
+    "Country": "Brunei Darussalam",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Brunei",
+  },
+  {
+    "Country": "Bulgaria",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Bulgaria",
+  },
+  {
+    "Country": "Burkina Faso",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Burkina Faso",
+  },
+  {
+    "Country": "Burundi",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Burundi",
+  },
+  {
+    "Country": "Bután",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Bhutan",
+  },
+  {
+    "Country": "Cabo Verde",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Cape Verde",
+  },
+  {
+    "Country": "Camboya",
+    "Excempted?": "Schengen Visa",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Cambodia",
+  },
+  {
+    "Country": "Camerún",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Cameroon",
+  },
+  {
+    "Country": "Canadá",
+    "Excempted?": "Yes",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "Canada",
+  },
+  {
+    "Country": "Chad",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Chad",
+  },
+  {
+    "Country": "Checa República",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Czech Republic",
+  },
+  {
+    "Country": "Chile",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, Working holidays",
+    "airport transit": "No",
+    "CountryEn": "Chile",
+  },
+  {
+    "Country": "China",
+    "Excempted?": "Schengen Visa",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "China",
+  },
+  {
+    "Country": "Chipre",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Cyprus",
+  },
+  {
+    "Country": "Colombia",
+    "Excempted?": "Yes",
+    "Treaties": "N/A",
+    "airport transit": "No",
+    "CountryEn": "Colombia",
+  },
+  {
+    "Country": "Comoras",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Comoros",
+  },
+  {
+    "Country": "Congo",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Congo",
+  },
+  {
+    "Country": "Congo República Democrática",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Democratic Republic of the Congo",
+  },
+  {
+    "Country": "Corea República",
+    "Excempted?": "Yes",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "South Korea",
+  },
+  {
+    "Country": "Corea República Popular Dem.",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "North Korea",
+  },
+  {
+    "Country": "Costa de Marfil",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Ivory Coast",
+  },
+  {
+    "Country": "Costa Rica",
+    "Excempted?": "Yes",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "Costa Rica",
+  },
+  {
+    "Country": "Croacia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Croatia",
+  },
+  {
+    "Country": "Cuba",
+    "Excempted?": "No",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "Cuba",
+  },
+  {
+    "Country": "Dinamarca",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Denmark",
+  },
+  {
+    "Country": "Djibouti",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Djibouti",
+  },
+  {
+    "Country": "Dominica",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Dominica",
+  },
+  {
+    "Country": "Ecuador",
+    "Excempted?": "Yes",
+    "Treaties": "CAN, TLC, Mercosur",
+    "airport transit": "No",
+    "CountryEn": "Ecuador",
+  },
+  {
+    "Country": "Egipto",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Egypt",
+  },
+  {
+    "Country": "El Salvador",
+    "Excempted?": "Yes",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "El Salvador",
+  },
+  {
+    "Country": "Emiratos Árabes Unidos",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "United Arab Emirates",
+  },
+  {
+    "Country": "Eritrea",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Eritrea",
+  },
+  {
+    "Country": "Eslovaquia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Slovakia",
+  },
+  {
+    "Country": "Eslovenia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Slovenia",
+  },
+  {
+    "Country": "España",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Spain",
+  },
+  {
+    "Country": "Estados Unidos de América",
+    "Excempted?": "Yes",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "United States of America",
+  },
+  {
+    "Country": "Estonia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Estonia",
+  },
+  {
+    "Country": "Etiopía",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Ethiopia",
+  },
+  {
+    "Country": "Fiji",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Fiji",
+  },
+  {
+    "Country": "Filipinas",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Philippines",
+  },
+  {
+    "Country": "Finlandia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Finland",
+  },
+  {
+    "Country": "Francia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE, Working holidays",
+    "airport transit": "No",
+    "CountryEn": "France",
+  },
+  {
+    "Country": "Gabón",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Gabon",
+  },
+  {
+    "Country": "Gambia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "The Gambia",
+  },
+  {
+    "Country": "Georgia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Georgia",
+  },
+  {
+    "Country": "Ghana",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Ghana",
+  },
+  {
+    "Country": "Grecia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Greece",
+  },
+  {
+    "Country": "Grenada",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Grenada",
+  },
+  {
+    "Country": "Guatemala",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Guatemala",
+  },
+  {
+    "Country": "Guinea",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Guinea",
+  },
+  {
+    "Country": "Guinea Ecuatorial",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Equatorial Guinea",
+  },
+  {
+    "Country": "Guinea-Bissau",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Guinea-Bissau",
+  },
+  {
+    "Country": "Guyana",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Guyana",
+  },
+  {
+    "Country": "Haití",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Haiti",
+  },
+  {
+    "Country": "Honduras",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Honduras",
+  },
+  {
+    "Country": "Hungría",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Hungary",
+  },
+  {
+    "Country": "India",
+    "Excempted?": "Schengen Visa",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "India",
+  },
+  {
+    "Country": "Indonesia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Indonesia",
+  },
+  {
+    "Country": "Irán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Iran",
+  },
+  {
+    "Country": "Iraq",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Iraq",
+  },
+  {
+    "Country": "Irlanda",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Ireland",
+  },
+  {
+    "Country": "Islandia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Iceland",
+  },
+  {
+    "Country": "Islas Marshall",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Marshall Islands",
+  },
+  {
+    "Country": "Islas Salomón",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Solomon Islands",
+  },
+  {
+    "Country": "Israel",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Israel",
+  },
+  {
+    "Country": "Italia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Italy",
+  },
+  {
+    "Country": "Jamaica",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Jamaica",
+  },
+  {
+    "Country": "Japón",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Japan",
+  },
+  {
+    "Country": "Jordania",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Jordan",
+  },
+  {
+    "Country": "Kazajstán",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Kazakhstan",
+  },
+  {
+    "Country": "Kenya",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Kenya",
+  },
+  {
+    "Country": "Kirguistán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Kyrgyzstan",
+  },
+  {
+    "Country": "Kiribati",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Kiribati",
+  },
+  {
+    "Country": "Kosovo",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Kosovo",
+  },
+  {
+    "Country": "Kuwait",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Kuwait",
+  },
+  {
+    "Country": "Laos",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Laos",
+  },
+  {
+    "Country": "Lesotho",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Lesotho",
+  },
+  {
+    "Country": "Letonia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Latvia",
+  },
+  {
+    "Country": "Líbano",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Lebanon",
+  },
+  {
+    "Country": "Liberia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Liberia",
+  },
+  {
+    "Country": "Libia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Libya",
+  },
+  {
+    "Country": "Liechtenstein",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Liechtenstein",
+  },
+  {
+    "Country": "Lituania",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Lithuania",
+  },
+  {
+    "Country": "Luxemburgo",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Luxembourg",
+  },
+  {
+    "Country": "Macedonia del Norte",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "North Macedonia",
+  },
+  {
+    "Country": "Madagascar",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Madagascar",
+  },
+  {
+    "Country": "Malasia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Malaysia",
+  },
+  {
+    "Country": "Malawi",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Malawi",
+  },
+  {
+    "Country": "Maldivas",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Maldives",
+  },
+  {
+    "Country": "Mali",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Mali",
+  },
+  {
+    "Country": "Malta",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Malta",
+  },
+  {
+    "Country": "Marruecos",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Morocco",
+  },
+  {
+    "Country": "Mauricio",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Mauritius",
+  },
+  {
+    "Country": "Mauritania",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Mauritania",
+  },
+  {
+    "Country": "México",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, Working holidays",
+    "airport transit": "No",
+    "CountryEn": "Mexico",
+  },
+  {
+    "Country": "Micronesia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Micronesia",
+  },
+  {
+    "Country": "Moldavia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Moldova",
+  },
+  {
+    "Country": "Mónaco",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Monaco",
+  },
+  {
+    "Country": "Mongolia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Mongolia",
+  },
+  {
+    "Country": "Montenegro",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Montenegro",
+  },
+  {
+    "Country": "Mozambique",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Mozambique",
+  },
+  {
+    "Country": "Myanmar",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Myanmar (Burma)",
+  },
+  {
+    "Country": "Namibia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Namibia",
+  },
+  {
+    "Country": "Nauru",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Nauru",
+  },
+  {
+    "Country": "Nepal",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Nepal",
+  },
+  {
+    "Country": "Nicaragua",
+    "Excempted?": "Schengen Visa",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Nicaragua",
+  },
+  {
+    "Country": "Níger",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Niger",
+  },
+  {
+    "Country": "Nigeria",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Nigeria",
+  },
+  {
+    "Country": "Noruega",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Norway",
+  },
+  {
+    "Country": "Nueva Zelanda",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "New Zealand",
+  },
+  {
+    "Country": "Omán",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Oman",
+  },
+  {
+    "Country": "Países Bajos",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Netherlands",
+  },
+  {
+    "Country": "Pakistán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Pakistan",
+  },
+  {
+    "Country": "Palau",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Palau",
+  },
+  {
+    "Country": "Panamá",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Panama",
+  },
+  {
+    "Country": "Papua Nueva Guinea",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Papua New Guinea",
+  },
+  {
+    "Country": "Paraguay",
+    "Excempted?": "Yes",
+    "Treaties": "Mercosur, TLC",
+    "airport transit": "No",
+    "CountryEn": "Paraguay",
+  },
+  {
+    "Country": "Perú",
+    "Excempted?": "Yes",
+    "Treaties": "CAN, TLC, Working holidays",
+    "airport transit": "No",
+    "CountryEn": "Peru",
+  },
+  {
+    "Country": "Polonia",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Poland",
+  },
+  {
+    "Country": "Portugal",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Portugal",
+  },
+  {
+    "Country": "Qatar",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Qatar",
+  },
+  {
+    "Country": "Reino Unido Gran Bretaña e Irlanda del Norte",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "United Kingdom of Great Britain and Northern Ireland",
+  },
+  {
+    "Country": "República Centroafricana",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Central African Republic",
+  },
+  {
+    "Country": "República Dominicana",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Dominican Republic",
+  },
+  {
+    "Country": "Rumania",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Romania",
+  },
+  {
+    "Country": "Rusia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Russia",
+  },
+  {
+    "Country": "Rwanda",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Rwanda",
+  },
+  {
+    "Country": "Saint Kitts y Nevis",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Saint Kitts and Nevis",
+  },
+  {
+    "Country": "Samoa",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Samoa",
+  },
+  {
+    "Country": "San Marino",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "San Marino",
+  },
+  {
+    "Country": "San Vicente y las Granadinas",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Saint Vincent and the Grenadines",
+  },
+  {
+    "Country": "Santa Lucía",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Saint Lucia",
+  },
+  {
+    "Country": "Santo Tomé y Príncipe",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Sao Tome and Principe",
+  },
+  {
+    "Country": "Senegal",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Senegal",
+  },
+  {
+    "Country": "Serbia",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Serbia",
+  },
+  {
+    "Country": "Seychelles",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Seychelles",
+  },
+  {
+    "Country": "Sierra Leona",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Sierra Leone",
+  },
+  {
+    "Country": "Singapur",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Singapore",
+  },
+  {
+    "Country": "Siria",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Syria",
+  },
+  {
+    "Country": "Somalia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Somalia",
+  },
+  {
+    "Country": "Sri Lanka",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Sri Lanka",
+  },
+  {
+    "Country": "Suazilandia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Eswatini",
+  },
+  {
+    "Country": "Sudáfrica",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "South Africa",
+  },
+  {
+    "Country": "Sudán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Sudan",
+  },
+  {
+    "Country": "Sudán del Sur",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "South Sudan",
+  },
+  {
+    "Country": "Suriname",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Suriname",
+  },
+  {
+    "Country": "Sweden",
+    "Excempted?": "Yes",
+    "Treaties": "TLC, UE",
+    "airport transit": "No",
+    "CountryEn": "Sweden",
+  },
+  {
+    "Country": "Switzerland",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Switzerland",
+  },
+  {
+    "Country": "Tailandia",
+    "Excempted?": "Schengen Visa",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Thailand",
+  },
+  {
+    "Country": "Tanzania",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Tanzania",
+  },
+  {
+    "Country": "Tayikistán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Tajikistan",
+  },
+  {
+    "Country": "Timor Oriental",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "East Timor",
+  },
+  {
+    "Country": "Togo",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Togo",
+  },
+  {
+    "Country": "Tonga",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Tonga",
+  },
+  {
+    "Country": "Trinidad y Tobago",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Trinidad and Tobago",
+  },
+  {
+    "Country": "Túnez",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Tunisia",
+  },
+  {
+    "Country": "Turkmenistán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Turkmenistan",
+  },
+  {
+    "Country": "Turquía",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Turkey",
+  },
+  {
+    "Country": "Tuvalu",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Tuvalu",
+  },
+  {
+    "Country": "Ucrania",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Ukraine",
+  },
+  {
+    "Country": "Uganda",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Uganda",
+  },
+  {
+    "Country": "Uruguay",
+    "Excempted?": "Yes",
+    "Treaties": "Mercosur, TLC",
+    "airport transit": "No",
+    "CountryEn": "Uruguay",
+  },
+  {
+    "Country": "Uzbekistán",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "Yes",
+    "CountryEn": "Uzbekistan",
+  },
+  {
+    "Country": "Vanuatu",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Vanuatu",
+  },
+  {
+    "Country": "Vatican",
+    "Excempted?": "Yes",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Vatican City",
+  },
+  {
+    "Country": "Venezuela",
+    "Excempted?": "Yes",
+    "Treaties": "TLC",
+    "airport transit": "No",
+    "CountryEn": "Venezuela",
+  },
+  {
+    "Country": "Vietnam",
+    "Excempted?": "Schengen Visa",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Vietnam",
+  },
+  {
+    "Country": "Yemen",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Yemen",
+  },
+  {
+    "Country": "Zambia",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Zambia",
+  },
+  {
+    "Country": "Zimbabwe",
+    "Excempted?": "No",
+    "Treaties": "null",
+    "airport transit": "No",
+    "CountryEn": "Zimbabwe",
+  },
+];

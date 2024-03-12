@@ -1,0 +1,28 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import SectionOne from "../../../components/en/resources/Section_1.astro";
+import { getCollection } from 'astro:content';
+
+const allResources = await getCollection('resources', ({ id }) => {
+  return id.startsWith('es/');
+});
+---
+
+<Layout title="Resources">
+    <div class="max-w-screen-lg mx-auto">
+      <SectionOne/>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {allResources.map(p => (              
+          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/es/resources/${p.slug.slice(3)}`}>  
+            <div class="flex justify-between">                          
+              <div class="text-sm text-slate-900">{p.data.author}</div>
+              <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
+              </div>                      
+              <div class="text-primary text-lg font-bold mt-2">{p.data.title}</div>
+              
+              <p class="font-light py-4">{p.data.description}</p>   
+            </a>
+          ))}
+      </div>            
+  </div>
+</Layout>

@@ -1,0 +1,23 @@
+[
+    {
+        "Country": "Afganistán",
+        "Excempted?": "No",
+        "Treaties": null,
+        "airport transit": "Yes",
+        "Apostille": false
+    },
+    {
+        "Country": "Albania",
+        "Excempted?": "Yes",
+        "Treaties": null,
+        "airport transit": "No",
+        "Apostille": true
+    },
+    {
+        "Country": "Zimbabwe",
+        "Excempted?": "No",
+        "Treaties": null,
+        "airport transit": "No",
+        "Apostille": false
+    }
+]

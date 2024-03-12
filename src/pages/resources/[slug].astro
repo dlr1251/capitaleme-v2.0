@@ -23,5 +23,6 @@ const { pathname } = Astro.url
 
 ---
 <ResourcesLayout title={entry.data.title} frontmatter={entry.data} headings={headings}>
+  <div class="py-8 pl-4 mt-16 font-bold text-3xl bg-slate-100 rounded">{entry.data.title}</div>
   <Content />
 </ResourcesLayout>
