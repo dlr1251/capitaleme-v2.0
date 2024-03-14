@@ -15,7 +15,7 @@ const allResources = await getCollection('resources', ({ id }) => {
       <SectionOne/>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         {allResources.map(p => (              
-          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  
+          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/resources/${p.slug.slice(3)}`}>  
             <div class="flex justify-between">                          
               <div class="text-sm text-slate-900">{p.data.author}</div>
               <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
