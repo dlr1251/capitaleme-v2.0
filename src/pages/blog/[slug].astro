@@ -22,5 +22,6 @@ const { pathname } = Astro.url
 
 ---
 <PostsLayout title={entry.data.title} headings={headings} frontmatter={entry.data}>
+  <div class="py-8 pl-4 mt-16 font-bold text-3xl bg-slate-100 rounded">{entry.data.title}</div>
   <Content />
 </PostsLayout>

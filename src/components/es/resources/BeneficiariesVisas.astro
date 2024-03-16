@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+const benVisas = await getCollection('visas', ({ id, data }) => {
+  return id.startsWith('es/') && data.beneficiaries.includes("no") === false;
+});
+---
+<div>
+    {
+        benVisas.map( p => (
+            
+            <ul>            
+                <li><a href={`/es/visas/${p.slug.slice(3)}`}>{p.data.title.slice(3)}</a></li>
+            </ul>
+        ))
+    }
+</div>
