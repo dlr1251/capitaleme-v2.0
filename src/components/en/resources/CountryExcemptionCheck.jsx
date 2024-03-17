@@ -20,7 +20,7 @@ function CountrySelector() {
 
   return (
     <div>
-      <select onChange={handleSelectChange} defaultValue="">
+      <select className='w-full' onChange={handleSelectChange} defaultValue="">
         <option value="" disabled>Select a country</option>
         {countries.map(country => (
           <option key={country.CountryEn} value={country.CountryEn}>
