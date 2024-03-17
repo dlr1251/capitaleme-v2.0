@@ -32,6 +32,8 @@ function CountrySelector() {
         <p> {exemptedStatus === "Yes" ? <div className='bg-green-200'>This country is exempted from short-stay visa requirements</div> : 
         <div className='bg-red-200'>This country is not exempted from short-stay visa requirements.</div>} </p>
       )}
+      
+      {/* {exemptedStatus === "Yes" && dnv === true  ? <div className='bg-green-200'>You can apply</div> : <div className='bg-red-200'>You can't apply.</div>} */}
     </div>
   );
 }

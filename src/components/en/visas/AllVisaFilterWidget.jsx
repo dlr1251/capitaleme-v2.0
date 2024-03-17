@@ -122,10 +122,10 @@ const FilterVisaWidget = ({locale}) => {
         <div className='flex flex-col'>
           <div className="flex flex-col md:flex-col mb-6">
               <div className="w-full bg-slate-100 flex flex-col sm:flex-row p-4 sticky top-16 rounded mb-4">
-                <form className="flex items-center p-4 rounded">
+                <form className="flex items-center p-1 md:p-4 rounded">
                     <select
                       id="countries"                      
-                      className={`bg-gray-50 border ${showCountrySelectorError ? 'border-red-500' : 'border-gray-300'} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4`}
+                      className={`bg-gray-50 border ${showCountrySelectorError ? 'border-red-500' : 'border-gray-300'} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-1 md:mb-4`}
                       value={country}
                       onChange={(e) => {
                         setCountry(e.target.value);
@@ -137,7 +137,7 @@ const FilterVisaWidget = ({locale}) => {
                       
                     </select>
                 </form>
-                <div className="flex items-center p-4 rounded">
+                <div className="flex items-center p-1 md:p-4 rounded">
                   <input
                     id="beneficiaries-checkbox"
                     type="checkbox"
@@ -152,7 +152,7 @@ const FilterVisaWidget = ({locale}) => {
                   />
                   <label htmlFor="beneficiaries-checkbox" className="ml-2 text-sm font-medium text-gray-900">Bringing Spouse and Children?</label>
                 </div>
-                <div className="flex items-center p-4 rounded">
+                <div className="flex items-center p-1 md:p-4 rounded">
                   <input
                     id="workPermit-checkbox"
                     type="checkbox"
@@ -167,7 +167,7 @@ const FilterVisaWidget = ({locale}) => {
                   />
                   <label htmlFor="workPermit-checkbox" className="ml-2 text-sm font-medium text-gray-900">Do you want an open work permit?</label>
                 </div>
-                <div className="flex items-center p-4 rounded">
+                <div className="flex items-center p-1 md:p-4 rounded">
                   <input
                     id="accrueResidency-checkbox"
                     type="checkbox"
