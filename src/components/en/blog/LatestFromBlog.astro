@@ -6,7 +6,7 @@ const allPosts = await getCollection('posts', ({ id }) => {
 const latestPosts = allPosts.slice(0,3)
 ---
 <section class="max-w-screen-lg mx-auto p-3 md:p-0 mb-24">
-    <h2 class="text-3xl font-bold text-primary mb-4">Visit the Blog</h2>
+    <h2 class="text-3xl font-bold text-primary mb-4">Our Blog</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
 
         {latestPosts.map(p => (

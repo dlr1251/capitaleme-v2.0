@@ -3,12 +3,15 @@ import Layout from "../layouts/Layout.astro";
 import SectionOne from '../components/en/about/Section_1.astro';
 import SectionThree from '../components/en/about/Section_3.astro';
 import LatestFromBlog from "../components/en/blog/LatestFromBlog.astro";
-
+import ReviewsSection from '../components/en/home/ReviewsSection';
 const pageTitle = "About Us";
 
 ---
 <Layout title={pageTitle}>    
+      <div class="mt-16">
       <SectionOne/>
+      <ReviewsSection client:load />
       <SectionThree/>
       <LatestFromBlog/>
+      </div>
 </Layout>
