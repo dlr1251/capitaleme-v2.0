@@ -17,11 +17,13 @@ const someResources = allResources.reverse().slice(0,15)
             Visas y Migración
         </div>   
         <div class="text-3xl mb-3 mt-6 font-bold">Servicios de Asistencia en Visas Colombianas</div>
-        <div class="font-light mb-3 text-lg">Con nuestros Servicios de Asistencia en Visas Colombianas, podrás tener el acompañamiento profesional de un abogado bilingüe en todo tu proceso migratorio.</div>
+        <div class="font-light mb-3 text-lg">
+            Con nuestros Servicios de Asistencia en Visas Colombianas, podrás tener el acompañamiento profesional de un abogado bilingüe en todo tu proceso migratorio. Te acompañamos desde el primer momento en que tomes la decisión de quedarte en Colombia analizando tu perfil migratorio, asesorándote en la mejor categoría de visa para ti, el mejor tiempo para aplicar, los documentos necesarios para la solicitud y presentamos tu solicitud, la monitoreamos hasta una respuesta final y te ayudamos a obtener tu cédula de extranjería. 
+        </div>
           <div class="w-full h-auto flex justify-center items-center">
             <div class="flex flex-wrap w-auto max-w-4xl mr-auto">
                 {someResources.map(p => (
-                    <a href={`/visas/${p.slug.slice(3)}`} class="w-full md:w-1/3 py-2 flex justify-center">
+                    <a href={`/es/visas/${p.slug.slice(3)}`} class="w-full md:w-1/3 py-2 flex justify-center">
                     <div class="block py-2 underline w-full text-lg hover:text-secondary">{p.data.title}</div>
                 </a>
                 ))}
@@ -59,7 +61,7 @@ const someResources = allResources.reverse().slice(0,15)
         </div>   
 
         <div class="text-3xl mb-3 mt-6 font-bold">Creación y gestión de empresa</div>
-        <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
+        <div class="font-light mb-3 text-lg">Con nuestros servicios de formalización y gestión de empresa, tendrás a un abogado bilingüe a tu lado para asistirte en la implementación de la mejor estrategia legal para tu modelo de negocio</div>
           <div class="w-full h-auto flex justify-center items-center ">
             <div class="flex flex-wrap flex-col w-auto max-w-4xl mr-auto">
                     <a href="#" class="w-auto py-2 flex justify-center">
@@ -85,8 +87,8 @@ const someResources = allResources.reverse().slice(0,15)
                 
             </div>
         </div>
-        <div class="text-3xl mb-3 mt-6 font-bold">Acuerdos de Bienes Raíces</div>
-        <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
+        <div class="text-3xl mb-3 mt-6 font-bold">Asesoría en negocios inmobiliarios</div>
+        <div class="font-light mb-3 text-lg">Ofrecemos servicios de apoyo legal en compra, venta y arrendamiento de propiedades. Contarás con la guía de un abogado bilingüe para guiarte hacia el mejor resultado posible.</div>
           <div class="w-full h-auto flex justify-center items-center ">
             <div class="flex flex-wrap flex-col w-auto max-w-4xl mr-auto">
                     <a href="#" class="w-auto py-2 flex justify-center">

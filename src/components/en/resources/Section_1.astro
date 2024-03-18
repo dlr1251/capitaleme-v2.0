@@ -4,13 +4,13 @@ const featArticle = await getEntry('posts','en/counting-your-days')
 ---
 <section class="bg-slate-100 mb-4">
     <div class="py-8 mx-auto max-w-screen-lg sm:py-16">  
-        <div class="text-3xl font-bold text-primary mb-3">
+        <a href={featArticle.slug} class="text-3xl font-bold text-primary mb-3 hover:text-secondary group">
             {featArticle.data.title}            
-        </div> 
-        <p class="text-lg">{featArticle.data.description}</p>
-        <p class="text-sm">{featArticle.data.author}</p>
-        <p class="text-sm">{featArticle.data.pubDate.toString().slice(0,10)}</p>
-        <p class="text-sm">{featArticle.data.readTime}</p>
+        </a> 
+        <p class="text-lg text-primary group-hover:text-secondary">{featArticle.data.description}</p>
+        <p class="text-sm text-primary group-hover:text-secondary">{featArticle.data.author}</p>
+        <p class="text-sm text-primary group-hover:text-secondary">{featArticle.data.pubDate.toString().slice(0,10)}</p>
+        <p class="text-sm text-primary group-hover:text-secondary">{featArticle.data.readTime}</p>
         
     </div>
 </section>
