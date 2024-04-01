@@ -2,7 +2,7 @@
 import ContactTabs from "../common/ContactForm.astro"
 ---
 
-<section class="h-full mx-auto my-16 pt-12 md:mt-24 md:pt-20 flex flex-col md:flex-row justify-center items-center max-w-screen-xl">
+<section class="h-full mx-auto my-16 pt-12 px-3 md:px-16 lg:px-0 md:mt-24 md:pt-20 flex flex-col md:flex-row justify-center items-center max-w-screen-xl">
             <div class="w-full h-full p-2 md:p-0">
               <div class="text-4xl md:text-5xl font-bold text-primary mb-8 flex flex-col justify-between">
                 <span class="mb-1.5">WE MANAGE <br/></span>
@@ -15,30 +15,40 @@ import ContactTabs from "../common/ContactForm.astro"
               </div>
               <ul>
                 <li class="mb-3 text-lg md:text-xl text-primary flex">
-                  <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
-                  </svg>
-  
-                  Visas & Immigration Services
+                  <a href="/services" class="flex group">
+                    <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                      <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="group-hover:text-secondary group-hover:underline">
+                      Visas & Immigration Services
+                    </span>
+                  </a>
                 </li>
                 <li class="mb-3 text-lg md:text-xl text-primary flex">
-                  <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
-                  </svg>
-  
-                  Business Incorporations
+                  <a href="/services" class="flex group">
+                    <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                      <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="group-hover:text-secondary group-hover:underline">
+                      Business Incorporations
+                    </span>                    
+                  </a>
                 </li>
                 <li class="mb-3 text-lg md:text-xl text-primary flex">
-                  <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
-                  </svg>
-  
-                  Real Estate Agreements
+                  <a href="/services" class="flex group">
+                    <svg class="w-6 h-6 text-secondary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                      <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm13.7-1.3a1 1 0 0 0-1.4-1.4L11 12.6l-1.8-1.8a1 1 0 0 0-1.4 1.4l2.5 2.5c.4.4 1 .4 1.4 0l4-4Z" clip-rule="evenodd"/>
+                    </svg>
+                  <span class="group-hover:text-secondary group-hover:underline">
+                    Real Estate Agreements
+                  
+                  </span>  
+                  </a>
                 </li>
               </ul>
             </div>
-            <div class="w-full p-2 md:p-0">
-              <div class="font-bold text-primary bg-slate-100 pl-3 pt-2">Contact now</div>
+            <div class="w-full sm:w-3/4 mr-auto p-2 md:p-0 flex flex-col ">
+              <div class="font-bold text-primary text-white flex justify-center items-center pl-3 py-2 text-xl  bg-secondary">Contact now</div>
               <ContactTabs/>
             </div>                   
     </div>

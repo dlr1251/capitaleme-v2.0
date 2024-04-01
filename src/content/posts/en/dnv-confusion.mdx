@@ -8,7 +8,10 @@ image:
     url: "../../src/assets/blog/DNV-confusion.jpg"
     alt: "Thumbnail of Astro arcs."
 tags: ["visas", "immigration", "blog"]
+# // import CountryExcemptionCheck from "../../../components/en/resources/CountryExcemptionCheck"
 ---
+import CountryExcemptionCheck from "../../../components/en/resources/CountryExcemptionCheck"
+
 ## {frontmatter.title}
 
 There is widespread confusion and concerning ongoing discussions in Facebook groups and internet forums regarding the Colombian Digital Nomad Visa, specifically whether or not you can stay in Colombia for two consecutive years without having to leave.
@@ -64,14 +67,16 @@ What should be understood by *digital nomads*? This visa type was first conceive
 
 The second part of the sentence states that these digital nomads have nationalities from countries that don’t require a visa for short stay. The list of the countries is found on the [Resolución 5488 de 2022](https://www.cancilleria.gov.co/sites/default/files/Normograma/docs/resolucion_minrelaciones_5488_2022.htm).
 
-You don’t need to read the resolution, since I’ve written down the countries is this table so you can use the Notion search function.
+### Check if your country is exempted or not
 
-Note that there are 100 countries that are exempt of visa, so if you are coming from Zambia or Turkmenistan, or good old North Korea, you have to find another visa type to bring your activities here.
 
-<aside>
-💡 For the nationals of Camboya, China, India, Nicaragua, Thailand and Vietnam, it is provieded that the person may enter whitout a visa and with an Entrance Permit if he/she is a visa holder or resident in the USA or any country from the Schengen space with a minimum validity of 180 days at the time of the entrance.
+<CountryExcemptionCheck client:load/>
 
-</aside>
+Note that there are 100 countries that are exempt of visa, so if you are coming from Zambia or Turkmenistan, or good old North Korea, you have to find another [visa type](/visas) to bring your activities here.
+
+
+> 💡 For the nationals of Camboya, China, India, Nicaragua, Thailand and Vietnam, it is provieded that the person may enter whitout a visa and with an Entrance Permit if he/she is a visa holder or resident in the USA or any country from the Schengen space with a minimum validity of 180 days at the time of the entrance.
+
 
 ## 2. **What does the rule provide for the digital nomads from the excempted coutries?**
 

@@ -11,13 +11,13 @@ const latestPosts = allPosts.slice(0,3)
 
         {latestPosts.map(p => (
           
-          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  
-            <div class="flex justify-between">                          
-              <div class="text-sm text-slate-900">{p.data.author}</div>
-              <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
+          <a class="p-5 block border rounded group w-full hover:shadow hover:shadow-4xl hover:bg-primary hover:text-white hover:border hover:border-secondary hover:border-4" href={`/blog/${p.slug.slice(3)}`}>  
+            <div class="flex justify-between ">                          
+                <div class="text-sm text-slate-900 group-hover:text-white">{p.data.author}</div>
+                <div class="text-sm text-slate-500 group-hover:text-white">{p.data.pubDate.toString().slice(0,10)}</div>
               </div>                      
-              <div class="text-primary text-lg font-bold mt-2">{p.data.title}</div>
-              <div class="text-sm text-slate-700">{p.data.readTime}</div>
+              <div class="text-primary text-lg font-bold mt-2 group-hover:text-secondary">{p.data.title}</div>
+              <div class="text-sm text-slate-700 group-hover:text-white">{p.data.readTime}</div>
               <p class="font-light py-4">{p.data.description}</p>   
             </a>
           ))}
