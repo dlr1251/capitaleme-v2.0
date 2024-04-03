@@ -12,7 +12,7 @@ const allResources = await getCollection('resources', ({ id }) => {
 
 <Layout title="Blog">
   <SectionOne/>
-  <div class="max-w-screen-lg mx-auto">
+  <div class="max-w-screen-xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         {allPosts.map(p => (              
           <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  

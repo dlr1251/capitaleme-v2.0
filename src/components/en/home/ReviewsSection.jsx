@@ -25,7 +25,7 @@ function ReviewsSection() {
 
   return (
     <section className="bg-white">
-      <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-0">
+      <div className="py-8 px-4 mx-auto max-w-screen-xl sm:pb-16 sm:pt-8 lg:px-0">
         <div className="text-3xl font-bold text-primary mb-3">
           Our Experience
         </div>

@@ -3,7 +3,7 @@ import {  getEntry } from 'astro:content';
 const featArticle = await getEntry('posts','en/counting-your-days')
 ---
 <section class="bg-slate-100 mb-4">
-    <div class="py-8 mx-auto max-w-screen-lg sm:py-16">  
+    <div class="py-8 mx-auto max-w-screen-xl sm:py-16">  
         <a href={featArticle.slug} class="text-3xl font-bold text-primary mb-3 hover:text-secondary group">
             {featArticle.data.title}            
         </a> 

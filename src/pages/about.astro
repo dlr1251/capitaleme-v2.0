@@ -10,8 +10,14 @@ const pageTitle = "About Us";
 <Layout title={pageTitle}>    
       <div class="mt-16">
       <SectionOne/>
-      <ReviewsSection client:load />
-      <SectionThree/>
-      <LatestFromBlog/>
+            <div class="max-w-screen-xl mx-auto">
+                  <ReviewsSection client:load />
+            </div>
+      
+            <SectionThree/>
+      
+            <div class="max-w-screen-xl mx-auto">
+                  <LatestFromBlog/>
+            </div>
       </div>
 </Layout>
