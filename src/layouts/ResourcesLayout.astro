@@ -73,7 +73,7 @@ const slug = url.pathname.slice(7);
 		<WhatsAppButton/>
 		<Navbar />			
 		<div class="flex min-h-screen p-0 sm:ml-0">
-			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 sm:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
+			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 lg:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
 				 <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">
 					<div class="my-4 mx-2 text-primary border-b pb-2">Discover usefull resources to understand the Colombian visas regulations.</div>
 					
@@ -142,7 +142,7 @@ const slug = url.pathname.slice(7);
 						prose 
 						prose-slate 
 						prose-lg 
-						md:prose-xl 
+						lg:prose-xl 
 						prose-headings:text-primary 
 						prose-h2:text-2xl 
 						prose-h2:underline 
@@ -169,7 +169,7 @@ const slug = url.pathname.slice(7);
 			</div>
 			
 			<!-- Sticky TableOfContents -->
-			<div class="hidden sm:block sticky top-4 h-screen z-40">
+			<div class="hidden 2xl:block sticky top-4 h-screen z-40">
 				<div class="h-full overflow-y-auto">
 					<TableOfContents headings={Astro.props.headings} />
 				</div>

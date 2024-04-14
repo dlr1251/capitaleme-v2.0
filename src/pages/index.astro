@@ -1,9 +1,9 @@
 ---
 export const prerender = true;
 import Layout from '../layouts/Layout.astro';
-import SectionOne from '../components/en/home/Section_1.astro';
-import SectionTwo from '../components/en/home/Section_2.astro';
-import SectionThree from '../components/en/home/Section_3.astro';
+import Hero from '../components/en/home/Hero.astro';
+import Services from '../components/en/home/Services.astro';
+import BookAppointmentCTA from '../components/en/home/BookAppointmentCTA.astro';
 import ReviewsSection from '../components/en/home/ReviewsSection';
 import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
 
@@ -11,9 +11,9 @@ import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
 
 <Layout title="Capital M Law">
 	<main>
-		<SectionOne/>
-		<SectionTwo/>
-		<SectionThree/>		
+		<Hero/>
+		<Services/>
+		<BookAppointmentCTA/>		
 		<ReviewsSection client:load/>
 		<LatestFromBlog/>
 	</main>
