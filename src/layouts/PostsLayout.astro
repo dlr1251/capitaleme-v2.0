@@ -8,10 +8,6 @@ import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import BreadCrumb from '../components/BreadCrumb.astro'
 import SpeedInsights from "@vercel/speed-insights/astro"
-import VisaHeader from '../components/en/visas/VisaHeader.astro'
-import VisaAssistanceService from '../components/en/visas/VisaAssistanceService.astro'
-import VisaHeaderEs from '../components/es/visas/VisaHeader.astro'
-import VisaAssistanceServiceEs from '../components/es/visas/VisaAssistanceService.astro'
 
 interface Props {
 	title: string;		
@@ -55,18 +51,18 @@ const slug = url.pathname.slice(7);
 <html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Learn about Colombian visas cateogories and current regulations" />
+		<meta name="description" content="Find insightful content about the Colombian Legal system from local attorneys" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 		<title>{title}</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
+		<meta property="og:title" content={title}>
+		<meta property="og:description" content="Find insightful content about the Colombian Legal system from local attorneys" />
+		<meta property="og:url" content="https://www.capitaleme.com/">		
 		<GoogleTag/>
 		<SpeedInsights/>
-		<meta property="og:title" content={title}>
-		<meta property="og:description" content="Learn about Colombian visas cateogories and current regulations" />
-		<meta property="og:url" content="https://www.capitaleme.com/">		
 
 	</head>
 	<body>

@@ -8,10 +8,6 @@ import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import BreadCrumb from '../components/BreadCrumb.astro'
 import SpeedInsights from "@vercel/speed-insights/astro"
-import VisaHeader from '../components/en/visas/VisaHeader.astro'
-import VisaAssistanceService from '../components/en/visas/VisaAssistanceService.astro'
-import VisaHeaderEs from '../components/es/visas/VisaHeader.astro'
-import VisaAssistanceServiceEs from '../components/es/visas/VisaAssistanceService.astro'
 
 interface Props {
 	title: string;		
@@ -49,8 +45,10 @@ const sidebarResources = await getCollection("resources",({ id }) => {
 
 const url = Astro.url
 const slug = url.pathname.slice(7);
+console.log(url);
 
 ---
+{console.log(url)}
 <!doctype html>
 <html lang={lang}>
 	<head>
@@ -120,7 +118,7 @@ const slug = url.pathname.slice(7);
 									</svg>
 							</button>
 							<ul id="dropdown-resources-list" class="py-2 space-y-2">
-								{ sidebarResources.map( (resource) => (
+								{ sidebarResources.map( (resource) => (									
 									<li class="">
 										<a href={locale == "en" ? `/resources/${resource.slug.slice(3)}` : `/es/resources/${resource.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/resources/' + resource.slug.slice(3) || url.pathname == '/es/resources/' + resource.slug.slice(3) ? ' bg-primary text-white' : ''}`}>
 											<span class="flex-1 ms-6 font-light whitespace-wrap">{resource.data.title}</span>      
@@ -136,34 +134,25 @@ const slug = url.pathname.slice(7);
 			<div class="flex-none w-full md:w-auto">
 				<div 
 					class="
-						p-4 
-						rounded-lg 
-						mt-14 
-						prose 
-						prose-slate 
-						prose-lg 
-						lg:prose-xl 
-						prose-headings:text-primary 
-						prose-h2:text-2xl 
-						prose-h2:underline 
-						prose-h3:text-xl
-						prose-h3:text-slate-500
-						border-r
+							p-4 
+							rounded-lg 
+							mt-14 
+							prose 
+							prose-slate 
+							prose-lg 
+							lg:prose-xl 
+							prose-headings:text-primary 
+							prose-h2:text-2xl 
+							prose-h2:underline 
+							prose-h3:text-xl
+							prose-h3:text-slate-500
+							border-r
 						">
 
 					<div class="max-w-screen-sm md:max-w-screen-2xl mx-auto">											
 						<BreadCrumb/>
-						<!-- { 
-							lang == "en" ? 
-							<VisaHeader title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/> :
-							<VisaHeaderEs title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/>
-						} -->
-						<slot/>
-						<!-- { 
-							visa_rara !== true && lang == "en" ? <VisaAssistanceService/> : 
-							visa_rara !== true && lang == "es" ? <VisaAssistanceServiceEs/> :
-							<div></div>
-						}						 -->
+						
+						<slot/>						
 					</div>
 				</div>
 			</div>

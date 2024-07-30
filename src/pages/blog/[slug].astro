@@ -20,8 +20,13 @@ const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 const { pathname } = Astro.url
 
+
 ---
 <PostsLayout title={entry.data.title} headings={headings} frontmatter={entry.data}>
-  <div class="py-8 pl-4 mt-16 font-bold text-3xl bg-slate-100 rounded">{entry.data.title}</div>
+  <div class="py-8 pl-4 mt-16 font-bold text-3xl bg-slate-100 rounded">
+    {entry.data.title}
+    <div class="text-sm pt-2 font-normal">by: {entry.data.author}</div>
+    <div class="text-sm pt-2 font-normal">published: {entry.data.pubDate.toISOString().slice(0,10)}</div>
+  </div>
   <Content />
 </PostsLayout>

@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SectionOne from '../components/en/real-estate/Section_1.astro';
+import Calculator from "../components/en/real-estate/Calculator";
+import LatestFromBlog from "../components/en/blog/LatestFromBlog.astro";
+
+const pageTitle = "Real Estate";
+
+---
+<Layout title={pageTitle}>
+      <div class="px-4">
+
+            <SectionOne/>
+            <Calculator client:load/>
+            
+            
+            <div class="max-w-screen-xl mx-auto">
+
+                  <LatestFromBlog/>      
+            </div>
+      </div>
+    
+</Layout>
