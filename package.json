@@ -60,6 +60,10 @@
   },
   "overrides": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "astro-expressive-code": {
+        "astro": "4.16.18"
+    }    
   }
 }
+
