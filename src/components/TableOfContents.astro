@@ -29,15 +29,16 @@ function buildToc(headings: Heading[]): Heading[] {
     }
   });
 
+  console.log(toc);
   return toc;
 }
 
 
 ---
 
-<nav class="toc prose prose-a:text-slate-500 0 pt-20">
+<nav class="toc prose prose-a:text-slate-500 0 pt-24 w-80 max-w-96">
     <div class="ml-8 border-b font-bold">Table of Contents</div>
-    <ul class="list-none">
+    <ul class="list-none max-w-80">
       {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
     </ul>
 </nav>

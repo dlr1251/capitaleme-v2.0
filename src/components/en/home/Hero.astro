@@ -1,17 +1,18 @@
 ---
-import ContactTabs from "../common/ContactForm.astro"
+import ContactForm from "../common/ContactForm.astro"
 ---
 
-<section class="h-full mx-auto my-16 pt-12 px-3 md:px-16 lg:px-0 md:mt-24 md:pt-20 flex flex-col md:flex-row justify-center items-center max-w-screen-xl">
-            <div class="w-full h-full p-2 md:p-0">
-              <div class="text-4xl md:text-5xl font-bold text-primary mb-8 flex flex-col justify-between">
-                <span class="mb-1.5">WE MANAGE <br/></span>
-                <span class="mb-1.5">YOUR LEGAL NEEDS<br/> </span>
+<section class="flex flex-col md:flex-row justify-center items-center max-w-screen-xl mx-auto py-6">
+            <div class="w-full h-full p-2 md:p-0 md:w-2/3">
+              <div class="text-4xl md:text-3xl font-bold text-primary mb-8 flex flex-col justify-between">
+                <span class="mb-1.5">WE MANAGE YOUR LEGAL NEEDS</span>
                 <span class="mb-1.5">IN COLOMBIA</span>
               </div>
               <div class="mb-5 text-lg md:text-xl text-primary text-light">
                 A legal boutique based in Medellín, Colombia. <br>
-                We provide legal advice to international clients
+                We provide legal advice to international clients<br>
+                We are Colombian attorneys - abogados -. We understand the culture, language and common practices of the Colombian legal system.
+
               </div>
               <ul>
                 <li class="mb-3 text-lg md:text-xl text-primary flex">
@@ -47,9 +48,9 @@ import ContactTabs from "../common/ContactForm.astro"
                 </li>
               </ul>
             </div>
-            <div class="w-full sm:w-3/4 mr-auto p-2 md:p-0 flex flex-col ">
-              <div class="font-bold text-primary text-white flex justify-center items-center pl-3 py-2 text-xl  bg-secondary">Contact now</div>
-              <ContactTabs/>
+            <div class="w-full sm:w-3/4 md:w-1/3 mr-auto p-2 md:p-0 flex flex-col ">
+        
+              <ContactForm/>
             </div>                   
-    </div>
+            </div>
 </section>

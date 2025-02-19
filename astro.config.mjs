@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 import astroExpressiveCode from 'astro-expressive-code';
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
@@ -8,9 +8,14 @@ import partytown from "@astrojs/partytown";
 import sitemap from '@astrojs/sitemap';
 
 
+
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
+  legacy: {
+    collections: true
+  },
   site: 'https://www.capitaleme.com',
   image: {
     domains: ["astro.build"]
@@ -28,15 +33,22 @@ export default defineConfig({
       prefixDefaultLocale: false
     }
   },
-  integrations: [astroExpressiveCode(), mdx(), tailwind({
-    applyBaseStyles: true,
-    configFile: './tailwind.config.mjs'
-  }), react(), partytown({
-    config: {
-      forward: ['dataLayer.push'],
-      debug: true,
-    }
-  }), sitemap()],
+  integrations: [
+    astroExpressiveCode(), 
+    mdx(), 
+    react(), 
+    sitemap(),
+    tailwind({
+      applyBaseStyles: true,
+      configFile: './tailwind.config.mjs'}), 
+    partytown({
+      config: {
+          forward: ['dataLayer.push'],
+          debug: true,
+        }
+      }), 
+    
+  ],
   adapter: vercel({
     edgeMiddleware: true,
     webAnalytics: {

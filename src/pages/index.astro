@@ -3,18 +3,42 @@ export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/en/home/Hero.astro';
 import Services from '../components/en/home/Services.astro';
-import BookAppointmentCTA from '../components/en/home/BookAppointmentCTA.astro';
-import ReviewsSection from '../components/en/home/ReviewsSection';
-import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
 
+import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
+import HeroNews from '../components/en/home/HeroNews.astro';
+import DiscoverResources from '../components/en/home/DiscoverResources.astro';
+// import ExploreVisas from '../components/en/home/ExploreVisas.astro';
+import ExploreProperties from '../components/en/home/ExploreProperties.astro';
+import GetStarted from '../components/en/home/GetStarted.astro';
+
+import HomeHero   from '../components/en/home/HomeHero.astro';
+import HomeAboutUs   from '../components/en/home/HomeAboutUs.astro';
+import HomeVisasSection from '../components/en/home/HomeVisasSection.astro';
+import HomeRealEstateSection from '../components/en/home/HomeRealEstateSection.astro';
+import HomeBusinessSection from '../components/en/home/HomeBusinessSection.astro';
+import CalendlyInline from '../components/en/common/CalendlyInline.astro';
 ---
 
-<Layout title="Capital M Law">
-	<main>
-		<Hero/>
-		<Services/>
-		<BookAppointmentCTA/>		
-		<ReviewsSection client:load/>
+<Layout title="Capital M Law - Home">
+	<main class="">        
+        <HomeHero/>
+        <HomeAboutUs/>
+        <HomeVisasSection/>
+        <HomeRealEstateSection/>
+        <!-- <HomeBusinessSection/> -->
+        <CalendlyInline />
+        <!-- <HeroNews/> -->
+      
+        		
+		<!-- <Hero/> -->
+        <!-- <DiscoverResources/> -->
+        <!-- <ExploreVisas/>  -->
+        <!-- <ExploreProperties/> -->
+        <!-- <GetStarted /> -->
+        <!-- <HomeReviews/>   -->
+          
+		<!-- <Services/> -->
+		<!-- <BookAppointmentCTA/>		 -->
 		<LatestFromBlog/>
 	</main>
 </Layout>

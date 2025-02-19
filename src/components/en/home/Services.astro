@@ -13,13 +13,15 @@ console.log(someResources)
             Visas & Immigration
         </div>   
         <div class="text-3xl mb-3 mt-6 font-bold">Colombian Visas Assistance Services</div>
-        <div class="font-light mb-3 text-lg">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
+        <div class="font-light mb-3 text-xl">With our Visas Assistance Services, you will have an expert bilingual immigration attorney by your side to help you plan your move to Colombia.</div>
           <div class="w-full h-auto flex justify-center items-center">
-            <div class="flex flex-wrap w-auto max-w-4xl mr-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mr-auto">
                 {someResources.map( (p, index )=> (
 
-                <div class="w-full md:w-1/3 py-2 flex justify-left">
-                    <button data-modal-target={`default-modal-${index}`} data-modal-toggle={`default-modal-${index}`} class="text-primary underline hover:text-secondary text-lg py-2.5 text-center" type="button">
+                <div class="w-full py-2 flex justify-left">
+                    <button 
+                        data-modal-target={`default-modal-${index}`} data-modal-toggle={`default-modal-${index}`} 
+                        class="text-primary hover:text-secondary text-2xl p-2.5 border w-full" type="button">
                         {`${p.data.title.slice(3)} Visa`}
                     </button>
                     <div id={`default-modal-${index}`} tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -48,7 +50,7 @@ console.log(someResources)
                                     <div class="text-base flex flex-col text-gray-500 w-full sm:w-1/2">
                                         <div class="text-primary font-bold">Requirements:</div>
                                         <ul class="list-decimal">
-                                            {p.data.requirements?.map( r => <li class="ml-5 text-sm">{r}</li> )}
+                                            {p.data.requirements?.map((r: string) => <li class="ml-5 text-sm">{r}</li>)}
                                         </ul>
                                     </div>
                                 </div>
@@ -66,27 +68,27 @@ console.log(someResources)
                 ))}
             </div>
         </div>        
-        <div class="text-3xl mb-3 mt-6 font-bold">Legal Assistance before Migración Colombia</div>
-        <div class="font-light mb-3 text-lg">We are experts in procedures with this entity, we assist you with:</div>
-          <div class="w-full h-auto flex justify-center items-center mb-12">
+        <div class="text-3xl mb-3 mt-6 font-bold ">Legal Assistance and Guidance</div>
+        <div class="font-light mb-3 text-xl ">If you feel lost in the process of getting a Cédula or a Salvoconducto, use these guides</div>
+          <div class="w-full h-auto flex justify-center items-center mb-12 ">
             <div class="flex flex-wrap flex-col w-auto max-w-4xl mr-auto">
                     <a href="/resources/cedula-extranjeria" class="w-auto py-2 flex justify-center">
-                        <div class="block py-2 underline w-full text-lg hover:text-secondary">
+                        <div class="block p-4 rounded shadow shadow-lg border w-full text-xl hover:text-secondary">
                             Obtaining a foreign ID card (cédula de extranjería)
                         </div>
                     </a>
                     <a href="/resources/tourism-permit-extension" class="w-auto py-2 flex justify-center">
-                        <div class="block py-2 underline w-full text-lg hover:text-secondary">
+                        <div class="block p-4 rounded shadow shadow-lg border w-full text-xl hover:text-secondary">
                             Extending your tourism permit/stamp
                         </div>
                     </a>
                     <a href="/resources/certificate-migratory-movements" class="w-auto py-2 flex justify-center">
-                        <div class="block py-2 underline w-full text-lg hover:text-secondary">
+                        <div class="block p-4 rounded shadow shadow-lg border w-full text-xl hover:text-secondary">
                             Getting a Certificate of Migratory Movements
                         </div>
                     </a>
                     <a href="/resources/salvoconducto" class="w-auto py-2 flex justify-center">
-                        <div class="block py-2 underline w-full text-lg hover:text-secondary">
+                        <div class="block p-4 rounded shadow shadow-lg border w-full text-xl hover:text-secondary">
                             Processing a Salvoconducto
                         </div>
                     </a>

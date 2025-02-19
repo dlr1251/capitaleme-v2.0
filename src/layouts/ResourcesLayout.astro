@@ -8,6 +8,9 @@ import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import BreadCrumb from '../components/BreadCrumb.astro'
 import SpeedInsights from "@vercel/speed-insights/astro"
+import ResourcesTOC from '../components/ResourcesTOC'
+import jsonData from '../assets/res_5477.json';
+
 
 interface Props {
 	title: string;		
@@ -45,10 +48,8 @@ const sidebarResources = await getCollection("resources",({ id }) => {
 
 const url = Astro.url
 const slug = url.pathname.slice(7);
-console.log(url);
 
 ---
-{console.log(url)}
 <!doctype html>
 <html lang={lang}>
 	<head>
@@ -160,14 +161,15 @@ console.log(url);
 			<!-- Sticky TableOfContents -->
 			<div class="hidden 2xl:block sticky top-4 h-screen z-40">
 				<div class="h-full overflow-y-auto">
-					<TableOfContents headings={Astro.props.headings} />
+					<!-- <TableOfContents headings={Astro.props.headings} /> -->
+					 <ResourcesTOC data={Astro.props.headings} client:load/>
 				</div>
 			</div>
 		</div>			
 		
 		<Footer/>
 			
-		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
+		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>
 		
 	</body>
 </html>

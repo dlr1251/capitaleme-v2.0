@@ -1,0 +1,200 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SectionOne from '../../components/en/real-estate/Section_1.astro';
+import SectionTwo from '../../components/en/real-estate/Section_2.astro';
+import SectionThree from '../../components/en/real-estate/Section_3.astro';
+import SectionFour from '../../components/en/real-estate/Section_4.astro';
+import Calculator from "../../components/en/real-estate/Calculator";
+// import TaxCalculator from "../components/en/real-estate/TaxCalculator";
+import PropertySearchService from "../../components/en/real-estate/PropertySearchService";
+import ExploreProperties from "../../components/en/home/ExploreProperties.astro";
+import InfoSectionSteps from "../../components/en/InfoSectionSteps";
+import { coerce } from "astro:schema";
+const pageTitle = "Real Estate";
+
+
+
+---
+<Layout title={pageTitle}>
+      <div class="px-4 w-3/4 mx-auto">
+
+            <div class="bg-gray-50 p-8 rounded-lg shadow-md space-y-4">
+                  <!-- Title -->                  
+                
+                  <div class="grid grid-cols-3 max-w-5xl mx-auto mb-4 mt-12">
+
+                        <!-- Selling Section -->
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                        <h3 class="text-lg font-semibold text-blue-700">Looking to sell?</h3>
+                        <p class="text-sm text-blue-600">
+                        <a href="#" class="text-blue-800 underline hover:text-blue-500">
+                              List with Us
+                        </a>
+                        </p>
+                        </div>
+                  
+                        <!-- Buying Section -->
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-md">
+                        <h3 class="text-lg font-semibold text-green-700">Looking to buy?</h3>
+                        <p class="text-sm text-green-600">
+                        <a href="#" class="text-green-800 underline hover:text-green-500">
+                              Property Finding Assistance Service
+                        </a>
+                        </p>
+                        </div>
+                  
+                        <!-- Advice Section -->
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                        <h3 class="text-lg font-semibold text-yellow-700">Need Advice?</h3>
+                        <p class="text-sm text-yellow-600">
+                        Resources: 
+                        <a href="#" class="text-yellow-800 underline hover:text-yellow-500">HOA</a>, 
+                        <a href="#" class="text-yellow-800 underline hover:text-yellow-500">Predial</a>, 
+                        <a href="#" class="text-yellow-800 underline hover:text-yellow-500">Promesa de Compraventa</a>, 
+                        <a href="#" class="text-yellow-800 underline hover:text-yellow-500">Arrendamiento</a>.
+                        </p>
+                        </div>
+
+                  </div>
+
+            </div>
+
+            <div class="bg-gray-50 py-12">
+            <div class="container mx-auto px-6 lg:px-12 space-y-12">
+                  <!-- Header Section -->
+                  <div class="text-center max-w-3xl mx-auto">
+                  <h2 class="text-4xl font-bold text-gray-800 leading-tight">
+                  Sell Your Property with Confidence and Reach an International Market
+                  </h2>
+                  <p class="text-lg text-gray-600 mt-4">
+                  At <span class="font-semibold text-gray-800">Capital M Law</span>, we specialize in connecting property owners with an international network of buyers. Our expert legal team ensures a seamless and rewarding sales process.
+                  </p>
+                  </div>
+            
+                  <!-- Features Section -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div class="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
+                  <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21H7c-1.104 0-2-.896-2-2V7a2 2 0 012-2h7c1.104 0 2 .896 2 2v4m-6 5l-2-2m0 0l2-2m-2 2h10" />
+                        </svg>
+                  </div>
+                  <h3 class="text-xl font-semibold text-gray-800 mt-4 text-center">Global Exposure</h3>
+                  <p class="text-sm text-gray-600 mt-2 text-center">
+                        Market your property to qualified international buyers and investors actively seeking opportunities in Colombia.
+                  </p>
+                  </div>
+                  <div class="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
+                  <div class="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.58a12.043 12.043 0 01.84 4.58 12.043 12.043 0 01-.84 4.58L12 14z" />
+                        </svg>
+                  </div>
+                  <h3 class="text-xl font-semibold text-gray-800 mt-4 text-center">Strategic Pricing</h3>
+                  <p class="text-sm text-gray-600 mt-2 text-center">
+                        Set a competitive price based on local trends, global demand, and expert valuation.
+                  </p>
+                  </div>
+                  <div class="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
+                  <div class="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 text-yellow-600 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7m0 8V5m-7 7h3m4-4h8m-6 4h8" />
+                        </svg>
+                  </div>
+                  <h3 class="text-xl font-semibold text-gray-800 mt-4 text-center">Expert Legal Support</h3>
+                  <p class="text-sm text-gray-600 mt-2 text-center">
+                        Navigate Colombian real estate laws with confidence as our team handles all legal complexities.
+                  </p>
+                  </div>
+                  <div class="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
+                  <div class="flex items-center justify-center h-16 w-16 rounded-full bg-red-100 text-red-600 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.24 12l-8-8M3.76 12l8 8" />
+                        </svg>
+                  </div>
+                  <h3 class="text-xl font-semibold text-gray-800 mt-4 text-center">Seamless Process</h3>
+                  <p class="text-sm text-gray-600 mt-2 text-center">
+                        From listing to closing, we manage every step, ensuring a smooth and stress-free experience.
+                  </p>
+                  </div>
+                  </div>
+            
+                  <!-- Call to Action -->
+                  <div class="text-center">
+                  <a href="/contact" class="inline-block bg-blue-600 text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors">
+                  List Your Property Now
+                  </a>
+                  </div>
+            </div>
+            </div>
+
+            <div class="my-4 border-b border-gray-200">
+                  <ul class="flex flex-wrap -mb-px text-lg font-medium text-center" 
+                    id="real-estate-tab" data-tabs-toggle="#real-estate-tab-content" 
+                    data-tabs-active-classes="text-primary hover:text-secondary/80" 
+                    data-tabs-inactive-classes="text-gray-500 hover:text-gray-600 hover:border-primary"
+                    role="tablist"
+                    >
+                      <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="explore-properties-tab" data-tabs-target="#explore-properties" type="button" role="tab" aria-controls="explore-properties" aria-selected="false">Explore Properties</button>
+                    </li>
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="property-search-tab" data-tabs-target="#property-search" type="button" role="tab" aria-controls="property-search" aria-selected="false">Property Search Service</button>
+                    </li>
+                      <li class="me-2" role="presentation">
+                          <button class="inline-block p-4 border-b-2 rounded-t-lg" id="real-estate-process-tab" data-tabs-target="#real-estate-process" type="button" role="tab" aria-controls="real-estate-process" aria-selected="false">The Process</button>
+                      </li>
+                      <li class="me-2" role="presentation">
+                          <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="real-estate-faqs-tab" data-tabs-target="#real-estate-faqs" type="button" role="tab" aria-controls="real-estate-faqs" aria-selected="false">FAQs</button>
+                      </li>
+                     
+               
+                  </ul>
+            </div>
+            
+            <div id="real-estate-tab-content">
+            <div class="hidden p-4 rounded-lg bg-gray-50" id="explore-properties" role="tabpanel" aria-labelledby="explore-properties-tab">
+                  
+                  <ExploreProperties/>
+            
+            </div>
+            <div class="hidden p-4 rounded-lg bg-gray-50" id="real-estate-process" role="tabpanel" aria-labelledby="real-estate-process-tab">
+                  <!-- <InfoSectionSteps sections={stepsRealEstate} client:load/> -->
+                  
+            </div>
+            <div class="hidden p-4 rounded-lg bg-gray-50" id="real-estate-faqs" role="tabpanel" aria-labelledby="real-estate-faqs-tab">
+                  <!-- <InfoSectionSteps sections={faqsRealEstate} client:load/> -->
+            </div>
+            
+            <div class="hidden p-4 rounded-lg bg-gray-50" id="property-search" role="tabpanel" aria-labelledby="property-search-tab">
+                  <PropertySearchService client:load />
+            </div>
+            </div>
+
+
+            
+  
+            <!-- <TaxCalculator client:load /> -->
+
+                  
+      </div>
+    
+</Layout>
+
+
+<!-- https://preview.themeforest.net/item/homelengo-real-estate-react-nextjs-template/full_screen_preview/55221268?_ga=2.115483270.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- https://preview.themeforest.net/item/findhouse-real-estate-react-nextjs-template/full_screen_preview/40848817?_ga=2.115483270.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- https://preview.themeforest.net/item/homy-real-estate-react-js-template-dashboard/full_screen_preview/54462367?_ga=2.115483270.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- https://preview.themeforest.net/item/quarter-real-estate-react-template/full_screen_preview/34222962?_ga=2.115483270.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- https://preview.themeforest.net/item/homy-real-estate-react-next-js-template-dashboard/full_screen_preview/50732099?_ga=2.115483270.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- http://preview.themeforest.net/item/acres-real-estate-react-template/full_screen_preview/29896485?_ga=2.115483270.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- https://preview.themeforest.net/item/homez-real-estate-react-nextjs-template/full_screen_preview/47704622?_ga=2.10618420.1269779563.1737505432-561667645.1737505432 -->
+<!--  -->
+<!-- https://homez-appdir.vercel.app/ -->

@@ -1,0 +1,118 @@
+---
+---
+
+<div class="w-3/4 mx-auto bg-clear-background py-6 px-8">
+    <div class="flex flex-col lg:flex-row items-center gap-6">
+      <!-- Image and Name -->
+      <div class="text-center lg:text-left">
+        <img src="/path/to/consultant-image.jpg" alt="Property Consultant" class="w-40 h-40 rounded-full mx-auto lg:mx-0" />
+        <h3 class="text-xl font-bold mt-4">DANIEL PAUL</h3>
+        <p class="text-gray-500">PROPERTY CONSULTANT MEDELLIN</p>
+      </div>
+  
+      <!-- Description -->
+      <div class="text-center lg:text-left flex-1">
+        <h2 class="text-2xl font-bold mb-4">Finding property service:</h2>
+        <p class="text-gray-700 mb-4">
+          Discover your dream property in Colombia with the guidance of an expert real estate consultant.
+        </p>
+        <p class="text-gray-700 mb-4">
+          Our service specializes in finding the perfect investment opportunity, tailored to your needs. Whether you're looking for a finca, duplex, or urban property, our consultant provides expert advice on deal negotiation, property valuation, and market trends. From identifying opportunities to closing deals, we ensure a smooth, informed process so you can invest with confidence and achieve your goals.
+        </p>
+      </div>
+    </div>
+  
+    <!-- Multi-Step Form Trigger -->
+    <div class="mt-6">
+      <button data-accordion-target="#property-form" class="w-full py-3 px-4 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+        What property are you looking for? Let us contact you
+      </button>
+    </div>
+  
+    <!-- Accordion Multi-Step Form -->
+    <div id="property-form" class="hidden mt-6">
+      <form class="space-y-8">
+        <!-- Step 1: User Details -->
+        <div id="step-1">
+          <h3 class="text-lg font-bold">Step 1: User Details</h3>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+              <input type="text" id="name" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" id="email" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+              <input type="text" id="phone" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+          </div>
+        </div>
+  
+        <!-- Step 2: Property Details -->
+        <div id="step-2">
+          <h3 class="text-lg font-bold">Step 2: Property Details</h3>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label for="location" class="block text-sm font-medium text-gray-700">Preferred Location</label>
+              <input type="text" id="location" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+            <div>
+              <label for="price-range" class="block text-sm font-medium text-gray-700">Price Range</label>
+              <input type="text" id="price-range" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+            <div>
+              <label for="bedrooms" class="block text-sm font-medium text-gray-700">Bedrooms</label>
+              <input type="number" id="bedrooms" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+            <div>
+              <label for="bathrooms" class="block text-sm font-medium text-gray-700">Bathrooms</label>
+              <input type="number" id="bathrooms" class="w-full border border-gray-300 rounded-lg p-2" required />
+            </div>
+          </div>
+        </div>
+  
+        <!-- Step 3: Additional Details -->
+        <div id="step-3">
+          <h3 class="text-lg font-bold">Step 3: Additional Details</h3>
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label for="amenities" class="block text-sm font-medium text-gray-700">Amenities</label>
+              <textarea id="amenities" class="w-full border border-gray-300 rounded-lg p-2" rows="3"></textarea>
+            </div>
+            <div>
+              <label for="notes" class="block text-sm font-medium text-gray-700">Additional Notes</label>
+              <textarea id="notes" class="w-full border border-gray-300 rounded-lg p-2" rows="3"></textarea>
+            </div>
+            <div>
+              <label for="references" class="block text-sm font-medium text-gray-700">Upload Files</label>
+              <input type="file" id="references" class="w-full border border-gray-300 rounded-lg p-2" multiple />
+            </div>
+          </div>
+        </div>
+  
+        <!-- Submit Button -->
+        <div>
+          <button type="submit" class="w-full py-3 px-4 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // Toggle Accordion Form
+    const button = document.querySelector('[data-accordion-target]');
+    if (button) {
+      button.addEventListener('click', () => {
+        const form = document.querySelector('#property-form');
+        if (form) {
+          form.classList.toggle('hidden');
+        }
+      });
+    }
+  </script>
+  

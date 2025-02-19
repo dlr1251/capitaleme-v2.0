@@ -11,17 +11,20 @@ interface Props {
 
 const { title } = Astro.props;
 
+import { ClientRouter } from "astro:transitions";
+
 ---
 
 <!doctype html>
 <html lang={lang}>
 	<head>
+		<ClientRouter />
 		<meta charset="UTF-8" />
 		<meta name="description" content="Capital M Law - Your Law Firm" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 		<title>Capital M - {title}</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<GoogleTag/>
@@ -31,12 +34,43 @@ const { title } = Astro.props;
 	<body>
 		<WhatsAppButton />
 		<Navbar />
-			<div class="mt-16">
+			<div class="">
 				<slot />
 			</div>
 		<Footer />
 
-		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
+		<script is:inline src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>
+		<!-- <script is:inline src="https://carrier.formcarry.com/js/v1.js"></script> -->
+		<!-- <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
+		<!-- <script is:inline src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+
+		<script is:inline>
+			// formcarry({			  
+			//   form: "oe6f89XVhFy",			  
+			//   element: "#contact-form",
+			//   // Success callback, you can show alert messages
+			//   // or redirect the user in this function
+			//   onSuccess: function(response){
+			// 	Swal.fire({
+			// 		title: 'Success!',
+			// 		text: response.title,
+			// 		icon: 'success',
+			// 		confirmButtonText: 'OK'
+			// 	});
+				
+			//   },
+			//   // Error callback, a good place to show errors 🗿
+			//   onError: function(error){
+			// 	alert(error)
+			// 	Swal.fire({
+			// 		title: 'Error!',
+			// 		text: error,
+			// 		icon: 'error',
+			// 		confirmButtonText: 'OK'
+			// 	});
+			//   }
+			// });
+		  </script>
 		
 	</body>
 </html>

@@ -1,0 +1,118 @@
+---
+import { getCollection } from 'astro:content';
+import EmblaCarousel from 'embla-carousel';
+
+// Fetch English visas
+const allVisas = await getCollection('visas', (visa) => visa.id.startsWith('en/'));
+
+// Filter popular visas
+const popularVisas = allVisas.filter((visa) => visa.data.popular === true);
+
+// Inline script to initialize Embla Carousel with unique selectors
+const init = () => {
+  if (typeof window !== 'undefined') {
+    const emblaNode = document.querySelector('.embla-popular') as HTMLElement;
+    const prevBtn = document.querySelector('.embla-popular__button--prev') as HTMLElement;
+    const nextBtn = document.querySelector('.embla-popular__button--next') as HTMLElement;
+
+    if (!emblaNode || !prevBtn || !nextBtn) return;
+    const embla = EmblaCarousel(emblaNode, { loop: true });
+
+    prevBtn.addEventListener('click', () => embla.scrollPrev(), false);
+    nextBtn.addEventListener('click', () => embla.scrollNext(), false);
+  }
+}
+---
+
+<section class="w-full mx-auto p-4 md:p-8 bg-white rounded-lg shadow-md">
+  <h2 class="text-3xl font-bold text-terciary underline mb-8 text-center">
+    Popular Visas
+  </h2>
+
+  <!-- Embla Carousel Wrapper with unique classes -->
+  <div class="embla-popular">
+    <div class="embla-popular__container">
+      {allVisas.map((visa) => (
+        <a class="embla-popular__slide visa-card"  href={`visas/${visa.slug.slice(3)}`}>
+          <h3 class="visa-title">{visa.data.title}</h3>
+          {visa.data.type && (
+            <div class="visa-details">
+              <strong>Type:</strong> {visa.data.type}
+            </div>
+          )}
+          {visa.data.validity && (
+            <div class="visa-details">
+              <strong>Validity:</strong> {visa.data.validity}
+            </div>
+          )}
+          {Array.isArray(visa.data.beneficiaries) && (
+            <div class="visa-details">
+              <strong>Allows beneficiaries:</strong> {visa.data.beneficiaries.includes('yes') ? 'yes' : 'no'}
+            </div>
+          )}
+          {visa.data.short_description && (
+            <p class="visa-shortdesc">{visa.data.short_description}</p>
+          )}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <!-- Carousel controls with unique classes -->
+  <div class="carousel-controls-popular flex justify-center gap-4 mt-4">
+    <button class="embla-popular__button embla-popular__button--prev" aria-label="Previous slide">‹</button>
+    <button class="embla-popular__button embla-popular__button--next" aria-label="Next slide">›</button>
+  </div>
+</section>
+
+<style>
+  .embla-popular {
+    overflow: hidden;
+    width: 100%;
+  }
+  .embla-popular__container {
+    display: flex;
+  }
+  .embla-popular__slide {
+    flex: 0 0 auto;
+    width: 80%; /* Adjust as needed for your design */
+    margin-right: 1rem;
+    box-sizing: border-box;
+  }
+
+  .visa-card {
+    background: #f2f2f2;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .visa-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0f172a; /* Adjust to your terciary colr */
+    margin-bottom: 1rem;
+  }
+  .visa-details {
+    font-size: 1rem;
+    color: #1e293b; 
+    margin-bottom: 0.5rem;
+  }
+  .visa-shortdesc {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #334155;
+  }
+  .embla-popular__button {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #0f172a;
+  }
+  .embla-popular__button:hover {
+    color: #0f172a99;
+  }
+</style>
+
+<script type="module" src="/src/scripts/embla-init-popular.js"></script>

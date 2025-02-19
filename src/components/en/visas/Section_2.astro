@@ -1,0 +1,33 @@
+---
+const sections = [
+  {
+    title: "Initial Consultation & Legal Strategy",
+    description: `Our services begin with an in-depth consultation. We aim to understand every aspect of your situation - professional life, family, travel plans, budget - to craft a customized strategy that ensures you meet all requirements for visa approval and benefits your interests.`
+  },
+  {
+    title: "Document Review & Advice",
+    description: `We meticulously review all necessary documents and information. This ensures that every piece of your application aligns perfectly with the requirements, setting the stage for a smooth visa application process.`
+  },
+  {
+    title: "Visa Submission, Monitoring & Support",
+    description: `With your application in motion, we closely monitor its progress. Our team stays vigilant, ensuring that your submission not only meets all criteria but is also poised for a favorable outcome, keeping you informed every step of the way.`
+  },
+  {
+    title: "Visa Registration & Cédula de Extranjería",
+    description: `Upon achieving visa approval, we extend our guidance to include the final, crucial steps. Assisting with the Cédula de Extranjería registration, we ensure your transition into Colombian residency is as smooth as your path to visa approval.`
+  }
+];
+---
+
+<div class="my-6 w-2/3 mx-auto">
+  {sections.map((section, index) => (
+  <div class="flex items-start mb-10 border p-6">            
+      <div>
+        <h3 class="text-xl text-primary">{ index + 1 }. {section.title}</h3>
+        <p class="text-primary font-light mt-2">{section.description}</p>
+      </div>
+    </div>
+  ))}
+</div>
+
+

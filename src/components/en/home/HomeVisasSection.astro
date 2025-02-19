@@ -1,0 +1,129 @@
+---
+import { getCollection } from "astro:content";
+import PopularVisasCarousel from "../common/PopularVisasCarousel.astro"
+import InfoSectionSteps from "../InfoSectionSteps";
+const allVisas = await getCollection("visas", (visa) =>
+  visa.id.startsWith("en/")
+);
+const popularVisas = allVisas.filter((visa) => visa.data.popular === true);
+
+const steps = [
+  {
+    title: "Initial consultation",
+    content:
+      "From the start, we provide personalized consultation to choose the visa category that best fits your professional, travel, personal, or family plans.",
+  },
+  {
+    title: "Legal Strategy",
+    content:
+      "Depending on your needs (e.g., salvoconducto, permit extension), we devise a tailored legal strategy for your application.",
+  },
+  {
+    title: "Application Submition",
+    content:
+      "We handle the submission process of your application and coordinate any associated payments, ensuring accuracy and efficiency.",
+  },
+  {
+    title: "Process Monitoring",
+    content:
+      "We keep you updated on every step of the application status and handle any follow-ups with the immigration authority.",
+  },
+  {
+    title: "Approval & Issuance",
+    content:
+      "Once your visa is approved, we verify all documentation, guide you through final payments, and confirm the details of your visa.",
+  },
+  {
+    title: "Cédula de extranjería",
+    content:
+      "After visa approval, we assist you in obtaining your Cédula de extranjería, ensuring you meet all requirements and understand next steps.",
+  },
+];
+const visasFAQs = [
+  {
+    title: "How much does it cost?",
+    content:
+      "Depending on the visa category, it can range from $99 USD to $380 USD",
+  },
+  {
+    title: "How long does it take?",
+    content:
+      "Depending on your needs (e.g., salvoconducto, permit extension), it can take around 6-8 weeks.",
+  },
+  {
+    title: "Can I apply from Mexico?",
+    content:
+      "You can apply for any other country, provided that you hold a valid and vigent resident permit in that country",
+  },
+  {
+    title: "What if I get denied?",
+    content:
+      "Consider that the final response can be either 'Negada' or 'Inadmitida'. Both with different consequences. When a visa application gets 'Negada', it means that you can't apply for a new visa until 6 months later. If the visa is deemed inadmissible or 'Inadmitida', you can apply for a new one the next day. ",
+  },
+];
+
+const resources = await getCollection('resources', ({ id }) => {
+  return id.startsWith('en/');
+});
+import AllVisaFilterWidget from '../visas/AllVisaFilterWidget'
+import AccordionFAQ from "../../AccordionFAQ";
+---
+
+<div class="md:max-w-5xl mx-auto mt-12">
+    <div class="text-3xl font-bold mt-16 mb-4 text-terciary">Visas and Immigration</div>
+    <p class="font-light text-xl text-primary">
+      The key to a successful visa application starts with a <span class="underline">good understanding of the process.</span>
+    </p>
+    <p class="font-light text-xl text-primary">
+        If you want an experienced Law Firm by your side, check out our <span class="text-bold">Visa
+          Assistance Service:</span>
+    </p>
+
+    <div class="my-4 border-b border-gray-200">
+
+
+      <ul class="flex flex-wrap -mb-px text-lg text-center" 
+        id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" 
+        data-tabs-active-classes="text-secondary border-secondary hover:text-secondary/80" 
+        data-tabs-inactive-classes="text-gray-500 hover:text-gray-600 hover:border-primary"
+        role="tablist"
+        >
+        <li class="me-2" role="presentation">
+          <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="discover-visas-tab" data-tabs-target="#discover-visas" type="button" role="tab" aria-controls="discover-visas" aria-selected="false">Discover Visas</button>
+      </li>
+          <li class="me-2" role="presentation">
+              <button class="inline-block p-4 border-b-2 rounded-t-lg" id="process-tab" data-tabs-target="#process" type="button" role="tab" aria-controls="process" aria-selected="false">The Process</button>
+          </li>
+          <li class="me-2" role="presentation">
+              <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="faqs-tab" data-tabs-target="#faqs" type="button" role="tab" aria-controls="faqs" aria-selected="false">FAQs</button>
+          </li>
+
+      </ul>
+    </div>
+    <div id="default-tab-content">
+      <div class="hidden p-4 rounded-lg" id="discover-visas" role="tabpanel" aria-labelledby="discover-visas-tab">        
+        <AllVisaFilterWidget locale={Astro.currentLocale} visas={allVisas}  client:load/>        
+      </div>
+      <div class="hidden p-4 rounded-lg" id="process" role="tabpanel" aria-labelledby="process-tab">
+        <InfoSectionSteps sections={steps} client:load/>
+      </div>
+      <div class="hidden p-4 rounded-lg" id="faqs" role="tabpanel" aria-labelledby="faqs-tab">
+        <!-- <InfoSectionSteps sections={faqs} client:load/> -->
+        <AccordionFAQ items={visasFAQs} client:load/>
+
+      </div>
+      
+
+
+    </div>
+
+    </div>
+    <div class="my-8 px-4 py-8 rounded-md bg-gray-50 text-center ">
+        <p class="text-primary font-light text-lg">
+          Our fees for visa services start from <span class="font-semibold">$812,500 COP</span>.
+        </p>
+        <p class="text-primary font-light text-lg">We accept credit cards</p>
+        <p class="text-primary font-light text-lg mt-1">To get a full detailed quotation, feel free to 
+          <a href="#"class="text-terciary underline font-semibold hover:text-terciary/80">book an appointment</a>
+        </p>
+</div>

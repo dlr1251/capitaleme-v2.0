@@ -8,6 +8,9 @@ export default {
 	theme: {
 		
 		extend: {
+			height: {
+				'128': '32rem',
+			},
 			typography: (theme) => ({
 				DEFAULT: {
 				  css: {
@@ -19,6 +22,7 @@ export default {
 			colors: {
 				primary: '#16345F',
 				secondary: '#00AA81',
+				terciary: '#9BB8E0',
 			  },
 			fontFamily: {
 				sans: ['Outfit', 'sans-serif'],

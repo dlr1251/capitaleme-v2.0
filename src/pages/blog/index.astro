@@ -2,6 +2,11 @@
 import Layout from "../../layouts/Layout.astro";
 import SectionOne from "../../components/en/resources/Section_1.astro";
 import { getCollection } from 'astro:content';
+import BlogPostsList from "../../components/es/blog/BlogPostsList";
+import {  getEntry } from 'astro:content';
+import BlogHero from "../../components/en/blog/BlogHero";
+const featArticle = await getEntry('posts','en/counting-your-days')
+
 const allPosts = await getCollection('posts', ({ id }) => {
   return id.startsWith('en/');
 });
@@ -11,20 +16,15 @@ const allResources = await getCollection('resources', ({ id }) => {
 ---
 
 <Layout title="Blog">
-  <SectionOne/>
+  <BlogHero post={allPosts[1]} client:load/>
   <div class="max-w-screen-xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {allPosts.map(p => (              
-          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  
-            <div class="flex justify-between">                          
-              <div class="text-sm text-slate-900">{p.data.author}</div>
-              <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
-              </div>                      
-              <div class="text-primary text-lg font-bold mt-2">{p.data.title}</div>
-              <div class="text-sm text-slate-700">{p.data.readTime}</div>
-              <p class="font-light py-4">{p.data.description}</p>   
-            </a>
-          ))}
-      </div>            
+    <h1 class="text-3xl font-bold text-primary mt-8">All Posts</h1>
+    <p class="text-lg text-slate-700">Here you can find all the posts we have published so far.</p>
+    <p class="text-lg text-slate-700">Click on the image to read the full post.</p>
+    <p class="text-lg text-slate-700">Enjoy!</p>
+    
+    
+    <BlogPostsList posts={allPosts} client:load/>
+
   </div>
 </Layout>

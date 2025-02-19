@@ -12,7 +12,7 @@ import VisaHeader from '../components/en/visas/VisaHeader.astro'
 import VisaAssistanceService from '../components/en/visas/VisaAssistanceService.astro'
 import VisaHeaderEs from '../components/es/visas/VisaHeader.astro'
 import VisaAssistanceServiceEs from '../components/es/visas/VisaAssistanceService.astro'
-
+import { ViewTransitions } from "astro:transitions";
 interface Props {
 	title: string;		
 	frontmatter: any;
@@ -24,22 +24,6 @@ const { title, headings, workPermit, beneficiaries, type, sponsored, countries, 
 const locale = Astro.currentLocale
 
 const sidebarVisas = await getCollection("visas",({ id, data }) => {
-	if (locale == "en") {
-		return id.startsWith('en/');
-	} else {
-		return id.startsWith('es/');
-	}
-});
-
-const sidebarPosts = await getCollection("posts",({ id }) => {
-	if (locale == "en") {
-		return id.startsWith('en/');
-	} else {
-		return id.startsWith('es/');
-	}
-});
-
-const sidebarResources = await getCollection("resources",({ id }) => {
 	if (locale == "en") {
 		return id.startsWith('en/');
 	} else {
@@ -64,6 +48,7 @@ const slug = url.pathname.slice(7);
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<GoogleTag/>
 		<SpeedInsights/>
+		<ViewTransitions/>
 		<meta property="og:title" content={title}>
 		<meta property="og:description" content="Learn about Colombian visas cateogories and current regulations" />
 		<meta property="og:url" content="https://www.capitaleme.com/">		
@@ -75,34 +60,10 @@ const slug = url.pathname.slice(7);
 		<div class="flex min-h-screen p-0 sm:ml-0">
 			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 sm:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
 				 <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">
-					<div class="my-4 mx-2 text-primary border-b pb-2">Discover usefull resources to understand the Colombian visas regulations.</div>
-					
-					<ul class="space-y-2 font-medium">                   					   
-					   <li>											  							   
-							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group rounded-lg hover:bg-secondary hover:text-white border hover:border-secondary border-secondary border-3" aria-controls="dropdown-posts-list" data-collapse-toggle="dropdown-posts-list">								
-									<span class="p-0 ms-3 text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All posts' : 'Todos los posts' }</span>
-										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-									</svg>
-							</button>
-							<ul id="dropdown-posts-list" class="hidden py-2 space-y-2">
-								{ sidebarPosts.map( (post) => (
-									<li class="">
-										<a href={locale == "en" ? `/blog/${post.slug.slice(3)}` : `/es/blog/${post.slug.slice(3)}` } class={`flex items-center p-2 text-primary font-light hover:underline rounded-lg group max-w-full ${url.pathname == '/blog/' + post.slug.slice(3) || url.pathname == '/es/blog/' + post.slug.slice(3) ? 'underline bg-secondary text-white' : ''}`}>
-											<span class="flex-1 ms-6 whitespace-wrap">{post.data.title}</span>      
-										</a>
-									</li>
-								)) }
-							</ul>
-					  	</li>
-					   <li class="h-42">											  							   
-							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group rounded-lg group border border-secondary border-3 hover:bg-secondary hover:text-white hover:border-secondary" aria-controls="dropdown-visas-list" data-collapse-toggle="dropdown-visas-list">								
-									<span class="p-0 ms-3 text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All visas' : 'Todas las visas' }</span>
-										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-									</svg>
-							</button>
-							<ul id="dropdown-visas-list" class="pb-2 overflow-y-scroll h-96 relative">								
+					<div class="my-4 mx-2 text-primary border-b pb-2">Which visa is the best for you?</div>				
+																  							   
+						   <span class="p-0 ms-3 text-xl text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All visas' : 'Todas las visas' }</span>							
+							<ul id="dropdown-visas-list" class="pb-2 overflow-y-scroll h-full relative">								
 								{ sidebarVisas.map( (visa) => (
 									<li class="">
 										<a href={locale == "en" ? `/visas/${visa.slug.slice(3)}` : `/es/visas/${visa.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full hover:underline ${url.pathname == '/visas/' + visa.slug.slice(3) || url.pathname == '/es/visas/' + visa.slug.slice(3) ? 'bg-primary text-white' : ''}`}>
@@ -110,26 +71,7 @@ const slug = url.pathname.slice(7);
 										</a>
 									</li>
 								)) }								
-							</ul>
-					  	</li>
-					   <li class="pb-20">											  							   
-							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group rounded-lg group hover:bg-secondary hover:text-white border border-secondary border-3" aria-controls="dropdown-resources-list" data-collapse-toggle="dropdown-resources-list">								
-									<span class="p-0 ms-3 rounded-lg">{lang == 'en' ? 'All resources' : 'Todos los recursos' }</span>
-										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-									</svg>
-							</button>
-							<ul id="dropdown-resources-list" class="hidden py-2 space-y-2">
-								{ sidebarResources.map( (resource) => (
-									<li class="">
-										<a href={locale == "en" ? `/resources/${resource.slug.slice(3)}` : `/es/resources/${resource.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/resources/' + resource.slug.slice(3) || url.pathname == '/es/resources/' + resource.slug.slice(3) ? 'underline bg-secondary text-white' : ''}`}>
-											<span class="flex-1 ms-6 font-light whitespace-wrap">{resource.data.title}</span>      
-										</a>
-									</li>
-								)) }
-							</ul>
-					  	</li>
-					</ul>
+							</ul>					  	
 				 </div>
 			  </aside>	
 			<!-- Main content container -->
@@ -178,7 +120,7 @@ const slug = url.pathname.slice(7);
 		
 		<Footer/>
 			
-		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
+		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>
 		
 	</body>
 </html>

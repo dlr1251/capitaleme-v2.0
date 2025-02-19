@@ -18,10 +18,20 @@ function getSpanishURL(path :string) {
 const engURL = getEnglishURL(pathname);
 const espURL = getSpanishURL(pathname);
 
+const links = [
+  // { href: lang == "en" ? "/" : "/es", text: lang == "en" ? "Home" : "Inicio" },
+  { href: lang == "en" ? "/about" : "/es/about", text: lang == "en" ? "About Us" : "Nosotros" },
+  { href: lang == "en" ? "/visas" : "/es/visas", text: lang == "en" ? "Visas & Immigration" : "Visas Colombianas" },
+  { href: lang == "en" ? "/real-estate" : "/es/real-estate", text: lang == "en" ? "Real Estate" : "Inmobiliario" },
+  // { href: lang == "en" ? "/trademark-registry" : "/es/registro-marca", text: lang == "en" ? "Trademark Registry" : "Registro de Marcas" },
+  { href: lang == "en" ? "/resources" : "/es/resources", text: lang == "en" ? "Resources" : "Recursos" },
+  { href: lang == "en" ? "/blog" : "/es/blog", text: lang == "en" ? "News" : "Blog" },
+  { href: lang == "en" ? "/contact" : "/es/contact", text: lang == "en" ? "Hire us" : "Contacto" }
+];
 
 ---
 
-<nav class="bg-white border-gray-200 fixed w-full z-50 top-0 shadow md:shadow-lg">
+<nav class="bg-[#fbfbfb] border-gray-200 fixed w-full z-50 top-0 shadow md:shadow-lg">
     <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
         <a href={lang == "es" ? "/es" : "/"} class=`px-0 w-1/3 md:w-auto flex items-center`>            
             <Image src={faviconURL} loading="eager" alt="Capital M Logo" class="h-8 md:mr-3" width={100} />
@@ -29,36 +39,26 @@ const espURL = getSpanishURL(pathname);
       
         <div id="mega-menu" class="items-center justify-between hidden w-full md:flex md:w-auto order-3 md:order-1">
             <ul class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-6 rtl:space-x-reverse">
-                <li>
-                    <a 
-                        href={lang == "en" ? "/about" : "/es/about"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('about') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "About" : "Nosotros"}</a>
-                </li>
-                <li>
-                    <a 
-                        href={lang == "en" ? "/services" : "/es/services"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('services') ? 'text-secondary underline' : ''}`}> {lang == "en" ? "Services" : "Servicios"}</a>
-                </li>
-                <li>
-                    <a 
-                        href={lang == "en" ? "/visas" : "/es/visas"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.includes('visas') ? 'text-secondary underline' : ''}`}> {lang == "en" ? "Colombian Visas" : "Visas Colombianas"}</a>
-                </li>
-                <li>
-                    <a 
-                        href={lang == "en" ? "/blog" : "/es/blog"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.includes('blog') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Blog" : "Blog"}</a>
-                </li>
-                <li>
-                    <a 
-                        href={lang == "en" ? "/resources" : "/es/resources"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.includes('resources') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Resources" : "Recursos"}</a>
-                </li>
-                <li>
-                    <a 
-                        href={lang == "en" ? "/contact" : "/es/contact"} 
-                        class={`block py-2 px-3 text-primary border-b border-gray-100 md:border-0 md:hover:text-secondary md:hover:underline md:p-0 ${pathname.endsWith('contact') ? 'text-secondary underline' : ''}`}>{lang == "en" ? "Contact" : "Contacto"}</a>
-                </li>
+                {links.map((link) => (
+                    <li>
+                        <a 
+                            data-astro-reload={link.href === '/' || link.href === '/es/' ? true : undefined}
+                            href={link.href} 
+                            class={`
+                              block 
+                              py-2 px-3 
+                              text-primary                                                           
+                              border-b border-gray-100 md:border-0 
+                              md:hover:text-secondary 
+                              md:hover:underline 
+                              md:p-0 
+                              ${(pathname === link.href) ? 'text-primary border border-b-4' : ''}
+                              ${pathname.includes(link.href) && link.href !== "/" ? 'text-secondary border border-b-4' : ''}
+                              `
+                            }
+                              >{link.text}</a>
+                    </li>
+                ))}          
             </ul>
         </div>
         

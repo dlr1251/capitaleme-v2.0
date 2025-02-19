@@ -1,30 +1,49 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import SectionOne from "../../components/en/resources/Section_1.astro";
 import { getCollection } from 'astro:content';
-const allPosts = await getCollection('posts', ({ id }) => {
-  return id.startsWith('en/');
-});
 const allResources = await getCollection('resources', ({ id }) => {
   return id.startsWith('en/');
 });
+const categories = allResources.map(p => p.data.tags);
+
 ---
 
 <Layout title="Resources">
-  <SectionOne/>
+  <!-- <SectionOne/> -->
     <div class="max-w-screen-xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {allResources.map(p => (              
-          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/resources/${p.slug.slice(3)}`}>  
-            <div class="flex justify-between">                          
-              <div class="text-sm text-slate-900">{p.data.author}</div>
-              <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
-              </div>                      
-              <div class="text-primary text-lg font-bold mt-2">{p.data.title}</div>
-              
-              <p class="font-light py-4">{p.data.description}</p>   
-            </a>
-          ))}
-      </div>            
+      <div class="min-h-screen bg-gray-50">
+        <!-- Hero Section -->
+        <section class="bg-white py-16 px-4 text-center h-96 flex flex-col justify-center">
+          <h1 class="text-4xl font-bold text-primary mt-12">Legal Resource Library</h1>
+          <p class="text-lg text-gray-600 mt-4">Your comprehensive collection of legal articles, texts, and commented laws.</p>  
+        </section>
+    
+        <!-- Category Overview -->
+        <section class="py-16 px-4 hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {categories.map(category => (
+              <a href={`.`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="text-4xl">{`icon`}</div>
+                <h2 class="mt-4 text-2xl font-semibold text-gray-800">{category}</h2>
+              </a>
+            ))}
+          </div>
+        </section>
+    
+        <!-- Resource Grid -->
+        <section class="py-16 px-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allResources.map(resource => (
+              <a href={`resources/${resource.slug.slice(3)}`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                {/* <div class="text-3xl">{icon}</div> */}
+                <h3 class="mt-4 text-xl font-semibold text-gray-800">{resource.data.title}</h3>
+                <p class="mt-2 text-gray-600">{resource.data.description}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
   </div>
+
 </Layout>
+

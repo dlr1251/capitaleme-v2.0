@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCollection, getEntry } from 'astro:content';
+// import { getCollection, getEntry } from 'astro:content';
 
 import countries from '../../../content/countries/Countries.js'
 // Import the list of all the countries in JSON. 
@@ -12,13 +12,13 @@ import countries from '../../../content/countries/Countries.js'
 // },
 // Assume this function is your adapted or existing fetch logic
 
-async function fetchVisas() {
-    // Use your existing logic to fetch visa data
-    // For demonstration, this will just return an empty array
-    return await getCollection('visas', ({ id }) => {
-                      return id.startsWith('en/');
-                  });
-}
+// async function fetchVisas() {
+//     // Use your existing logic to fetch visa data
+//     // For demonstration, this will just return an empty array
+//     return await getCollection('visas', ({ id }) => {
+//                       return id.startsWith('en/');
+//                   });
+// }
 
 
 

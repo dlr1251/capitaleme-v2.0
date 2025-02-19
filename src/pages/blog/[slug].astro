@@ -28,5 +28,7 @@ const { pathname } = Astro.url
     <div class="text-sm pt-2 font-normal">by: {entry.data.author}</div>
     <div class="text-sm pt-2 font-normal">published: {entry.data.pubDate.toISOString().slice(0,10)}</div>
   </div>
-  <Content />
+  <div class="">
+    <Content />
+  </div>
 </PostsLayout>

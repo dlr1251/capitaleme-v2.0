@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 function Calculator() {
-  const UVT = 47065;
-  const [propertyValue, setPropertyValue] = useState(455000000);
+  const UVT = 49065;
+  const [propertyValue, setPropertyValue] = useState(498000000);
   const [notaryFee, setNotaryFee] = useState(0);
   const [registrationFee, setRegistrationFee] = useState(0);
   const [rentasFee, setRentasFee] = useState(0);
@@ -100,13 +100,12 @@ function Calculator() {
             <div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Property Value (COP):
+                  Property Value (COP): 3
                 </label>
                 <input
-                  type="range"
+                  type="number"
                   min="300"
-                  max="5000"
-                  step="5"
+                  max="5000"                  
                   value={propertyValue / 1000000}
                   onChange={(e) => handleSliderChange(e.target.value)}
                   className="w-full"
@@ -167,7 +166,7 @@ function Calculator() {
                 </label>
                 <span className="block text-gray-900">{formatCurrency(propertyValue / exchangeRate, 'USD')}</span>
                 <input
-                  type="range"
+                  type="number"
                   min="300"
                   max="5000"
                   step="5"
@@ -233,7 +232,7 @@ function Calculator() {
                   Property Value (COP):
                 </label>
                 <input
-                  type="range"
+                  type="number"
                   min="300"
                   max="5000"
                   step="5"
@@ -296,7 +295,7 @@ function Calculator() {
                   Property Value (USD):
                 </label>
                 <input
-                  type="range"
+                  type="number"
                   min="300"
                   max="5000"
                   step="5"

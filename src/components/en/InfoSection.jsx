@@ -1,0 +1,42 @@
+export default function InfoSection({ sections }) {
+    return (
+      <div className="space-y-8">
+        {sections.map((section, i) => (
+          <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-8 border-b-2 pb-4">
+            {/* Title Section */}
+            <div className="flex items-start justify-between group">
+              <h3
+                className={`
+                  text-2xl font-semibold transition-colors duration-300
+                  relative pb-1 text-primary
+                  after:content-[''] after:absolute after:left-0 after:bottom-0 after:bg-primary after:h-[2px] after:w-full
+                  after:transition-all after:duration-300 after:ease-in-out
+                `}
+              >
+                {section.title}
+              </h3>
+            </div>
+  
+            {/* Content Section */}
+            <div className="md:col-span-2 overflow-hidden">
+              <div className="flex flex-col gap-6 items-start mt-2">
+                {section.image && (
+                  <div className="w-full">
+                    <img
+                      src={section.image}
+                      alt={section.alt || 'Section Image'}
+                      className="rounded-xl w-full object-cover shadow-md transition-opacity duration-700"
+                    />
+                  </div>
+                )}
+  
+                <div className="prose text-xl font-light leading-relaxed prose-primary w-full">
+                  <div dangerouslySetInnerHTML={{ __html: section.content }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }

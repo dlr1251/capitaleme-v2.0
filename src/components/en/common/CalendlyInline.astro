@@ -1,0 +1,62 @@
+---
+import ContactForm from "../../en/common/ContactForm.astro";
+import ContactCard from "../contact/ContactCard.astro";
+
+
+---
+<div class="mx-auto md:max-w-5xl mt-12">
+    <h3 class="text-3xl font-bold text-terciary mb-8">How to hire us?</h3>
+    <div class="grid grid-cols-2">
+        
+        <div class="shadow-lg rounded-lg p-6 border border-gray-200">
+            <h3 class="text-medium font-bold text-primary mb-2">Initial Consultation with Capital M</h3>
+            <p class="text-lg text-primary font-light mb-4">Schedule a 45-minute meeting with our team to discuss your case and get a detailed quotation.</p>            
+        
+            <!-- Pricing Section -->
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                <p class="text-lg font-semibold text-gray-800">Consultation Fee</p>
+                <p class="text-xl font-bold text-blue-600">$45 USD <span class="text-gray-500">or</span> 175,000 COP</p>
+            </div>
+        
+            <!-- Payment Instructions -->
+            <div class="mb-4">
+                <p class="text-gray-700">Please send the payment receipt to <span class="font-semibold text-blue-600">info@capitaleme.com</span> to confirm your appointment.</p>
+            </div>
+        
+            <!-- Payment Methods -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold text-primary">Accepted Payment Methods</h4>
+                <ul class="text-gray-700 mt-2 space-y-2">
+                    <li class="flex items-center">
+                        <span class="font-medium text-primary">💳 Bancolombia Ahorros:</span>
+                        <span class="ml-2">61400002492</span>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="font-medium text-primary">💳 Credit Cards (Stripe):</span>
+                        <a href="https://buy.stripe.com/7sI29Cg361Ja3sI149" target="_blank" class="ml-2 text-blue-600 underline hover:text-blue-800">Pay via Stripe</a>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="font-medium text-primary">💳 Revolut:</span>
+                        <span class="ml-2">@daniel8hsk</span>
+                    </li>
+                </ul>
+            </div>
+        
+            <!-- Booking Button -->
+            <div class="text-center">
+                <a href="https://calendly.com/danielluque/45-min-meeting"
+                target="_blank"
+                class="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300 inline-block text-lg">
+                    Book Your Consultation
+                </a>
+            </div>
+        </div>
+        <div class="">
+
+            <ContactForm />            
+            
+        </div>
+    </div>
+
+
+</div>
