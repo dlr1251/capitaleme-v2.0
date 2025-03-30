@@ -17,18 +17,18 @@ const posts = defineCollection({
     })
 });
 
-const countries = defineCollection({
-    loader: file("src/content/countries/Countries.json"),
-    schema: z.object({
-      name: z.string(),
-      treaties: z.array(z.string()),   
-      excempted: z.string(),
-      image: z.object({
-        url: z.string(),
-        alt: z.string()
-      }),
-    })
-});
+// const countries = defineCollection({
+//     loader: file("src/content/countries/Countries.json"),
+//     schema: z.object({
+//       name: z.string(),
+//       treaties: z.array(z.string()),   
+//       excempted: z.string(),
+//       image: z.object({
+//         url: z.string(),
+//         alt: z.string()
+//       }),
+//     })
+// });
 
 const resources = defineCollection({
     loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),

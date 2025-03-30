@@ -6,7 +6,7 @@ const FancyTooltipLink = ({ link, description = "This topic could use more conte
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
 
-  const triggerRef = useRef(null);
+  // const triggerRef = useRef(null);
   const tooltipRef = useRef(null);
 
   const { x, y, reference, floating, strategy } = useFloating({

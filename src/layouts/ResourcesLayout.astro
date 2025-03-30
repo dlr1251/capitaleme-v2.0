@@ -3,7 +3,7 @@ const lang = Astro.currentLocale
 import Footer from '../components/Footer.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import { getCollection } from 'astro:content';
-import Navbar from '../components/Navbar.astro';
+import Navbar from '../components/Navbar.jsx';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import BreadCrumb from '../components/BreadCrumb.astro'
@@ -70,7 +70,7 @@ const slug = url.pathname.slice(7);
 	</head>
 	<body>
 		<WhatsAppButton/>
-		<Navbar />			
+		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />			
 		<div class="flex min-h-screen p-0 sm:ml-0">
 			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 lg:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
 				 <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">

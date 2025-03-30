@@ -1,6 +1,6 @@
 ---
 const lang = Astro.currentLocale
-import Navbar from '../components/Navbar.astro';
+import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
@@ -33,7 +33,7 @@ import { ClientRouter } from "astro:transitions";
 	</head>
 	<body>
 		<WhatsAppButton />
-		<Navbar />
+		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />
 			<div class="">
 				<slot />
 			</div>
