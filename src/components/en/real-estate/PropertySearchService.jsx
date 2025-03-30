@@ -48,17 +48,17 @@ const PropertyServiceComponent = () => {
       <div className="flex flex-col lg:flex-row items-center gap-6">
         {/* Image */}
         <div className="w-full lg:w-1/3">
-          <img
-            src="https://via.placeholder.com/300"
+          {/* <img
+            src=""
             alt="Property Consultant"
             className="rounded-lg"
-          />
+            /> */}
         </div>
 
         {/* Description */}
         <div className="w-full lg:w-2/3 text-center lg:text-left">
           <h2 className="text-3xl font-bold text-primary mb-4">
-            Finding property service
+            Finding property service in Colombia
           </h2>
           <p className="text-gray-600 text-lg">
             Discover your dream property in Colombia with the guidance of an
