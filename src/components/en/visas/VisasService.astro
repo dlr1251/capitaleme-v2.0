@@ -19,9 +19,9 @@ const sections = [
 ];
 ---
 
-<div class="my-6 w-2/3 mx-auto">
+<div class="my-6 w-auto md:w-2/3 mx-auto">
   {sections.map((section, index) => (
-  <div class="flex items-start mb-10 border p-6">            
+  <div class="flex items-start md:mb-10 border p-6">            
       <div>
         <h3 class="text-xl text-primary">{ index + 1 }. {section.title}</h3>
         <p class="text-primary font-light mt-2">{section.description}</p>

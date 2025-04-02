@@ -8,13 +8,13 @@ import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
 import HeroNews from '../components/en/home/HeroNews.astro';
 import DiscoverResources from '../components/en/home/DiscoverResources.astro';
 // import ExploreVisas from '../components/en/home/ExploreVisas.astro';
-import ExploreProperties from '../components/en/home/ExploreProperties.astro';
+import ExploreProperties from '../components/en/home/ExploreProperties.jsx';
 import GetStarted from '../components/en/home/GetStarted.astro';
 
 import HomeHero   from '../components/en/home/HomeHero.astro';
 import HomeAboutUs   from '../components/en/home/HomeAboutUs.astro';
 import HomeVisasSection from '../components/en/home/HomeVisasSection.jsx';
-import HomeRealEstateSection from '../components/en/home/HomeRealEstateSection.astro';
+import HomeRealEstateSection from '../components/en/home/HomeRealEstateSection.jsx';
 import HomeBusinessSection from '../components/en/home/HomeBusinessSection.astro';
 import CalendlyInline from '../components/en/common/CalendlyInline.astro';
 import { getCollection } from "astro:content";
@@ -28,7 +28,7 @@ const allVisas = await getCollection("visas", (visa) =>
         <HomeHero/>
         <HomeAboutUs/>
         <HomeVisasSection client:load allVisas={allVisas} locale="en"/>
-        <HomeRealEstateSection/>
+        <HomeRealEstateSection client:load/>
         <!-- <HomeBusinessSection/> -->
         <CalendlyInline />
         <!-- <HeroNews/> -->

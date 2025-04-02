@@ -8,12 +8,7 @@ const TeamSection = ({ members }) => {
     <section className="py-8 max-w-6xl mx-auto">
       <div className="flex gap-6 mb-8">
         {/* Active Card */}
-        <div className="w-1/4 flex-1 bg-secondary rounded-lg shadow-md p-4">
-          {/* <img
-            src={selectedMember.data.image}
-            alt={selectedMember.data.name}
-            className="rounded-lg mb-4"
-          /> */}
+        <div className="w-auto md:w-1/4 flex-1 bg-secondary rounded-lg shadow-md p-4">        
           <h3 className="text-xl font-semibold text-primary h-16">{selectedMember.data.name}</h3>
           <p className="text-gray-100">{selectedMember.data.role}</p>
           <p className="text-sm text-gray-100">{selectedMember.data.email}</p>
@@ -46,13 +41,13 @@ const TeamSection = ({ members }) => {
         </div>
 
         {/* Biography Box */}
-        <div className=" w-3/4 flex-2 bg-white rounded-lg shadow-md p-6">
+        <div className="w-auto md:w-3/4 flex-2 bg-white rounded-lg shadow-md p-6">
           <p className="text-gray-800">{selectedMember.data.bio}</p>
         </div>
       </div>
 
       {/* Lower Cards */}
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 md:flex gap-4">
         {members.map((member) => (
           <div
             key={member.id}

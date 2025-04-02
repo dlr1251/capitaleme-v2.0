@@ -1,15 +1,14 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
-import SectionOne from "../../../components/en/visas/Section_1.astro";
-import SectionTwo from "../../../components/en/visas/Section_2.astro";
 import GoogleReviews from "../../../components/en/common/GoogleReviews.jsx";
 import FilterVisaWidget from "../../../components/en/visas/AllVisaFilterWidget.jsx";
 import CalendlyInline from "../../../components/en/common/CalendlyInline.astro";
 import ResourcesList from "../../../components/en/resources/ResourcesList.astro";
 import AccordionFAQ from "../../../components/AccordionFAQ";
-import VisaAssistanceService from "../../../components/en/visas/VisaAssistanceService.astro";
-
+// import VisaAssistanceService from "../../../components/en/visas/VisaAssistanceService.astro";
+import VisasHero from "../../../components/en/visas/VisasHero.astro";
+import VisasService from "../../../components/en/visas/VisasService.astro";
 const lang = Astro.currentLocale;
 const allVisas = await getCollection("visas", ({ id }) => {
   return id.startsWith("en/");
@@ -42,11 +41,11 @@ const visasFAQs = [
 
 <Layout title="Your Colombian Visa Application, made simple ">
   
-  <SectionOne />
-  <!-- <VisaAssistanceService/> -->
-  <SectionTwo />  
-  <div class="mx-auto w-2/3">
-    <GoogleReviews />
+  <VisasHero />
+  <VisasService />
+
+  <div class="mx-auto w-auto md:w-2/3">
+    <GoogleReviews client:load/>
     <h2 class=" mt-6 text-xl text-primary font-bold">Discover all visa categories</h2>
     <FilterVisaWidget locale="en" visas={allVisas} client:only="react" />
     

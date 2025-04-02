@@ -1,13 +1,26 @@
 import { useState } from 'react';
 
 const Navbar = ({ lang, pathname }) => {
-  console.log({pathname: pathname, lang : lang});
   
-  const getEnglishURL = (path) => (path?.startsWith('/en') ? path.substring(3) : path); 
+  const getEnglishURL = (path) => (path?.startsWith('/en') ? path : `/en${path}`); 
   const getSpanishURL = (path) => (path?.startsWith('/es') ? path : `/es${path}`); 
 
+  const getUrlForLang = (path, targetLang) => {
+    // Remove any existing '/en' or '/es' prefix
+    const cleanedPath = path.replace(/^\/(en|es)/, '');
+    return `/${targetLang}${cleanedPath}`;
+  };
+  
   const engURL = getEnglishURL(pathname);
   const espURL = getSpanishURL(pathname);
+  console.log(
+    {
+      pathname: pathname, 
+      lang : lang,
+      engURL: engURL,
+      espURL: espURL,
+    });
+
   
   const links = [
     { href: lang === 'en' ? '/en/about' : '/es/about', text: lang === 'en' ? 'About Us' : 'Nosotros' },
@@ -86,14 +99,15 @@ const Navbar = ({ lang, pathname }) => {
             >
               <div className="py-1" role="none">
                 <a
-                  href={engURL}
+                  
+                  href={lang === 'es' ? getUrlForLang(pathname, 'en') : getUrlForLang(pathname, 'es')}
                   className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
                   role="menuitem"
                 >
                   English
                 </a>
                 <a
-                  href={espURL}
+                  href={lang === 'en' ? getUrlForLang(pathname, 'es') : getUrlForLang(pathname, 'en')}
                   className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
                   role="menuitem"
                 >

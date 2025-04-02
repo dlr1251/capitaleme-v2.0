@@ -9,11 +9,25 @@ const CarouselComponent = () => {
   return (
     <Swiper
       modules={[Pagination]}
-      pagination={{ dynamicBullets: true }}           
-      spaceBetween={50}
-      slidesPerView={3}
+      pagination={{ dynamicBullets: true }}
       loop={true}
-      // You can add more Swiper options here
+      breakpoints={{
+        // when window width is >= 320px
+        320: {
+          slidesPerView: 1,
+          spaceBetween: 10,
+        },
+        // when window width is >= 768px
+        768: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        // when window width is >= 1024px
+        1024: {
+          slidesPerView: 3,
+          spaceBetween: 30,
+        },
+      }}
     >
       {reviewsData.map((review, index) => (
         <SwiperSlide key={index}>
