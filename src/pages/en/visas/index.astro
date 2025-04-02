@@ -1,0 +1,63 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import SectionOne from "../../../components/en/visas/Section_1.astro";
+import SectionTwo from "../../../components/en/visas/Section_2.astro";
+import GoogleReviews from "../../../components/en/common/GoogleReviews.jsx";
+import FilterVisaWidget from "../../../components/en/visas/AllVisaFilterWidget.jsx";
+import CalendlyInline from "../../../components/en/common/CalendlyInline.astro";
+import ResourcesList from "../../../components/en/resources/ResourcesList.astro";
+import AccordionFAQ from "../../../components/AccordionFAQ";
+import VisaAssistanceService from "../../../components/en/visas/VisaAssistanceService.astro";
+
+const lang = Astro.currentLocale;
+const allVisas = await getCollection("visas", ({ id }) => {
+  return id.startsWith("en/");
+});
+
+const visasFAQs = [
+  {
+    title: "How much does it cost?",
+    content:
+      "Depending on the visa category, it can range from $99 USD to $380 USD",
+  },
+  {
+    title: "How long does it take?",
+    content:
+      "Depending on your needs (e.g., salvoconducto, permit extension), it can take around 6-8 weeks.",
+  },
+  {
+    title: "Can I apply from Mexico?",
+    content:
+      "You can apply for any other country, provided that you hold a valid and vigent resident permit in that country",
+  },
+  {
+    title: "What if I get denied?",
+    content:
+      "Consider that the final response can be either 'Negada' or 'Inadmitida'. Both with different consequences. When a visa application gets 'Negada', it means that you can't apply for a new visa until 6 months later. If the visa is deemed inadmissible or 'Inadmitida', you can apply for a new one the next day. ",
+  },
+];
+
+---
+
+<Layout title="Your Colombian Visa Application, made simple ">
+  
+  <SectionOne />
+  <!-- <VisaAssistanceService/> -->
+  <SectionTwo />  
+  <div class="mx-auto w-2/3">
+    <GoogleReviews />
+    <h2 class=" mt-6 text-xl text-primary font-bold">Discover all visa categories</h2>
+    <FilterVisaWidget locale="en" visas={allVisas} client:only="react" />
+    
+    <CalendlyInline/>
+    <ResourcesList />
+    <div class="mt-20 mb-12">
+      <h3 class="text-terciary font-bold text-3xl mb-8">FAQ</h3>
+      <AccordionFAQ items={visasFAQs} client:load/>
+    </div>
+  </div>
+  
+
+</Layout>
+

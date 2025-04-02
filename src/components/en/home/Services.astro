@@ -4,7 +4,7 @@ const allResources = await getCollection('visas', ({ id, data }) => {
   return id.startsWith('en/') && data.popular === true;
 });
 const someResources = allResources.reverse().slice(0,15)
-console.log(someResources)
+
 ---
 
 <section class="bg-white h-auto text-primary p-4 md:p-16 ">

@@ -1,0 +1,79 @@
+.embla {
+    position: relative;
+  }
+  .embla__viewport {
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+  }
+  .embla__container {
+    display: flex;
+  }
+  .embla__slide {
+    flex: 0 0 100%;
+    padding: 0.75rem;
+    max-height: 660px; /* Adjust as needed */
+    overflow: hidden;
+  }
+  @media (min-width: 768px) {
+    .embla__slide {
+      flex: 0 0 33.3333%;
+    }
+  }
+  .embla__prev,
+  .embla__next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #00AA81; /* Secondary background color */
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+    z-index: 10;
+  }
+  .embla__prev {
+    left: -3rem; /* Adjust as needed for the desired offset */
+  }
+  .embla__next {
+    right: -3rem; /* Adjust as needed for the desired offset */
+  }
+  .embla__prev:hover,
+  .embla__next:hover {
+    background: #007256; /* Intense color for hover (darker shade of secondary) */
+    transform: translateY(-50%) scale(1.1); /* Add slight zoom for effect */
+  }
+  .embla__indicators {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .embla__pagination {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.5);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    transition: color 0.3s ease, font-weight 0.3s ease;
+  }
+  .embla__pagination:hover {
+    color: #f59e0b; /* Tailwind accent color */
+  }
+  .embla__pagination.active {
+    color: #f59e0b;
+    font-weight: bold;
+  }
+  .text-ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 8; /* Adjust number of lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  

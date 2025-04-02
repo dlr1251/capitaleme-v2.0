@@ -9,11 +9,11 @@ const TeamSection = ({ members }) => {
       <div className="flex gap-6 mb-8">
         {/* Active Card */}
         <div className="w-1/4 flex-1 bg-secondary rounded-lg shadow-md p-4">
-          <img
+          {/* <img
             src={selectedMember.data.image}
             alt={selectedMember.data.name}
             className="rounded-lg mb-4"
-          />
+          /> */}
           <h3 className="text-xl font-semibold text-primary h-16">{selectedMember.data.name}</h3>
           <p className="text-gray-100">{selectedMember.data.role}</p>
           <p className="text-sm text-gray-100">{selectedMember.data.email}</p>
@@ -61,11 +61,11 @@ const TeamSection = ({ members }) => {
             }`}
             onClick={() => setSelectedMember(member)}
           >
-            <img
+            {/* <img
               src={member.data.image}
               alt={member.data.name}
               className="rounded-lg mb-2"
-            />
+            /> */}
             <h4 className="text-lg font-semibold text-primary">{member.data.name}</h4>
             <p className="text-sm text-gray-600">{member.data.role}</p>
           </div>

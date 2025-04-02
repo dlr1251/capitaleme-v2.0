@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 const allResources = await getCollection('visas', ({ id, data }) => {
   return id.startsWith('es/') ? data.popular !== false : true;
 });
-console.log(allResources);
+
 
 const someResources = allResources.reverse().slice(0,15)
 

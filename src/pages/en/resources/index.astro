@@ -1,0 +1,49 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { getCollection } from 'astro:content';
+const allResources = await getCollection('resources', ({ id }) => {
+  return id.startsWith('en/');
+});
+const categories = allResources.map(p => p.data.tags);
+
+---
+
+<Layout title="Resources">
+  <!-- <SectionOne/> -->
+    <div class="max-w-screen-xl mx-auto">
+      <div class="min-h-screen bg-gray-50">
+        <!-- Hero Section -->
+        <section class="bg-white py-16 px-4 text-center h-96 flex flex-col justify-center">
+          <h1 class="text-4xl font-bold text-primary mt-12">Legal Resource Library</h1>
+          <p class="text-lg text-gray-600 mt-4">Your comprehensive collection of legal articles, texts, and commented laws.</p>  
+        </section>
+    
+        <!-- Category Overview -->
+        <section class="py-16 px-4 hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {categories.map(category => (
+              <a href={`.`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="text-4xl">{`icon`}</div>
+                <h2 class="mt-4 text-2xl font-semibold text-gray-800">{category}</h2>
+              </a>
+            ))}
+          </div>
+        </section>
+    
+        <!-- Resource Grid -->
+        <section class="py-16 px-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allResources.map(resource => (
+              <a href={`resources/${resource.slug.slice(3)}`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                {/* <div class="text-3xl">{icon}</div> */}
+                <h3 class="mt-4 text-xl font-semibold text-gray-800">{resource.data.title}</h3>
+                <p class="mt-2 text-gray-600">{resource.data.description}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
+  </div>
+
+</Layout>
+

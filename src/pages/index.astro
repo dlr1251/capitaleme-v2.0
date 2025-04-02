@@ -13,17 +13,21 @@ import GetStarted from '../components/en/home/GetStarted.astro';
 
 import HomeHero   from '../components/en/home/HomeHero.astro';
 import HomeAboutUs   from '../components/en/home/HomeAboutUs.astro';
-import HomeVisasSection from '../components/en/home/HomeVisasSection.astro';
+import HomeVisasSection from '../components/en/home/HomeVisasSection.jsx';
 import HomeRealEstateSection from '../components/en/home/HomeRealEstateSection.astro';
 import HomeBusinessSection from '../components/en/home/HomeBusinessSection.astro';
 import CalendlyInline from '../components/en/common/CalendlyInline.astro';
+import { getCollection } from "astro:content";
+const allVisas = await getCollection("visas", (visa) =>
+  visa.id.startsWith("en/")
+);
 ---
 
 <Layout title="Capital M Law - Home">
 	<main class="">        
         <HomeHero/>
         <HomeAboutUs/>
-        <HomeVisasSection/>
+        <HomeVisasSection client:load allVisas={allVisas} locale="en"/>
         <HomeRealEstateSection/>
         <!-- <HomeBusinessSection/> -->
         <CalendlyInline />

@@ -1,0 +1,58 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import GoogleReviews from "../../components/en/common/GoogleReviews.jsx";
+import MissionVision from '../../components/en/about/MissionVision.astro';
+import LatestFromBlog from "../../components/en/blog/LatestFromBlog.astro";
+
+import ContactForm from "../../components/en/common/ContactForm.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
+import Gallery from '../../components/en/about/Gallery.jsx'
+import WhatWeHaveDone from '../../components/en/about/WhatWeHaveDone.astro' 
+import OurTeam from '../../components/en/about/OurTeam';
+
+const pageTitle = "About Us";
+import { getCollection } from 'astro:content';
+const authors = await getCollection('authors');
+
+const messages = [
+      "We want to help expats, nomads and travelers with their legal processes in Colombia because we know what it means to be playing away from home.",
+      "Ultimately, we want to enrich Colombian culture through cultural exchange with expats, nomads, travelers, and tourists. We understand cultural differences and language barriers can slower down some [already slow] legal processes.",
+      "We are Colombian attorneys - abogados -. We understand the culture, language and common practices of the Colombian legal system.",
+      "We have practiced the Law across different areas gaining valuable insights to protect your interests. We believe that understanding Colombian regulations and operating under the Colombian legal system shouldn't be hard.",
+      "Our philosophy is to simplify the complexities of the legal world and prioritize open communication, trust, and the human aspect of all our interactions.",
+      "We love cats. Harry Potter. Kimetsu no Yaiba. Shakira. Bad Bunny. García Marquez. Hermann Hesse."
+    ];
+---
+<Layout title={pageTitle}>   
+  
+  <div class="md:max-w-5xl mx-auto h-3/4 flex flex-col justify-center px-6 w-2/3 mx-auto">    
+      <h1 class="text-4xl md:text-6xl font-extrabold text-primary justify-left my-8 mt-32">
+          Welcome to Capital M Law <br />      
+      </h1>
+      <p class="my-12 text-lg md:text-4xl ">
+        <strong class="block text-primary text-left">Your Trusted Colombian Law Firm</strong>
+        <span class="block text-terciary text-left md:text-3xl">Fast, Affordable, Bilingual</span>
+      </p>
+  </div>
+
+  <div class="md:max-w-5xl mx-auto h-3/4 flex flex-col justify-center px-6 w-2/3 mx-auto prose">
+
+    <div class="space-y-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      {messages.map(message => (
+        <div class="p-6 rounded-lg shadow-lg transform transition duration-500 hover:scale-105 hover:bg-secondary hover:text-white flex items-center justify-center">
+          <p class="text-lg font-light ">{message}</p>
+        </div>
+      ))}
+    </div>
+    </div>
+
+    <div class="md:max-w-5xl mx-auto">
+      <div class="text-3xl mt-12 text-terciary font-bold">Our Team</div>
+      <OurTeam members={authors} client:load/>
+      
+      <!-- <Gallery client:load  /> -->
+      <GoogleReviews client:load/>
+      <WhatWeHaveDone/>
+    </div>
+  </div>
+</Layout>

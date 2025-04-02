@@ -86,7 +86,7 @@ const FilterVisaWidget = ({locale, visas}) => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = list.slice(indexOfFirstItem, indexOfLastItem);
-  console.log('current items',currentItems);
+  
   
   
   return (

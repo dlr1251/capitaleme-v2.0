@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SectionOne from '../../components/en/services/Section_1.astro';
+import SectionTwo from '../../components/en/services/Section_2.astro';
+import SectionThree from '../../components/en/services/Section_3.astro';
+import SectionFour from '../../components/en/services/Section_4.astro';
+import LatestFromBlog from "../../components/en/blog/LatestFromBlog.astro";
+
+const pageTitle = "Visas & Immigration";
+
+---
+<Layout title={pageTitle}>
+      <div class="px-4">
+
+            <SectionOne/>
+            <SectionTwo/>
+            <SectionThree/>
+            <SectionFour/>
+            <div class="max-w-screen-xl mx-auto">
+
+                  <LatestFromBlog/>      
+            </div>
+      </div>
+    
+</Layout>

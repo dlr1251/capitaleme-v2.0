@@ -9,7 +9,7 @@ function CountrySelector() {
   useEffect(() => {
     // Assuming you want to do something whenever selectedCountry changes, like logging or fetching more data
     const countryInfo = countries.find(country => country.CountryEn === selectedCountry);
-    console.log(countryInfo);
+    
     setExemptedStatus(countryInfo ? countryInfo["Excempted?"] : '');
     // Here you could also do other effects, like logging or setting other state based on the selected country
   }, [selectedCountry]); // This will run whenever selectedCountry changes

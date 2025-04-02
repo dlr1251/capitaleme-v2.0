@@ -1,19 +1,21 @@
 import { useState } from 'react';
 
 const Navbar = ({ lang, pathname }) => {
-  const getEnglishURL = (path) => (path?.startsWith('/') ? path.substring(3) : path); 
+  console.log({pathname: pathname, lang : lang});
+  
+  const getEnglishURL = (path) => (path?.startsWith('/en') ? path.substring(3) : path); 
   const getSpanishURL = (path) => (path?.startsWith('/es') ? path : `/es${path}`); 
 
   const engURL = getEnglishURL(pathname);
   const espURL = getSpanishURL(pathname);
   
   const links = [
-    { href: lang === 'en' ? '/about' : '/es/about', text: lang === 'en' ? 'About Us' : 'Nosotros' },
-    { href: lang === 'en' ? '/visas' : '/es/visas', text: lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas' },
-    { href: lang === 'en' ? '/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario' },
-    { href: lang === 'en' ? '/resources' : '/es/resources', text: lang === 'en' ? 'Resources' : 'Recursos' },
-    { href: lang === 'en' ? '/blog' : '/es/blog', text: lang === 'en' ? 'News' : 'Blog' },
-    { href: lang === 'en' ? '/contact' : '/es/contact', text: lang === 'en' ? 'Hire us' : 'Contacto' },
+    { href: lang === 'en' ? '/en/about' : '/es/about', text: lang === 'en' ? 'About Us' : 'Nosotros' },
+    { href: lang === 'en' ? '/en/visas' : '/es/visas', text: lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas' },
+    { href: lang === 'en' ? '/en/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario' },
+    { href: lang === 'en' ? '/en/resources' : '/es/resources', text: lang === 'en' ? 'Resources' : 'Recursos' },
+    { href: lang === 'en' ? '/en/blog' : '/es/blog', text: lang === 'en' ? 'News' : 'Blog' },
+    { href: lang === 'en' ? '/en/contact' : '/es/contact', text: lang === 'en' ? 'Hire us' : 'Contacto' },
   ];
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
