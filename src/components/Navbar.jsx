@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Logo from '../assets/logo/color-horizontal.svg';
 
 const Navbar = ({ lang, pathname }) => {
   
@@ -13,13 +14,7 @@ const Navbar = ({ lang, pathname }) => {
   
   const engURL = getEnglishURL(pathname);
   const espURL = getSpanishURL(pathname);
-  console.log(
-    {
-      pathname: pathname, 
-      lang : lang,
-      engURL: engURL,
-      espURL: espURL,
-    });
+
 
   
   const links = [
@@ -39,7 +34,7 @@ const Navbar = ({ lang, pathname }) => {
       <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
         <a href={lang === 'es' ? '/es' : '/'} className="px-0 w-1/3 md:w-auto flex items-center">
           <img
-            src={ lang === 'en' ? '../../src/assets/logo/color-horizontal.svg' : '../../../src/assets/logo/color-horizontal.svg'}
+            src={Logo.src}
             loading="eager"
             alt="Capital M Logo"
             className="h-8 md:mr-3"
