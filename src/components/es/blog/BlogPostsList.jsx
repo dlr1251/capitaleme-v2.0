@@ -40,7 +40,7 @@ const BlogPostsList = ({ posts }) => {
 
       <div className="posts grid grid-cols-1 md:grid-cols-3 gap-3">
         {paginatedPosts.map(post => (
-          <a key={post.slug} href={`/blog/${post.slug.slice(3)}`} className="block border rounded p-5 hover:shadow hover:shadow-xl">
+          <a key={post.slug} href={`/en/blog/${post.slug.slice(3)}`} className="block border rounded p-5 hover:shadow hover:shadow-xl">
             <div className="flex justify-between">
               <img src={post.data.image.url} alt="" className="object-cover rounded" />
             </div>

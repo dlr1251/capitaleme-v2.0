@@ -1,23 +1,14 @@
 ---
 export const prerender = true;
+import { getCollection } from "astro:content";
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/en/home/Hero.astro';
-import Services from '../components/en/home/Services.astro';
-
 import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
-import HeroNews from '../components/en/home/HeroNews.astro';
-import DiscoverResources from '../components/en/home/DiscoverResources.astro';
-// import ExploreVisas from '../components/en/home/ExploreVisas.astro';
-import ExploreProperties from '../components/en/home/ExploreProperties.jsx';
-import GetStarted from '../components/en/home/GetStarted.astro';
-
 import HomeHero   from '../components/en/home/HomeHero.astro';
 import HomeAboutUs   from '../components/en/home/HomeAboutUs.astro';
 import HomeVisasSection from '../components/en/home/HomeVisasSection.jsx';
 import HomeRealEstateSection from '../components/en/home/HomeRealEstateSection.jsx';
-import HomeBusinessSection from '../components/en/home/HomeBusinessSection.astro';
-import CalendlyInline from '../components/en/common/CalendlyInline.astro';
-import { getCollection } from "astro:content";
+import CalendlyInline from '../components/en/home/CalendlyInline.astro';
+
 const allVisas = await getCollection("visas", (visa) =>
   visa.id.startsWith("en/")
 );
@@ -28,21 +19,8 @@ const allVisas = await getCollection("visas", (visa) =>
         <HomeHero/>
         <HomeAboutUs/>
         <HomeVisasSection client:load allVisas={allVisas} locale="en"/>
-        <HomeRealEstateSection client:load/>
-        <!-- <HomeBusinessSection/> -->
-        <CalendlyInline />
-        <!-- <HeroNews/> -->
-      
-        		
-		<!-- <Hero/> -->
-        <!-- <DiscoverResources/> -->
-        <!-- <ExploreVisas/>  -->
-        <!-- <ExploreProperties/> -->
-        <!-- <GetStarted /> -->
-        <!-- <HomeReviews/>   -->
-          
-		<!-- <Services/> -->
-		<!-- <BookAppointmentCTA/>		 -->
-		<LatestFromBlog/>
+        <HomeRealEstateSection client:load/>        
+        <CalendlyInline />        
+		    <LatestFromBlog/>
 	</main>
 </Layout>

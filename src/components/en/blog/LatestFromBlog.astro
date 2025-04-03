@@ -6,10 +6,11 @@ const allPosts = await getCollection('posts', ({ id }) => {
 const latestPosts = allPosts.slice(0,3)
 ---
 <section class="md:max-w-5xl mx-auto w-auto md:w-2/3 p-3 md:p-0 my-24">
-    <h2 class="text-3xl font-bold text-terciary mb-8">Latest from the Blog</h2>
+    <h2 class="text-xl md:text-3xl font-bold text-secondary 
+    md:text-terciary mb-8">Latest from the Blog</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         {latestPosts.map(p => (          
-          <a class="p-5 block border border-4 rounded group w-full hover:shadow hover:shadow-4xl hover:bg-primary hover:text-white hover:border hover:border-secondary hover:border-4" href={`/blog/${p.slug.slice(3)}`}>  
+          <a class="p-5 block border border-4 rounded group w-full hover:shadow hover:shadow-4xl hover:bg-primary hover:text-white hover:border hover:border-secondary hover:border-4" href={`/en/blog/${p.slug.slice(3)}`}>  
             <div class="flex justify-between ">                          
                 <div class="text-sm text-slate-900 group-hover:text-white">{p.data.author}</div>
                 <div class="text-sm text-slate-500 group-hover:text-white">{p.data.pubDate.toString().slice(0,10)}</div>

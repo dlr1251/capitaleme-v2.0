@@ -23,7 +23,7 @@ const Navbar = ({ lang, pathname }) => {
     { href: lang === 'en' ? '/en/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario' },
     { href: lang === 'en' ? '/en/resources' : '/es/resources', text: lang === 'en' ? 'Resources' : 'Recursos' },
     { href: lang === 'en' ? '/en/blog' : '/es/blog', text: lang === 'en' ? 'News' : 'Blog' },
-    { href: lang === 'en' ? '/en/contact' : '/es/contact', text: lang === 'en' ? 'Hire us' : 'Contacto' },
+    { href: lang === 'en' ? '/en/contact' : '/es/contact', text: lang === 'en' ? 'Contact' : 'Contacto' },
   ];
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -31,7 +31,7 @@ const Navbar = ({ lang, pathname }) => {
 
   return (
     <nav className="bg-[#fbfbfb] border-gray-200 fixed w-full z-50 top-0 shadow md:shadow-lg">
-      <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+      <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-2 md:p-4">
         <a href={lang === 'es' ? '/es' : '/'} className="px-0 w-1/3 md:w-auto flex items-center">
           <img
             src={Logo.src}
@@ -87,7 +87,7 @@ const Navbar = ({ lang, pathname }) => {
           </button>
           {dropdownOpen && (
             <div
-              className="z-10 absolute right-0 mt-2 w-auto origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="z-100 absolute right-0 mt-2 w-auto origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"

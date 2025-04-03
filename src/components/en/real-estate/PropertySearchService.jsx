@@ -46,21 +46,14 @@ const PropertyServiceComponent = () => {
     <div className="p-6 bg-gray-50 rounded-lg shadow-lg max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex flex-col lg:flex-row items-center gap-6">
-        {/* Image */}
-        <div className="w-full lg:w-1/3">
-          {/* <img
-            src=""
-            alt="Property Consultant"
-            className="rounded-lg"
-            /> */}
-        </div>
+        
 
-        {/* Description */}
-        <div className="w-full lg:w-2/3 text-center lg:text-left">
-          <h2 className="text-3xl font-bold text-primary mb-4">
+        
+        <div className="w-full lg:w-2/3 ">
+          <h2 className="md:text-3xl font-bold text-primary mb-4">
             Finding property service in Colombia
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 md:text-lg">
             Discover your dream property in Colombia with the guidance of an
             expert real estate consultant. Our service specializes in finding
             the perfect investment opportunity, tailored to your needs.
@@ -104,7 +97,7 @@ const PropertyServiceComponent = () => {
       {/* Toggle Bar */}
       <div
         onClick={handleToggleForm}
-        className="mt-8 p-4 bg-secondary text-white text-center font-semibold cursor-pointer rounded-lg shadow-md hover:bg-secondary/90"
+        className="hidden mt-8 p-4 bg-secondary text-white text-center font-semibold cursor-pointer rounded-lg shadow-md hover:bg-secondary/90"
       >
         What property are you looking for? Let us contact you
       </div>

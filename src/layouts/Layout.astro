@@ -1,15 +1,17 @@
 ---
 const lang = Astro.currentLocale
 import Navbar from '../components/Navbar.jsx';
+import Breadcrumb from '../components/BreadCrumb.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import GoogleTag from '../components/GoogleTag.astro'
 import  SpeedInsights  from "@vercel/speed-insights/astro"
 interface Props {
 	title: string;
+	showBreadcrumb?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, showBreadcrumb = true } = Astro.props;
 
 import { ClientRouter } from "astro:transitions";
 
@@ -35,6 +37,7 @@ import { ClientRouter } from "astro:transitions";
 	<body>
 		<WhatsAppButton />
 		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />
+		{showBreadcrumb && <Breadcrumb pathname={Astro.url.pathname} />}
 			<div class="">
 				<slot />
 			</div>

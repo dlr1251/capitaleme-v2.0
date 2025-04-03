@@ -11,7 +11,7 @@ const latestPosts = allPosts.slice(0,3)
 
         {latestPosts.map(p => (
           
-          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${p.slug.slice(3)}`}>  
+          <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/en/blog/${p.slug.slice(3)}`}>  
             <div class="flex justify-between">                          
               <div class="text-sm text-slate-900">{p.data.author}</div>
               <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>

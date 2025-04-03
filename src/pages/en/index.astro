@@ -5,8 +5,7 @@ import HomeHero   from '../../components/en/home/HomeHero.astro';
 import HomeAboutUs   from '../../components/en/home/HomeAboutUs.astro';
 import HomeVisasSection from '../../components/en/home/HomeVisasSection.jsx';
 import HomeRealEstateSection from '../../components/en/home/HomeRealEstateSection.jsx';
-import HomeBusinessSection from '../../components/en/home/HomeBusinessSection.astro';
-import CalendlyInline from '../../components/en/common/CalendlyInline.astro';
+import CalendlyInline from '../../components/en/home/CalendlyInline.astro';
 import LatestFromBlog from '../../components/en/blog/LatestFromBlog.astro';
 import { getCollection } from "astro:content";
 const allVisas = await getCollection("visas", (visa) =>
@@ -21,8 +20,7 @@ const allVisas = await getCollection("visas", (visa) =>
         <HomeAboutUs/>
         <HomeVisasSection client:load allVisas={allVisas} locale="en"/>
         <HomeRealEstateSection client:load />
-
-		<CalendlyInline />
-		<LatestFromBlog/>
+    		<CalendlyInline />
+		    <LatestFromBlog/>
 	</main>
 </Layout>
