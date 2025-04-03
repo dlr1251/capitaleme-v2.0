@@ -16,14 +16,14 @@ const AccordionFAQ = ({ items }) => {
           <h2 id={`accordion-open-heading-${index}`}>
             <button
               type="button"
-              className={`flex items-center justify-between w-full p-5 border-b ${
+              className={`flex items-center justify-between w-full p-2.5 md:p-5 border-b ${
                 openIndex === index ? "bg-gray-50" : ""
               } hover:bg-gray-50`}
               onClick={() => toggleAccordion(index)}
               aria-expanded={openIndex === index}
               aria-controls={`accordion-open-body-${index}`}
             >
-              <span className="font-medium text-primary  text-lg">                
+              <span className="font-light text-primary md:text-lg">                
                 {item.title}
               </span>
               {/* Icon */}
@@ -55,7 +55,7 @@ const AccordionFAQ = ({ items }) => {
             }`}
             aria-labelledby={`accordion-open-heading-${index}`}
           >
-            <div className="p-5 text-gray-700 bg-gray-50">
+            <div className="p-2.5 md:p-5 text-primary font-light bg-gray-50 text-sm md:text-md">
               {item.content}
             </div>
           </div>

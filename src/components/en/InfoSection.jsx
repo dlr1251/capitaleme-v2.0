@@ -2,14 +2,16 @@ export default function InfoSection({ sections }) {
     return (
       <div className="space-y-8">
         {sections.map((section, i) => (
-          <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-8 border-b-2 pb-4">
+          <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 border-b-2 pb-4">
             {/* Title Section */}
             <div className="flex items-start justify-between group">
               <h3
                 className={`
-                  text-2xl font-semibold transition-colors duration-300
+                  text-lg
+                  md:text-2xl font-semibold transition-colors duration-300
                   relative pb-1 text-primary
-                  after:content-[''] after:absolute after:left-0 after:bottom-0 after:bg-primary after:h-[2px] after:w-full
+                  after:content-[''] after:absolute after:left-0 after:bottom-0 after:bg-primary 
+                  after:h-[2px] after:w-full
                   after:transition-all after:duration-300 after:ease-in-out
                 `}
               >
@@ -29,8 +31,7 @@ export default function InfoSection({ sections }) {
                     />
                   </div>
                 )}
-  
-                <div className="prose text-xl font-light leading-relaxed prose-primary w-full">
+                <div className="prose text-md md:text-xl font-light leading-relaxed prose-primary w-full">
                   <div dangerouslySetInnerHTML={{ __html: section.content }} />
                 </div>
               </div>

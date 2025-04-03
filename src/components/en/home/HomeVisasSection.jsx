@@ -66,20 +66,20 @@ const VisasAndImmigration = ({ allVisas, locale }) => {
   ];
 
   return (
-    <div className="w-auto mt-12 mx-6 md:max-w-5xl md:mx-auto">
-      <div className="text-3xl font-bold mt-16 mb-4 text-terciary">Visas and Immigration</div>
-      <p className="font-light text-xl text-primary">
+    <section className="md:max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-12 text-primary">
+      <h2 className="text-xl text-secondary md:text-3xl font-bold mb-8 md:text-terciary">
+        Visas and Immigration
+      </h2>
+      
+      <p className="font-light text-md md:text-xl">
         The key to a successful visa application starts with a <span className="underline">good understanding of the process.</span>
       </p>
-      <p className="font-light text-xl text-primary">
+      <p className="font-light text-md md:text-xl">
         If you want an experienced Law Firm by your side, check out our <span className="font-bold">Visa Assistance Service:</span>
       </p>
 
       <div className="my-4 border-b border-gray-200">
-        <ul
-          className="flex flex-wrap -mb-px text-lg text-center"
-          role="tablist"
-        >
+        <ul className="flex flex-wrap -mb-px text-sm md:text-lg text-center" role="tablist">
           <li className="me-2" role="presentation">
             <button
               className={`inline-block p-1 md:p-4 border-b-2 rounded-t-lg ${
@@ -130,37 +130,40 @@ const VisasAndImmigration = ({ allVisas, locale }) => {
           </li>
         </ul>
       </div>
+
       <div id="default-tab-content">
         {activeTab === 'discover-visas' && (
-          <div className="p-4 rounded-lg" role="tabpanel" id="discover-visas">
+          <div className="p-0 md:p-4 rounded-lg" role="tabpanel" id="discover-visas">
             <AllVisaFilterWidget locale={locale} visas={allVisas} />
           </div>
         )}
         {activeTab === 'process' && (
-          <div className="p-4 rounded-lg" role="tabpanel" id="process">
+          <div className="p-0 md:p-4 rounded-lg" role="tabpanel" id="process">
             <InfoSectionSteps sections={steps} />
           </div>
         )}
         {activeTab === 'faqs' && (
-          <div className="p-4 rounded-lg" role="tabpanel" id="faqs">
+          <div className="p-0 md:p-4 rounded-lg" role="tabpanel" id="faqs">
             <AccordionFAQ items={visasFAQs} />
           </div>
         )}
       </div>
 
       <div className="my-8 px-4 py-8 rounded-md bg-gray-50 text-center">
-        <p className="text-primary font-light text-lg">
+        <p className="text-primary font-light text-base md:text-lg">
           Our fees for visa services start from <span className="font-semibold">$812,500 COP</span>.
         </p>
-        <p className="text-primary font-light text-lg">We accept credit cards</p>
-        <p className="text-primary font-light text-lg mt-1">
+        <p className="text-primary font-light text-base md:text-lg">
+          We accept credit cards
+        </p>
+        <p className="text-primary font-light text-base md:text-lg mt-1">
           To get a full detailed quotation, feel free to{' '}
-          <a href="#" className="text-terciary underline font-semibold hover:text-terciary/80">
+          <a href="#" className="text-secondary underline font-semibold hover:text-secondary/80 transition">
             book an appointment
           </a>
         </p>
       </div>
-    </div>
+    </section>
   );
 };
 

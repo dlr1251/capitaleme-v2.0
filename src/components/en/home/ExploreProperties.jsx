@@ -2,8 +2,8 @@ import React from 'react';
 
 const ExplorePropertiesSection = () => {
   return (
-    <section className="bg-white py-8 px-8 border rounded-lg">
-      <h2 className="text-3xl font-bold text-primary mb-8">Explore Properties</h2>
+    <section className="bg-white p-4 md:p-8 border rounded-lg">
+      <h2 className="md:text-3xl font-bold text-primary mb-4 md:mb-8">Explore Properties</h2>
       <p className="text-primary mb-4">
         If you are looking to find a good property in Medellín or in Colombia to buy it, we have a good solution for you. We can assist you throughout the legal process of title search, HOA, property taxes and some common commercial practices.
       </p>
@@ -75,8 +75,8 @@ const ExplorePropertiesSection = () => {
         </div>
 
         {/* Cards Section */}
-        <div className="w-full md:w-4/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mt-8">
-          <div className="bg-white rounded-sm border border-gray-200 p-4">
+        <div className="w-full h-screen overflow-y-auto md:w-4/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-8 mt-8">
+          <div className="bg-white rounded-sm border border-gray-200 md:p-4">
             <img
               src="/public/real_estate/cielo/vista_1.jpeg"
               alt="Property Image"

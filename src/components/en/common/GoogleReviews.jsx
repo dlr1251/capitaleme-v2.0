@@ -1,6 +1,7 @@
 // CarouselComponent.jsx
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import reviewsData from '../../../data/googleReviews.json';
@@ -8,9 +9,13 @@ import reviewsData from '../../../data/googleReviews.json';
 const CarouselComponent = () => {
   return (
     <Swiper
-      modules={[Pagination]}
+      modules={[Pagination, Autoplay]}
       pagination={{ dynamicBullets: true }}
       loop={true}
+      autoplay={{
+        delay: 2500, // Time in milliseconds between slides (e.g., 2.5 seconds)
+        disableOnInteraction: true, // Stops autoplay after user interaction (optional)
+      }}
       breakpoints={{
         // when window width is >= 320px
         320: {
@@ -56,14 +61,14 @@ const CarouselComponent = () => {
               {review.authorName || 'Anonymous'}
             </h3>
             <p className="mt-2 text-gray-500 text-center">{review.reviewDate}</p>
-            <p className="my-2 text-gray-700 text-left text-xl max-h-96 overflow-hidden">
+            <p className="my-2 text-gray-700 text-left text-sm md:text-lg max-h-96 overflow-hidden">
               {`"${review.text}"` || 'No review text available.'}
             </p>
             <a
               href={review.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-lg font-bold text-secondary hover:underline"
+              className="text-sm md:text-lg font-bold text-secondary hover:underline"
             >
               View Original
             </a>

@@ -91,7 +91,7 @@ const FilterVisaWidget = ({locale, visas}) => {
   
   return (
     <div 
-    className={`flex flex-col p-4 rounded-lg border border-grey-200 transition-colors duration-500  ${
+    className={`flex flex-col p-4 rounded-lg border border-grey-200 transition-colors duration-500 h-screen md:h-screen overflow-y-auto ${
       isAnimating ? "bg-secondary" : "bg-white"
     }`}>
       {/* Filters Section */}
@@ -115,7 +115,7 @@ const FilterVisaWidget = ({locale, visas}) => {
               {countries
                 .sort((a, b) => a.CountryEn.localeCompare(b.CountryEn))
                 .map((c, i) => (
-                  <option key={i} value={c.Country}>
+                  <option className="text-md" key={i} value={c.Country}>
                     {locale === 'es' ? c.Country : c.CountryEn}
                   </option>
                 ))}
@@ -131,7 +131,7 @@ const FilterVisaWidget = ({locale, visas}) => {
               }}
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 hover:text-gray-900"
             />
-            <span className="py-4 font-medium text-gray-500 text-sm">Bringing Spouse and Children</span>
+            <span className="py-1 md:py-4 font-medium text-gray-500 text-sm">Bringing Spouse and Children</span>
           </label>
           <label className="flex items-center gap-2">
             <input
@@ -143,7 +143,7 @@ const FilterVisaWidget = ({locale, visas}) => {
               }}
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 hover:text-gray-900"
             />
-            <span className="py-4 font-medium text-gray-500 text-sm">Open work permit</span>
+            <span className="py-1 md:py-4 font-medium text-gray-500 text-sm">Open work permit</span>
           </label>
           <label className="flex items-center gap-2">
             <input
@@ -155,7 +155,7 @@ const FilterVisaWidget = ({locale, visas}) => {
               }}
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 hover:text-gray-900"
             />
-            <span className="py-4 font-medium text-gray-500 text-sm">Time accrual towards Residency</span>
+            <span className="py-1 md:py-4 font-medium text-gray-500 text-sm">Time accrual towards Residency</span>
           </label>
           <button className="mt-4 flex items-center px-4 py-2 border text-gray-800 rounded-lg group hover:border-primary"
             onClick={() => setViewMode(viewMode === "cards" ? "list" : "cards")}
@@ -166,7 +166,7 @@ const FilterVisaWidget = ({locale, visas}) => {
         </div>
 
       {/* Right Column: Announcement */}
-      <div className="lg:w-3/4 bg-gray-100 p-4 rounded-lg shadow-lg text-primary">
+      <div className="lg:w-3/4 bg-gray-100 p-4 rounded-lg shadow-lg text-primary hidden md:block">
         <h3 className="text-lg font-bold">For which Visa Category should I apply?</h3>
         <p className="mt-2">
           There are over 45 visa categories as 2025, each with its own requirements, limitations and associated costs. Choosing the right visa category is the best way to start your migration strategy.
@@ -217,14 +217,14 @@ const FilterVisaWidget = ({locale, visas}) => {
 
        {/* Visa Display - Cards */}
        {viewMode === "cards" ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
           {currentItems.map((visa, index) => (
             <a
               key={index}
-              href={`/visas/${visa.slug.slice(3)}`}
-              className="bg-white border rounded-lg p-6 group hover:shadow-xl transition-shadow flex flex-col justify-between"
+              href={`/en/visas/${visa.slug.slice(3)}`}
+              className="border rounded-lg p-3 md:p-6 group hover:shadow-xl transition-shadow flex flex-col justify-between"
             >
-              <h4 className="text-lg font-bold text-primary group-hover:text-secondary">
+              <h4 className="md:text-lg font-bold text-primary group-hover:text-secondary">
                 {visa.data.title.slice(3)}
               </h4>
               <p className="text-sm text-gray-600 mt-2">{visa.data.short_description}</p>
@@ -234,6 +234,9 @@ const FilterVisaWidget = ({locale, visas}) => {
                 </div>
                 <div className="text-sm">
                 <span className="font-bold text-secondary">Work Permit:</span> {visa.data.workPermit.includes("yes") ? "Yes" : visa.data.workPermit}
+                </div>
+                <div className="text-sm">
+                <span className="font-bold text-secondary">Type:</span> {visa.data.type}
                 </div>
               </div>
             </a>

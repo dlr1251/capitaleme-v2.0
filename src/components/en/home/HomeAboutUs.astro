@@ -27,15 +27,15 @@ const sections = [
 ]
 ---
 
-<section class="md:max-w-5xl mx-auto px-4 md:px-8 py-12 text-primary">
-  <h2 class="text-3xl font-bold mb-8 text-terciary">About Us</h2>
+<section class="md:max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-12 text-primary">
+  <h2 class="text-xl text-secondary md:text-3xl font-bold mb-8 md:text-terciary">About Us</h2>
   
   <InfoSection sections={sections} client:load/>
-  <h3 class="text-2xl font-semibold transition-colors duration-300 inline-block my-8
+  <h3 class="text-xl md:text-2xl font-semibold transition-colors duration-300 inline-block my-8
                   relative pb-1 text-primary
                   after:content-[''] after:absolute after:left-0 after:bottom-0 after:bg-primary after:h-[2px] after:w-full
                   after:transition-all after:duration-300 after:ease-in-out">What our clients say:</h3>
-  <GoogleReviews/>
+  <GoogleReviews client:load/>
 
   
 </section>
