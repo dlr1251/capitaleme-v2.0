@@ -2,6 +2,7 @@
 const lang = Astro.currentLocale
 import Footer from '../components/Footer.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import MobileTOC from '../components/MobileTOC.astro';
 import { getCollection } from 'astro:content';
 import Navbar from '../components/Navbar.jsx';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
@@ -93,6 +94,7 @@ const slug = url.pathname.slice(7);
 						">
 
 						<BreadCrumb pathname={Astro.url.pathname}/>
+						<!-- <MobileTOC headings={Astro.props.headings}/> -->
 					<div class="max-w-screen-sm md:max-w-screen-2xl mx-auto">											
 						{ 
 							lang == "en" ? 

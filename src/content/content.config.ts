@@ -1,5 +1,33 @@
 import { z, defineCollection } from "astro:content";
 import { glob, file } from 'astro/loaders';
+import { notionLoader } from 'notion-astro-loader';
+import { getNotionPage } from '../lib/notion';
+
+
+const pageCollection = defineCollection({
+  loader: async () => {
+    const page = await getNotionPage();
+    if (!page) return [];
+    return [page]; // Devuelve un array con una sola entrada
+  },
+  schema: z.object({
+    title: z.string(),
+    content: z.string(),
+    pubDate: z.string(),
+  }),
+});
+
+const database = defineCollection({
+  loader: notionLoader({
+    auth: import.meta.env.NOTION_TOKEN, // Token de la API
+    database_id: import.meta.env.NOTION_DATABASE_ID, // ID de la base de datos
+    // Opcional: Filtros de Notion
+    // filter: {
+    //   property: 'Published', // Ejemplo: filtrar por una propiedad "Published"
+    //   checkbox: { equals: true },
+    // },
+  }),
+});
 
 const posts = defineCollection({
     loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
@@ -86,6 +114,8 @@ export const collections = {
   'posts': posts,
   'resources': resources,  
   'visas': visas,
+  'database': database,
+  'page': pageCollection,
   // 'countries': countries,
   // 'authors': authors,
 };
