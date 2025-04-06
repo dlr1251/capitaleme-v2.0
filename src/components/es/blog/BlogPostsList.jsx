@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 const BlogPostsList = ({ posts }) => {
   const [filters, setFilters] = useState({ author: '', category: '', startDate: '', endDate: '' });
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const pageSize = 8;
 
   // Filter posts
   const filteredPosts = posts.filter(post => {
@@ -38,7 +38,7 @@ const BlogPostsList = ({ posts }) => {
         <input type="date" name="endDate" value={filters.endDate} onChange={handleFilterChange} placeholder="End date" />
       </div>
 
-      <div className="posts grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="posts grid grid-cols-1 md:grid-cols-4 gap-3">
         {paginatedPosts.map(post => (
           <a key={post.slug} href={`/en/blog/${post.slug.slice(3)}`} className="block border rounded p-5 hover:shadow hover:shadow-xl">
             <div className="flex justify-between">

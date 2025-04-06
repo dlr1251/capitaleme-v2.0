@@ -76,7 +76,10 @@ const slug = url.pathname.slice(7);
 							<ul id="dropdown-posts-list" class="py-2 space-y-2 ">
 								{ sidebarPosts.map( (post) => (
 									<li class="">
-										<a href={locale == "en" ? `/blog/${post.slug.slice(3)}` : `/es/blog/${post.slug.slice(3)}` } class={`flex flex-col p-2 text-primary font-light hover:shadow hover:shadow-lg hover:bg-white rounded-lg group max-w-full ${url.pathname == '/blog/' + post.slug.slice(3) || url.pathname == '/es/blog/' + post.slug.slice(3) ? ' bg-primary text-white hover:text-primary shadow shadow-lg' : ''}`}>
+										<a href={locale == "en" ? `/en/blog/${post.slug.slice(3)}` : `/es/blog/${post.slug.slice(3)}` } 
+										class={`flex flex-col p-2 text-primary font-light hover:shadow hover:shadow-lg hover:bg-white rounded-lg group max-w-full 
+										${url.pathname == '/en/blog/' + post.slug.slice(3) || url.pathname == '/es/blog/' + post.slug.slice(3) ? 
+										' bg-primary text-white hover:text-primary shadow shadow-lg' : ''}`}>
 											<span class="flex-1 ms-3 whitespace-wrap font-bold">{post.data.title}</span>      
 											<span class="flex-1 ms-3 whitespace-wrap text-sm">{post.data.pubDate.toString().slice(0, 10)}</span>      
 										</a>
@@ -88,26 +91,10 @@ const slug = url.pathname.slice(7);
 			<!-- Main content container -->
 			<div class="flex-auto w-full md:w-auto">
 				<div 
-					class="
-						p-4 
-						rounded-lg 
-						mt-14 
-						prose 
-						prose-slate 
-						prose-lg 
-						lg:prose-xl 
-						prose-headings:text-primary 
-						prose-h2:text-2xl 
-						prose-h2:underline 
-						prose-h3:text-xl
-						prose-h3:text-slate-500
-						prose-p:font-light
-						prose-p:text-slate-500
-						border-r
-						max-w-screen-lg
+					class=" p-4  rounded-lg  mt-14  prose  prose-slate  prose-lg  lg:prose-xl  prose-headings:text-primary prose-h2:text-2xl prose-h2:underline  prose-h3:text-xl prose-h3:text-slate-500 prose-p:font-light prose-p:text-slate-500 border-r max-w-screen-md mx-auto
 						">
 
-					<div class="w-4/5 mx-auto">											
+					<div class="w-full mx-auto">											
 						<!-- <BreadCrumb/>						 -->
 						<slot/>						
 					</div>
@@ -115,7 +102,7 @@ const slug = url.pathname.slice(7);
 			</div>
 			
 			<!-- Sticky TableOfContents -->
-			<div class="hidden sticky 2xl:block top-4 h-screen z-40 h-full overflow-y-auto">				
+			<div style="right: 40px" class="hidden sticky 2xl:block top-4 h-screen z-40 h-full overflow-y-auto w-1/4 border border-r border-2">				
 					<TableOfContents headings={Astro.props.headings} />
 				
 			</div>

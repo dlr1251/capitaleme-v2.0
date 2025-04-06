@@ -1,28 +1,94 @@
 ---
 import { getCollection } from 'astro:content';
 import ResourcesLayout from '../../../layouts/ResourcesLayout.astro';
+import { marked } from 'marked';
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const resourcesEntries = await getCollection('resources',({ id }) => {
-    return id.startsWith('en/');
-  });
-  
-  return resourcesEntries.map(entry => ({
-      params: { 
-          slug: entry.slug.slice(3) 
-      }, 
-      props: { entry },
+  const notionEntries = await getCollection('notion');
+  return notionEntries.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
   }));
 }
 
-
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render()
-const { pathname } = Astro.url
+const pageData = entry.data.data;
+console.log('Page data:', pageData);
 
+// Function to add IDs to headings
+function addHeadingIds(html: string) {
+  return html.replace(
+    /<(h[1-3])>(.*?)<\/\1>/g,
+    (match: string, tag: string, text: string) => {
+      const slug = text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+        .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
+      return `<${tag} id="${slug}">${text}</${tag}>`;
+    }
+  );
+}
+
+// Function to extract headings with depth, text, and slug
+function extractHeadings(html: string) {
+  const headingRegex = /<(h[1-3])>(.*?)<\/\1>/g;
+  const headings = [];
+  let match;
+  while ((match = headingRegex.exec(html)) !== null) {
+    const depth = parseInt(match[1].replace('h', ''));
+    const text = match[2];
+    const slug = text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric with hyphens
+      .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
+    headings.push({
+      depth: depth,
+      text: text,
+      slug: slug,
+    });
+  }
+  return headings;
+}
+
+// Render Markdown and add heading IDs
+const htmlContentRaw = await (pageData.Content ? marked(pageData.Content) : '<p>No content available.</p>');
+const htmlString = typeof htmlContentRaw === 'string' ? htmlContentRaw : await htmlContentRaw;
+const htmlContent = addHeadingIds(htmlString);
+const headings = extractHeadings(htmlString);
+console.log('Headings:', headings);
 ---
-<ResourcesLayout title={entry.data.title} frontmatter={entry.data} headings={headings}>
-  <div class="py-8 pl-4 mt-16 font-bold text-3xl bg-slate-100 rounded">{entry.data.title}</div>
-  <Content />
+
+<ResourcesLayout 
+  title={pageData.Name} 
+  frontmatter={{
+    title: pageData.Name,
+    summary: pageData.Summary,
+    pubDate: pageData.PubDate,
+    content_type: pageData.Content_Type,
+    slug: pageData.Slug,
+  }} 
+  headings={headings}
+>
+  <div class="py-8 pl-4 mt-16 font-bold text-2xl md:text-3xl bg-slate-100 rounded">{pageData.Name}</div>
+  <div class="content" set:html={htmlContent} />
 </ResourcesLayout>
+
+<style>
+  html {
+    scroll-behavior: smooth; /* Smooth scrolling for TOC links */
+  }
+  .content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+  }
+  .content th, .content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  .content th {
+    background-color: #f2f2f2;
+  }
+</style>

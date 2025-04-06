@@ -17,17 +17,6 @@ const pageCollection = defineCollection({
   }),
 });
 
-const database = defineCollection({
-  loader: notionLoader({
-    auth: import.meta.env.NOTION_TOKEN, // Token de la API
-    database_id: import.meta.env.NOTION_DATABASE_ID, // ID de la base de datos
-    // Opcional: Filtros de Notion
-    // filter: {
-    //   property: 'Published', // Ejemplo: filtrar por una propiedad "Published"
-    //   checkbox: { equals: true },
-    // },
-  }),
-});
 
 const posts = defineCollection({
     loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
@@ -45,18 +34,6 @@ const posts = defineCollection({
     })
 });
 
-// const countries = defineCollection({
-//     loader: file("src/content/countries/Countries.json"),
-//     schema: z.object({
-//       name: z.string(),
-//       treaties: z.array(z.string()),   
-//       excempted: z.string(),
-//       image: z.object({
-//         url: z.string(),
-//         alt: z.string()
-//       }),
-//     })
-// });
 
 const resources = defineCollection({
     loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
@@ -114,7 +91,6 @@ export const collections = {
   'posts': posts,
   'resources': resources,  
   'visas': visas,
-  'database': database,
   'page': pageCollection,
   // 'countries': countries,
   // 'authors': authors,

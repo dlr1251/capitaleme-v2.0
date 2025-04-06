@@ -60,13 +60,13 @@ const slug = url.pathname.slice(7);
 		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load/>			
 		<div class="flex min-h-screen p-0 sm:ml-0">
 			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 sm:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
-				 <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">
+				 <div class="h-full px-3 py-4 overflow-y-auto bg-primary">
 					<div class="my-4 mx-2 text-primary border-b pb-2">Which visa is the best for you?</div>											  							   
 						   <span class="p-0 ms-3 text-xl text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All visas' : 'Todas las visas' }</span>							
 							<ul id="dropdown-visas-list" class="pb-2 overflow-y-scroll h-full relative">								
 								{ sidebarVisas.map( (visa) => (
 									<li class="">
-										<a href={locale == "en" ? `/visas/${visa.slug.slice(3)}` : `/es/visas/${visa.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full hover:underline ${url.pathname == '/visas/' + visa.slug.slice(3) || url.pathname == '/es/visas/' + visa.slug.slice(3) ? 'bg-primary text-white' : ''}`}>
+										<a href={locale == "en" ? `/en/visas/${visa.slug.slice(3)}` : `/es/visas/${visa.slug.slice(3)}` } class={`flex items-center p-2 text-white rounded-lg group max-w-full hover:underline ${url.pathname.includes('/visas/' + visa.slug.slice(3)) || url.pathname.includes('/es/visas/' + visa.slug.slice(3)) ? 'bg-secondary text-white font-bold' : ''}`}>
 											<span class="flex-1 ms-6 whitespace-wrap font-light">{visa.data.title}</span>      
 										</a>
 									</li>
@@ -77,20 +77,7 @@ const slug = url.pathname.slice(7);
 			<!-- Main content container -->
 			<div class="flex-none w-full md:w-auto">
 				<div 
-					class="
-						p-4 
-						rounded-lg 
-						mt-14 
-						prose 
-						prose-slate 
-						prose-lg 
-						md:prose-xl 
-						prose-headings:text-primary 
-						prose-h2:text-2xl 
-						prose-h2:underline 
-						prose-h3:text-xl
-						prose-h3:text-slate-500
-						border-r
+					class="p-4 rounded-lg mt-14 prose prose-slate prose-lg md:prose-xl prose-headings:text-primary prose-h2:text-2xl prose-h2:underline prose-h3:text-xl prose-h3:text-slate-500 border-r
 						">
 
 						<BreadCrumb pathname={Astro.url.pathname}/>

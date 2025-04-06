@@ -9,167 +9,123 @@ import GoogleTag from '../components/GoogleTag.astro'
 import BreadCrumb from '../components/BreadCrumb.astro'
 import SpeedInsights from "@vercel/speed-insights/astro"
 import ResourcesTOC from '../components/ResourcesTOC'
-import jsonData from '../assets/res_5477.json';
+import Breadcrumb from '../components/BreadCrumb.astro';
 
+
+
+const notionEntries = await getCollection('notion');
 
 interface Props {
-	title: string;		
-	frontmatter: any;
-	headings: any;
+  showBreadcrumb?: boolean;
+  title: string;		
+  frontmatter: any;
+  headings: any;
 }
 
-const { title, headings, workPermit, beneficiaries, type, sponsored, countries, visa_rara } = Astro.props.frontmatter || Astro.props 
-
 const locale = Astro.currentLocale
+const { title, showBreadcrumb = true } = Astro.props.frontmatter || Astro.props 
+const { headings } = Astro.props
 
 const sidebarVisas = await getCollection("visas",({ id, data }) => {
-	if (locale == "en") {
-		return id.startsWith('en/');
-	} else {
-		return id.startsWith('es/');
-	}
+  if (locale == "en") {
+    return id.startsWith('en/');
+  } else {
+    return id.startsWith('es/');
+  }
 });
 
 const sidebarPosts = await getCollection("posts",({ id }) => {
-	if (locale == "en") {
-		return id.startsWith('en/');
-	} else {
-		return id.startsWith('es/');
-	}
+  if (locale == "en") {
+    return id.startsWith('en/');
+  } else {
+    return id.startsWith('es/');
+  }
 });
 
 const sidebarResources = await getCollection("resources",({ id }) => {
-	if (locale == "en") {
-		return id.startsWith('en/');
-	} else {
-		return id.startsWith('es/');
-	}
+  if (locale == "en") {
+    return id.startsWith('en/');
+  } else {
+    return id.startsWith('es/');
+  }
 });
 
 const url = Astro.url
 const slug = url.pathname.slice(7);
+console.log('Headings in layout:', headings);
+console.log('url:', url);
+console.log("Resources Entries: ", notionEntries);
 
 ---
+
 <!doctype html>
 <html lang={lang}>
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Learn about Colombian visas cateogories and current regulations" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<title>{title}</title>
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<GoogleTag/>
-		<SpeedInsights/>
-		<meta property="og:title" content={title}>
-		<meta property="og:description" content="Learn about Colombian visas cateogories and current regulations" />
-		<meta property="og:url" content="https://www.capitaleme.com/">		
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Learn about Colombian visas categories and current regulations" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>{title}</title>
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <GoogleTag/>
+    <SpeedInsights/>
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content="Learn about Colombian visas categories and current regulations" />
+    <meta property="og:url" content="https://www.capitaleme.com/"/>		
+  </head>
+  <body>
+    <WhatsAppButton/>
+    <Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />	
 
-	</head>
-	<body>
-		<WhatsAppButton/>
-		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />			
-		<div class="flex min-h-screen p-0 sm:ml-0">
-			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 lg:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
-				 <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">
-					<div class="my-4 mx-2 text-primary border-b pb-2">Discover usefull resources to understand the Colombian visas regulations.</div>
-					
-					<ul class="space-y-2 font-medium">                   					   
-					   <li>											  							   
-							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group rounded-lg hover:bg-secondary hover:text-white border hover:border-secondary border-secondary border-3" aria-controls="dropdown-posts-list" data-collapse-toggle="dropdown-posts-list">								
-									<span class="p-0 ms-3 text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All posts' : 'Todos los posts' }</span>
-										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-									</svg>
-							</button>
-							<ul id="dropdown-posts-list" class="hidden py-2 space-y-2">
-								{ sidebarPosts.map( (post) => (
-									<li class="">
-										<a href={locale == "en" ? `/blog/${post.slug.slice(3)}` : `/es/blog/${post.slug.slice(3)}` } class={`flex items-center p-2 text-primary font-light hover:underline rounded-lg group max-w-full ${url.pathname == '/blog/' + post.slug.slice(3) || url.pathname == '/es/blog/' + post.slug.slice(3) ? ' bg-primary text-white' : ''}`}>
-											<span class="flex-1 ms-6 whitespace-wrap">{post.data.title}</span>      
-										</a>
-									</li>
-								)) }
-							</ul>
-					  	</li>
-					   <li class="h-42">											  							   
-							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group rounded-lg group border border-secondary border-3 hover:bg-secondary hover:text-white hover:border-secondary" aria-controls="dropdown-visas-list" data-collapse-toggle="dropdown-visas-list">								
-									<span class="p-0 ms-3 text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All visas' : 'Todas las visas' }</span>
-										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-									</svg>
-							</button>
-							<ul id="dropdown-visas-list" class="hidden pb-2 overflow-y-scroll h-96 relative">								
-								{ sidebarVisas.map( (visa) => (
-									<li class="">
-										<a href={locale == "en" ? `/visas/${visa.slug.slice(3)}` : `/es/visas/${visa.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full hover:underline ${url.pathname == '/visas/' + visa.slug.slice(3) || url.pathname == '/es/visas/' + visa.slug.slice(3) ? 'bg-primary text-white' : ''}`}>
-											<span class="flex-1 ms-6 whitespace-wrap font-light">{visa.data.title}</span>      
-										</a>
-									</li>
-								)) }								
-							</ul>
-					  	</li>
-					   <li class="pb-20">											  							   
-							<button type="button" class="flex flex-row items-center justify-between w-full p-2 text-base text-secondary transition duration-75 rounded-lg group rounded-lg group hover:bg-secondary hover:text-white border border-secondary border-3" aria-controls="dropdown-resources-list" data-collapse-toggle="dropdown-resources-list">								
-									<span class="p-0 ms-3 rounded-lg">{lang == 'en' ? 'All resources' : 'Todos los recursos' }</span>
-										<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-										<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-									</svg>
-							</button>
-							<ul id="dropdown-resources-list" class="py-2 space-y-2">
-								{ sidebarResources.map( (resource) => (									
-									<li class="">
-										<a href={locale == "en" ? `/resources/${resource.slug.slice(3)}` : `/es/resources/${resource.slug.slice(3)}` } class={`flex items-center p-2 text-primary rounded-lg group max-w-full ${url.pathname == '/resources/' + resource.slug.slice(3) || url.pathname == '/es/resources/' + resource.slug.slice(3) ? ' bg-primary text-white' : ''}`}>
-											<span class="flex-1 ms-6 font-light whitespace-wrap">{resource.data.title}</span>      
-										</a>
-									</li>
-								)) }
-							</ul>
-					  	</li>
-					</ul>
-				 </div>
-			  </aside>	
-			<!-- Main content container -->
-			<div class="flex-none w-full md:w-auto">
-				<div 
-					class="
-							p-4 
-							rounded-lg 
-							mt-14 
-							prose 
-							prose-slate 
-							prose-lg 
-							lg:prose-xl 
-							prose-headings:text-primary 
-							prose-h2:text-2xl 
-							prose-h2:underline 
-							prose-h3:text-xl
-							prose-h3:text-slate-500
-							border-r
-						">
+    <div class="flex min-h-screen p-0 sm:ml-0">
+      <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 lg:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
+        <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">
+          <div class="my-4 mx-2 text-primary border-b pb-2">
+            Discover useful resources to understand the Colombian visas regulations.
+          </div>
+          <ul class="space-y-2 font-medium"> 						
+            <li>											  							   
+              <div class="flex flex-row items-center justify-between w-full pt-2 text-base text-primary transition 		duration-75  hover:bg-secondary hover:text-white   ">								
+                <span class="p-0 group-hover:text-white">{lang == 'en' ? 'All resources' : 'Todos los posts' }</span>               
+              </div>
+              <ul class=" py-2 space-y-2 flex flex-col">
+                { notionEntries.map( (resource) => (
+					<a href={`/en/resources/${resource.data.slug}`} 
+					class={`font-light text-md text-primary my-3 pt-4 hover:bg-white ${ url.pathname === `/en/resources/${resource.data.slug}`   ? `text-secondary` : `text-terciary`}`}>
+						{resource.data.data.Name}
+					</a>
+				)) }
+              </ul>
+            </li>
 
-					<div class="max-w-screen-sm md:max-w-screen-2xl mx-auto">											
-						<BreadCrumb/>
-						
-						<slot/>						
-					</div>
-				</div>
-			</div>
-			
-			<!-- Sticky TableOfContents -->
-			<div class="hidden 2xl:block sticky top-4 h-screen z-40">
-				<div class="h-full overflow-y-auto">
-					<!-- <TableOfContents headings={Astro.props.headings} /> -->
-					 <ResourcesTOC data={Astro.props.headings} client:load/>
-				</div>
-			</div>
-		</div>			
-		
-		<Footer/>
-			
-		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>
-		
-	</body>
+          </ul>
+        </div>
+      </aside>	
+      <!-- Main content container -->
+      <div class="flex-none w-full md:w-auto">
+        <div class="p-4 rounded-lg mt-14 prose prose-slate prose-lg lg:prose-xl prose-headings:text-primary prose-h2:text-2xl prose-h2:underline prose-h3:text-xl prose-h3:text-slate-500 border-r">
+          <div class="max-w-screen-sm md:max-w-screen-2xl mx-auto">											
+            {showBreadcrumb && <Breadcrumb pathname={Astro.url.pathname} />}
+            <slot/>						
+          </div>
+        </div>
+      </div>			
+      <!-- Sticky TableOfContents -->
+      <div class="hidden 2xl:block sticky top-4 h-screen z-40">
+        <div class="h-full overflow-y-auto">
+          <ResourcesTOC 
+            data={headings} 
+            title={lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'} 
+            style={{ width: 'full', top: '100px', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '8px' }} 
+            linkStyle={{ color: '#333', fontWeight: '500' }} 
+            client:load
+          />
+        </div>
+      </div>
+    </div>					
+    <Footer/>			
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>		
+  </body>
 </html>

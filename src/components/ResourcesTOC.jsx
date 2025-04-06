@@ -1,31 +1,44 @@
-const TOC = ({ data }) => (
-  <nav style={{ position: 'fixed', top: '80px', right: '20px', width: '500px', overflowY: 'auto', maxHeight: '90vh' }}>
-    <h3 className='text-secondary'>Table of Contents</h3>
-    <ul style={{ listStyle: 'none', padding: 0 }}>
-      {data?.map((title, index) => {
-        if (!title?.slug || !title?.text) return null;
-        
-        // Add indentation and styling based on depth
+const ResourcesTOC = ({ 
+  data, 
+  title = 'Table of Contents', 
+  style = {}, 
+  listStyle = {}, 
+  linkStyle = {} 
+}) => (
+  <nav style={{ 
+    position: 'relative', 
+    top: '80px', 
+    right: '-20px', 
+    width: 'auto', 
+    overflowY: 'auto', 
+    maxHeight: '90vh', 
+    ...style 
+  }}>
+    <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem', fontWeight: '600' }}>{title}</h3>
+    <ul style={{ listStyle: 'none', padding: 0, ...listStyle }}>
+      {data?.map((heading, index) => {
+        if (!heading?.slug || !heading?.text) return null;
+
         const itemStyle = {
-          marginLeft: `${(title.depth - 1) * 1.5}rem`,
+          marginLeft: `${(heading.depth - 1) * 1.5}rem`,
           marginBottom: '0.5rem'
         };
-        
-        const linkStyle = {
-          color: title.depth === 1 ? '#000' : '#666',
-          fontSize: `${1.1 - title.depth * 0.1}rem`,
+
+        const defaultLinkStyle = {
+          color: heading.depth === 1 ? '#000' : '#666',
+          fontSize: `${1.1 - heading.depth * 0.1}rem`,
           textDecoration: 'none'
         };
-        
+
         return (
           <li key={index} style={itemStyle}>
             <a 
-              href={`#${title.slug}`}
-              style={linkStyle}
+              href={`#${heading.slug}`} 
+              style={{ ...defaultLinkStyle, ...linkStyle }}
               onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
               onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
             >
-              {title.text}
+              {heading.text}
             </a>
           </li>
         );
@@ -34,4 +47,4 @@ const TOC = ({ data }) => (
   </nav>
 );
 
-export default TOC;
+export default ResourcesTOC;

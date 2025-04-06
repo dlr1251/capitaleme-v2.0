@@ -1,43 +1,73 @@
 ---
+import { getEntry } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
+import { getEntryBySlug } from "astro:content";
 import { getCollection } from 'astro:content';
-const allResources = await getCollection('resources', ({ id }) => {
+
+const notionEntries = await getCollection('notion');
+
+console.log({
+  "Notion Entries": notionEntries[0].data.data
+});
+
+
+const mdxResources = await getCollection('resources', ({ id }) => {
   return id.startsWith('en/');
 });
-const categories = allResources.map(p => p.data.tags);
+
+
+
+const allEntries = [
+  ...notionEntries.map((entry) => ({
+    slug: entry.data.data.Slug || entry.id,
+    title: entry.data.data.Name,
+    description: entry.data.data.Summary || '',
+    pubDate: entry.data.data.PubDate || new Date(),
+    type: entry.data.data.Content_Type || 'post',
+    source: 'notion',
+  })),
+  ...mdxResources.map((entry) => ({
+    slug: entry.slug,
+    title: entry.data.title,
+    description: entry.data.description,
+    pubDate: new Date(entry.data.pubDate),
+    type: 'resource',
+    source: 'mdx',
+  })),
+];
+
+// Filtrar duplicados: si un slug existe en Notion, omitir la versión MDX
+const uniqueEntries = [];
+const seenSlugs = new Set();
+for (const entry of allEntries) {
+  if (!seenSlugs.has(entry.slug)) {
+    seenSlugs.add(entry.slug);
+    uniqueEntries.push(entry);
+  }
+}
 
 ---
 
-<Layout title="Resources">
+<Layout 
+  title="Resources">
   <!-- <SectionOne/> -->
     <div class="max-w-screen-xl mx-auto">
       <div class="min-h-screen bg-gray-50">
         <!-- Hero Section -->
-        <section class="bg-white py-16 px-4 text-center h-96 flex flex-col justify-center">
-          <h1 class="text-4xl font-bold text-primary mt-12">Legal Resource Library</h1>
-          <p class="text-lg text-gray-600 mt-4">Your comprehensive collection of legal articles, texts, and commented laws.</p>  
-        </section>
-    
-        <!-- Category Overview -->
-        <section class="py-16 px-4 hidden">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories.map(category => (
-              <a href={`.`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div class="text-4xl">{`icon`}</div>
-                <h2 class="mt-4 text-2xl font-semibold text-gray-800">{category}</h2>
-              </a>
-            ))}
-          </div>
+        <section class="bg-white py-16 px-4 text-center md:h-96 h-auto flex flex-col justify-center mt-[64px]">
+          <h1 class="text-2xl md:text-4xl font-bold text-primary mt-12">Legal Resource Library</h1>
+          <p class="text-lg text-gray-600 mt-4">
+            Your comprehensive collection of legal articles, texts, and commented laws.
+          </p>  
         </section>
     
         <!-- Resource Grid -->
-        <section class="py-16 px-4">
+        <section class="py-8 md:py-16 px-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allResources.map(resource => (
-              <a href={`resources/${resource.slug.slice(3)}`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                {/* <div class="text-3xl">{icon}</div> */}
-                <h3 class="mt-4 text-xl font-semibold text-gray-800">{resource.data.title}</h3>
-                <p class="mt-2 text-gray-600">{resource.data.description}</p>
+            {allEntries.map(resource => (
+              <a href={`resources/${resource.slug}`} class="block p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">                
+                <h3 class="mt-4 text-xl font-semibold text-gray-800">{resource.title}</h3>
+                <p class="mt-2 text-gray-600">{resource.description}</p>
               </a>
             ))}
           </div>

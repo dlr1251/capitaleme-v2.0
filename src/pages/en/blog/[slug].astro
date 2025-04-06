@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import PostsLayout from '../../../layouts/PostsLayout.astro';
+import BlogPostHeaderAlt from '../../../components/en/blog/BlogPostHeaderAlt';
 export const prerender = true;
 
 export async function getStaticPaths() {
@@ -20,15 +21,10 @@ const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 const { pathname } = Astro.url
 
-
 ---
 <PostsLayout title={entry.data.title} headings={headings} frontmatter={entry.data}>
-  <div class="py-8 pl-4 mt-16 font-bold text-3xl bg-slate-100 rounded">
-    {entry.data.title}
-    <div class="text-sm pt-2 font-normal">by: {entry.data.author}</div>
-    <div class="text-sm pt-2 font-normal">published: {entry.data.pubDate.toISOString().slice(0,10)}</div>
-  </div>
-  <div class="">
+  <BlogPostHeaderAlt entry={entry} client:load />
+  <div class="container mx-auto px-4 prose prose-lg max-w-4xl mb-20">
     <Content />
   </div>
 </PostsLayout>
