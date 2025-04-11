@@ -6,9 +6,9 @@ import AccordionFAQ from '../../AccordionFAQ';
 
 // Constants
 const TABS = {
+  PROCESS: 'real-estate-process',
   EXPLORE: 'explore-properties',
   SEARCH: 'property-search',
-  PROCESS: 'real-estate-process',
   FAQS: 'real-estate-faqs'
 };
 
@@ -105,16 +105,16 @@ const PricingSection = () => (
 );
 
 const RealEstateSection = () => {
-  const [activeTab, setActiveTab] = useState(TABS.EXPLORE);
+  const [activeTab, setActiveTab] = useState(TABS.PROCESS);
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case TABS.EXPLORE:
-        return <ExploreProperties />;
-      case TABS.SEARCH:
-        return <PropertySearchService />;
       case TABS.PROCESS:
         return <InfoSectionSteps sections={STEPS_REAL_ESTATE} />;
+      case TABS.SEARCH:
+        return <PropertySearchService />;
+      case TABS.EXPLORE:
+        return <ExploreProperties />;      
       case TABS.FAQS:
         return <AccordionFAQ items={FAQS_REAL_ESTATE} />;
       default:
@@ -126,7 +126,7 @@ const RealEstateSection = () => {
     <section className="bg-gray-50 p-8 rounded-lg shadow-md mt-12 mb-8">
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="space-y-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4 text-center">Colombian Real Estate Guide</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4">Colombian Real Estate Guide</h2>
           
           <div className="intro-text">
             <p className='font-light text-md md:text-lg text-primary text-justify mb-4'>If you are planning to buy a finca, an apartment, or any real estate property in Colombia, it's important to know that the process is quite different from that in the USA, Europe, and other countries.</p>
@@ -137,15 +137,15 @@ const RealEstateSection = () => {
 
         <div className="tabs-section">
           <ul className="flex flex-wrap -mb-px text-sm md:text-lg text-center border-b border-gray-200" role="tablist">
+            <TabButton id={TABS.PROCESS} active={activeTab === TABS.PROCESS} onClick={setActiveTab}>
+              The Process
+            </TabButton>
             <TabButton id={TABS.EXPLORE} active={activeTab === TABS.EXPLORE} onClick={setActiveTab}>
               Explore Properties
             </TabButton>
             <TabButton id={TABS.SEARCH} active={activeTab === TABS.SEARCH} onClick={setActiveTab}>
               Property Search
-            </TabButton>
-            <TabButton id={TABS.PROCESS} active={activeTab === TABS.PROCESS} onClick={setActiveTab}>
-              The Process
-            </TabButton>
+            </TabButton>            
             <TabButton id={TABS.FAQS} active={activeTab === TABS.FAQS} onClick={setActiveTab}>
               FAQs
             </TabButton>

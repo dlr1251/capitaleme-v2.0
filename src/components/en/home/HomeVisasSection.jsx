@@ -67,7 +67,7 @@ const VisasAndImmigration = ({ allVisas, locale }) => {
 
   return (
     <section className="md:max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-12 text-primary">
-      <h2 className="text-xl text-secondary md:text-3xl font-bold mb-8 md:text-terciary">
+      <h2 className="text-xl text-secondary md:text-3xl font-bold mb-8">
         Visas and Immigration
       </h2>
       

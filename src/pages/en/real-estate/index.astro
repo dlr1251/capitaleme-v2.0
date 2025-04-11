@@ -3,23 +3,38 @@ import Layout from "../../../layouts/Layout.astro";
 import ServicesGrid from '../../../components/en/real-estate/ServicesGrid';
 import SellerFeatures from '../../../components/en/real-estate/SellerFeatures';
 import HomeRealEstateSection from '../../../components/en/home/HomeRealEstateSection.jsx';
-
+import GoogleReviews from '../../../components/en/common/GoogleReviews.jsx'
+import Calculator from "../../../components/en/real-estate/Calculator";
+import RealEstateHero from "../../../components/en/real-estate/RealEstateHero.astro";
 const pageTitle = "Real Estate Services in Colombia";
 ---
 <Layout title={pageTitle}>
+
+      <RealEstateHero />
+
+      <HomeRealEstateSection client:load/>
+
+      <div class="mx-auto w-auto md:w-2/3 mb-8">
+            <div class="mb-16">
+                  <GoogleReviews client:load/>
+            </div>
+            <Calculator client:load/>
+      </div>
+
+
       <div class="px-4 w-auto md:w-full mx-auto mt-[75px]">
+            
             <div class="bg-gray-50 p-8 rounded-lg shadow-md space-y-8 mb-8">
-                  <div class="text-center max-w-3xl mx-auto mb-8">
-                        <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4">Real Estate in Colombia</h1>
-                        <p class="text-gray-600">Expert legal guidance for international property buyers and sellers</p>
-                  </div>
+                  
                   
                   <ServicesGrid client:load />
             </div>
 
             <SellerFeatures client:load />
 
-            <HomeRealEstateSection client:load/>
+        
+
+
       </div>
 </Layout>
 

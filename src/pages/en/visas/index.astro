@@ -4,7 +4,7 @@ import Layout from "../../../layouts/Layout.astro";
 import GoogleReviews from "../../../components/en/common/GoogleReviews.jsx";
 import FilterVisaWidget from "../../../components/en/visas/AllVisaFilterWidget.jsx";
 import CalendlyInline from "../../../components/en/home/CalendlyInline.astro";
-import ResourcesList from "../../../components/en/resources/ResourcesList.astro";
+
 import AccordionFAQ from "../../../components/AccordionFAQ";
 // import VisaAssistanceService from "../../../components/en/visas/VisaAssistanceService.astro";
 import VisasHero from "../../../components/en/visas/VisasHero.astro";
@@ -50,7 +50,7 @@ const visasFAQs = [
     <FilterVisaWidget locale="en" visas={allVisas} client:only="react" />
     
     <CalendlyInline/>
-    <ResourcesList />
+    
     <div class="mt-20 mb-12">
       <h3 class="text-terciary font-bold text-3xl mb-8">FAQ</h3>
       <AccordionFAQ items={visasFAQs} client:load/>
