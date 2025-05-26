@@ -58,12 +58,12 @@ const slug = url.pathname.slice(7);
 	<body>
 		<WhatsAppButton/>
 		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load/>			
-		<div class="flex min-h-screen p-0 sm:ml-0">
+		<div class="flex min-h-screen p-0 sm:ml-0 justify-between">
 			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 sm:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
 				 <div class="h-full px-3 py-4 overflow-y-auto bg-primary">
 					<div class="my-4 mx-2 text-primary border-b pb-2">Which visa is the best for you?</div>											  							   
 						   <span class="p-0 ms-3 text-xl text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All visas' : 'Todas las visas' }</span>							
-							<ul id="dropdown-visas-list" class="pb-2 overflow-y-scroll h-full relative">								
+							<ul id="dropdown-visas-list" class="pb-2 overflow-y-scroll h-[42rem] relative">								
 								{ sidebarVisas.map( (visa) => (
 									<li class="">
 										<a href={locale == "en" ? `/en/visas/${visa.slug.slice(3)}` : `/es/visas/${visa.slug.slice(3)}` } class={`flex items-center p-2 text-white rounded-lg group max-w-full hover:underline ${url.pathname.includes('/visas/' + visa.slug.slice(3)) || url.pathname.includes('/es/visas/' + visa.slug.slice(3)) ? 'bg-secondary text-white font-bold' : ''}`}>
