@@ -3,67 +3,69 @@ import AllVisaFilterWidget from '../visas/AllVisaFilterWidget';
 import InfoSectionSteps from '../InfoSectionSteps';
 import AccordionFAQ from '../../AccordionFAQ';
 
+// Define steps array as a constant
+const steps = [
+  {
+    title: "Initial consultation",
+    content:
+      "From the start, we provide personalized consultation to choose the visa category that best fits your professional, travel, personal, or family plans.",
+  },
+  {
+    title: "Legal Strategy",
+    content:
+      "Depending on your needs (e.g., salvoconducto, permit extension), we devise a tailored legal strategy for your application.",
+  },
+  {
+    title: "Application Submition",
+    content:
+      "We handle the submission process of your application and coordinate any associated payments, ensuring accuracy and efficiency.",
+  },
+  {
+    title: "Process Monitoring",
+    content:
+      "We keep you updated on every step of the application status and handle any follow-ups with the immigration authority.",
+  },
+  {
+    title: "Approval & Issuance",
+    content:
+      "Once your visa is approved, we verify all documentation, guide you through final payments, and confirm the details of your visa.",
+  },
+  {
+    title: "Cédula de extranjería",
+    content:
+      "After visa approval, we assist you in obtaining your Cédula de extranjería, ensuring you meet all requirements and understand next steps.",
+  },
+];
+
+// Define visasFAQs array as a constant
+const visasFAQs = [
+  {
+    title: "How much does it cost?",
+    content:
+      "Depending on the visa category, it can range from $99 USD to $380 USD",
+  },
+  {
+    title: "How long does it take?",
+    content:
+      "Depending on your needs (e.g., salvoconducto, permit extension), it can take around 6-8 weeks.",
+  },
+  {
+    title: "Can I apply from Mexico?",
+    content:
+      "You can apply for any other country, provided that you hold a valid and vigent resident permit in that country",
+  },
+  {
+    title: "What if I get denied?",
+    content:
+      "Consider that the final response can be either 'Negada' or 'Inadmitida'. Both with different consequences. When a visa application gets 'Negada', it means that you can't apply for a new visa until 6 months later. If the visa is deemed inadmissible or 'Inadmitida', you can apply for a new one the next day. ",
+  },
+];
+
 const VisasAndImmigration = ({ allVisas, locale }) => {
   const [activeTab, setActiveTab] = useState('discover-visas');
 
   // Filter popular visas if needed (not used in this markup)
   const popularVisas = allVisas.filter(visa => visa.data.popular === true);
-
-  const steps = [
-    {
-      title: "Initial consultation",
-      content:
-        "From the start, we provide personalized consultation to choose the visa category that best fits your professional, travel, personal, or family plans.",
-    },
-    {
-      title: "Legal Strategy",
-      content:
-        "Depending on your needs (e.g., salvoconducto, permit extension), we devise a tailored legal strategy for your application.",
-    },
-    {
-      title: "Application Submition",
-      content:
-        "We handle the submission process of your application and coordinate any associated payments, ensuring accuracy and efficiency.",
-    },
-    {
-      title: "Process Monitoring",
-      content:
-        "We keep you updated on every step of the application status and handle any follow-ups with the immigration authority.",
-    },
-    {
-      title: "Approval & Issuance",
-      content:
-        "Once your visa is approved, we verify all documentation, guide you through final payments, and confirm the details of your visa.",
-    },
-    {
-      title: "Cédula de extranjería",
-      content:
-        "After visa approval, we assist you in obtaining your Cédula de extranjería, ensuring you meet all requirements and understand next steps.",
-    },
-  ];
-
-  const visasFAQs = [
-    {
-      title: "How much does it cost?",
-      content:
-        "Depending on the visa category, it can range from $99 USD to $380 USD",
-    },
-    {
-      title: "How long does it take?",
-      content:
-        "Depending on your needs (e.g., salvoconducto, permit extension), it can take around 6-8 weeks.",
-    },
-    {
-      title: "Can I apply from Mexico?",
-      content:
-        "You can apply for any other country, provided that you hold a valid and vigent resident permit in that country",
-    },
-    {
-      title: "What if I get denied?",
-      content:
-        "Consider that the final response can be either 'Negada' or 'Inadmitida'. Both with different consequences. When a visa application gets 'Negada', it means that you can't apply for a new visa until 6 months later. If the visa is deemed inadmissible or 'Inadmitida', you can apply for a new one the next day. ",
-    },
-  ];
 
   return (
     <section className="md:max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-12 text-primary">

@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import vercel from "@astrojs/vercel";
-import astroExpressiveCode from 'astro-expressive-code';
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import partytown from "@astrojs/partytown";
@@ -34,7 +33,7 @@ export default defineConfig({
     }
   },
   integrations: [
-    astroExpressiveCode(), 
+    
     mdx(), 
     react(), 
     sitemap(),

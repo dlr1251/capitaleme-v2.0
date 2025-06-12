@@ -4,7 +4,7 @@ import PropertySearchService from '../real-estate/PropertySearchService';
 import ExploreProperties from './ExploreProperties';
 import AccordionFAQ from '../../AccordionFAQ';
 
-// Constants
+// Define TABS as a constant
 const TABS = {
   PROCESS: 'real-estate-process',
   EXPLORE: 'explore-properties',
@@ -12,6 +12,7 @@ const TABS = {
   FAQS: 'real-estate-faqs'
 };
 
+// Define STEPS_REAL_ESTATE as a constant
 const STEPS_REAL_ESTATE = [
   {
     title: 'Timing & Banking',
@@ -39,6 +40,7 @@ const STEPS_REAL_ESTATE = [
   },
 ];
 
+// Define FAQS_REAL_ESTATE as a constant
 const FAQS_REAL_ESTATE = [
   {
     title: 'How much does it cost?',
