@@ -31,7 +31,7 @@ const CalendlyButton = () => {
     e.preventDefault();
     if (window.Calendly) {
       window.Calendly.initPopupWidget({
-        url: 'https://calendly.com/danielluque/45-min-meeting?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=16345f'
+        url: 'https://calendly.com/capital-m-law/initial-consultation-with-capital-m'
       });
     }
   };
