@@ -2,6 +2,9 @@
   "name": "capitalm-website",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=18.20.8"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -16,7 +19,7 @@
     "@astrojs/react": "^4.2.3",
     "@astrojs/sitemap": "^3.3.0",
     "@astrojs/tailwind": "^6.0.2",
-    "@astrojs/vercel": "^8.1.3",
+    "@astrojs/vercel": "^8.1.5",
     "@floating-ui/dom": "^1.6.10",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
