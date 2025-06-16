@@ -1,0 +1,78 @@
+---
+import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
+import Layout from '../../../layouts/Layout.astro';
+import NotionBlock from '../../../components/NotionBlock.astro';
+import { Client } from '@notionhq/client';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  // Get all Notion pages that match our criteria
+  const notionDatabaseId = '20d0a3cd15e38169928fff5c6f2b219c';
+  const notionContent = await getNotionDatabase(notionDatabaseId);
+
+  return notionContent.map((item: any) => {
+    const title = item.properties?.['Topic Name']?.title[0]?.plain_text || 'Untitled';
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    
+    return {
+      params: { slug },
+      props: { 
+        pageId: item.id,
+        title,
+        url: item.url,
+        lastEdited: item.last_edited_time,
+        icon: item.icon
+      }
+    };
+  });
+}
+
+const { pageId, title, url, lastEdited, icon } = Astro.props;
+const page = await getNotionPage(pageId);
+
+// Fetch the page blocks
+const notion = new Client({
+  auth: import.meta.env.NOTION_API_KEY,
+});
+
+const blocks = await notion.blocks.children.list({
+  block_id: pageId,
+  page_size: 100,
+});
+
+---
+
+<Layout title={title}>
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
+    <article class="py-12">
+      <!-- Header -->
+      <header class="mb-12">
+        <div class="flex items-center gap-4 mb-4">
+          {icon?.type === 'emoji' && (
+            <span class="text-3xl">{icon.emoji}</span>
+          )}
+          <h1 class="text-3xl sm:text-4xl font-light text-gray-900">{title}</h1>
+        </div>
+        <div class="flex items-center gap-4 text-sm text-gray-500">
+          <span>Last updated: {new Date(lastEdited).toLocaleDateString()}</span>
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-blue-600 hover:text-blue-800"
+          >
+            View in Notion
+          </a>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="prose prose-lg max-w-none">
+        {blocks.results.map((block: any) => (
+          <NotionBlock block={block} />
+        ))}
+      </div>
+    </article>
+  </div>
+</Layout> 

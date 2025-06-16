@@ -1,10 +1,8 @@
 import { defineCollection, z } from 'astro:content';
-import { notionLoader } from 'notion-astro-loader';
-import { glob, file } from 'astro/loaders';
 import { getNotionPage } from '../lib/notion';
 import { Client } from '@notionhq/client';
 // import NotionToMarkdown from 'notion-to-md';
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
+const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
 
 // Define extended block type to include children
 interface ExtendedBlock extends Record<string, any> {
@@ -198,19 +196,22 @@ function blocksToMarkdown(blocks: ExtendedBlock[], indentLevel: number = 0): str
         // Header separator
         const headerSeparator = '| ' + headerRow.table_row.cells.map(() => '---').join(' | ') + ' |';
 
-        // Body rows
-        const bodyRows = rows.slice(1).map((row: any) => {
+        // Data rows
+        const dataRows = rows.slice(1).map((row: any) => {
           const cells = row.table_row.cells.map((cell: any) => renderRichText(cell)).join(' | ');
           return `| ${cells} |`;
-        }).join('\n');
+        });
 
-        // Combine table Markdown
-        markdown += `${headerMarkdown}\n${headerSeparator}${bodyRows ? '\n' + bodyRows : ''}\n\n`;
+        markdown += [headerMarkdown, headerSeparator, ...dataRows].join('\n') + '\n\n';
         break;
+
+      default:
+        // For unsupported block types, add a comment
+        markdown += `<!-- Unsupported block type: ${block.type} -->\n\n`;
     }
   }
 
-  return markdown.trim();
+  return markdown;
 }
 
 const notionCollection = defineCollection({
@@ -257,12 +258,18 @@ const notionCollection = defineCollection({
   },
 });
 
-
+// const database = defineCollection({
+//   loader: notionLoader({
+//     auth: import.meta.env.NOTION_API_KEY,
+//     database_id: import.meta.env.NOTION_DATABASE_ID,
+//   }),
+// });
 
 export const collections = {  
   'posts': postsCollection, // Archivos MDX
   'resources': resourcesCollection, // Archivos MDX
   'notion': notionCollection,
+  // 'database': database,
 }; 
 
 

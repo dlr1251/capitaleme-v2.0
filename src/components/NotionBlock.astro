@@ -1,0 +1,419 @@
+---
+interface RichTextItem {
+  type: string;
+  plain_text: string;
+  href?: string;
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    strikethrough: boolean;
+    underline: boolean;
+    code: boolean;
+  };
+}
+
+interface BlockContent {
+  type: string;
+  class: string;
+  content: RichTextItem[] | BlockContent[] | string;
+  attrs?: {
+    href?: string;
+    target?: string;
+    rel?: string;
+    type?: 'checkbox' | 'text' | 'radio' | 'submit' | 'button';
+    checked?: boolean;
+    disabled?: boolean;
+    class?: string;
+  };
+}
+
+interface Props {
+  block: any;
+}
+
+const { block } = Astro.props;
+
+const renderRichText = (richText: RichTextItem[]): BlockContent[] => {
+  if (!richText || !Array.isArray(richText)) {
+    return [];
+  }
+  
+  return richText.map((text: RichTextItem) => {
+    const classes = [
+      text.annotations.bold && 'font-bold',
+      text.annotations.italic && 'italic',
+      text.annotations.strikethrough && 'line-through',
+      text.annotations.underline && 'underline',
+      text.annotations.code && 'font-mono bg-gray-100 px-1 rounded'
+    ].filter(Boolean).join(' ');
+
+    if (text.href) {
+      return {
+        type: 'a',
+        class: 'text-blue-600 hover:underline',
+        attrs: {
+          href: text.href,
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        },
+        content: text.plain_text
+      };
+    }
+
+    return {
+      type: 'span',
+      class: classes,
+      content: text.plain_text
+    };
+  });
+};
+
+const renderBlock = (block: any): BlockContent | null => {
+  if (!block || !block.type) {
+    return null;
+  }
+
+  switch (block.type) {
+    case 'paragraph':
+      return {
+        type: 'p',
+        class: 'mb-4',
+        content: renderRichText(block.paragraph?.rich_text || [])
+      };
+    
+    case 'heading_1':
+      return {
+        type: 'h1',
+        class: 'text-3xl font-bold mb-6',
+        content: renderRichText(block.heading_1?.rich_text || [])
+      };
+    
+    case 'heading_2':
+      return {
+        type: 'h2',
+        class: 'text-2xl font-bold mb-4',
+        content: renderRichText(block.heading_2?.rich_text || [])
+      };
+    
+    case 'heading_3':
+      return {
+        type: 'h3',
+        class: 'text-xl font-bold mb-3',
+        content: renderRichText(block.heading_3?.rich_text || [])
+      };
+    
+    case 'bulleted_list_item':
+      return {
+        type: 'li',
+        class: 'ml-6 mb-2',
+        content: renderRichText(block.bulleted_list_item?.rich_text || [])
+      };
+    
+    case 'numbered_list_item':
+      return {
+        type: 'li',
+        class: 'ml-6 mb-2',
+        content: renderRichText(block.numbered_list_item?.rich_text || [])
+      };
+    
+    case 'to_do':
+      return {
+        type: 'div',
+        class: 'flex items-center gap-2 mb-2',
+        content: [
+          {
+            type: 'input',
+            class: 'w-4 h-4',
+            attrs: {
+              type: 'checkbox' as const,
+              checked: block.to_do?.checked || false,
+              disabled: true
+            },
+            content: []
+          },
+          {
+            type: 'span',
+            class: '',
+            content: renderRichText(block.to_do?.rich_text || [])
+          }
+        ]
+      };
+    
+    case 'toggle':
+      return {
+        type: 'details',
+        class: 'mb-4',
+        content: [
+          {
+            type: 'summary',
+            class: 'cursor-pointer',
+            content: renderRichText(block.toggle?.rich_text || [])
+          },
+          {
+            type: 'div',
+            class: 'mt-2 ml-4',
+            content: [] // Toggle content will be rendered here
+          }
+        ]
+      };
+    
+    case 'code':
+      return {
+        type: 'pre',
+        class: 'bg-gray-100 p-4 rounded-lg mb-4 overflow-x-auto',
+        content: [{
+          type: 'code',
+          class: 'text-sm',
+          content: renderRichText(block.code?.rich_text || [])
+        }]
+      };
+    
+    case 'quote':
+      return {
+        type: 'blockquote',
+        class: 'border-l-4 border-gray-200 pl-4 italic mb-4',
+        content: renderRichText(block.quote?.rich_text || [])
+      };
+    
+    case 'callout':
+      return {
+        type: 'div',
+        class: 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4',
+        content: [
+          block.callout?.icon?.emoji && {
+            type: 'span',
+            class: 'text-xl mr-2',
+            content: block.callout.icon.emoji
+          },
+          {
+            type: 'span',
+            class: '',
+            content: renderRichText(block.callout?.rich_text || [])
+          }
+        ].filter(Boolean) as BlockContent[]
+      };
+
+    case 'table':
+      return {
+        type: 'div',
+        class: 'overflow-x-auto mb-4',
+        content: [{
+          type: 'table',
+          class: 'min-w-full border-collapse',
+          content: [{
+            type: 'tbody',
+            class: '',
+            content: (block.table?.rows || []).map((row: any) => ({
+              type: 'tr',
+              class: '',
+              content: (row.cells || []).map((cell: any) => ({
+                type: 'td',
+                class: 'border border-gray-200 p-2',
+                content: renderRichText(cell)
+              }))
+            }))
+          }]
+        }]
+      };
+    
+    default:
+      return null;
+  }
+};
+
+const blockData = renderBlock(block);
+---
+
+{blockData && (
+  <Fragment>
+    {blockData.type === 'p' && (
+      <p class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'a' ? (
+              <a {...item.attrs}>{item.content}</a>
+            ) : (
+              <span class={item.class}>{item.content}</span>
+            )
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </p>
+    )}
+    
+    {blockData.type === 'h1' && (
+      <h1 class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'a' ? (
+              <a {...item.attrs}>{item.content}</a>
+            ) : (
+              <span class={item.class}>{item.content}</span>
+            )
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </h1>
+    )}
+    
+    {blockData.type === 'h2' && (
+      <h2 class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'a' ? (
+              <a {...item.attrs}>{item.content}</a>
+            ) : (
+              <span class={item.class}>{item.content}</span>
+            )
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </h2>
+    )}
+    
+    {blockData.type === 'h3' && (
+      <h3 class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'a' ? (
+              <a {...item.attrs}>{item.content}</a>
+            ) : (
+              <span class={item.class}>{item.content}</span>
+            )
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </h3>
+    )}
+    
+    {blockData.type === 'li' && (
+      <li class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'a' ? (
+              <a {...item.attrs}>{item.content}</a>
+            ) : (
+              <span class={item.class}>{item.content}</span>
+            )
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </li>
+    )}
+    
+    {blockData.type === 'div' && (
+      <div class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'input' ? (
+              <input {...item.attrs} class={item.class} />
+            ) : item.type === 'span' ? (
+              <span class={item.class}>
+                {Array.isArray(item.content) ? (
+                  (item.content as BlockContent[]).map((subItem: BlockContent) => (
+                    subItem.type === 'a' ? (
+                      <a {...subItem.attrs}>{subItem.content}</a>
+                    ) : (
+                      <span class={subItem.class}>{subItem.content}</span>
+                    )
+                  ))
+                ) : (
+                  <span>{item.content}</span>
+                )}
+              </span>
+            ) : null
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </div>
+    )}
+    
+    {blockData.type === 'details' && (
+      <details class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'summary' ? (
+              <summary class={item.class}>
+                {Array.isArray(item.content) ? (
+                  (item.content as BlockContent[]).map((subItem: BlockContent) => (
+                    subItem.type === 'a' ? (
+                      <a {...subItem.attrs}>{subItem.content}</a>
+                    ) : (
+                      <span class={subItem.class}>{subItem.content}</span>
+                    )
+                  ))
+                ) : (
+                  <span>{item.content}</span>
+                )}
+              </summary>
+            ) : item.type === 'div' ? (
+              <div class={item.class}>
+                {Array.isArray(item.content) ? (
+                  (item.content as BlockContent[]).map((subItem: BlockContent) => (
+                    subItem.type === 'a' ? (
+                      <a {...subItem.attrs}>{subItem.content}</a>
+                    ) : (
+                      <span class={subItem.class}>{subItem.content}</span>
+                    )
+                  ))
+                ) : (
+                  <span>{item.content}</span>
+                )}
+              </div>
+            ) : null
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </details>
+    )}
+    
+    {blockData.type === 'pre' && (
+      <pre class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'code' ? (
+              <code class={item.class}>
+                {Array.isArray(item.content) ? (
+                  (item.content as BlockContent[]).map((subItem: BlockContent) => (
+                    subItem.type === 'a' ? (
+                      <a {...subItem.attrs}>{subItem.content}</a>
+                    ) : (
+                      <span class={subItem.class}>{subItem.content}</span>
+                    )
+                  ))
+                ) : (
+                  <span>{item.content}</span>
+                )}
+              </code>
+            ) : null
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </pre>
+    )}
+    
+    {blockData.type === 'blockquote' && (
+      <blockquote class={blockData.class}>
+        {Array.isArray(blockData.content) ? (
+          (blockData.content as BlockContent[]).map((item: BlockContent) => (
+            item.type === 'a' ? (
+              <a {...item.attrs}>{item.content}</a>
+            ) : (
+              <span class={item.class}>{item.content}</span>
+            )
+          ))
+        ) : (
+          <span>{blockData.content}</span>
+        )}
+      </blockquote>
+    )}
+  </Fragment>
+)} 

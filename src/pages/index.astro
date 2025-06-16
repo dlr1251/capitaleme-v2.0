@@ -12,6 +12,8 @@ import CalendlyInline from '../components/en/home/CalendlyInline.astro';
 const allVisas = await getCollection("visas", (visa) =>
   visa.id.startsWith("en/")
 );
+
+
 ---
 
 <Layout title="Capital M Law - Home">
@@ -21,6 +23,8 @@ const allVisas = await getCollection("visas", (visa) =>
         <HomeVisasSection client:load allVisas={allVisas} locale="en"/>
         <HomeRealEstateSection client:load/>        
         <CalendlyInline />        
-		    <LatestFromBlog/>
+        <LatestFromBlog/>
+        
+      
 	</main>
 </Layout>

@@ -1,8 +1,6 @@
 import { z, defineCollection } from "astro:content";
-import { glob, file } from 'astro/loaders';
-import { notionLoader } from 'notion-astro-loader';
+import { glob } from 'astro/loaders';
 import { getNotionPage } from '../lib/notion';
-
 
 const pageCollection = defineCollection({
   loader: async () => {
@@ -17,42 +15,39 @@ const pageCollection = defineCollection({
   }),
 });
 
-
 const posts = defineCollection({
-    loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
-    schema: z.object({
-      title: z.string(),
-      pubDate: z.date(),
-      description: z.string(),
-      readTime: z.string(),
-      author: z.string(),
-      image: z.object({
-        url: z.string(),
-        alt: z.string()
-      }),
-      tags: z.array(z.string())
-    })
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.date(),
+    description: z.string(),
+    readTime: z.string(),
+    author: z.string(),
+    image: z.object({
+      url: z.string(),
+      alt: z.string()
+    }),
+    tags: z.array(z.string())
+  })
 });
-
 
 const resources = defineCollection({
-    loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
-    schema: z.object({
-      title: z.string(),
-      pubDate: z.date(),
-      lastEditDate: z.date(),
-      description: z.string(),
-      author: z.string(),
-      image: z.object({
-        url: z.string(),
-        alt: z.string()
-      }),
-      tags: z.array(z.string()).optional(),
-      docType: z.array(z.string()).optional(),
-      legalArea: z.array(z.string()).optional()
-    })
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.date(),
+    lastEditDate: z.date(),
+    description: z.string(),
+    author: z.string(),
+    image: z.object({
+      url: z.string(),
+      alt: z.string()
+    }),
+    tags: z.array(z.string()).optional(),
+    docType: z.array(z.string()).optional(),
+    legalArea: z.array(z.string()).optional()
+  })
 });
-
 
 const visas = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', }),
@@ -67,7 +62,7 @@ const visas = defineCollection({
     short_description: z.string().optional(),
     requirements: z.array(z.string()).optional(),
     countries: z.array(z.string()),
-    visa_rara: z.z.boolean().optional()
+    visa_rara: z.boolean().optional()
   })
 });
 

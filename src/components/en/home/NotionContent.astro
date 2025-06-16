@@ -1,0 +1,34 @@
+---
+import { getNotionDatabase } from '../../../utils/notion';
+
+const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
+const notionContent = await getNotionDatabase(databaseId);
+---
+
+<section class="container mx-auto px-4 py-12">
+    <h2 class="text-3xl font-bold mb-8 text-center">Legal Resources</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {notionContent.map((item: any) => (
+            <a 
+                href={item.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+            >
+                <div class="flex items-start gap-4">
+                    {item.icon?.type === 'emoji' && (
+                        <span class="text-2xl">{item.icon.emoji}</span>
+                    )}
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800">
+                            {item.properties.Name?.title[0]?.plain_text || 'Untitled'}
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            Last updated: {new Date(item.last_edited_time).toLocaleDateString()}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        ))}
+    </div>
+</section> 

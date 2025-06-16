@@ -3,49 +3,74 @@ import { getEntry } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
 import { getEntryBySlug } from "astro:content";
 import { getCollection } from 'astro:content';
+import { getNotionDatabase } from '../../../utils/notion';
+import NotionBlock from '../../../components/NotionBlock.astro';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-const notionEntries = await getCollection('notion');
+type NotionPage = PageObjectResponse & {
+  properties: {
+    Name: {
+      type: 'title';
+      title: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Description: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Content: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+  };
+  icon?: {
+    type: 'emoji';
+    emoji: string;
+  };
+  last_edited_time: string;
+};
 
-console.log({
-  "Notion Entries": notionEntries[0].data.data
-});
+const allEntries = await getCollection('resources');
+// Fetch Notion database content
+const databaseId = import.meta.env.NOTION_RESOURCES_DATABASE_ID;
+const pages = await getNotionDatabase(databaseId) as NotionPage[];
 
-
-const mdxResources = await getCollection('resources', ({ id }) => {
-  return id.startsWith('en/');
-});
-
-
-
-const allEntries = [
-  ...notionEntries.map((entry) => ({
-    slug: entry.data.data.Slug || entry.id,
-    title: entry.data.data.Name,
-    description: entry.data.data.Summary || '',
-    pubDate: entry.data.data.PubDate || new Date(),
-    type: entry.data.data.Content_Type || 'post',
-    source: 'notion',
-  })),
-  ...mdxResources.map((entry) => ({
-    slug: entry.slug,
-    title: entry.data.title,
-    description: entry.data.description,
-    pubDate: new Date(entry.data.pubDate),
-    type: 'resource',
-    source: 'mdx',
-  })),
-];
-
-// Filtrar duplicados: si un slug existe en Notion, omitir la versión MDX
-const uniqueEntries = [];
-const seenSlugs = new Set();
-for (const entry of allEntries) {
-  if (!seenSlugs.has(entry.slug)) {
-    seenSlugs.add(entry.slug);
-    uniqueEntries.push(entry);
-  }
+// Debug logging
+console.log('Notion content count:', pages.length);
+if (pages.length > 0) {
+  console.log('First item structure:', {
+    id: pages[0].id,
+    url: pages[0].url,
+    title: pages[0].properties?.Name?.title[0]?.plain_text,
+    properties: pages[0].properties
+  });
 }
 
+// Debug logging for title structure
+if (pages.length > 0) {
+  console.log('Title property structure:', {
+    title: pages[0].properties?.Name?.title[0]?.plain_text,
+    title_: pages[0].properties?.Name,
+    allProperties: Object.keys(pages[0].properties || {})
+  });
+}
 ---
 
 <Layout 
@@ -65,14 +90,40 @@ for (const entry of allEntries) {
         {allEntries.map(resource => (
           <a href={`resources/${resource.slug}`} class="group">
             <div class="p-6 bg-white border border-gray-100 rounded-md transition-all duration-200 group-hover:border-gray-300 group-hover:shadow-sm h-full flex flex-col">
-              <span class="text-xs uppercase tracking-wider text-gray-400">{resource.type}</span>
-              <h3 class="mt-2 text-lg font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{resource.title}</h3>
-              <p class="mt-2 text-sm text-gray-600 flex-grow">{resource.description}</p>
+              <span class="text-xs uppercase tracking-wider text-gray-400">{resource.data.docType?.[0] || 'Resource'}</span>
+              <h3 class="mt-2 text-lg font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{resource.data.title}</h3>
+              <p class="mt-2 text-sm text-gray-600 flex-grow">{resource.data.description}</p>
               <div class="mt-4 text-xs text-gray-400">
-                {resource.pubDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}
+                {resource.data.legalArea?.[0] || ''}
               </div>
             </div>
           </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Notion Content Section -->
+    <section class="py-12 border-t border-gray-100">
+      <h2 class="text-2xl font-light text-gray-900 mb-8">Reviewed Legal Resources</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {pages.map((page) => (
+          <article class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4">
+              {page.properties.Name?.title?.[0]?.plain_text || 'Untitled'}
+            </h2>
+            <div class="prose max-w-none">
+              {page.properties.Description?.rich_text?.[0]?.plain_text && (
+                <p class="text-gray-600 mb-4">
+                  {page.properties.Description.rich_text[0].plain_text}
+                </p>
+              )}
+              {page.properties.Content?.rich_text?.[0]?.plain_text && (
+                <div class="mt-4">
+                  <NotionBlock block={page.properties.Content.rich_text[0]} />
+                </div>
+              )}
+            </div>
+          </article>
         ))}
       </div>
     </section>
