@@ -217,6 +217,12 @@ function blocksToMarkdown(blocks: ExtendedBlock[], indentLevel: number = 0): str
 const notionCollection = defineCollection({
   loader: async () => {
     try {
+      // First, get the database to see its properties
+      const database = await notion.databases.retrieve({
+        database_id: process.env.NOTION_RESOURCES_DATABASE_ID || '',
+      });
+      console.log('Available properties:', Object.keys(database.properties));
+
       const response = await notion.databases.query({
         database_id: process.env.NOTION_RESOURCES_DATABASE_ID || '',
         filter: {

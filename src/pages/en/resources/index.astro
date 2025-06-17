@@ -58,7 +58,7 @@ if (pages.length > 0) {
   console.log('First item structure:', {
     id: pages[0].id,
     url: pages[0].url,
-    title: pages[0].properties?.Name?.title[0]?.plain_text,
+    title: pages[0].properties?.['Topic Name']?.title[0]?.plain_text,
     properties: pages[0].properties
   });
 }
@@ -66,7 +66,7 @@ if (pages.length > 0) {
 // Debug logging for title structure
 if (pages.length > 0) {
   console.log('Title property structure:', {
-    title: pages[0].properties?.Name?.title[0]?.plain_text,
+    title: pages[0].properties?.['Topic Name']?.title[0]?.plain_text,
     title_: pages[0].properties?.Name,
     allProperties: Object.keys(pages[0].properties || {})
   });
@@ -108,9 +108,9 @@ if (pages.length > 0) {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {pages.map((page) => (
           <article class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold mb-4">
-              {page.properties.Name?.title?.[0]?.plain_text || 'Untitled'}
-            </h2>
+            <a class="text-2xl font-semibold mb-4" href={`/en/clkr/${page.properties?.['Topic Name']?.title[0]?.plain_text?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
+              {page.properties?.['Topic Name']?.title[0]?.plain_text || 'Untitled'}
+            </a>
             <div class="prose max-w-none">
               {page.properties.Description?.rich_text?.[0]?.plain_text && (
                 <p class="text-gray-600 mb-4">

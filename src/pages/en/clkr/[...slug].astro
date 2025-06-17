@@ -3,6 +3,7 @@ import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
 import Layout from '../../../layouts/Layout.astro';
 import NotionBlock from '../../../components/NotionBlock.astro';
 import { Client } from '@notionhq/client';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export const prerender = true;
 
@@ -29,7 +30,15 @@ export async function getStaticPaths() {
 }
 
 const { pageId, title, url, lastEdited, icon } = Astro.props;
-const page = await getNotionPage(pageId);
+const page = await getNotionPage(pageId) as PageObjectResponse;
+console.log('Notion Page Data:', {
+  id: pageId,
+  title,
+  url,
+  lastEdited,
+  icon,
+  pageProperties: page.properties
+});
 
 // Fetch the page blocks
 const notion = new Client({
@@ -40,6 +49,47 @@ const blocks = await notion.blocks.children.list({
   block_id: pageId,
   page_size: 100,
 });
+console.log('Notion Blocks:', blocks.results);
+
+// Function to fetch children blocks recursively
+async function fetchChildrenBlocks(blockId: string) {
+  const response = await notion.blocks.children.list({
+    block_id: blockId,
+    page_size: 100,
+  });
+  
+  // Process each child block recursively
+  const processedChildren = await Promise.all(
+    response.results.map(async (child: any) => {
+      if (child.has_children) {
+        const grandChildren = await fetchChildrenBlocks(child.id);
+        return {
+          ...child,
+          children: grandChildren
+        };
+      }
+      return child;
+    })
+  );
+  
+  return processedChildren;
+}
+
+// Process blocks and fetch children if needed
+const processedBlocks = await Promise.all(
+  blocks.results.map(async (block: any) => {
+    if (block.has_children) {
+      const children = await fetchChildrenBlocks(block.id);
+      return {
+        ...block,
+        children: children
+      };
+    }
+    return block;
+  })
+);
+
+console.log('Processed Blocks with Children:', processedBlocks);
 
 ---
 
@@ -56,23 +106,27 @@ const blocks = await notion.blocks.children.list({
         </div>
         <div class="flex items-center gap-4 text-sm text-gray-500">
           <span>Last updated: {new Date(lastEdited).toLocaleDateString()}</span>
-          <a 
-            href={url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:text-blue-800"
-          >
-            View in Notion
-          </a>
         </div>
       </header>
 
       <!-- Content -->
       <div class="prose prose-lg max-w-none">
-        {blocks.results.map((block: any) => (
+        {processedBlocks.map((block: any) => (
           <NotionBlock block={block} />
         ))}
       </div>
     </article>
   </div>
-</Layout> 
+</Layout>
+
+<script>
+  // Log the content when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const content = document.querySelector('.prose');
+    console.log('Browser-side Content:', {
+      content: content?.innerHTML,
+      element: content,
+      blocks: content?.children
+    });
+  });
+</script> 

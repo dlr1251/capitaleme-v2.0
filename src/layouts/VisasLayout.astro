@@ -109,6 +109,12 @@ const slug = url.pathname.slice(7);
 		<Footer/>
 			
 		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>
-		
+		<script>
+			// Log the content when the page loads
+			document.addEventListener('DOMContentLoaded', () => {
+				const content = document.querySelector('.content');
+				console.log('Content HTML:', content?.innerHTML);
+			});
+		</script>
 	</body>
 </html>

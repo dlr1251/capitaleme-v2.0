@@ -53,12 +53,21 @@ function extractHeadings(html: string) {
 
 // Render Markdown and add heading IDs
 const htmlContentRaw = await (pageData.Content ? marked(pageData.Content) : '<p>No content available.</p>');
-const htmlString = typeof htmlContentRaw === 'string' ? htmlContentRaw : await htmlContentRaw;
-const htmlContent = addHeadingIds(htmlString);
-const headings = extractHeadings(htmlString);
-console.log('Headings:', headings);
----
+console.log('Raw HTML Content:', htmlContentRaw);
 
+const htmlString = typeof htmlContentRaw === 'string' ? htmlContentRaw : await htmlContentRaw;
+console.log('Processed HTML String:', htmlString);
+
+const htmlContent = addHeadingIds(htmlString);
+console.log('Final HTML Content with IDs:', htmlContent);
+
+const headings = extractHeadings(htmlString);
+console.log('Extracted Headings:', headings);
+
+// Add browser-side logging
+---
+{console.log('Server-side HTML Content:', htmlContent)}
+{console.log('Headings:', headings)}
 <ResourcesLayout 
   title={pageData.Name} 
   frontmatter={{
@@ -73,6 +82,15 @@ console.log('Headings:', headings);
   <div class="py-8 pl-4 mt-16 font-bold text-2xl md:text-3xl bg-slate-100 rounded">{pageData.Name}</div>
   <div class="content" set:html={htmlContent} />
 </ResourcesLayout>
+
+<script>
+  // Log the content when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const content = document.querySelector('.content');
+    console.log('Browser-side Content HTML:', content?.innerHTML);
+    console.log('Content Element:', content);
+  });
+</script>
 
 <style>
   html {
