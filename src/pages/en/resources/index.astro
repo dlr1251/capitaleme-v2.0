@@ -7,9 +7,45 @@ import { getNotionDatabase } from '../../../utils/notion';
 import NotionBlock from '../../../components/NotionBlock.astro';
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
+// Helper function to render rich text
+function renderRichText(richText: Array<{
+  type: 'text';
+  text: {
+    content: string;
+  };
+  plain_text: string;
+  annotations?: {
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    underline?: boolean;
+    code?: boolean;
+    color?: string;
+  };
+  href?: string;
+}>) {
+  return richText.map((item) => {
+    let content = item.text.content;
+    let className = '';
+
+    if (item.annotations?.bold) className += 'font-bold ';
+    if (item.annotations?.italic) className += 'italic ';
+    if (item.annotations?.strikethrough) className += 'line-through ';
+    if (item.annotations?.underline) className += 'underline ';
+    if (item.annotations?.code) className += 'font-mono bg-gray-100 px-1 rounded ';
+    if (item.annotations?.color && item.annotations.color !== 'default') className += `text-${item.annotations.color}-600 `;
+
+    if (item.href) {
+      return `<a href="${item.href}" class="${className}">${content}</a>`;
+    }
+
+    return `<span class="${className}">${content}</span>`;
+  }).join('');
+}
+
 type NotionPage = PageObjectResponse & {
   properties: {
-    Name: {
+    'Topic Name': {
       type: 'title';
       title: Array<{
         type: 'text';
@@ -37,6 +73,15 @@ type NotionPage = PageObjectResponse & {
           content: string;
         };
         plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
       }>;
     };
   };
@@ -58,7 +103,6 @@ if (pages.length > 0) {
   console.log('First item structure:', {
     id: pages[0].id,
     url: pages[0].url,
-    title: pages[0].properties?.['Topic Name']?.title[0]?.plain_text,
     properties: pages[0].properties
   });
 }
@@ -66,8 +110,7 @@ if (pages.length > 0) {
 // Debug logging for title structure
 if (pages.length > 0) {
   console.log('Title property structure:', {
-    title: pages[0].properties?.['Topic Name']?.title[0]?.plain_text,
-    title_: pages[0].properties?.Name,
+    title_: pages[0].properties?.['Topic Name'],
     allProperties: Object.keys(pages[0].properties || {})
   });
 }
@@ -108,8 +151,8 @@ if (pages.length > 0) {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {pages.map((page) => (
           <article class="bg-white rounded-lg shadow-md p-6">
-            <a class="text-2xl font-semibold mb-4" href={`/en/clkr/${page.properties?.['Topic Name']?.title[0]?.plain_text?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
-              {page.properties?.['Topic Name']?.title[0]?.plain_text || 'Untitled'}
+            <a class="text-2xl font-semibold mb-4" href={`/en/clkr/${(page.properties['Topic Name'] as NotionPage['properties']['Topic Name']).title[0]?.plain_text?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
+              {(page.properties['Topic Name'] as NotionPage['properties']['Topic Name']).title[0]?.plain_text || 'Untitled'}
             </a>
             <div class="prose max-w-none">
               {page.properties.Description?.rich_text?.[0]?.plain_text && (
@@ -118,9 +161,7 @@ if (pages.length > 0) {
                 </p>
               )}
               {page.properties.Content?.rich_text?.[0]?.plain_text && (
-                <div class="mt-4">
-                  <NotionBlock block={page.properties.Content.rich_text[0]} />
-                </div>
+                <div class="mt-4" set:html={renderRichText(page.properties.Content.rich_text)} />
               )}
             </div>
           </article>
