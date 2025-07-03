@@ -1,0 +1,229 @@
+---
+import ContactForm from "../ui/forms/ContactForm.astro";
+---
+
+<section class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.05&quot;%3E%3Ccircle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;4&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-semibold mb-6">
+        🚀 ¿Listo para Comenzar?
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+        Cómo Contratarnos
+      </h2>
+      <p class="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+        Obtén orientación legal experta para tu viaje en Colombia. Reserva una consulta o envíanos un mensaje - estamos aquí para ayudarte a tener éxito.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <!-- Left Column - Consultation & Calendly -->
+      <div class="space-y-8">
+        <!-- Consultation Card -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl font-bold">
+              ⭐
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white">Consulta Inicial</h3>
+              <p class="text-white/80">Sesión personalizada de 45 minutos</p>
+            </div>
+          </div>
+          
+          <div class="bg-gradient-to-r from-yellow-400/20 to-orange-500/20 rounded-xl p-6 mb-6 border border-yellow-400/30">
+            <div class="text-center">
+              <p class="text-white/90 text-lg mb-2">Tarifa de Consulta</p>
+              <div class="flex items-center justify-center gap-4">
+                <span class="text-3xl font-bold text-yellow-400">$45 USD</span>
+                <span class="text-white/60">o</span>
+                <span class="text-3xl font-bold text-yellow-400">175,000 COP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Methods -->
+          <div class="space-y-4 mb-6">
+            <h4 class="text-lg font-semibold text-white">Métodos de Pago</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-white/10 rounded-lg p-3 border border-white/20">
+                <div class="flex items-center gap-2 text-white/90">
+                  <span class="text-lg">💳</span>
+                  <span class="text-sm">Bancolombia: 61400002492</span>
+                </div>
+              </div>
+              <div class="bg-white/10 rounded-lg p-3 border border-white/20">
+                <div class="flex items-center gap-2 text-white/90">
+                  <span class="text-lg">💳</span>
+                  <span class="text-sm">Stripe (Tarjetas)</span>
+                </div>
+              </div>
+              <div class="bg-white/10 rounded-lg p-3 border border-white/20">
+                <div class="flex items-center gap-2 text-white/90">
+                  <span class="text-lg">💳</span>
+                  <span class="text-sm">Revolut: @daniel8hsk</span>
+                </div>
+              </div>
+              <a 
+                href="https://buy.stripe.com/7sI29Cg361Ja3sI149" 
+                target="_blank" 
+                class="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg p-3 text-center font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg"
+              >
+                💳 Pagar con Stripe
+              </a>
+            </div>
+          </div>
+
+          <!-- What's Included -->
+          <div class="bg-white/10 rounded-xl p-6 border border-white/20">
+            <h4 class="text-lg font-semibold text-white mb-4">Lo que Incluye:</h4>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-white/90">
+                <span class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✓</span>
+                <span>Evaluación legal personalizada</span>
+              </li>
+              <li class="flex items-center gap-3 text-white/90">
+                <span class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✓</span>
+                <span>Cotización detallada y cronograma</span>
+              </li>
+              <li class="flex items-center gap-3 text-white/90">
+                <span class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✓</span>
+                <span>Consulta bilingüe</span>
+              </li>
+              <li class="flex items-center gap-3 text-white/90">
+                <span class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✓</span>
+                <span>Soporte de seguimiento</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Calendly Embed -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+            <h3 class="text-xl font-bold mb-2">📅 Programa tu Consulta</h3>
+            <p class="text-white/90">Elige un horario que te funcione</p>
+          </div>
+          <div class="p-4">
+            <div 
+              class="calendly-inline-widget" 
+              data-url="https://calendly.com/capital-m-law/" 
+              style="min-width:320px;height:700px;"
+            ></div>
+            <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Contact Form -->
+      <div class="space-y-8">
+        <!-- Contact Form Card -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+            <h3 class="text-xl font-bold mb-2">💬 Envíanos un Mensaje</h3>
+            <p class="text-white/90">Responderemos en 24 horas</p>
+          </div>
+          <div class="p-6">
+            <ContactForm />
+          </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+          <h3 class="text-xl font-bold text-white mb-6">¿Por qué Elegir Capital M Law?</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                🏆
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Equipo Experto</h4>
+                <p class="text-white/80 text-sm">Abogados bilingües con años de experiencia</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                ⚡
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Servicio Rápido</h4>
+                <p class="text-white/80 text-sm">Tiempos de respuesta rápidos y procesos eficientes</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                💰
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Precios Transparentes</h4>
+                <p class="text-white/80 text-sm">Costos claros y directos sin cargos ocultos</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                🌟
+              </div>
+              <div>
+                <h4 class="text-white font-semibold mb-1">Resultados Comprobados</h4>
+                <p class="text-white/80 text-sm">Cientos de casos exitosos completados</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+          <h3 class="text-lg font-bold text-white mb-4">📞 Ponte en Contacto</h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-lg">📧</span>
+              <span>info@capitaleme.com</span>
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-lg">📱</span>
+              <span>+57 314 602 2411</span>
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-lg">📍</span>
+              <span>Medellín, Colombia</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="text-center mt-16">
+      <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+        <h3 class="text-2xl font-bold text-white mb-4">
+          ¿Listo para Comenzar tu Viaje Legal en Colombia?
+        </h3>
+        <p class="text-white/90 text-lg mb-6">
+          Únete a cientos de clientes satisfechos que han confiado en Capital M Law para sus necesidades legales en Colombia.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="#calendly"
+            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg font-semibold hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            📅 Reservar Consulta
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a
+            href="https://wa.me/573146022411"
+            target="_blank"
+            class="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors duration-200"
+          >
+            💬 WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 

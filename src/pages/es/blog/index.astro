@@ -1,63 +1,172 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import SectionOne from "../../../components/en/resources/Section_1.astro";
-import { getCollection } from 'astro:content';
-const allPosts = await getCollection('posts', ({ id }) => {
-  return id.startsWith('es/');
+import { getNotionDatabase } from '../../../utils/notion';
+import BlogExplorer from '../../../components/es/blog/BlogExplorer.jsx';
+import type { BlogPost } from '../../../components/es/blog/BlogCard.tsx';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+
+type NotionPage = PageObjectResponse & {
+  properties: {
+    Nombre: {
+      type: 'title';
+      title: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Description: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
+      }>;
+    };
+    Content: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
+      }>;
+    };
+    Lang: {
+      type: 'select';
+      select: {
+        name: string;
+      } | null;
+    };
+    Published: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+    Featured: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+  };
+  icon?: {
+    type: 'emoji';
+    emoji: string;
+  };
+  cover?: {
+    type: 'external';
+    external: {
+      url: string;
+    };
+  } | {
+    type: 'file';
+    file: {
+      url: string;
+    };
+  };
+  last_edited_time: string;
+};
+
+// Helper function to render rich text
+function renderRichText(richText: Array<{
+  type: 'text';
+  text: {
+    content: string;
+  };
+  plain_text: string;
+  annotations?: {
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    underline?: boolean;
+    code?: boolean;
+    color?: string;
+  };
+  href?: string;
+}>) {
+  return richText.map((item) => {
+    let content = item.text.content;
+    let className = '';
+
+    if (item.annotations?.bold) className += 'font-bold ';
+    if (item.annotations?.italic) className += 'italic ';
+    if (item.annotations?.strikethrough) className += 'line-through ';
+    if (item.annotations?.underline) className += 'underline ';
+    if (item.annotations?.code) className += 'font-mono bg-gray-100 px-1 rounded ';
+    if (item.annotations?.color && item.annotations.color !== 'default') className += `text-${item.annotations.color}-600 `;
+
+    if (item.href) {
+      return `<a href="${item.href}" class="${className}">${content}</a>`;
+    }
+
+    return `<span class="${className}">${content}</span>`;
+  }).join('');
+}
+
+// Helper function to format relative time in Spanish
+function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+  if (diffInDays > 0) {
+    return diffInDays === 1 ? 'hace 1 día' : `hace ${diffInDays} días`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? 'hace 1 hora' : `hace ${diffInHours} horas`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1 ? 'hace 1 minuto' : `hace ${diffInMinutes} minutos`;
+  } else {
+    return 'Ahora mismo';
+  }
+}
+
+// Fetch Notion database content
+const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
+const allPages = await getNotionDatabase(databaseId) as NotionPage[];
+
+// Filter for Spanish posts only and published posts
+const pages = allPages.filter(page => {
+  const langValue = page.properties.Lang?.select?.name;
+  const isSpanish = langValue === "Es" || langValue === "ES" || langValue === "Spanish";
+  const isPublished = page.properties.Published?.checkbox === true;
+  
+  return isSpanish && isPublished;
 });
-const allResources = await getCollection('resources', ({ id }) => {
-  return id.startsWith('es/');
-});
+
+// Map NotionPage[] to BlogPost[]
+const blogPosts: BlogPost[] = pages.map(page => ({
+  id: page.id,
+  properties: page.properties as BlogPost['properties'],
+  icon: page.icon,
+  last_edited_time: page.last_edited_time,
+  cover: page.cover
+}));
 ---
 
-<Layout title="Blog">
-    <div class="max-w-screen-lg mx-auto">
-      <SectionOne/>
-      <div class="mb-4 border-b border-gray-200">
-        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
-            <li class="me-2" role="presentation">
-                <button class="inline-block p-4 border-b-2 rounded-t-lg text-2xl text-primary font-bold mb-3 hover:text-secondary hover:border-secondary" id="profile-tab" data-tabs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Posts</button>
-            </li>
-            <li class="me-2" role="presentation">
-                <button class="inline-block p-4 border-b-2 rounded-t-lg text-2xl text-primary font-bold mb-3 hover:text-secondary hover:border-secondary" id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">Recursos</button>
-            </li>      
-        </ul>
-      </div>
-      <div id="default-tab-content">
-        <div class="hidden p-4 rounded-lg bg-gray-50" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {allPosts.map(p => (              
-              <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/es/blog/${p.slug.slice(3)}`}>  
-                <div class="flex justify-between">                          
-                  <div class="text-sm text-slate-900">{p.data.author}</div>
-                  <div class="text-sm text-slate-500">{p.data.pubDate.toString().slice(0,10)}</div>
-                  </div>                      
-                  <div class="text-primary text-lg font-bold mt-2">{p.data.title}</div>
-                  <div class="text-sm text-slate-700">{p.data.readTime}</div>
-                  <p class="font-light py-4">{p.data.description}</p>   
-                </a>
-              ))}
-          </div>
-        </div>
-        <div class="hidden p-4 rounded-lg bg-gray-50" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-            {allResources.map(r => (
-              
-              <a class="p-5 block border rounded w-full hover:shadow hover:shadow-xl" href={`/blog/${r.slug.slice(3)}`}>  
-                <div class="flex justify-between">                          
-                  <div class="text-sm text-slate-900">{r.data.author}</div>
-                  <div class="text-sm text-slate-500">{r.data.pubDate.toString().slice(0,10)}</div>
-                  </div>                      
-                  <div class="text-primary text-lg font-bold mt-2">{r.data.title}</div>            
-                  <p class="font-light py-4">{r.data.description}</p>
-                  
-                </a>
-              ))}
-          </div>
-        </div>
-      </div>
-
-            
-  </div>
-</Layout>
+<Layout title="Blog - Capital EME">
+  <BlogExplorer client:load posts={blogPosts} />
+</Layout> 

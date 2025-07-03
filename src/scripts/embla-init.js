@@ -3,7 +3,6 @@ import emblaCarousel from 'embla-carousel';
 document.addEventListener('DOMContentLoaded', () => {
   const emblaNode = document.querySelector('.embla');
   if (!emblaNode) {
-    console.error('Embla root element not found.');
     return;
   }
 
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (!embla) {
-    console.error('Embla failed to initialize.');
     return;
   }
 

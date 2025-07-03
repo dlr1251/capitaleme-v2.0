@@ -1,0 +1,302 @@
+---
+export const prerender = true;
+import BlogPostLayoutNew from '../../../layouts/BlogPostLayoutNew.astro';
+import { getNotionDatabase, getNotionPage } from '../../../utils/notion';
+import NotionBlock from '../../../components/content/NotionBlock.astro';
+import SocialSharing from '../../../components/core/common/SocialSharing.jsx';
+import { Client } from '@notionhq/client';
+import type { PageObjectResponse, BlockObjectResponse, PartialBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+
+type NotionPage = PageObjectResponse & {
+  properties: {
+    Nombre: {
+      type: 'title';
+      title: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Lang: {
+      type: 'select';
+      select: {
+        name: string;
+      };
+    };
+    Description: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
+      }>;
+    };
+    Content: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
+      }>;
+    };
+    Published: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+  };
+  icon?: {
+    type: 'emoji';
+    emoji: string;
+  };
+  last_edited_time: string;
+};
+
+export async function getStaticPaths() {
+  const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
+  const pages = await getNotionDatabase(databaseId) as NotionPage[];
+  
+  // Filter pages to only include those with Lang="En" or "EN" or "English" AND Published=true
+  const englishPages = pages.filter(page => {
+    const langValue = page.properties.Lang?.select?.name;
+    const isEnglish = langValue === "En" || langValue === "EN" || langValue === "English";
+    
+    // Check if published (assuming there's a Published checkbox property)
+    const isPublished = page.properties.Published?.checkbox === true;
+    
+    return isEnglish && isPublished;
+  });
+  
+  return englishPages.map((page) => {
+    const nameProperty = page.properties?.Nombre;
+    
+    if (!nameProperty?.title?.[0]?.plain_text) {
+      return {
+        params: { slug: 'untitled' },
+        props: { pageId: page.id }
+      };
+    }
+    
+    const title = nameProperty.title[0].plain_text;
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    return {
+      params: { slug },
+      props: { pageId: page.id }
+    };
+  });
+}
+
+const { pageId } = Astro.props;
+const page = await getNotionPage(pageId) as NotionPage;
+const title = page.properties.Nombre.title[0]?.plain_text || 'Untitled';
+const cover = page.cover;
+const description = page.properties.Description?.rich_text?.[0]?.plain_text || '';
+
+// Fetch the page blocks
+const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
+const blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 200 });
+
+// Enhanced type for blocks with children
+type BlockWithChildren = BlockObjectResponse & {
+  has_children: true;
+  children: BlockObjectResponse[];
+};
+
+// Type guard for blocks with children
+function hasChildren(block: BlockObjectResponse): block is BlockWithChildren {
+  return block.has_children === true;
+}
+
+// Recursively fetch children blocks
+async function fetchChildrenBlocks(blockId: string): Promise<(BlockObjectResponse | BlockWithChildren)[]> {
+  const response = await notion.blocks.children.list({ block_id: blockId, page_size: 200 });
+  const processedChildren = await Promise.all(
+    response.results.map(async (child: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
+      if ('has_children' in child && child.has_children) {
+        const grandChildren = await fetchChildrenBlocks(child.id);
+        return { ...child, children: grandChildren } as BlockWithChildren;
+      }
+      return child as BlockObjectResponse;
+    })
+  );
+  return processedChildren;
+}
+
+const processedBlocks = await Promise.all(
+  blocks.results.map(async (block: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
+    if ('has_children' in block && block.has_children) {
+      const children = await fetchChildrenBlocks(block.id);
+      return { ...block, children } as BlockWithChildren;
+    }
+    return block as BlockObjectResponse;
+  })
+);
+
+// Extract headings for TOC
+function extractHeadings(blocks: (BlockObjectResponse | BlockWithChildren)[]) {
+  const headings: Array<{ depth: number; text: string; id: string }> = [];
+  
+  function walk(blocks: (BlockObjectResponse | BlockWithChildren)[]) {
+    for (const block of blocks) {
+      if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
+        let text = '';
+        if (block.type === 'heading_1' && 'heading_1' in block) {
+          text = block.heading_1.rich_text.map((t: any) => t.plain_text).join('');
+        } else if (block.type === 'heading_2' && 'heading_2' in block) {
+          text = block.heading_2.rich_text.map((t: any) => t.plain_text).join('');
+        } else if (block.type === 'heading_3' && 'heading_3' in block) {
+          text = block.heading_3.rich_text.map((t: any) => t.plain_text).join('');
+        }
+        
+        headings.push({
+          depth: block.type === 'heading_1' ? 1 : block.type === 'heading_2' ? 2 : 3,
+          text,
+          id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+        });
+      }
+      if (hasChildren(block)) {
+        walk(block.children);
+      }
+    }
+  }
+  walk(blocks);
+  return headings;
+}
+
+const headings = extractHeadings(processedBlocks);
+
+// Calculate time to read
+function getTextFromBlocks(blocks: (BlockObjectResponse | BlockWithChildren)[]): string {
+  let text = '';
+  
+  function walk(blocks: (BlockObjectResponse | BlockWithChildren)[]) {
+    for (const block of blocks) {
+      // Check if block has rich_text property based on its type
+      if (block.type === 'paragraph' && 'paragraph' in block && block.paragraph.rich_text) {
+        text += block.paragraph.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
+      } else if (block.type === 'heading_1' && 'heading_1' in block && block.heading_1.rich_text) {
+        text += block.heading_1.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
+      } else if (block.type === 'heading_2' && 'heading_2' in block && block.heading_2.rich_text) {
+        text += block.heading_2.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
+      } else if (block.type === 'heading_3' && 'heading_3' in block && block.heading_3.rich_text) {
+        text += block.heading_3.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
+      } else if (block.type === 'bulleted_list_item' && 'bulleted_list_item' in block && block.bulleted_list_item.rich_text) {
+        text += block.bulleted_list_item.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
+      } else if (block.type === 'numbered_list_item' && 'numbered_list_item' in block && block.numbered_list_item.rich_text) {
+        text += block.numbered_list_item.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
+      }
+      
+      if (hasChildren(block)) {
+        walk(block.children);
+      }
+    }
+  }
+  walk(blocks);
+  return text;
+}
+
+const plainText = getTextFromBlocks(processedBlocks);
+const words = plainText.trim().split(/\s+/).length;
+const timeToRead = Math.max(1, Math.round(words / 200)); // 200 wpm
+
+// Enhanced metadata for SEO and social sharing
+const currentUrl = Astro.url.href;
+const imageUrl = cover?.type === 'external' ? cover.external.url : cover?.file?.url || '/icons/isotipo-color.svg';
+const publishedDate = page.last_edited_time;
+const author = 'CapitalE Team';
+const siteName = 'CapitalE - Colombian Immigration & Legal Services';
+
+// Generate structured data for SEO
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "image": imageUrl,
+  "author": {
+    "@type": "Organization",
+    "name": author,
+    "url": "https://capitaleme.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": siteName,
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://capitaleme.com/icons/isotipo-color.svg"
+    }
+  },
+  "datePublished": publishedDate,
+  "dateModified": publishedDate,
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": currentUrl
+  },
+  "wordCount": words,
+  "timeRequired": `PT${timeToRead}M`
+};
+
+---
+
+<BlogPostLayoutNew
+  title={title}
+  cover={cover}
+  description={description}
+  headings={headings}
+  timeToRead={timeToRead}
+  lastEdited={page.last_edited_time}
+  currentUrl={currentUrl}
+  imageUrl={imageUrl}
+  structuredData={structuredData}
+  author={author}
+  siteName={siteName}
+  publishedDate={publishedDate}
+  lang="en"
+>
+  <div class="prose prose-lg max-w-none">
+    {processedBlocks.map((block: any) => (
+      <NotionBlock block={block} />
+    ))}
+  </div>
+  
+  <!-- Social Sharing Component -->
+  <div class="mt-12">
+    <SocialSharing 
+      client:load
+      title={title}
+      description={description}
+      url={currentUrl}
+      imageUrl={imageUrl}
+    />
+  </div>
+</BlogPostLayoutNew>
+
+<script>
+  // Log the content when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    // Content loaded
+  });
+</script> 

@@ -1,0 +1,210 @@
+---
+import TableOfContentsHeading from "../../content/TableOfContentsHeading.astro";
+
+interface Heading {
+  depth: number;
+  text: string;
+  id: string;
+  slug?: string;
+  subheadings?: Heading[];
+}
+
+const headings: Heading[] = Astro.props.headings || [];
+const title: string = Astro.props.title || 'Table of Contents';
+const lang: string = Astro.props.lang || 'en';
+
+const toc: Heading[] = buildToc(headings);
+
+function buildToc(headings: Heading[]): Heading[] {
+  const toc: Heading[] = [];
+  const parentHeadings: Map<number, Heading> = new Map();
+
+  headings.forEach((h: Heading) => {
+    const heading: Heading = { ...h, subheadings: [] };
+    parentHeadings.set(heading.depth, heading);
+
+    // Start with h2 as the main level
+    if (heading.depth === 2) {
+      toc.push(heading);
+    } else {
+      const parent = parentHeadings.get(heading.depth - 1);
+      if (parent && parent.subheadings) {
+        parent.subheadings.push(heading);
+      }
+    }
+  });
+
+  return toc;
+}
+
+const displayTitle = lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos';
+---
+
+<nav class="toc-container bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+  <div class="flex items-center gap-3 mb-6">
+    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900">{displayTitle}</h3>
+  </div>
+  
+  {toc.length > 0 ? (
+    <ul class="toc-list space-y-1 ml-2">
+      {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+    </ul>
+  ) : (
+    <div class="text-center py-8">
+      <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <p class="text-gray-500 text-sm">
+        {lang === 'en' ? 'No headings available' : 'No hay encabezados disponibles'}
+      </p>
+    </div>
+  )}
+</nav>
+
+<style>
+  .toc-container {
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  .toc-list {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+  }
+
+  .toc-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .toc-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+  }
+
+  .toc-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+  }
+
+  .toc-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Ensure headings have proper scroll margin for navbar offset */
+  :global(h2, h3, h4, h5, h6) {
+    scroll-margin-top: 120px;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const headings = document.querySelectorAll('h2, h3, h4, h5, h6');
+    let currentActiveLink: HTMLElement | null = null;
+
+    // Function to update active link
+    const updateActiveLink = (link: HTMLElement) => {
+      if (currentActiveLink) {
+        currentActiveLink.classList.remove('toc-link-active');
+      }
+      link.classList.add('toc-link-active');
+      currentActiveLink = link;
+    };
+
+    // Smooth scroll with navbar offset
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href')?.substring(1);
+        const targetElement = document.getElementById(targetId || '');
+        
+        if (targetElement) {
+          const navbarOffset = 120; // Height of navbar + breadcrumb
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navbarOffset;
+
+          // Use requestAnimationFrame for smoother scrolling
+          requestAnimationFrame(() => {
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          });
+
+          // Update active link after scrolling
+          setTimeout(() => updateActiveLink(link as HTMLElement), 100);
+        }
+      });
+    });
+
+    // Intersection Observer for scroll spy
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -80% 0px',
+      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`) as HTMLElement;
+          if (tocLink) {
+            updateActiveLink(tocLink);
+          }
+        }
+      });
+    }, observerOptions);
+
+    // Observe all headings
+    headings.forEach(heading => {
+      if (heading.id) {
+        observer.observe(heading);
+      }
+    });
+
+    // Handle initial hash in URL
+    const hash = window.location.hash;
+    if (hash) {
+      const targetId = hash.substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        setTimeout(() => {
+          const navbarOffset = 120;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navbarOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+      }
+    }
+
+    // Update active link on initial load
+    if (hash) {
+      const initialLink = document.querySelector(`.toc-link[href="${hash}"]`) as HTMLElement;
+      if (initialLink) {
+        updateActiveLink(initialLink);
+      }
+    } else if (tocLinks.length > 0) {
+      updateActiveLink(tocLinks[0] as HTMLElement);
+    }
+  });
+</script>

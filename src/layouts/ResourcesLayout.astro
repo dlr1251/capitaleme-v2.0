@@ -1,17 +1,13 @@
 ---
 const lang = Astro.currentLocale
-import Footer from '../components/Footer.astro';
-import TableOfContents from '../components/TableOfContents.astro';
+import Footer from '../components/core/layout/Footer.astro';
 import { getCollection } from 'astro:content';
-import Navbar from '../components/Navbar.jsx';
-import WhatsAppButton from '../components/WhatsAppButton.astro';
-import GoogleTag from '../components/GoogleTag.astro'
-import BreadCrumb from '../components/BreadCrumb.astro'
+import Navbar from '../components/core/layout/Navbar.tsx';
+import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
+import GoogleTag from '../components/core/common/GoogleTag.astro'
 import SpeedInsights from "@vercel/speed-insights/astro"
-import ResourcesTOC from '../components/ResourcesTOC'
-import Breadcrumb from '../components/BreadCrumb.astro';
-
-
+import ResourcesTOC from '../components/core/navigation/ResourcesTOC.jsx'
+import Breadcrumb from '../components/core/navigation/BreadCrumb.astro';
 
 const notionEntries = await getCollection('notion');
 
@@ -22,39 +18,10 @@ interface Props {
   headings: any;
 }
 
-const locale = Astro.currentLocale
 const { title, showBreadcrumb = true } = Astro.props.frontmatter || Astro.props 
 const { headings } = Astro.props
 
-const sidebarVisas = await getCollection("visas",({ id, data }) => {
-  if (locale == "en") {
-    return id.startsWith('en/');
-  } else {
-    return id.startsWith('es/');
-  }
-});
-
-const sidebarPosts = await getCollection("posts",({ id }) => {
-  if (locale == "en") {
-    return id.startsWith('en/');
-  } else {
-    return id.startsWith('es/');
-  }
-});
-
-const sidebarResources = await getCollection("resources",({ id }) => {
-  if (locale == "en") {
-    return id.startsWith('en/');
-  } else {
-    return id.startsWith('es/');
-  }
-});
-
 const url = Astro.url
-const slug = url.pathname.slice(7);
-console.log('Headings in layout:', headings);
-console.log('url:', url);
-console.log("Resources Entries: ", notionEntries);
 
 ---
 
@@ -64,7 +31,8 @@ console.log("Resources Entries: ", notionEntries);
     <meta charset="UTF-8" />
     <meta name="description" content="Learn about Colombian visas categories and current regulations" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icons/isotipo-color.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>{title}</title>
@@ -130,8 +98,7 @@ console.log("Resources Entries: ", notionEntries);
     <script>
       // Log the content when the page loads
       document.addEventListener('DOMContentLoaded', () => {
-        const content = document.querySelector('.content');
-        console.log('Content HTML:', content?.innerHTML);
+        // Content loaded
       });
     </script>
   </body>

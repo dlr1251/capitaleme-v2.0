@@ -1,44 +1,98 @@
 ---
 import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
-import Layout from '../../../layouts/Layout.astro';
-import NotionBlock from '../../../components/NotionBlock.astro';
+import CLKRLayout from '../../../layouts/CLKRLayout.astro';
+import NotionBlock from '../../../components/content/NotionBlock.astro';
 import { Client } from '@notionhq/client';
 import type { PageObjectResponse, BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { calculateReadingTime } from '../../../utils/readingTime';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
+  // Helper function to get page title from database
+  function getPageTitle(item: any): string {
+    try {
+      const titleProperty = item.properties?.['Topic Name'];
+      if (titleProperty?.title?.[0]?.plain_text) {
+        return titleProperty.title[0].plain_text;
+      }
+      return 'Untitled';
+    } catch (error) {
+      return 'Untitled';
+    }
+  }
+
+  // Helper function to get slug from database
+  function getSlug(item: any): string {
+    try {
+      const slugProperty = item.properties?.['slug'];
+      if (slugProperty?.rich_text?.[0]?.plain_text) {
+        return slugProperty.rich_text[0].plain_text;
+      }
+      return '';
+    } catch (error) {
+      return '';
+    }
+  }
+
+  // Helper function to check if a page is published
+  function isPublished(item: any): boolean {
+    try {
+      const publishedProperty = item.properties?.['Published'];
+      if (publishedProperty && 'checkbox' in publishedProperty) {
+        return publishedProperty.checkbox === true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Helper function to check if a page is in English
+  function isEnglish(item: any): boolean {
+    try {
+      const langProperty = item.properties?.['Lang'];
+      if (langProperty && 'select' in langProperty && langProperty.select) {
+        return langProperty.select.name === 'En' || langProperty.select.name === 'EN' || langProperty.select.name === 'English';
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   // Get all Notion pages that match our criteria
   const notionDatabaseId = '20d0a3cd15e38169928fff5c6f2b219c';
   const notionContent = await getNotionDatabase(notionDatabaseId);
 
-  return notionContent.map((item: any) => {
-    const title = item.properties?.['Topic Name']?.title[0]?.plain_text || 'Untitled';
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    
-    return {
-      params: { slug },
-      props: { 
-        pageId: item.id,
-        title,
-        url: item.url,
-        lastEdited: item.last_edited_time,
-        icon: item.icon
-      }
-    };
-  });
+  return notionContent
+    .filter((item: any) => {
+      const title = getPageTitle(item);
+      const slug = getSlug(item);
+      const published = isPublished(item);
+      const english = isEnglish(item);
+      
+      // Only include items with valid titles, slugs, published status, and English language
+      return title !== 'Untitled' && slug !== '' && published && english;
+    })
+    .map((item: any) => {
+      const title = getPageTitle(item);
+      const slug = getSlug(item);
+      
+      return {
+        params: { slug },
+        props: { 
+          pageId: item.id,
+          title,
+          slug,
+          icon: item.icon,
+          lastEdited: item.last_edited_time
+        }
+      };
+    });
 }
 
-const { pageId, title, url, lastEdited, icon } = Astro.props;
-const page = await getNotionPage(pageId) as PageObjectResponse;
-console.log('Notion Page Data:', {
-  id: pageId,
-  title,
-  url,
-  lastEdited,
-  icon,
-  pageProperties: page.properties
-});
+const { pageId, title, lastEdited } = Astro.props;
 
 // Fetch the page blocks
 const notion = new Client({
@@ -49,13 +103,12 @@ const blocks = await notion.blocks.children.list({
   block_id: pageId,
   page_size: 100,
 });
-console.log('Notion Blocks:', blocks.results);
 
 // Function to fetch children blocks recursively
 async function fetchChildrenBlocks(blockId: string): Promise<BlockObjectResponse[]> {
   const response = await notion.blocks.children.list({
     block_id: blockId,
-    page_size: 100,
+    page_size: 200,
   });
   
   // Process each child block recursively
@@ -89,44 +142,153 @@ const processedBlocks = await Promise.all(
   })
 );
 
-console.log('Processed Blocks with Children:', processedBlocks);
+// Extract headings from blocks for TOC
+const headings: any[] = [];
+processedBlocks.forEach((block: any) => {
+  if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
+    const text = block.heading_1?.rich_text?.[0]?.plain_text || 
+                 block.heading_2?.rich_text?.[0]?.plain_text || 
+                 block.heading_3?.rich_text?.[0]?.plain_text;
+    if (text) {
+      headings.push({
+        depth: block.type === 'heading_1' ? 1 : block.type === 'heading_2' ? 2 : 3,
+        text: text,
+        id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      });
+    }
+  }
+});
+
+// Calculate reading time from the processed blocks
+const readingTime = calculateReadingTime(processedBlocks);
 
 ---
 
-<Layout title={title}>
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
-    <article class="py-12">
-      <!-- Header -->
-      <header class="mb-12">
-        <div class="flex items-center gap-4 mb-4">
-          {icon?.type === 'emoji' && (
-            <span class="text-3xl">{icon.emoji}</span>
-          )}
-          <h1 class="text-3xl sm:text-4xl font-light text-gray-900">{title}</h1>
-        </div>
-        <div class="flex items-center gap-4 text-sm text-gray-500">
-          <span>Last updated: {new Date(lastEdited).toLocaleDateString()}</span>
-        </div>
-      </header>
-
-      <!-- Content -->
-      <div class="prose prose-lg max-w-none">
-        {processedBlocks.map((block: any) => (
-          <NotionBlock block={block} />
-        ))}
-      </div>
-    </article>
+<CLKRLayout 
+  title={title} 
+  lastEdited={lastEdited}
+  readingTime={readingTime}
+  headings={headings}
+  showBreadcrumb={false}
+  lang="en"
+>
+  <!-- Content -->
+  <div class="prose prose-lg max-w-none">
+    {processedBlocks.map((block: any) => {
+      // Add ID to heading blocks
+      if (block.type.startsWith('heading_')) {
+        const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || '';
+        const slug = text.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        block.id = slug;
+      }
+      return <NotionBlock block={block} />;
+    })}
   </div>
-</Layout>
+</CLKRLayout>
+
+<style>
+  /* Ensure headings have proper scroll margin for navbar offset */
+  :global(h2, h3, h4, h5, h6) {
+    scroll-margin-top: 160px;
+  }
+</style>
 
 <script>
-  // Log the content when the page loads
   document.addEventListener('DOMContentLoaded', () => {
-    const content = document.querySelector('.prose');
-    console.log('Browser-side Content:', {
-      content: content?.innerHTML,
-      element: content,
-      blocks: content?.children
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    let currentActiveLink: HTMLElement | null = null;
+
+    // Function to update active link
+    const updateActiveLink = (link: HTMLElement) => {
+      if (currentActiveLink) {
+        currentActiveLink.classList.remove('active');
+      }
+      link.classList.add('active');
+      currentActiveLink = link;
+    };
+
+    // Smooth scroll with offset
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href')?.substring(1);
+        const targetElement = document.getElementById(targetId || '');
+        
+        if (targetElement) {
+          const headerOffset = 140;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          // Use requestAnimationFrame for smoother scrolling
+          requestAnimationFrame(() => {
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          });
+
+          // Update active link after scrolling
+          setTimeout(() => updateActiveLink(link as HTMLElement), 100);
+        }
+      });
     });
+
+    // Intersection Observer for scroll spy
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -80% 0px',
+      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`) as HTMLElement;
+          if (tocLink) {
+            updateActiveLink(tocLink);
+          }
+        }
+      });
+    }, observerOptions);
+
+    // Observe all headings
+    headings.forEach(heading => {
+      if (heading.id) {
+        observer.observe(heading);
+      }
+    });
+
+    // Handle initial hash in URL
+    const hash = window.location.hash;
+    if (hash) {
+      const targetId = hash.substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        setTimeout(() => {
+          const headerOffset = 140;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+      }
+    }
+
+    // Update active link on initial load
+    if (hash) {
+      const initialLink = document.querySelector(`.toc-link[href="${hash}"]`) as HTMLElement;
+      if (initialLink) {
+        updateActiveLink(initialLink);
+      }
+    } else if (tocLinks.length > 0) {
+      updateActiveLink(tocLinks[0] as HTMLElement);
+    }
   });
 </script> 

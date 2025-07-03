@@ -1,17 +1,25 @@
 ---
-const lang = Astro.currentLocale
-import Navbar from '../components/Navbar.jsx';
-import Breadcrumb from '../components/BreadCrumb.astro';
-import Footer from '../components/Footer.astro';
-import WhatsAppButton from '../components/WhatsAppButton.astro';
-import GoogleTag from '../components/GoogleTag.astro'
-import  SpeedInsights  from "@vercel/speed-insights/astro"
-interface Props {
+import Navbar from '../components/core/layout/Navbar';
+import Footer from '../components/core/layout/Footer.astro';
+import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
+import GoogleTag from '../components/core/common/GoogleTag.astro'
+import SpeedInsights from "@vercel/speed-insights/astro"
+import ContactBar from '../components/core/layout/ContactBar.astro';
+import { getAllMenuData } from '../utils/menuDataOptimized.js';
+
+export interface Props {
 	title: string;
-	showBreadcrumb?: boolean;
+	description?: string;
+	lang?: string;
+	pathname?: string;
+	menuData?: any;
+	customBreadcrumbs?: Array<{ label: string; href?: string }>;
 }
 
-const { title, showBreadcrumb = true } = Astro.props;
+const { title, description, lang = 'en', pathname, menuData: propMenuData } = Astro.props;
+
+// Get optimized menu data if not provided
+const menuData = propMenuData || await getAllMenuData(lang);
 
 import { ClientRouter } from "astro:transitions";
 
@@ -20,62 +28,99 @@ import { ClientRouter } from "astro:transitions";
 <!doctype html>
 <html lang={lang}>
 	<head>
-		
 		<ClientRouter />
 		<meta charset="UTF-8" />
-		<meta name="description" content="Capital M Law - Colombian Legal Experts" />
-		<meta name="viewport" content="width=device-width" />		
-		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-		<title>Capital M - {title}</title>
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+		<title>{title}</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 		<GoogleTag/>
 		<SpeedInsights/>
-
+		<link rel="stylesheet" href="/src/styles/blog.css" />
 	</head>
 	<body>
 		<WhatsAppButton />
-		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />
-		{showBreadcrumb && <Breadcrumb pathname={Astro.url.pathname} />}
-			<div class="">
-				<slot />
-			</div>
-		<Footer />
+		<div id="sticky-header" class="transition-all duration-300 sticky top-0 z-50">
+			<ContactBar lang={lang} />
+			<Navbar client:load lang={lang} pathname={pathname} menuData={menuData} />
+		</div>
+		<main>
+			<slot />
+		</main>
+		<Footer lang={lang} />
 
 		<script is:inline src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>
 		<!-- <script is:inline src="https://carrier.formcarry.com/js/v1.js"></script> -->
 		<!-- <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
-		<!-- <script is:inline src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
-
-		<script is:inline>
-			// formcarry({			  
-			//   form: "oe6f89XVhFy",			  
-			//   element: "#contact-form",
-			//   // Success callback, you can show alert messages
-			//   // or redirect the user in this function
-			//   onSuccess: function(response){
-			// 	Swal.fire({
-			// 		title: 'Success!',
-			// 		text: response.title,
-			// 		icon: 'success',
-			// 		confirmButtonText: 'OK'
-			// 	});
-				
-			//   },
-			//   // Error callback, a good place to show errors 🗿
-			//   onError: function(error){
-			// 	alert(error)
-			// 	Swal.fire({
-			// 		title: 'Error!',
-			// 		text: error,
-			// 		icon: 'error',
-			// 		confirmButtonText: 'OK'
-			// 	});
-			//   }
-			// });
-		  </script>
 		
+		<script>
+			// Handle sticky header when mega menu is open
+			document.addEventListener('DOMContentLoaded', function() {
+				const stickyHeader = document.getElementById('sticky-header');
+				
+				// Listen for custom event from Navbar component
+				document.addEventListener('megaMenuToggle', function(event: any) {
+					const isOpen = event.detail?.isOpen;
+					
+					if (stickyHeader && isOpen) {
+						stickyHeader.classList.add('sticky', 'top-0', 'z-50', 'shadow-lg');
+					} else if (stickyHeader) {
+						stickyHeader.classList.remove('sticky', 'top-0', 'z-50', 'shadow-lg');
+					}
+				});
+			});
+		</script>
 	</body>
 </html>
+
+<style is:global>
+	:root {
+		--color-primary: #16345F;
+		--color-secondary: #00AA81;
+	}
+	
+	* {
+		box-sizing: border-box;
+	}
+	
+	html {
+		font-family: 'Outfit', system-ui, sans-serif;
+		background: #fff;
+		background-size: 224px;
+	}
+	
+	code {
+		background-color: #f1f5f9;
+		border-radius: 0.25rem;
+		padding: 0.125rem 0.25rem;
+	}
+	
+	pre {
+		background-color: #f1f5f9;
+		border-radius: 0.5rem;
+		padding: 1rem;
+		overflow-x: auto;
+	}
+	
+	pre code {
+		background-color: transparent;
+		padding: 0;
+	}
+	
+	.astro-code {
+		background-color: #f1f5f9;
+		border-radius: 0.5rem;
+		padding: 1rem;
+		overflow-x: auto;
+	}
+	
+	.astro-code code {
+		background-color: transparent;
+		padding: 0;
+	}
+</style>
 

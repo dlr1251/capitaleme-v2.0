@@ -1,10 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import SectionOne from '../../components/en/services/Section_1.astro';
-import SectionTwo from '../../components/en/services/Section_2.astro';
-import SectionThree from '../../components/en/services/Section_3.astro';
-import SectionFour from '../../components/en/services/Section_4.astro';
-import LatestFromBlog from "../../components/en/blog/LatestFromBlog.astro";
+import Layout from '../../layouts/Layout.astro';
+import VisaServicesOverview from '../../components/features/visa-services/VisaServicesOverview.astro';
+import VisaServicesProcess from '../../components/features/visa-services/VisaServicesProcess.astro';
+import VisaServicesBenefits from '../../components/features/visa-services/VisaServicesBenefits.astro';
+import VisaServicesFeatures from '../../components/features/visa-services/VisaServicesFeatures.astro';
+import BlogPageLatest from '../../components/features/blog/BlogPageLatest.astro';
 
 const pageTitle = "Visas & Immigration";
 
@@ -12,13 +12,13 @@ const pageTitle = "Visas & Immigration";
 <Layout title={pageTitle}>
       <div class="px-4">
 
-            <SectionOne/>
-            <SectionTwo/>
-            <SectionThree/>
-            <SectionFour/>
+            <VisaServicesOverview/>
+            <VisaServicesProcess/>
+            <VisaServicesBenefits/>
+            <VisaServicesFeatures/>
             <div class="max-w-screen-xl mx-auto">
 
-                  <LatestFromBlog/>      
+                  <BlogPageLatest/>      
             </div>
       </div>
     

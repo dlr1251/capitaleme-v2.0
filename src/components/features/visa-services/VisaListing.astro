@@ -1,0 +1,95 @@
+---
+import type { NotionPage } from '../../../utils/notionTypes';
+import { renderRichTextSafely } from '../../../utils/notionHelpers';
+import { 
+  getPageTitle, 
+  getPageDescription, 
+  getPageSlug, 
+  getPageSelectValue 
+} from '../../../utils/notionHelpers';
+
+interface Props {
+  pages: NotionPage[];
+  locale: 'en' | 'es';
+  title: string;
+  description: string;
+}
+
+const { pages, locale, title, description } = Astro.props;
+---
+
+<div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
+  <!-- Header Section -->
+  <header class="py-12 sm:py-20 border-b border-gray-100">
+    <h1 class="text-3xl sm:text-4xl font-bold text-primary">{title}</h1>
+    <p class="mt-3 text-gray-500 max-w-2xl">
+      {description}
+    </p>
+  </header>
+
+  <!-- Visa Grid -->
+  <section class="py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+      {pages.map((page) => {
+        const pageTitle = getPageTitle(page, 'Name');
+        const pageSlug = getPageSlug(page, 'slug') || pageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const pageDescription = getPageDescription(page, 'Description');
+        const contentProperty = page.properties.Content;
+        const contentText = contentProperty && contentProperty.type === 'rich_text' ? contentProperty.rich_text : [];
+        
+        return (
+          <a
+            href={`/${locale}/visas2/${pageSlug}`}
+            class="border rounded-lg p-3 md:p-6 group hover:shadow-xl transition-shadow flex flex-col justify-between"
+          >
+            <h4 class="md:text-lg font-bold text-primary group-hover:text-secondary">
+              {pageTitle}
+            </h4>
+            <div class="prose max-w-none">
+              {pageDescription && (
+                <p class="text-sm text-gray-600 mt-2">
+                  {pageDescription}
+                </p>
+              )}
+              {contentText.length > 0 && (
+                <div class="mt-4 text-sm text-gray-600" set:html={renderRichTextSafely(contentText)} />
+              )}
+            </div>
+            {locale === 'en' && (
+              <div class="mt-4">
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Last updated:</span> {new Date(page.last_edited_time).toLocaleDateString()}
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Countries:</span> {getPageSelectValue(page, 'Countries...')}
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Beneficiaries:</span> {getPageSelectValue(page, 'Beneficiaries')}
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Work Permit:</span> {getPageSelectValue(page, 'WorkPermit')}
+                </div>
+              </div>
+            )}
+            {locale === 'es' && (
+              <div class="mt-4">
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Última actualización:</span> {new Date(page.last_edited_time).toLocaleDateString()}
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Países:</span> {getPageSelectValue(page, 'Countries...')}
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Beneficiarios:</span> {getPageSelectValue(page, 'Beneficiaries')}
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-secondary">Permiso de trabajo:</span> {getPageSelectValue(page, 'WorkPermit')}
+                </div>
+              </div>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</div> 

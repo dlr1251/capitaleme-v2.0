@@ -1,0 +1,180 @@
+---
+import Layout from './Layout.astro';
+import TableOfContents from '../components/core/navigation/TableOfContents.astro';
+import { getAllMenuData } from '../utils/menuDataOptimized.js';
+
+export interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+  pathname?: string;
+  headings?: any[];
+  lastEdited?: string;
+  showBreadcrumb?: boolean;
+}
+
+const { 
+  title, 
+  description, 
+  lang = 'en', 
+  pathname,
+  headings = [],
+  lastEdited,
+  showBreadcrumb = false
+} = Astro.props;
+
+// Get optimized menu data
+const menuData = await getAllMenuData(lang);
+
+// Get guides for sidebar navigation
+const guidesData = menuData?.guides || [];
+const hasHeadings = headings && headings.length > 0;
+---
+
+<Layout title={title} description={description} lang={lang} pathname={pathname} menuData={menuData}>
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
+    <div class="flex gap-8">
+      <!-- Left Navigation Panel -->
+      <aside class="hidden lg:block w-64 shrink-0">
+        <div class="sticky top-32">
+          <nav class="space-y-6">
+            <!-- Header -->
+            <div class="pb-4 border-b border-gray-200">
+              <h2 class="text-lg font-bold text-gray-900 mb-2">📚 {lang === 'es' ? 'Guías Legales' : 'Legal Guides'}</h2>
+              <p class="text-sm text-gray-600">{lang === 'es' ? 'Recursos y guías paso a paso' : 'Step-by-step resources and guides'}</p>
+            </div>
+
+            <!-- Guides Navigation -->
+            {guidesData.length > 0 && (
+              <div class="space-y-2">
+                <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                  {lang === 'es' ? 'Guías Disponibles' : 'Available Guides'}
+                </h3>
+                <div class="space-y-1">
+                  {guidesData.slice(0, 10).map((guide: any) => (
+                    <a
+                      href={guide.url}
+                      class={`block px-3 py-2 text-sm rounded-md transition-all duration-200 ${
+                        guide.slug === Astro.params.slug
+                          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                      }`}
+                    >
+                      <div class="font-medium">{guide.title}</div>
+                      {guide.description && (
+                        <div class="text-xs text-gray-500 mt-1 line-clamp-2">
+                          {guide.description}
+                        </div>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <!-- Quick Links -->
+            <div class="pt-4 border-t border-gray-200">
+              <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                {lang === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
+              </h3>
+              <div class="space-y-2">
+                <a href={`/${lang}/guides`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <span class="mr-2">🏠</span>
+                  {lang === 'es' ? 'Inicio Guías' : 'Guides Home'}
+                </a>
+                <a href={`/${lang}/contact`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <span class="mr-2">📞</span>
+                  {lang === 'es' ? 'Contáctanos' : 'Contact Us'}
+                </a>
+                <a href={`/${lang}/visas`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <span class="mr-2">🛂</span>
+                  {lang === 'es' ? 'Visas' : 'Visas'}
+                </a>
+                <a href={`/${lang}/real-estate`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <span class="mr-2">🏠</span>
+                  {lang === 'es' ? 'Bienes Raíces' : 'Real Estate'}
+                </a>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <article class="flex-1 min-w-0">
+        <!-- Breadcrumb -->
+        {showBreadcrumb && (
+          <nav class="mb-6" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-sm text-gray-500">
+              <li><a href={`/${lang}`} class="hover:text-gray-700">{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
+              <li class="flex items-center">
+                <span class="mx-2">/</span>
+                <a href={`/${lang}/guides`} class="hover:text-gray-700">{lang === 'es' ? 'Guías' : 'Guides'}</a>
+              </li>
+              <li class="flex items-center">
+                <span class="mx-2">/</span>
+                <span class="text-gray-900">{title}</span>
+              </li>
+            </ol>
+          </nav>
+        )}
+
+        <!-- Header -->
+        <header class="mb-8">
+          <h1 class="text-3xl sm:text-4xl font-light text-gray-900 mb-4">{title}</h1>
+          {description && (
+            <p class="text-lg text-gray-600 max-w-3xl mb-4">
+              {description}
+            </p>
+          )}
+          
+          <!-- Meta information -->
+          {lastEdited && (
+            <div class="flex items-center gap-6 text-sm text-gray-500">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span>
+                  {lang === 'es' ? 'Última actualización' : 'Last updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US')}
+                </span>
+              </div>
+            </div>
+          )}
+        </header>
+
+        <!-- Content -->
+        <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
+          <slot />
+        </div>
+      </article>
+
+      <!-- Right Table of Contents -->
+      {hasHeadings && (
+        <aside class="hidden xl:block w-80 shrink-0">
+          <div class="sticky top-32">
+            <TableOfContents headings={headings} lang={lang} />
+          </div>
+        </aside>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* Smooth scroll behavior for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Ensure headings have proper scroll margin for navbar offset */
+  :global(h2, h3, h4, h5, h6) {
+    scroll-margin-top: 120px;
+  }
+
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

@@ -1,0 +1,265 @@
+import { useState } from 'react';
+
+interface Property {
+  id: string;
+  data?: {
+    title?: string;
+    mainImage?: string;
+    status?: 'available' | 'sold' | 'pending' | string;
+    propertyType?: string;
+    location?: string;
+    price?: {
+      usd?: number;
+      cop?: number;
+    };
+    area?: {
+      total?: number;
+      unit?: string;
+    };
+    bedrooms?: number;
+    bathrooms?: number;
+    features?: string[];
+  };
+  [key: string]: any;
+}
+
+interface PropertyCardProps {
+  property: Property;
+}
+
+const PropertyCard = ({ property }: PropertyCardProps) => {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+
+  const formatPrice = (price?: number) => {
+    if (!price) return 'Precio no disponible';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const formatPriceCOP = (price?: number) => {
+    if (!price) return 'Precio no disponible';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const propertyData = property.data || property;
+  const propertyId = property.id;
+  const price = propertyData?.price || {};
+  const area = propertyData?.area || {};
+  const features: string[] = propertyData?.features || [];
+
+  return (
+    <div 
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Image Container */}
+      <div className="relative h-64 overflow-hidden">
+        <img
+          src={propertyData?.mainImage || '/images/placeholder.jpg'}
+          alt={propertyData?.title || 'Propiedad'}
+          className={`w-full h-full object-cover transition-transform duration-300 ${
+            isHovered ? 'scale-110' : 'scale-100'
+          }`}
+        />
+        <div className="absolute top-4 left-4">
+          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            propertyData?.status === 'available' 
+              ? 'bg-green-500 text-white' 
+              : propertyData?.status === 'sold' 
+                ? 'bg-red-500 text-white' 
+                : 'bg-yellow-500 text-white'
+          }`}>
+            {propertyData?.status === 'available' ? 'Disponible' : 
+             propertyData?.status === 'sold' ? 'Vendida' : 'Pendiente'}
+          </span>
+        </div>
+        <div className="absolute top-4 right-4">
+          <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold">
+            {propertyData?.propertyType || 'Propiedad'}
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold text-primary mb-2">{propertyData?.title || 'Título de la Propiedad'}</h3>
+        <p className="text-gray-600 mb-4 flex items-center">
+          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+          </svg>
+          {propertyData?.location || 'Ubicación no especificada'}
+        </p>
+
+        {/* Price */}
+        <div className="mb-4">
+          <div className="text-2xl font-bold text-primary">{formatPrice(price.usd)}</div>
+          <div className="text-sm text-gray-600">{formatPriceCOP(price.cop)}</div>
+        </div>
+
+        {/* Property Details */}
+        <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
+          <div className="text-center">
+            <div className="font-semibold text-primary">{area.total || 'N/A'} {area.unit || 'm²'}</div>
+            <div className="text-gray-600">Área</div>
+          </div>
+          {propertyData?.bedrooms && (
+            <div className="text-center">
+              <div className="font-semibold text-primary">{propertyData.bedrooms}</div>
+              <div className="text-gray-600">Habitaciones</div>
+            </div>
+          )}
+          {propertyData?.bathrooms && (
+            <div className="text-center">
+              <div className="font-semibold text-primary">{propertyData.bathrooms}</div>
+              <div className="text-gray-600">Baños</div>
+            </div>
+          )}
+        </div>
+
+        {/* Features Preview */}
+        {features.length > 0 && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2">
+              {features.slice(0, 3).map((feature: string, index: number) => (
+                <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                  {feature}
+                </span>
+              ))}
+              {features.length > 3 && (
+                <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                  +{features.length - 3} más
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Action Button */}
+        <a
+          href={`/es/real-estate/properties/${propertyId}`}
+          className="block w-full bg-secondary text-white text-center py-3 rounded-lg font-semibold hover:bg-secondary/80 transition-colors"
+        >
+          Ver Detalles
+        </a>
+      </div>
+    </div>
+  );
+};
+
+interface PropertyListingProps {
+  properties: Property[];
+}
+
+const PropertyListing = ({ properties }: PropertyListingProps) => {
+  const [filter, setFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('price-low');
+
+  const filteredProperties = properties.filter((property: Property) => {
+    const propertyData = property.data || property;
+    if (filter === 'all') return true;
+    if (filter === 'available') return propertyData?.status === 'available';
+    if (filter === 'sold') return propertyData?.status === 'sold';
+    if (filter === 'pending') return propertyData?.status === 'pending';
+    return true;
+  });
+
+  const sortedProperties = [...filteredProperties].sort((a: Property, b: Property) => {
+    const aData = a.data || a;
+    const bData = b.data || b;
+    const aPrice = aData?.price?.usd || 0;
+    const bPrice = bData?.price?.usd || 0;
+    const aArea = aData?.area?.total || 0;
+    const bArea = bData?.area?.total || 0;
+    switch (sortBy) {
+      case 'price-low':
+        return aPrice - bPrice;
+      case 'price-high':
+        return bPrice - aPrice;
+      case 'area-low':
+        return aArea - bArea;
+      case 'area-high':
+        return bArea - aArea;
+      default:
+        return 0;
+    }
+  });
+
+  return (
+    <div className="max-w-7xl mx-auto px-4">
+      {/* Filters and Sort */}
+      <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              filter === 'all' 
+                ? 'bg-primary text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Todas las Propiedades
+          </button>
+          <button
+            onClick={() => setFilter('available')}
+            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              filter === 'available' 
+                ? 'bg-green-500 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Disponibles
+          </button>
+          <button
+            onClick={() => setFilter('sold')}
+            className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              filter === 'sold' 
+                ? 'bg-red-500 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Vendidas
+          </button>
+        </div>
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+        >
+          <option value="price-low">Precio: Menor a Mayor</option>
+          <option value="price-high">Precio: Mayor a Menor</option>
+          <option value="area-low">Área: Menor a Mayor</option>
+          <option value="area-high">Área: Mayor a Menor</option>
+        </select>
+      </div>
+
+      {/* Properties Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {sortedProperties.map((property: Property) => (
+          <div key={property.id} className="mb-8">
+            <PropertyCard property={property} />
+          </div>
+        ))}
+      </div>
+
+      {sortedProperties.length === 0 && (
+        <div className="text-center py-12">
+          <h3 className="text-xl font-semibold text-gray-600 mb-2">No se encontraron propiedades</h3>
+          <p className="text-gray-500">Intenta ajustar tus filtros para ver más propiedades.</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PropertyListing; 

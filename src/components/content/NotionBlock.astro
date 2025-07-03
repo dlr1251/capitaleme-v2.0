@@ -1,0 +1,417 @@
+---
+import type { RichTextItemResponse, BlockObjectResponse, TextRichTextItemResponse, TableBlockObjectResponse, TableRowBlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+
+interface Props {
+  block: BlockObjectResponse;
+}
+
+const { block } = Astro.props;
+
+// Base type for blocks that can have children
+type BlockWithChildren = BlockObjectResponse & {
+  has_children: true;
+  children: BlockObjectResponse[];
+};
+
+// Type guard for blocks with children
+function hasChildren(block: BlockObjectResponse): block is BlockWithChildren {
+  return block.has_children === true;
+}
+
+// Type guard for text rich text items
+function isTextRichText(item: RichTextItemResponse): item is TextRichTextItemResponse {
+  return item.type === "text";
+}
+
+// Helper function to render rich text
+function renderRichText(richText: RichTextItemResponse[]) {
+  return richText.map((item) => {
+    if (!isTextRichText(item)) {
+      return `<span>${item.plain_text}</span>`;
+    }
+
+    let content = item.text.content;
+    let className = '';
+
+    if (item.annotations.bold) className += 'font-bold ';
+    if (item.annotations.italic) className += 'italic ';
+    if (item.annotations.strikethrough) className += 'line-through ';
+    if (item.annotations.underline) className += 'underline ';
+    if (item.annotations.code) className += 'font-mono bg-gray-100 px-1 rounded ';
+    if (item.annotations.color !== 'default') className += `text-${item.annotations.color}-600 `;
+
+    if (item.href) {
+      return `<a href="${item.href}" class="${className}">${content}</a>`;
+    }
+
+    return `<span class="${className}">${content}</span>`;
+  }).join('');
+}
+
+// Helper function to render children blocks
+function renderChildren(children: BlockObjectResponse[]) {
+  return children.map((child) => {
+    if (isParagraph(child)) {
+      return `<p class="mb-4">${renderRichText(child.paragraph.rich_text)}</p>`;
+    }
+    if (isHeading1(child)) {
+      return `<h1 class="text-3xl font-bold mb-4">${renderRichText(child.heading_1.rich_text)}</h1>`;
+    }
+    if (isHeading2(child)) {
+      return `<h2 class="text-2xl font-bold mb-4">${renderRichText(child.heading_2.rich_text)}</h2>`;
+    }
+    if (isHeading3(child)) {
+      return `<h3 class="text-xl font-bold mb-4">${renderRichText(child.heading_3.rich_text)}</h3>`;
+    }
+    // Add more block type handling as needed
+    return '';
+  }).join('');
+}
+
+// Type guards for specific block types
+function isParagraph(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "paragraph" }> {
+  return block.type === "paragraph";
+}
+
+function isHeading1(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "heading_1" }> {
+  return block.type === "heading_1";
+}
+
+function isHeading2(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "heading_2" }> {
+  return block.type === "heading_2";
+}
+
+function isHeading3(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "heading_3" }> {
+  return block.type === "heading_3";
+}
+
+function isBulletedListItem(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "bulleted_list_item" }> {
+  return block.type === "bulleted_list_item";
+}
+
+function isNumberedListItem(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "numbered_list_item" }> {
+  return block.type === "numbered_list_item";
+}
+
+function isToDo(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "to_do" }> {
+  return block.type === "to_do";
+}
+
+function isToggle(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "toggle" }> {
+  return block.type === "toggle";
+}
+
+function isCode(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "code" }> {
+  return block.type === "code";
+}
+
+function isQuote(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "quote" }> {
+  return block.type === "quote";
+}
+
+function isCallout(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "callout" }> {
+  return block.type === "callout";
+}
+
+function isTable(block: BlockObjectResponse): block is TableBlockObjectResponse {
+  return block.type === "table";
+}
+
+function isTableRow(block: BlockObjectResponse): block is TableRowBlockObjectResponse {
+  return block.type === "table_row";
+}
+
+function isImage(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "image" }> {
+  return block.type === "image";
+}
+
+function isVideo(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "video" }> {
+  return block.type === "video";
+}
+
+function isFile(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "file" }> {
+  return block.type === "file";
+}
+
+function isPdf(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "pdf" }> {
+  return block.type === "pdf";
+}
+
+function isBookmark(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "bookmark" }> {
+  return block.type === "bookmark";
+}
+
+function isEquation(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "equation" }> {
+  return block.type === "equation";
+}
+
+function isColumnList(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "column_list" }> {
+  return block.type === "column_list";
+}
+
+function isColumn(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "column" }> {
+  return block.type === "column";
+}
+
+function isSyncedBlock(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "synced_block" }> {
+  return block.type === "synced_block";
+}
+
+function isTemplate(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "template" }> {
+  return block.type === "template";
+}
+
+function isLinkToPage(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "link_to_page" }> {
+  return block.type === "link_to_page";
+}
+
+function isTableOfContents(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "table_of_contents" }> {
+  return block.type === "table_of_contents";
+}
+
+function isBreadcrumb(block: BlockObjectResponse): block is Extract<BlockObjectResponse, { type: "breadcrumb" }> {
+  return block.type === "breadcrumb";
+}
+---
+
+{isParagraph(block) && (
+  <p class="mb-4" set:html={renderRichText(block.paragraph.rich_text)} />
+)}
+
+{isHeading1(block) && (
+  <h1 
+    id={block[block.type].rich_text.map((t: any) => t.plain_text).join('').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+    class="text-3xl font-bold mb-4" 
+    set:html={renderRichText(block.heading_1.rich_text)} 
+  />
+)}
+
+{isHeading2(block) && (
+  <h2 
+    id={block[block.type].rich_text.map((t: any) => t.plain_text).join('').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+    class="text-2xl font-bold mb-4" 
+    set:html={renderRichText(block.heading_2.rich_text)} 
+  />
+)}
+
+{isHeading3(block) && (
+  <h3 
+    id={block[block.type].rich_text.map((t: any) => t.plain_text).join('').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
+    class="text-xl font-bold mb-4" 
+    set:html={renderRichText(block.heading_3.rich_text)} 
+  />
+)}
+
+{isBulletedListItem(block) && (
+  <div class="mb-2">
+    <li class="list-disc ml-6">
+      <Fragment set:html={renderRichText(block.bulleted_list_item.rich_text)} />
+      {hasChildren(block) && (
+        <ul class="mt-2" set:html={renderChildren(block.children)} />
+      )}
+    </li>
+  </div>
+)}
+
+{isNumberedListItem(block) && (
+  <div class="mb-2">
+    <li class="list-decimal ml-6">
+      <Fragment set:html={renderRichText(block.numbered_list_item.rich_text)} />
+      {hasChildren(block) && (
+        <ol class="mt-2" set:html={renderChildren(block.children)} />
+      )}
+    </li>
+  </div>
+)}
+
+{isToDo(block) && (
+  <div class="mb-2">
+    <label class="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={block.to_do.checked}
+        disabled
+        class="rounded border-gray-300"
+      />
+      <span set:html={renderRichText(block.to_do.rich_text)} />
+    </label>
+    {hasChildren(block) && (
+      <div class="ml-6 mt-2" set:html={renderChildren(block.children)} />
+    )}
+  </div>
+)}
+
+{isToggle(block) && (
+  <div class="mb-4">
+    <details class="group">
+      <summary class="cursor-pointer" set:html={renderRichText(block.toggle.rich_text)} />
+      {hasChildren(block) && (
+        <div class="mt-2 pl-4" set:html={renderChildren(block.children)} />
+      )}
+    </details>
+  </div>
+)}
+
+{isCode(block) && (
+  <pre class="bg-gray-100 p-4 rounded-lg mb-4 overflow-x-auto">
+    <code class="font-mono text-sm">
+      {block.code.rich_text.map((text) => text.plain_text).join('')}
+    </code>
+  </pre>
+)}
+
+{isQuote(block) && (
+  <blockquote class="border-l-4 border-gray-300 pl-4 italic mb-4">
+    <Fragment set:html={renderRichText(block.quote.rich_text)} />
+    {hasChildren(block) && (
+      <div class="mt-2">
+        {renderChildren(block.children)}
+      </div>
+    )}
+  </blockquote>
+)}
+
+{isCallout(block) && (
+  <div class="bg-gray-50 p-4 rounded-lg mb-4 flex gap-3">
+    {block.callout.icon?.type === 'emoji' && (
+      <span class="text-xl">{block.callout.icon.emoji}</span>
+    )}
+    <div>
+      <Fragment set:html={renderRichText(block.callout.rich_text)} />
+      {hasChildren(block) && (
+        <div class="mt-2">
+          {renderChildren(block.children)}
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+{isTable(block) && hasChildren(block) && (
+  <div class="overflow-x-auto mb-4">
+    <table class="w-full border-collapse">
+      <tbody>
+        {block.children.filter(isTableRow).map((row) => (
+          <tr>
+            {row.table_row.cells.map((cell) => (
+              <td class="border border-gray-300 p-2" set:html={renderRichText(cell)} />
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+{block.type === 'divider' && (
+  <hr class="my-8 border-gray-200" />
+)}
+
+{isImage(block) && block.image.type === 'file' && (
+  <img
+    src={block.image.file.url}
+    alt={block.image.caption?.[0]?.plain_text || ''}
+    class="max-w-full h-auto rounded-lg mb-4"
+  />
+)}
+
+{isVideo(block) && block.video.type === 'file' && (
+  <video
+    src={block.video.file.url}
+    controls
+    class="max-w-full rounded-lg mb-4"
+  />
+)}
+
+{isFile(block) && block.file.type === 'file' && (
+  <a
+    href={block.file.file.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-blue-600 hover:underline mb-4 block"
+  >
+    {block.file.caption?.[0]?.plain_text || 'Download File'}
+  </a>
+)}
+
+{isPdf(block) && block.pdf.type === 'file' && (
+  <iframe
+    src={block.pdf.file.url}
+    class="w-full h-[600px] mb-4"
+  />
+)}
+
+{isBookmark(block) && (
+  <a
+    href={block.bookmark.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 mb-4"
+  >
+    {block.bookmark.caption?.[0]?.plain_text || block.bookmark.url}
+  </a>
+)}
+
+{isEquation(block) && (
+  <div class="my-4 p-4 bg-gray-50 rounded-lg overflow-x-auto">
+    {block.equation.expression}
+  </div>
+)}
+
+{isColumnList(block) && hasChildren(block) && (
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    {block.children.map((column) => (
+      <div class="col-span-1">
+        {hasChildren(column) && renderChildren(column.children)}
+      </div>
+    ))}
+  </div>
+)}
+
+{isColumn(block) && hasChildren(block) && (
+  <div class="col-span-1">
+    {renderChildren(block.children)}
+  </div>
+)}
+
+{isSyncedBlock(block) && hasChildren(block) && (
+  <div class="mb-4">
+    {renderChildren(block.children)}
+  </div>
+)}
+
+{isTemplate(block) && hasChildren(block) && (
+  <div class="mb-4">
+    {renderChildren(block.children)}
+  </div>
+)}
+
+{isLinkToPage(block) && block.link_to_page.type === 'page_id' && (
+  <a
+    href={`/en/clkr/${block.link_to_page.page_id}`}
+    class="text-blue-600 hover:underline mb-4 block"
+  >
+    {block.link_to_page.page_id}
+  </a>
+)}
+
+{isTableOfContents(block) && (
+  <nav class="mb-4 p-4 bg-gray-50 rounded-lg">
+    <h3 class="font-bold mb-2">Table of Contents</h3>
+    {/* Table of contents would be generated from headings */}
+  </nav>
+)}
+
+{isBreadcrumb(block) && (
+  <nav class="mb-4 text-sm text-gray-500">
+    {/* Breadcrumb navigation would be generated from page hierarchy */}
+  </nav>
+)}
+
+{block.type === 'unsupported' && (
+  <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
+    <p class="text-yellow-800">
+      This block type is not supported: {block.type}
+    </p>
+  </div>
+)} 

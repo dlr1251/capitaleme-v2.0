@@ -1,0 +1,451 @@
+---
+import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
+import CLKRLayout from '../../../layouts/CLKRLayout.astro';
+import NotionBlock from '../../../components/content/NotionBlock.astro';
+import { Client } from '@notionhq/client';
+import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { NotionPage } from '../../../utils/notionTypes';
+import CLKRConsultationForm from '../../../components/es/CLKRConsultationForm.jsx';
+import TableOfContents from '../../../components/core/navigation/TableOfContents.astro';
+import { 
+  getPageTitle, 
+  getPageDescription, 
+  getPageSelectValue 
+} from '../../../utils/notionHelpers';
+import { calculateReadingTime } from '../../../utils/readingTime';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
+  const pages = await getNotionDatabase(databaseId) as NotionPage[];
+  
+  // Filter for Spanish pages
+  const spanishPages = pages.filter((page: any) => 
+    getPageSelectValue(page, 'Lang') === "Es" || 
+    getPageSelectValue(page, 'Lang') === "Spanish"
+  );
+  
+  return spanishPages.map((page: any) => {
+    const title = getPageTitle(page, 'Topic Name');
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    
+    return {
+      params: { slug },
+      props: { 
+        pageId: page.id,
+        title,
+        url: page.url,
+        lastEdited: page.last_edited_time,
+        icon: page.icon
+      }
+    };
+  });
+}
+
+const { pageId, title, lastEdited } = Astro.props;
+const page = await getNotionPage(pageId) as NotionPage;
+
+// Type the icon properly
+const typedIcon = page.icon as { type: 'emoji'; emoji: string } | null;
+
+// Fetch the page blocks
+const notion = new Client({
+  auth: import.meta.env.NOTION_API_KEY,
+});
+
+const blocks = await notion.blocks.children.list({
+  block_id: pageId,
+  page_size: 100,
+});
+
+// Function to fetch children blocks recursively
+async function fetchChildrenBlocks(blockId: string): Promise<BlockObjectResponse[]> {
+  const response = await notion.blocks.children.list({
+    block_id: blockId,
+    page_size: 200,
+  });
+  
+  // Process each child block recursively
+  const processedChildren = await Promise.all(
+    response.results.map(async (child: any) => {
+      if (child.has_children) {
+        const grandChildren = await fetchChildrenBlocks(child.id);
+        return {
+          ...child,
+          children: grandChildren
+        };
+      }
+      return child;
+    })
+  );
+  
+  return processedChildren;
+}
+
+// Process blocks and fetch children if needed
+const processedBlocks = await Promise.all(
+  blocks.results.map(async (block: any) => {
+    if (block.has_children) {
+      const children = await fetchChildrenBlocks(block.id);
+      return {
+        ...block,
+        children: children
+      };
+    }
+    return block;
+  })
+);
+
+// Function to extract headings from blocks for table of contents
+function extractHeadings(blocks: any[]): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
+  
+  blocks.forEach((block: any) => {
+    if (block.type.startsWith('heading_')) {
+      const depth = parseInt(block.type.split('_')[1]);
+      const text = block[block.type].rich_text.map((t: any) => t.plain_text).join('');
+      if (text) {
+        // Create a slug from the text for the ID
+        const slug = text.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        headings.push({ id: slug, text, depth });
+      }
+    }
+    // Check children blocks recursively
+    if (block.children) {
+      headings.push(...extractHeadings(block.children));
+    }
+  });
+  
+  return headings;
+}
+
+// Get all CLKR pages for the navigation
+const allCLKRPages = await getNotionDatabase('20d0a3cd15e38169928fff5c6f2b219c') as NotionPage[];
+const spanishCLKRPages = allCLKRPages
+  .filter((page: any) => 
+    getPageSelectValue(page, 'Lang') === "Es" || 
+    getPageSelectValue(page, 'Lang') === "Spanish"
+  )
+  .map((page: any) => ({
+    title: getPageTitle(page, 'Topic Name'),
+    slug: getPageTitle(page, 'Topic Name')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, ''),
+    description: getPageDescription(page, 'Description'),
+    category: getPageSelectValue(page, 'Category') || 'General'
+  }))
+  .filter((page: any) => page.title !== 'Sin título');
+
+// Group pages by category
+const pagesByCategory = spanishCLKRPages.reduce((acc: Record<string, any[]>, page: any) => {
+  if (!acc[page.category]) {
+    acc[page.category] = [];
+  }
+  acc[page.category].push(page);
+  return acc;
+}, {} as Record<string, any[]>);
+
+// Extract headings for table of contents
+const headings = extractHeadings(processedBlocks);
+
+// Calculate reading time from the processed blocks
+const readingTime = calculateReadingTime(processedBlocks);
+
+// Get category for the current page
+const currentPageCategory = getPageSelectValue(page, 'Category') || 'General';
+
+---
+
+<CLKRLayout 
+  title={title} 
+  lastEdited={lastEdited}
+  readingTime={readingTime}
+  headings={headings}
+  showBreadcrumb={true}
+  lang="es"
+>
+  <!-- Content -->
+  <div class="prose prose-lg max-w-none">
+    {processedBlocks.map((block: any) => {
+      // Add ID to heading blocks
+      if (block.type.startsWith('heading_')) {
+        const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || '';
+        const slug = text.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        block.id = slug;
+      }
+      return <NotionBlock block={block} />;
+    })}
+  </div>
+
+  <!-- Consultation Form Section -->
+  <div class="mt-16 pt-8 border-t border-gray-200">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+        ¿Necesitas ayuda con este tema?
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Completa el formulario de consulta y agenda una cita personalizada con nuestros expertos legales. 
+        Te ayudaremos a resolver tus dudas y encontrar la mejor solución para tu caso.
+      </p>
+    </div>
+    
+    <CLKRConsultationForm 
+      client:load
+      topic={title}
+      category={currentPageCategory}
+    />
+  </div>
+</CLKRLayout>
+
+<style>
+  /* Smooth scroll behavior for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Ensure headings have proper scroll margin for navbar offset */
+  :global(h2, h3, h4, h5, h6) {
+    scroll-margin-top: 160px;
+  }
+
+  /* Table of contents link animations */
+  .toc-link {
+    position: relative;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .toc-link::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.25rem;
+    height: 0;
+    background-color: #3b82f6;
+    transition: height 0.2s ease-in-out;
+    border-radius: 0.125rem;
+  }
+
+  .toc-link:hover::before,
+  .toc-link.active::before {
+    height: 1.5rem;
+  }
+
+  .toc-link.active {
+    color: #2563eb;
+    background-color: #eff6ff;
+  }
+
+  /* Fade in animation for the table of contents */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .toc-container {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Prose customizations */
+  .prose {
+    color: #374151;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #111827;
+    font-weight: 600;
+  }
+
+  .prose h1 {
+    font-size: 2.25rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .prose h2 {
+    font-size: 1.875rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose h3 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose p {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.75;
+  }
+
+  .prose ul, .prose ol {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose li {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid #3b82f6;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #6b7280;
+  }
+
+  .prose code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .prose pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    
+    let currentActiveLink: HTMLElement | null = null;
+
+    // Function to update active link
+    const updateActiveLink = (link: HTMLElement) => {
+      if (currentActiveLink) {
+        currentActiveLink.classList.remove('active');
+      }
+      link.classList.add('active');
+      currentActiveLink = link;
+    };
+
+    // Smooth scroll with offset
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href')?.substring(1);
+        const targetElement = document.getElementById(targetId || '');
+        
+        if (targetElement) {
+          const headerOffset = 140;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          // Use requestAnimationFrame for smoother scrolling
+          requestAnimationFrame(() => {
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          });
+
+          // Update active link after scrolling
+          setTimeout(() => updateActiveLink(link as HTMLElement), 100);
+        }
+      });
+    });
+
+    // Intersection Observer for scroll spy
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -80% 0px',
+      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`) as HTMLElement;
+          if (tocLink) {
+            updateActiveLink(tocLink);
+          }
+        }
+      });
+    }, observerOptions);
+
+    // Observe all headings
+    headings.forEach(heading => {
+      if (heading.id) {
+        observer.observe(heading);
+      }
+    });
+
+    // Handle initial hash in URL
+    const hash = window.location.hash;
+    if (hash) {
+      const targetId = hash.substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        setTimeout(() => {
+          const headerOffset = 140;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+      }
+    }
+
+    // Update active link on initial load
+    if (hash) {
+      const initialLink = document.querySelector(`.toc-link[href="${hash}"]`) as HTMLElement;
+      if (initialLink) {
+        updateActiveLink(initialLink);
+      }
+    } else if (tocLinks.length > 0) {
+      updateActiveLink(tocLinks[0] as HTMLElement);
+    }
+
+    // Add mobile menu toggle functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  });
+</script> 

@@ -13,9 +13,6 @@ import remarkGfm from 'remark-gfm';
 // https://astro.build/config
 export default defineConfig({
   output: 'server',  
-  legacy: {
-    collections: true
-  },
   site: 'https://www.capitaleme.com',
   image: {
     domains: ["astro.build"],
@@ -38,7 +35,7 @@ export default defineConfig({
     //   es: "en"
     // },
     routing: {
-      prefixDefaultLocale: false
+      prefixDefaultLocale: true
     }
   },
   integrations: [

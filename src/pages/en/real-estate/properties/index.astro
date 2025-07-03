@@ -1,7 +1,15 @@
 ---
+import { getCollection } from 'astro:content';
+import RealEstateLayout from "../../../../layouts/RealEstateLayout.astro";
+
+const pageTitle = "All Our Properties";
+
+// Fetch all properties from the content collection
+const properties = await getCollection('properties', ({ id }) => id.startsWith('en/'));
 ---
 
-<section class="bg-gray-50 py-12">
+<RealEstateLayout title={pageTitle}>
+  <section class="bg-gray-50 py-12">
     <div class="container mx-auto px-6 lg:px-12">
       <h1 class="text-3xl font-bold text-gray-800 mb-6">All Our Properties</h1>
       <div class="flex flex-col lg:flex-row lg:space-x-12">
@@ -25,33 +33,34 @@
         <!-- Right Column: Property List -->
         <div class="lg:w-3/4">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Example Property -->
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-              <img
-                src="/images/real-estate/cielo/vista_2.jpeg"
-                alt="Finca en el cielo"
-                class="w-full h-48 object-cover"
-              />
-              <div class="p-6">
-                <h3 class="text-lg font-bold text-gray-800">Finca en el cielo</h3>
-                <p class="text-sm text-gray-600">Caldas</p>
-                <p class="text-sm text-gray-600">Area: 120 m²</p>
-                <p class="text-sm text-gray-600">Price (USD): $250,000</p>
-                <p class="text-sm text-gray-600">Price (COP): $1,000,000,000</p>
-                <p class="text-sm text-gray-600">Price per m²: $2,083</p>
+            {properties.map((property) => (
+              <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <img
+                  src={property.data.mainImage}
+                  alt={property.data.title}
+                  class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                  <h3 class="text-lg font-bold text-gray-800">{property.data.title}</h3>
+                  <p class="text-sm text-gray-600">{property.data.location}</p>
+                  <p class="text-sm text-gray-600">Area: {property.data.area.total} {property.data.area.unit}</p>
+                  <p class="text-sm text-gray-600">Price (USD): ${property.data.price.usd.toLocaleString()}</p>
+                  <p class="text-sm text-gray-600">Price (COP): ${property.data.price.cop.toLocaleString()}</p>
+                  <p class="text-sm text-gray-600">Price per m²: ${Math.round(property.data.price.usd / property.data.area.total)}</p>
+                </div>
+                <div class="border-t p-4 bg-gray-50">
+                  <a
+                    href={`/en/real-estate/properties/${property.id.replace('en/', '')}`}
+                    class="text-blue-600 hover:underline font-medium"
+                  >
+                    View Details
+                  </a>
+                </div>
               </div>
-              <div class="border-t p-4 bg-gray-50">
-                <a
-                  href="#"
-                  class="text-blue-600 hover:underline font-medium"
-                >
-                  View Details
-                </a>
-              </div>
-            </div>
-            <!-- Add more properties dynamically here -->
+            ))}
           </div>
         </div>
       </div>
     </div>
   </section>
+</RealEstateLayout> 

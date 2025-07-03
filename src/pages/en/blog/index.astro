@@ -1,30 +1,162 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
 import Layout from "../../../layouts/Layout.astro";
-import SectionOne from "../../../components/en/resources/Section_1.astro";
-import BlogPostsList from "../../../components/en/blog/BlogPostsListAlt";
-import BlogHero from "../../../components/en/blog/BlogHeroAlt";
+import { getNotionDatabase } from '../../../utils/notion';
+import BlogExplorer from '../../../components/features/blog/BlogExplorer.tsx';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-const featArticle = await getEntry('posts','en/counting-your-days')
+type NotionPage = PageObjectResponse & {
+  properties: {
+    Nombre: {
+      type: 'title';
+      title: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Description: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
+      }>;
+    };
+    Content: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+        annotations?: {
+          bold?: boolean;
+          italic?: boolean;
+          strikethrough?: boolean;
+          underline?: boolean;
+          code?: boolean;
+          color?: string;
+        };
+        href?: string;
+      }>;
+    };
+    Lang: {
+      type: 'select';
+      select: {
+        name: string;
+      } | null;
+    };
+    Published: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+    Featured: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+  };
+  icon?: {
+    type: 'emoji';
+    emoji: string;
+  };
+  cover?: {
+    type: 'external';
+    external: {
+      url: string;
+    };
+  } | {
+    type: 'file';
+    file: {
+      url: string;
+    };
+  };
+  last_edited_time: string;
+};
 
-const allPosts = await getCollection('posts', ({ id }) => {
-  return id.startsWith('en/');
-});
-const allResources = await getCollection('resources', ({ id }) => {
-  return id.startsWith('en/');
+// Helper function to render rich text
+function renderRichText(richText: Array<{
+  type: 'text';
+  text: {
+    content: string;
+  };
+  plain_text: string;
+  annotations?: {
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    underline?: boolean;
+    code?: boolean;
+    color?: string;
+  };
+  href?: string;
+}>) {
+  return richText.map((item) => {
+    let content = item.text.content;
+    let className = '';
+
+    if (item.annotations?.bold) className += 'font-bold ';
+    if (item.annotations?.italic) className += 'italic ';
+    if (item.annotations?.strikethrough) className += 'line-through ';
+    if (item.annotations?.underline) className += 'underline ';
+    if (item.annotations?.code) className += 'font-mono bg-gray-100 px-1 rounded ';
+    if (item.annotations?.color && item.annotations.color !== 'default') className += `text-${item.annotations.color}-600 `;
+
+    if (item.href) {
+      return `<a href="${item.href}" class="${className}">${content}</a>`;
+    }
+
+    return `<span class="${className}">${content}</span>`;
+  }).join('');
+}
+
+// Helper function to format relative time
+function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+  if (diffInDays > 0) {
+    return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+  } else {
+    return 'Just now';
+  }
+}
+
+// Fetch Notion database content
+const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
+const allPages = await getNotionDatabase(databaseId) as NotionPage[];
+
+// Filter for English posts only and published posts
+const pages = allPages.filter(page => {
+  const langValue = page.properties.Lang?.select?.name;
+  const isEnglish = langValue === 'En' || langValue === 'EN' || langValue === 'English';
+  const isPublished = page.properties.Published?.checkbox === true;
+  
+  return isEnglish && isPublished;
 });
 ---
 
-<Layout title="Blog">
-  <BlogHero post={allPosts[1]} client:load/>
-  <div class="max-w-screen-xl mx-auto">
-    <h1 class="text-3xl font-bold text-primary mt-8">All Posts</h1>
-    <p class="text-lg text-slate-700">Here you can find all the posts we have published so far.</p>
-    <p class="text-lg text-slate-700">Click on the image to read the full post.</p>
-    <p class="text-lg text-slate-700">Enjoy!</p>
-    
-    
-    <BlogPostsList posts={allPosts} client:load/>
-
-  </div>
-</Layout>
+<Layout title="Blog - Capital EME">
+  <BlogExplorer client:load posts={pages} />
+</Layout> 

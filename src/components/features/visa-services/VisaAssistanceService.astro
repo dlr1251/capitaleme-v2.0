@@ -1,0 +1,81 @@
+---
+
+const journeySteps = [
+    {                      
+        title: 'Initial consultation / Strategy and workplan definition',
+        description: 'Our services begin with an in-depth consultation. We aim to understand every aspect of your situation - professional life, family, travel plans, budget - to craft a customized strategy that ensures you meet all requirements for visa approval.',
+    },
+    {
+
+        title: 'Documents and information review',
+        description: 'We meticulously review all necessary documents and information. This ensures that every piece of your application aligns perfectly with the requirements, setting the stage for a smooth visa application process',        
+    },
+    {        
+        title: 'Visa submission & monitoring',
+        description: 'With your application in motion, we closely monitor its progress. Our team stays vigilant, ensuring that your submission not only meets all criteria but is also poised for a favorable outcome, keeping you informed every step of the way.',
+    },
+    {
+
+        title: 'Visa approval and cedula de extranjería',
+        description: 'Upon achieving visa approval, we extend our guidance to include the final, crucial steps. Assisting with the Cédula de Extranjería registration, we ensure your transition into Colombian residency is as smooth as your path to visa approval.',
+    }    
+]
+
+const sellingPoints = [
+    {
+        title: "Personalized Advice",
+        description: "Our services begin with an in-depth consultation. We aim to understand every aspect of your situation - professional life, family, travel plans, budget - to craft a customized strategy that ensures you meet all requirements for visa approval.",
+    },
+    {
+        title: "Multiple Communication Channels",
+        description: "Recognizing the importance of document collection, we offer multiple communication options tailored to your schedule, ensuring thorough review and perfect timing aligned with your travel needs.",
+    },
+    {
+        title: "Total Control Over Your Application",
+        description: "You'll have full access to all submitted documents and updates. Our team tracks your case daily and promptly advises on responses to any additional information or requirements from authorities.",
+    },
+    {
+        title: "Clarity at Every Stage of the Process",
+        description: "We guide you through each phase of the application, from preparation to payments, addressing requirements, and celebrating approvals, and provide support in case of denial.",
+    },
+    {
+        title: "Post-Approval Assistance",
+        description: "Once your visa is approved, we assist with scheduling an appointment at Migración Colombia for your visa registration and Cédula de Extranjería, helping you integrate seamlessly into local life.",
+    }
+]
+
+
+---
+
+<div class="font-bold mt-16 text-2xl text-secondary">Service journey</div>
+
+<ol class="relative border-s border-gray-200">                  
+    {    
+        journeySteps.map( (step) => (
+            <li class="mb-10 ms-4">
+                <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white "></div>                
+                <div class="text-lg font-semibold text-gray-900">{step.title}</div>
+                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{step.description}</p>                
+            </li>
+
+        ))
+    }
+ 
+</ol>
+
+
+
+
+
+<div class="text-2xl font-bold my-8 text-secondary">Why hire our services?</div>
+<div class="grid grid-cols-2 gap-4">
+    {
+        sellingPoints.map( (point) => (
+            <div class="border border-slate-300  p-2 rounded">
+                <div class="text-xl ">{point.title}</div>
+                <div class="font-light text-[1rem]">{point.description}</div>                
+            </div>
+        ) )
+    }
+
+</div>

@@ -27,6 +27,25 @@ export default {
 			fontFamily: {
 				sans: ['Outfit', 'sans-serif'],
 			  },
+			keyframes: {
+				float: {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-10px)' },
+				},
+				'float-slow': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-15px)' },
+				},
+				'float-fast': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-8px)' },
+				},
+			},
+			animation: {
+				'float': 'float 3s ease-in-out infinite',
+				'float-slow': 'float-slow 4s ease-in-out infinite',
+				'float-fast': 'float-fast 2.5s ease-in-out infinite',
+			},
 		},
 	},
 	plugins: [

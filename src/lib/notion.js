@@ -137,7 +137,6 @@ export async function getNotionPage() {
       pubDate: page.created_time,
     };
   } catch (error) {
-    console.error('Error fetching Notion page:', error.message);
     throw error;
   }
 }

@@ -1,14 +1,100 @@
 ---
+export const prerender = true;
 import Layout from "../../layouts/Layout.astro";
-import SectionOne from '../../components/es/about/Section_1.astro';
-import SectionThree from '../../components/es/about/Section_3.astro';
-import LatestFromBlog from "../../components/es/blog/LatestFromBlog.astro";
+import GoogleReviews from "../../components/es/ui/cards/GoogleReviews.jsx";
+import OurTeam from "../../components/pages/about/OurTeam.jsx";
+import AnimatedLogoIcon from "../../components/shared/AnimatedLogoIcon.jsx";
+import ValuesSection from "../../components/shared/ValuesSection.jsx";
+import { getTeamMembers } from "../../utils/teamData.js";
 
-const pageTitle = "Notostros";
+const pageTitle = "Nosotros - Capital M Law | Servicios Legales Colombianos";
 
+// Get team members data
+const teamMembers = await getTeamMembers('es');
+
+const messages = [
+      "Queremos ayudar a expatriados, nómadas y viajeros con sus procesos legales en Colombia porque sabemos lo que significa estar jugando lejos de casa.",
+      "En última instancia, queremos enriquecer la cultura colombiana a través del intercambio cultural con expatriados, nómadas, viajeros y turistas. Entendemos que las diferencias culturales y las barreras del idioma pueden ralentizar algunos procesos legales [ya lentos].",
+      "Somos abogados colombianos. Entendemos la cultura, el idioma y las prácticas comunes del sistema legal colombiano.",
+      "Hemos practicado la ley en diferentes áreas obteniendo valiosas perspectivas para proteger sus intereses. Creemos que entender las regulaciones colombianas y operar bajo el sistema legal colombiano no debería ser difícil.",
+      "Nuestra filosofía es simplificar las complejidades del mundo legal y priorizar la comunicación abierta, la confianza y el aspecto humano de todas nuestras interacciones.",
+      "Amamos los gatos. Harry Potter. Kimetsu no Yaiba. Shakira. Bad Bunny. García Márquez. Hermann Hesse."
+    ];
 ---
-<Layout title={pageTitle}>    
-      <SectionOne/>
-      <SectionThree/>
-      <LatestFromBlog/>
+<Layout title={pageTitle}>   
+  
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+          <div class="inline-flex items-center px-4 py-2 bg-blue-600/20 border border-blue-400/30 rounded-full text-blue-200 text-sm font-medium">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Servicios Legales Colombianos
+          </div>
+          
+          <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+            Bienvenido a 
+            <span class="block text-blue-400">Capital M Law</span>
+          </h1>
+          
+          <div class="space-y-4">
+            <h2 class="text-2xl md:text-3xl font-semibold text-blue-200">
+              Otra firma de abogados colombiana
+            </h2>
+            <p class="text-xl text-blue-100/80 font-light">
+              Rápida, Asequible, Bilingüe
+            </p>
+          </div>
+          
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center text-blue-200">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Servicios Bilingües
+            </div>
+            <div class="flex items-center text-blue-200">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Asesoría Legal Experta
+            </div>
+            <div class="flex items-center text-blue-200">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Comprensión Cultural
+            </div>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-2xl p-8 border border-blue-400/30 backdrop-blur-sm">
+            <div class="text-center space-y-4">
+              <AnimatedLogoIcon client:load />
+              <h3 class="text-xl font-semibold text-blue-200">¿Por qué elegir Capital M Law?</h3>
+              <p class="text-blue-100/80">Tendemos un puente entre clientes internacionales y la experiencia legal colombiana, haciendo que tu viaje legal sea fluido y exitoso.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <ValuesSection messages={messages} client:load />
+
+  <!-- Team Section -->
+  <OurTeam members={teamMembers as any} client:load />
+
+  <!-- Reviews Section -->
+  <GoogleReviews client:load />
 </Layout>

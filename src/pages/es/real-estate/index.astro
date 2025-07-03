@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import ServicesGrid from '../../../components/es/features/real-estate/ServicesGrid.jsx';
+import SellerFeatures from '../../../components/es/features/real-estate/SellerFeatures.jsx';
+import RealEstateGuide from '../../../components/es/real-estate/RealEstateGuide.jsx';
+import GoogleReviews from '../../../components/es/ui/cards/GoogleReviews.jsx'
+import Calculator from "../../../components/es/features/real-estate/Calculator.jsx";
+import RealEstateHero from "../../../components/es/features/real-estate/RealEstateHero.astro";
+import CLKRRepository from "../../../components/es/features/real-estate/CLKRRepository.jsx";
+import ConsultationSection from "../../../components/es/features/visa-services/ConsultationSection.jsx";
+
+const pageTitle = "Servicios Inmobiliarios en Colombia";
+
+// Fetch all properties from the content collection
+const properties = await getCollection('properties', ({ id }) => id.startsWith('es/'));
+---
+
+<Layout title={pageTitle}>
+  <!-- Modern Hero Section -->
+  <RealEstateHero />
+
+  <!-- Fee Calculator Section - Moved up for better lead generation -->
+  <section class="py-20 bg-gradient-to-br from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Calculator client:load />
+    </div>
+  </section>
+
+  <!-- Services Grid Section - Simplified and more prominent -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Nuestros Servicios
+          <span class="block text-emerald-600">Inmobiliarios</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Elige el servicio que mejor se adapte a tus necesidades inmobiliarias en Colombia
+        </p>
+      </div>
+      
+      <ServicesGrid client:load />
+    </div>
+  </section>
+
+  <!-- Property Listings Section - More prominent placement -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Propiedades
+          <span class="block text-emerald-600">Destacadas</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Descubre propiedades excepcionales en las ubicaciones más deseables de Colombia
+        </p>
+      </div>
+      
+      <CLKRRepository lang="es" client:load />
+    </div>
+  </section>
+
+  <!-- Real Estate Guide Section - Simplified -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Guía del Proceso
+          <span class="block text-emerald-600">Inmobiliario</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Entiende el proceso completo de compra de propiedades en Colombia
+        </p>
+      </div>
+      
+      <RealEstateGuide client:load properties={properties} />
+    </div>
+  </section>
+
+  <!-- Seller Features Section -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          ¿Vendiendo tu
+          <span class="block text-emerald-600">Propiedad?</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Te ayudamos a maximizar el valor de tu propiedad y asegurar transacciones fluidas
+        </p>
+      </div>
+      
+      <SellerFeatures client:load />
+    </div>
+  </section>
+
+  <!-- Google Reviews Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Lo que Dicen
+          <span class="block text-emerald-600">Nuestros Clientes</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Testimonios reales de clientes satisfechos que confiaron en nosotros con sus transacciones inmobiliarias
+        </p>
+      </div>
+      
+      <GoogleReviews client:load />
+    </div>
+  </section>
+
+  <!-- Consultation Section -->
+  <ConsultationSection client:load />
+</Layout> 

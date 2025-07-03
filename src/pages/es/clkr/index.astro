@@ -1,0 +1,201 @@
+---
+export const prerender = true;
+import Layout from "../../../layouts/Layout.astro";
+import { getNotionDatabase } from '../../../utils/notion';
+import CLKRConsultationForm from '../../../components/es/CLKRConsultationForm.jsx';
+
+// Get all CLKR pages for the navigation
+const allCLKRPages = await getNotionDatabase('20d0a3cd15e38169928fff5c6f2b219c');
+const spanishCLKRPages = allCLKRPages
+  .filter((page: any) => 
+    page.properties?.Lang?.select?.name === "Es" || 
+    page.properties?.Lang?.select?.name === "Spanish"
+  )
+  .map((page: any) => ({
+    title: page.properties?.['Topic Name']?.title?.[0]?.plain_text || 'Sin título',
+    slug: (page.properties?.['Topic Name']?.title?.[0]?.plain_text || 'sin-titulo')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, ''),
+    description: page.properties?.Description?.rich_text?.[0]?.plain_text || '',
+    category: page.properties?.Category?.select?.name || 'General',
+    icon: page.icon
+  }))
+  .filter((page: any) => page.title !== 'Sin título');
+
+// Group pages by category
+const pagesByCategory = spanishCLKRPages.reduce((acc: Record<string, any[]>, page: any) => {
+  if (!acc[page.category]) {
+    acc[page.category] = [];
+  }
+  acc[page.category].push(page);
+  return acc;
+}, {} as Record<string, any[]>);
+
+const pageTitle = "CLKR - Centro de Recursos Legales";
+---
+
+<Layout title={pageTitle}>
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
+    <!-- Hero Section -->
+    <div class="text-center py-12">
+      <div class="mb-6">
+        <span class="text-6xl">📚</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-light text-gray-900 mb-4">
+        Centro de Recursos Legales
+      </h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+        Tu guía completa sobre temas legales en Colombia. Encuentra información detallada sobre visas, 
+        bienes raíces, trámites legales y más.
+      </p>
+      <div class="flex items-center justify-center gap-4 text-sm text-gray-500">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+          <span>{spanishCLKRPages.length} recursos disponibles</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+          <span>{Object.keys(pagesByCategory).length} categorías</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
+      {Object.entries(pagesByCategory).map(([category, pages]: [string, any[]]) => (
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+              <span class="mr-2">
+                {category === 'Visas' ? '🛂' : 
+                 category === 'Real Estate' ? '🏠' : 
+                 category === 'Procedures' ? '📋' : 
+                 category === 'Legal' ? '⚖️' : '📄'}
+              </span>
+              {category}
+            </h2>
+            <p class="text-gray-600 text-sm mb-4">
+              {pages.length} {pages.length === 1 ? 'recurso' : 'recursos'} disponible{pages.length === 1 ? '' : 's'}
+            </p>
+            <div class="space-y-2">
+              {pages.slice(0, 3).map((page: any) => (
+                <a
+                  href={`/es/clkr/${page.slug}`}
+                  class="block p-3 rounded-md hover:bg-gray-50 transition-colors group"
+                >
+                  <div class="flex items-start gap-3">
+                    {page.icon?.type === 'emoji' && (
+                      <span class="text-lg group-hover:scale-110 transition-transform">
+                        {page.icon.emoji}
+                      </span>
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <h3 class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {page.title}
+                      </h3>
+                      {page.description && (
+                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">
+                          {page.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </a>
+              ))}
+              {pages.length > 3 && (
+                <div class="pt-2 border-t border-gray-100">
+                  <a 
+                    href={`/es/clkr?category=${category.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Ver todos los {pages.length} recursos →
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Consultation Form Section -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-12">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-semibold text-gray-900 mb-4">
+          ¿Necesitas ayuda específica?
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Nuestros expertos legales están aquí para ayudarte. Completa el formulario de consulta 
+          y agenda una cita personalizada para resolver tus dudas y encontrar la mejor solución.
+        </p>
+      </div>
+      
+      <div class="max-w-4xl mx-auto">
+        <CLKRConsultationForm 
+          client:load
+          topic=""
+          category=""
+        />
+      </div>
+    </div>
+
+    <!-- All Resources List -->
+    <div class="bg-white rounded-lg shadow-md border border-gray-200">
+      <div class="p-6 border-b border-gray-200">
+        <h2 class="text-2xl font-semibold text-gray-900">Todos los Recursos</h2>
+        <p class="text-gray-600 mt-2">Explora todos nuestros recursos legales organizados por categoría</p>
+      </div>
+      <div class="divide-y divide-gray-200">
+        {Object.entries(pagesByCategory).map(([category, pages]: [string, any[]]) => (
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <span class="mr-2">
+                {category === 'Visas' ? '🛂' : 
+                 category === 'Real Estate' ? '🏠' : 
+                 category === 'Procedures' ? '📋' : 
+                 category === 'Legal' ? '⚖️' : '📄'}
+              </span>
+              {category}
+            </h3>
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {pages.map((page: any) => (
+                <a
+                  href={`/es/clkr/${page.slug}`}
+                  class="block p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                >
+                  <div class="flex items-start gap-3">
+                    {page.icon?.type === 'emoji' && (
+                      <span class="text-xl group-hover:scale-110 transition-transform">
+                        {page.icon.emoji}
+                      </span>
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {page.title}
+                      </h4>
+                      {page.description && (
+                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">
+                          {page.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

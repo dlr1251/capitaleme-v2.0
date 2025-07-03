@@ -1,0 +1,247 @@
+---
+export const prerender = true;
+import VisasLayout from '../../../layouts/VisasLayout.astro';
+import { getNotionDatabase, getNotionPage } from '../../../utils/notion';
+import NotionBlock from '../../../components/content/NotionBlock.astro';
+import { Client } from '@notionhq/client';
+import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { NotionPage } from '../../../utils/notionTypes';
+import { 
+  getPageTitle, 
+  getPageDescription, 
+  getPageSlug, 
+  getPageSelectValue 
+} from '../../../utils/notionHelpers';
+
+export async function getStaticPaths() {
+  const databaseId = 'eea50d4ca9a64f329585bd8b64a583a6';
+  const pages = await getNotionDatabase(databaseId) as NotionPage[];
+  
+  // Filter for English pages
+  const englishPages = pages.filter(page => 
+    getPageSelectValue(page, 'Lang') === "En"
+  );
+  
+  return englishPages.map((page) => {
+    const slug = getPageSlug(page, 'slug');
+    if (!slug) {
+      return null;
+    }
+    
+    return {
+      params: { slug },
+      props: { pageId: page.id }
+    };
+  }).filter(Boolean);
+}
+
+const { pageId } = Astro.props;
+
+const pageResponse = await getNotionPage(pageId);
+// Type guard to ensure we have a valid page response
+if (!pageResponse) {
+  throw new Error('Invalid page response from Notion API');
+}
+const page = pageResponse;
+
+const title = getPageTitle(page, 'Name');
+const description = getPageDescription(page, 'Description');
+const currentSlug = Astro.params.slug;
+
+// Fetch the page blocks
+const notion = new Client({
+  auth: import.meta.env.NOTION_API_KEY,
+});
+
+const blocks = await notion.blocks.children.list({
+  block_id: pageId,
+  page_size: 100,
+});
+
+// Function to fetch children blocks recursively
+async function fetchChildrenBlocks(blockId: string): Promise<BlockObjectResponse[]> {
+  const response = await notion.blocks.children.list({
+    block_id: blockId,
+    page_size: 100,
+  });
+  
+  // Process each child block recursively
+  const processedChildren = await Promise.all(
+    response.results.map(async (child: any) => {
+      if (child.has_children) {
+        const grandChildren = await fetchChildrenBlocks(child.id);
+        return {
+          ...child,
+          children: grandChildren
+        };
+      }
+      return child;
+    })
+  );
+  
+  return processedChildren;
+}
+
+// Process blocks and fetch children if needed
+const processedBlocks = await Promise.all(
+  blocks.results.map(async (block: any) => {
+    if (block.has_children) {
+      const children = await fetchChildrenBlocks(block.id);
+      return {
+        ...block,
+        children: children
+      };
+    }
+    return block;
+  })
+);
+
+// Extract headings for table of contents
+function extractHeadings(blocks: any[]): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
+  
+  blocks.forEach((block: any) => {
+    if (block.type.startsWith('heading_')) {
+      const depth = parseInt(block.type.split('_')[1]);
+      const text = block[block.type].rich_text.map((t: any) => t.plain_text).join('');
+      if (text) {
+        // Create a slug from the text for the ID
+        const slug = text.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        headings.push({ id: slug, text, depth });
+      }
+    }
+    // Check children blocks recursively
+    if (block.children) {
+      headings.push(...extractHeadings(block.children));
+    }
+  });
+  
+  return headings;
+}
+
+// Extract headings for table of contents
+const headings = extractHeadings(processedBlocks);
+---
+
+<VisasLayout 
+  title={title}
+  description={description}
+  lang="en"
+  headings={headings}
+  lastEdited={page.last_edited_time}
+  currentSlug={currentSlug}
+>
+  <div class="prose prose-lg max-w-none">
+    {processedBlocks.map((block: any) => {
+      // Add ID to heading blocks
+      if (block.type.startsWith('heading_')) {
+        const text = block[block.type].rich_text.map((t: any) => t.plain_text).join('');
+        const slug = text.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        block.id = slug;
+      }
+      return <NotionBlock block={block} />;
+    })}
+  </div>
+</VisasLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    let currentActiveLink: HTMLElement | null = null;
+
+    // Function to update active link
+    const updateActiveLink = (link: HTMLElement) => {
+      if (currentActiveLink) {
+        currentActiveLink.classList.remove('active');
+      }
+      link.classList.add('active');
+      currentActiveLink = link;
+    };
+
+    // Smooth scroll with offset
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href')?.substring(1);
+        const targetElement = document.getElementById(targetId || '');
+        
+        if (targetElement) {
+          const headerOffset = 100;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          // Use requestAnimationFrame for smoother scrolling
+          requestAnimationFrame(() => {
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          });
+
+          // Update active link after scrolling
+          setTimeout(() => updateActiveLink(link as HTMLElement), 100);
+        }
+      });
+    });
+
+    // Intersection Observer for scroll spy
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -80% 0px',
+      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`) as HTMLElement;
+          if (tocLink) {
+            updateActiveLink(tocLink);
+          }
+        }
+      });
+    }, observerOptions);
+
+    // Observe all headings
+    headings.forEach(heading => {
+      if (heading.id) {
+        observer.observe(heading);
+      }
+    });
+
+    // Handle initial hash in URL
+    const hash = window.location.hash;
+    if (hash) {
+      const targetId = hash.substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        setTimeout(() => {
+          const headerOffset = 100;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+      }
+    }
+
+    // Update active link on initial load
+    if (hash) {
+      const initialLink = document.querySelector(`.toc-link[href="${hash}"]`) as HTMLElement;
+      if (initialLink) {
+        updateActiveLink(initialLink);
+      }
+    } else if (tocLinks.length > 0) {
+      updateActiveLink(tocLinks[0] as HTMLElement);
+    }
+  });
+</script> 

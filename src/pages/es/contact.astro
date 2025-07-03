@@ -1,15 +1,376 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import SectionOne from '../../components/es/contact/SectionOne.astro';
-import SectionTwo from '../../components/es/contact/SectionTwo.astro';
-import ContactTabs from '../../components/es/common/ContactForm.astro';
-
 ---
-<Layout title="Contact">
 
-    <div class="mt-16">
-        <SectionOne/>
-        <SectionTwo/>
-
+<Layout title="Contacto - Capital M Law">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        <div class="text-center">
+          <div class="mb-6">
+            <span class="text-6xl">📞</span>
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Hablemos de tu caso
+          </h1>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Nuestro equipo de expertos legales está listo para ayudarte. 
+            Cuéntanos sobre tu situación y te responderemos en menos de 24 horas.
+          </p>
+          <div class="flex items-center justify-center gap-8 text-sm text-gray-500">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+              <span>Respuesta en 24h</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+              <span>Consulta gratuita</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
+              <span>Expertos certificados</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div class="grid lg:grid-cols-3 gap-12">
+        <!-- Contact Information -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 sticky top-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+              <span class="mr-3">📍</span>
+              Información de Contacto
+            </h2>
+            
+            <!-- Contact Methods -->
+            <div class="space-y-6">
+              <!-- Email -->
+              <div class="flex items-start space-x-4 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
+                <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <span class="text-white text-xl">✉️</span>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 mb-1">Email</h3>
+                  <a href="mailto:info@capitaleme.com" class="text-blue-600 hover:text-blue-800 transition-colors">
+                    info@capitaleme.com
+                  </a>
+                  <p class="text-sm text-gray-500 mt-1">Respuesta en menos de 24 horas</p>
+                </div>
+              </div>
+
+              <!-- Phone -->
+              <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
+                <div class="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                  <span class="text-white text-xl">📱</span>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 mb-1">Teléfono</h3>
+                  <a href="tel:+573146022411" class="text-green-600 hover:text-green-800 transition-colors">
+                    +57 314 602 2411
+                  </a>
+                  <p class="text-sm text-gray-500 mt-1">Lun-Vie 9:00 AM - 6:00 PM</p>
+                </div>
+              </div>
+
+              <!-- WhatsApp -->
+              <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
+                <div class="flex-shrink-0 w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                  <span class="text-white text-xl">💬</span>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 mb-1">WhatsApp</h3>
+                  <a href="https://wa.me/573146022411" target="_blank" class="text-green-600 hover:text-green-800 transition-colors">
+                    +57 314 602 2411
+                  </a>
+                  <p class="text-sm text-gray-500 mt-1">Respuesta inmediata</p>
+                </div>
+              </div>
+
+              <!-- Address -->
+              <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors">
+                <div class="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                  <span class="text-white text-xl">🏢</span>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 mb-1">Oficina Principal</h3>
+                  <address class="text-purple-600 not-italic">
+                    Carrera 72 # 39A - 22<br>
+                    Edificio Lauret<br>
+                    Medellín - Colombia
+                  </address>
+                  <p class="text-sm text-gray-500 mt-1">Cita previa requerida</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Media -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+              <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                <span class="mr-2">🌐</span>
+                Síguenos
+              </h3>
+              <div class="flex space-x-4">
+                <a href="#" class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
+                  <span class="text-white text-lg">📘</span>
+                </a>
+                <a href="#" class="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center hover:bg-pink-700 transition-colors">
+                  <span class="text-white text-lg">📷</span>
+                </a>
+                <a href="#" class="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-gray-800 transition-colors">
+                  <span class="text-white text-lg">🎵</span>
+                </a>
+                <a href="#" class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
+                  <span class="text-white text-lg">📺</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div class="text-center mb-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                Envíanos tu consulta
+              </h2>
+              <p class="text-gray-600 max-w-2xl mx-auto">
+                Completa el formulario y nuestro equipo se pondrá en contacto contigo 
+                para discutir tu caso y encontrar la mejor solución legal.
+              </p>
+            </div>
+
+            <!-- Enhanced Contact Form -->
+            <form class="space-y-6" action="https://formcarry.com/s/oe6f89XVhFy" method="post" enctype="multipart/form-data">
+              <!-- Name and Email Row -->
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="mr-2">👤</span>
+                    Nombre Completo *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Tu nombre completo"
+                  />
+                </div>
+                <div>
+                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="mr-2">✉️</span>
+                    Correo Electrónico *
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="tu@email.com"
+                  />
+                </div>
+              </div>
+
+              <!-- Phone and Service Row -->
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="mr-2">📱</span>
+                    Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="+57 300 123 4567"
+                  />
+                </div>
+                <div>
+                  <label for="service" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="mr-2">🛂</span>
+                    Servicio de Interés
+                  </label>
+                  <select
+                    id="service"
+                    name="service"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Selecciona un servicio</option>
+                    <option value="Visas">Visas y Migración</option>
+                    <option value="Bienes Raíces">Bienes Raíces</option>
+                    <option value="Trámites Legales">Trámites Legales</option>
+                    <option value="Consultoría">Consultoría Legal</option>
+                    <option value="Apostilla">Apostilla</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Message -->
+              <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                  <span class="mr-2">💬</span>
+                  Tu Mensaje *
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="6"
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  placeholder="Cuéntanos sobre tu situación específica, necesidades y cualquier detalle relevante que nos ayude a preparar mejor la consulta..."
+                ></textarea>
+              </div>
+
+              <!-- Terms and Submit -->
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-start">
+                  <input
+                    id="accept_terms"
+                    name="accept_terms"
+                    type="checkbox"
+                    required
+                    class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label for="accept_terms" class="ml-3 text-sm text-gray-700">
+                    He leído y acepto los{' '}
+                    <a href="/es/terms" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                      Términos y Condiciones
+                    </a>{' '}
+                    y la{' '}
+                    <a href="/es/privacy" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                      Política de Privacidad
+                    </a>
+                    *
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
+                >
+                  <span class="mr-2">📤</span>
+                  Enviar Mensaje
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YouTube Section -->
+    <div class="bg-gray-50 py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center">
+            <span class="mr-3">📺</span>
+            Visita nuestro Canal de YouTube
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            Mantente actualizado con las últimas noticias legales, consejos y guías 
+            sobre visas, bienes raíces y trámites legales en Colombia.
+          </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto">
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <iframe 
+              class="w-full aspect-video" 
+              src="https://www.youtube.com/embed/30je3JaSq5U"
+              title="Capital M Law YouTube Channel"
+              style="border: 0;"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </Layout>
+
+<style>
+  /* Custom animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  /* Smooth transitions */
+  * {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2563eb;
+  }
+</style>
+
+<script>
+  // Add smooth animations on scroll
+  document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    document.querySelectorAll('section, .bg-white').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Form enhancement
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitBtn) {
+          submitBtn.innerHTML = '<span class="mr-2">⏳</span>Enviando...';
+          submitBtn.disabled = true;
+        }
+      });
+    }
+  });
+</script>

@@ -1,30 +1,15 @@
 ---
 export const prerender = true;
-import { getCollection } from "astro:content";
-import Layout from '../layouts/Layout.astro';
-import LatestFromBlog from '../components/en/blog/LatestFromBlog.astro';
-import HomeHero   from '../components/en/home/HomeHero.astro';
-import HomeAboutUs   from '../components/en/home/HomeAboutUs.astro';
-import HomeVisasSection from '../components/en/home/HomeVisasSection.jsx';
-import HomeRealEstateSection from '../components/en/home/HomeRealEstateSection.jsx';
-import CalendlyInline from '../components/en/home/CalendlyInline.astro';
-
-const allVisas = await getCollection("visas", (visa) =>
-  visa.id.startsWith("en/")
-);
-
-
 ---
 
-<Layout title="Capital M Law - Home">
-	<main class="">        
-        <HomeHero/>
-        <HomeAboutUs/>
-        <HomeVisasSection client:load allVisas={allVisas} locale="en"/>
-        <HomeRealEstateSection client:load/>        
-        <CalendlyInline />        
-        <LatestFromBlog/>
-        
-      
-	</main>
-</Layout>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="0;url=/en" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/en">English version</a>...</p>
+  </body>
+</html>

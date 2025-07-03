@@ -9,5 +9,6 @@
     "jsxImportSource": "react",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "baseUrl": "./src"
   }
 }

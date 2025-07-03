@@ -1,27 +1,55 @@
 ---
-export const prerender = true;
 import Layout from "../../../layouts/Layout.astro";
-import SectionOne from "../../../components/es/visas/Section_1.astro";
-import { getCollection } from 'astro:content';
+import { getNotionDatabase } from '../../../utils/notion';
+import type { NotionPage } from '../../../utils/notionTypes';
+import VisasHero from '../../../components/es/features/visa-services/VisasHero.jsx';
+import ServiceProcess from '../../../components/es/features/visa-services/ServiceProcess.jsx';
+import VisasSectionLegacy from '../../../components/pages/home/VisasSectionLegacy';
+import ConsultationSection from '../../../components/es/features/visa-services/ConsultationSection.jsx';
+import LatestBlogSection from '../../../components/es/features/visa-services/LatestBlogSection.jsx';
+import { getAllVisasFromNotion, getGuides } from '../../../utils/menuData.js';
+import BlogPageLatest from "../../../components/es/features/blog/BlogPageLatest.astro";
+import VisaFilterWidget from '../../../components/VisaFilterWidget';
 
+// Fetch Notion database content
+const databaseId = 'eea50d4ca9a64f329585bd8b64a583a6';
+const pages = await getNotionDatabase(databaseId) as NotionPage[];
 
+const allVisas = await getAllVisasFromNotion('es');
+const allGuides = await getGuides('es');
 
-const allVisas = await getCollection('visas', ({ id }) => {
-  return id.startsWith('es/');
-});
+// Get popular visas
+const popularVisas = allVisas.filter((visa: any) => visa.isPopular).slice(0, 4);
+
+// Get featured guides
+const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(0, 4);
 ---
 
-<Layout title="All resources">
-    <div class="mt-16">
-                <SectionOne/>
-
-                <div class="py-8 px-4 mx-auto max-w-screen-lg sm:py-16 lg:px-6 ">  
-                  {allVisas.map(p => (
-                      <a class="text-primary" href={`/es/visas/${p.slug.slice(3)}`}>
-                        <div class="font-bold">{p.data.title}</div>
-                        <div class="text-sm">{p.data.short_description}</div>
-                      </a>
-                    ))}
-                </div>
+<Layout title="Información de Visas - Capital M Law | Servicios Legales en Colombia">
+  <!-- Modern Hero Section -->
+  <VisasHero client:load popularVisas={popularVisas} guides={featuredGuides} lang="es" />
+  
+  <!-- How Our Service Works Section -->
+  <ServiceProcess client:load />
+  
+  <!-- Visa Categories with Filtering -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">
+          Descubre Todas las Categorías de Visa
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Encuentra la opción de visa perfecta para tu situación. Usa nuestro filtro interactivo para reducir tus opciones basado en tu país, necesidades y preferencias.
+        </p>
+      </div>
+      
+      <VisaFilterWidget client:load />
     </div>
-</Layout>
+  </section>
+
+  <!-- Full-Width Consultation Section -->
+  <ConsultationSection client:load />
+  
+  <BlogPageLatest/>
+</Layout> 

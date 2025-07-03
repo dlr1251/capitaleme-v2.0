@@ -1,17 +1,18 @@
 ---
+export const prerender = true;
 import Layout from "../../layouts/Layout.astro";
-import GoogleReviews from "../../components/en/common/GoogleReviews.jsx";
-import MissionVision from '../../components/en/about/MissionVision.astro';
-import LatestFromBlog from "../../components/en/blog/LatestFromBlog.astro";
+import GoogleReviews from "../../components/ui/cards/GoogleReviews.jsx";
+import OurTeam from "../../components/pages/about/OurTeam.tsx";
+// import AboutPageSection from "../../components/en/pages/AboutPageSection.astro"; // UNUSED - commenting out
+import AnimatedLogoIcon from "../../components/shared/AnimatedLogoIcon.jsx";
+import ValuesSection from "../../components/shared/ValuesSection.jsx";
+import { getTeamMembers } from "../../utils/teamData.js";
+import type { TeamMemberData } from "../../types/index";
 
-import ContactForm from "../../components/en/common/ContactForm.astro";
-import TableOfContents from "../../components/TableOfContents.astro";
-import Gallery from '../../components/en/about/Gallery.jsx'
-import OurTeam from '../../components/en/about/OurTeam';
+const pageTitle = "About Us - Capital M Law | Colombian Legal Services";
 
-const pageTitle = "About Us";
-import { getCollection } from 'astro:content';
-const authors = await getCollection('authors');
+// Get team members data
+const teamMembers: TeamMemberData[] = await getTeamMembers('en');
 
 const messages = [
       "We want to help expats, nomads and travelers with their legal processes in Colombia because we know what it means to be playing away from home.",
@@ -24,34 +25,82 @@ const messages = [
 ---
 <Layout title={pageTitle}>   
   
-  <div class="w-auto md:max-w-5xl mx-auto h-3/4 flex flex-col justify-center px-6 w-2/3 mx-auto">    
-      <h1 class="text-4xl md:text-6xl font-extrabold text-primary justify-left my-8 mt-32">
-          Welcome to Capital M Law <br />      
-      </h1>
-      <p class="my-12 text-lg md:text-4xl ">
-        <strong class="block text-primary text-left">Your Trusted Colombian Law Firm</strong>
-        <span class="block text-terciary text-left md:text-3xl">Fast, Affordable, Bilingual</span>
-      </p>
-  </div>
-
-  <div class="w-auto md:max-w-5xl mx-auto h-3/4 flex flex-col justify-center px-6 w-2/3 mx-auto prose">
-
-    <div class="space-y-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-      {messages.map(message => (
-        <div class="p-6 rounded-lg shadow-lg transform transition duration-500 hover:scale-105 hover:bg-secondary hover:text-white flex items-center justify-center">
-          <p class="text-lg font-light ">{message}</p>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:pt-36">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+          <div class="inline-flex items-center px-4 py-2 bg-blue-600/20 border border-blue-400/30 rounded-full text-blue-200 text-sm font-medium">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Colombian Legal Services
+          </div>
+          
+          <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+            Welcome to 
+            <span class="block text-blue-400">Capital M Law</span>
+          </h1>
+          
+          <div class="space-y-4">
+            <h2 class="text-2xl md:text-3xl font-semibold text-blue-200">
+              Yet another Colombian Law Firm
+            </h2>
+            <p class="text-xl text-blue-100/80 font-light">
+              Fast, Affordable, Bilingual
+            </p>
+          </div>
+          
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center text-blue-200">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Bilingual Services
+            </div>
+            <div class="flex items-center text-blue-200">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Expert Legal Counsel
+            </div>
+            <div class="flex items-center text-blue-200">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Cultural Understanding
+            </div>
+          </div>
         </div>
-      ))}
+        
+        <div class="relative">
+          <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-2xl p-8 border border-blue-400/30 backdrop-blur-sm">
+            <div class="text-center space-y-4">
+              <AnimatedLogoIcon client:load />
+              <h3 class="text-xl font-semibold text-blue-200">Why Choose Capital M Law?</h3>
+              <p class="text-blue-100/80">We bridge the gap between international clients and Colombian legal expertise, making your legal journey smooth and successful.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
+  </section>
 
-    <div class="md:max-w-5xl mx-auto">
-      <div class="text-3xl mt-12 text-terciary font-bold">Our Team</div>
-      <OurTeam members={authors} client:load/>
-      
-      <!-- <Gallery client:load  /> -->
-      <GoogleReviews client:load/>
-      
-    </div>
-  </div>
+  <!-- Values Section -->
+  <ValuesSection messages={messages} client:load />
+
+  <!-- About Page Section -->
+  <!-- <AboutPageSection /> -->
+
+  <!-- Team Section -->
+  <OurTeam members={teamMembers} client:load />
+
+  <!-- Reviews Section -->
+  <GoogleReviews client:load />
 </Layout>
+                

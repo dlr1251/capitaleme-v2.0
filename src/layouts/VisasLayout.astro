@@ -1,120 +1,127 @@
 ---
-const lang = Astro.currentLocale
-import Footer from '../components/Footer.astro';
-import TableOfContents from '../components/TableOfContents.astro';
-import MobileTOC from '../components/MobileTOC.astro';
-import { getCollection } from 'astro:content';
-import Navbar from '../components/Navbar.jsx';
-import WhatsAppButton from '../components/WhatsAppButton.astro';
-import GoogleTag from '../components/GoogleTag.astro'
-import BreadCrumb from '../components/BreadCrumb.astro'
-import SpeedInsights from "@vercel/speed-insights/astro"
-import VisaHeader from '../components/en/visas/VisaHeader.astro'
-import VisaAssistanceService from '../components/en/visas/VisaAssistanceService.astro'
-import VisaHeaderEs from '../components/es/visas/VisaHeader.astro'
-import VisaAssistanceServiceEs from '../components/es/visas/VisaAssistanceService.astro'
-import { ViewTransitions } from "astro:transitions";
-interface Props {
-	title: string;		
-	frontmatter: any;
-	headings: any;
+import Layout from './Layout.astro';
+import TableOfContents from '../components/core/navigation/TableOfContents.astro';
+import { getAllMenuData } from '../utils/menuDataOptimized.js';
+import VisaSidebarFilters from '../components/features/visa-services/VisaSidebarFilters.jsx';
+
+export interface Props {
+	title: string;
+	description?: string;
+	lang?: string;
+	pathname?: string;
+	headings?: any[];
+	lastEdited?: string;
+	showBreadcrumb?: boolean;
+	currentSlug?: string;
 }
 
-const { title, headings, workPermit, beneficiaries, type, sponsored, countries, visa_rara } = Astro.props.frontmatter || Astro.props 
+const { 
+	title, 
+	description, 
+	lang = 'en', 
+	pathname,
+	headings = [],
+	lastEdited,
+	showBreadcrumb = false,
+	currentSlug
+} = Astro.props;
 
-const locale = Astro.currentLocale
+// Get optimized menu data
+const menuData = await getAllMenuData(lang);
 
-const sidebarVisas = await getCollection("visas",({ id, data }) => {
-	if (locale == "en") {
-		return id.startsWith('en/');
-	} else {
-		return id.startsWith('es/');
-	}
-});
+// Get visa services for sidebar navigation
+const allVisas = menuData?.allVisas || [];
+const hasHeadings = headings && headings.length > 0;
 
-const url = Astro.url
-const slug = url.pathname.slice(7);
-
+// Get unique countries and visa types for filters from the menu data
+const countries = menuData?.visaCountries || [];
+const visaTypes = menuData?.visaTypes || [];
 ---
-<!doctype html>
-<html lang={lang}>
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Learn about Colombian visas cateogories and current regulations" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/isotipo-color.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-		<title>{title}</title>
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<GoogleTag/>
-		<SpeedInsights/>
-		<ViewTransitions/>
-		<meta property="og:title" content={title}>
-		<meta property="og:description" content="Learn about Colombian visas cateogories and current regulations" />
-		<meta property="og:url" content="https://www.capitaleme.com/">		
 
-	</head>
-	<body>
-		<WhatsAppButton/>
-		<Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load/>			
-		<div class="flex min-h-screen p-0 sm:ml-0 justify-between">
-			 <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 sm:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 	aria-label="Sidebar">
-				 <div class="h-full px-3 py-4 overflow-y-auto bg-primary">
-					<div class="my-4 mx-2 text-primary border-b pb-2">Which visa is the best for you?</div>											  							   
-						   <span class="p-0 ms-3 text-xl text-secondary rounded-lg group-hover:text-white">{lang == 'en' ? 'All visas' : 'Todas las visas' }</span>							
-							<ul id="dropdown-visas-list" class="pb-2 overflow-y-scroll h-[42rem] relative">								
-								{ sidebarVisas.map( (visa) => (
-									<li class="">
-										<a href={locale == "en" ? `/en/visas/${visa.slug.slice(3)}` : `/es/visas/${visa.slug.slice(3)}` } class={`flex items-center p-2 text-white rounded-lg group max-w-full hover:underline ${url.pathname.includes('/visas/' + visa.slug.slice(3)) || url.pathname.includes('/es/visas/' + visa.slug.slice(3)) ? 'bg-secondary text-white font-bold' : ''}`}>
-											<span class="flex-1 ms-6 whitespace-wrap font-light">{visa.data.title}</span>      
-										</a>
-									</li>
-								)) }								
-							</ul>					  	
-				 </div>
-			  </aside>	
-			<!-- Main content container -->
-			<div class="flex-none w-full md:w-auto">
-				<div 
-					class="p-4 rounded-lg mt-14 prose prose-slate prose-lg md:prose-xl prose-headings:text-primary prose-h2:text-2xl prose-h2:underline prose-h3:text-xl prose-h3:text-slate-500 border-r
-						">
+<Layout title={title} description={description} lang={lang} pathname={pathname} menuData={menuData}>
+	<div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
+		<div class="flex gap-8">
+			<!-- Left Navigation Panel with Filters -->
+			<aside class="hidden lg:block w-80 shrink-0">
+				<div class="sticky top-32">
+					<VisaSidebarFilters 
+						client:load
+						visas={allVisas}
+						currentSlug={currentSlug || ''}
+						lang={lang}
+						countries={countries}
+						visaTypes={visaTypes}
+					/>
+				</div>
+			</aside>
 
-						<BreadCrumb pathname={Astro.url.pathname}/>
-						<!-- <MobileTOC headings={Astro.props.headings}/> -->
-					<div class="max-w-screen-sm md:max-w-screen-2xl mx-auto">											
-						{ 
-							lang == "en" ? 
-							<VisaHeader title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/> :
-							<VisaHeaderEs title={title} workPermit={workPermit} beneficiaries={beneficiaries} type={type} sponsored={sponsored} countries={countries}/>
-						}
-						<slot/>
-						{ 
-							visa_rara !== true && lang == "en" ? <VisaAssistanceService/> : 
-							visa_rara !== true && lang == "es" ? <VisaAssistanceServiceEs/> :
-							<div></div>
-						}						
+			<!-- Main Content -->
+			<article class="flex-1 min-w-0">
+				<!-- Breadcrumb -->
+				{showBreadcrumb && (
+					<nav class="mb-6" aria-label="Breadcrumb">
+						<ol class="flex items-center space-x-2 text-sm text-gray-500">
+							<li><a href={`/${lang}`} class="hover:text-gray-700">{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
+							<li class="flex items-center">
+								<span class="mx-2">/</span>
+								<a href={`/${lang}/visas`} class="hover:text-gray-700">{lang === 'es' ? 'Visas' : 'Visas'}</a>
+							</li>
+							<li class="flex items-center">
+								<span class="mx-2">/</span>
+								<span class="text-gray-900">{title}</span>
+							</li>
+						</ol>
+					</nav>
+				)}
+
+				<!-- Header -->
+				<header class="mb-8">
+					<h1 class="text-3xl sm:text-4xl font-light text-gray-900 mb-4">{title}</h1>
+					{description && (
+						<p class="text-lg text-gray-600 max-w-3xl mb-4">
+							{description}
+						</p>
+					)}
+					
+					<!-- Meta information -->
+					{lastEdited && (
+						<div class="flex items-center gap-6 text-sm text-gray-500">
+							<div class="flex items-center gap-2">
+								<span class="w-2 h-2 bg-green-400 rounded-full"></span>
+								<span>
+									{lang === 'es' ? 'Última actualización' : 'Last updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US')}
+								</span>
+							</div>
+						</div>
+					)}
+				</header>
+
+				<!-- Content -->
+				<div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
+					<slot />
+				</div>
+			</article>
+
+			<!-- Right Table of Contents -->
+			{hasHeadings && (
+				<aside class="hidden xl:block w-80 shrink-0">
+					<div class="sticky top-32">
+						<TableOfContents headings={headings} lang={lang} />
 					</div>
-				</div>
-			</div>
-			
-			<!-- Sticky TableOfContents -->
-			<div class="hidden 2xl:block sticky top-4 h-screen z-40">
-				<div class="h-full overflow-y-auto">					
-					<TableOfContents headings={Astro.props.headings} />
-				</div>
-			</div>
-		</div>			
-		
-		<Footer/>
-			
-		<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>
-		<script>
-			// Log the content when the page loads
-			document.addEventListener('DOMContentLoaded', () => {
-				const content = document.querySelector('.content');
-				console.log('Content HTML:', content?.innerHTML);
-			});
-		</script>
-	</body>
-</html>
+				</aside>
+			)}
+		</div>
+	</div>
+</Layout>
+
+<style>
+	/* Smooth scroll behavior for the entire page */
+	html {
+		scroll-behavior: smooth;
+	}
+
+	/* Ensure headings have proper scroll margin for navbar offset */
+	:global(h2, h3, h4, h5, h6) {
+		scroll-margin-top: 120px;
+	}
+</style>

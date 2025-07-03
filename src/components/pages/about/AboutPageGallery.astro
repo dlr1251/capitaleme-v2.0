@@ -1,0 +1,109 @@
+---
+// Astro component - no React hooks needed
+const photos = [
+  {
+    id: 1,
+    url: "/images/misc/all-visas.jpeg",
+    description: "A breathtaking view of the mountains.",
+  },
+  {
+    id: 2,
+    url: "/images/misc/bg_home.jpeg",
+    description: "A peaceful lake surrounded by trees.",
+  },
+  {
+    id: 3,
+    url: "/images/misc/Team.jpeg",
+    description: "A vibrant cityscape at night.",
+  },
+  {
+    id: 4,
+    url: "/images/misc/Team.jpeg",
+    description: "A calm beach with crystal-clear water.",
+  },
+];
+
+// Default to first photo
+const highlightedPhoto = photos[0];
+---
+
+<div class="photo-gallery-container">
+  <!-- Highlighted Photo -->
+  <div class="highlighted-photo">
+    <img src={highlightedPhoto.url} alt={`Photo ${highlightedPhoto.id}`} />
+    <p class="photo-description">{highlightedPhoto.description}</p>
+  </div>
+
+  <!-- Thumbnail Carousel -->
+  <div class="thumbnail-carousel">
+    {photos.map((photo) => (
+      <div class="thumbnail">
+        <img
+          src={photo.url}
+          alt={`Thumbnail ${photo.id}`}
+          class={`thumbnail-image ${
+            photo.id === highlightedPhoto.id ? "active" : ""
+          }`}
+        />
+      </div>
+    ))}
+  </div>
+
+  <!-- Styles -->
+  <style>
+    .photo-gallery-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .highlighted-photo {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .highlighted-photo img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .photo-description {
+      margin-top: 10px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .thumbnail-carousel {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+
+    .thumbnail {
+      flex-shrink: 0;
+      width: 100px;
+      height: 100px;
+    }
+
+    .thumbnail-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 5px;
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
+    }
+
+    .thumbnail-image:hover {
+      transform: scale(1.05);
+    }
+
+    .thumbnail-image.active {
+      transform: scale(1.1);
+      border: 2px solid #007BFF;
+    }
+  </style>
+</div>

@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
-import { getNotionPage } from '../lib/notion';
 import { Client } from '@notionhq/client';
+import { glob } from 'astro/loaders';
 // import NotionToMarkdown from 'notion-to-md';
 const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
 
@@ -39,11 +39,95 @@ const resourcesCollection = defineCollection({
       url: z.string(),
       alt: z.string()
     }),
+    lang: z.string().optional(),
     tags: z.array(z.string()).optional(),
     docType: z.array(z.string()).optional(),
     legalArea: z.array(z.string()).optional()
   })
 });
+
+const propertiesCollection = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/properties' }),
+  schema: z.object({
+    title: z.string(),
+    location: z.string(),
+    price: z.object({
+      usd: z.number(),
+      cop: z.number()
+    }),
+    area: z.object({
+      total: z.number(),
+      unit: z.string()
+    }),
+    pricePerM2: z.number(),
+    bedrooms: z.number().optional(),
+    bathrooms: z.number().optional(),
+    propertyType: z.string(),
+    status: z.enum(['available', 'sold', 'pending']),
+    description: z.string(),
+    features: z.array(z.string()).optional(),
+    images: z.array(z.object({
+      url: z.string(),
+      alt: z.string()
+    })),
+    mainImage: z.string(),
+    coordinates: z.object({
+      lat: z.number(),
+      lng: z.number()
+    }).optional(),
+    contactInfo: z.object({
+      phone: z.string().optional(),
+      email: z.string().optional()
+    }).optional()
+  })
+});
+
+const authorsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    name: z.string(),
+    role: z.string(),
+    email: z.string(),
+    image: z.string(),
+    bio: z.string(),
+    socialLinks: z.object({
+      facebook: z.string().optional(),
+      twitter: z.string().optional(),
+      linkedin: z.string().optional()
+    }).optional()
+  })
+});
+
+// Add visas collection to fix the missing collection error
+const visasCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    country: z.string(),
+    visaType: z.string(),
+    requirements: z.array(z.string()).optional(),
+    processingTime: z.string().optional(),
+    cost: z.string().optional(),
+    lang: z.string().optional()
+  })
+});
+
+// Rate limiting utility for Notion API calls
+let lastApiCall = 0;
+const RATE_LIMIT_DELAY = 1000; // 1 second between calls
+
+async function rateLimitedApiCall<T>(apiCall: () => Promise<T>): Promise<T> {
+  const now = Date.now();
+  const timeSinceLastCall = now - lastApiCall;
+  
+  if (timeSinceLastCall < RATE_LIMIT_DELAY) {
+    await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_DELAY - timeSinceLastCall));
+  }
+  
+  lastApiCall = Date.now();
+  return apiCall();
+}
 
 async function fetchNestedBlocks(blockId: string, indentLevel: number = 0): Promise<ExtendedBlock[]> {
   const blocks: ExtendedBlock[] = [];
@@ -78,7 +162,6 @@ function blocksToMarkdown(blocks: ExtendedBlock[], indentLevel: number = 0): str
 
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
-    const nextBlock = blocks[i + 1] || null;
 
     const renderRichText = (richTextArray: any[]) =>
       richTextArray?.map((text) => text.plain_text).join('') || '';
@@ -217,12 +300,6 @@ function blocksToMarkdown(blocks: ExtendedBlock[], indentLevel: number = 0): str
 const notionCollection = defineCollection({
   loader: async () => {
     try {
-      // First, get the database to see its properties
-      const database = await notion.databases.retrieve({
-        database_id: process.env.NOTION_RESOURCES_DATABASE_ID || '',
-      });
-      console.log('Available properties:', Object.keys(database.properties));
-
       const response = await notion.databases.query({
         database_id: process.env.NOTION_RESOURCES_DATABASE_ID || '',
         filter: {
@@ -255,10 +332,8 @@ const notionCollection = defineCollection({
         })
       );
 
-      console.log('Final entries with Markdown:', entries);
       return entries;
     } catch (error) {
-      console.error('Notion loader error:', error);
       return [];
     }
   },
@@ -275,6 +350,9 @@ export const collections = {
   'posts': postsCollection, // Archivos MDX
   'resources': resourcesCollection, // Archivos MDX
   'notion': notionCollection,
+  'properties': propertiesCollection,
+  'authors': authorsCollection,
+  'visas': visasCollection,
   // 'database': database,
 }; 
 
@@ -287,12 +365,9 @@ export const collections = {
 
 // const pageCollection = defineCollection({
 //     loader: async () => {
-//         console.log('Running page loader...');
 //         try {
 //           const page = await getNotionPage();
-//           console.log('Page Loader result:', page);
 //           if (!page) {
-//             console.error('No page data returned from getNotionPage');
 //             throw new Error('No data from Notion');
 //           }
 //           const { id, ...pageData } = page;
@@ -302,7 +377,7 @@ export const collections = {
 //           }];
 //         } catch (error: unknown) {
 //           if (error instanceof Error) {
-//             console.error('Loader error:', error.message);
+//             // Handle error silently
 //           }
 //           throw error;
 //         }

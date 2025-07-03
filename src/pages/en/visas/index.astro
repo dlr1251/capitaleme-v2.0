@@ -1,62 +1,54 @@
 ---
-import { getCollection, getEntry } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
-import GoogleReviews from "../../../components/en/common/GoogleReviews.jsx";
-import FilterVisaWidget from "../../../components/en/visas/AllVisaFilterWidget.jsx";
-import CalendlyInline from "../../../components/en/home/CalendlyInline.astro";
+import { getNotionDatabase } from '../../../utils/notion';
+import type { NotionPage } from '../../../utils/notionTypes';
+import VisasHero from '../../../components/features/visa-services/VisasHero.jsx';
+import ServiceProcess from '../../../components/features/visa-services/ServiceProcess.jsx';
+import VisasSectionLegacy from '../../../components/pages/home/VisasSectionLegacy';
+import ConsultationSection from '../../../components/features/visa-services/ConsultationSection.jsx';
+import LatestBlogSection from '../../../components/features/visa-services/LatestBlogSection.jsx';
+import { getAllVisasFromNotion, getGuides } from '../../../utils/menuData.js';
+import BlogPageLatest from '../../../components/features/blog/BlogPageLatest.astro';
 
-import AccordionFAQ from "../../../components/AccordionFAQ";
-// import VisaAssistanceService from "../../../components/en/visas/VisaAssistanceService.astro";
-import VisasHero from "../../../components/en/visas/VisasHero.astro";
-import VisasService from "../../../components/en/visas/VisasService.astro";
-const lang = Astro.currentLocale;
-const allVisas = await getCollection("visas", ({ id }) => {
-  return id.startsWith("en/");
-});
+// Fetch Notion database content
+const databaseId = 'eea50d4ca9a64f329585bd8b64a583a6';
+const pages = await getNotionDatabase(databaseId) as NotionPage[];
 
-const visasFAQs = [
-  {
-    title: "How much does it cost?",
-    content:
-      "Depending on the visa category, it can range from $99 USD to $380 USD",
-  },
-  {
-    title: "How long does it take?",
-    content:
-      "Depending on your needs (e.g., salvoconducto, permit extension), it can take around 6-8 weeks.",
-  },
-  {
-    title: "Can I apply from Mexico?",
-    content:
-      "You can apply for any other country, provided that you hold a valid and vigent resident permit in that country",
-  },
-  {
-    title: "What if I get denied?",
-    content:
-      "Consider that the final response can be either 'Negada' or 'Inadmitida'. Both with different consequences. When a visa application gets 'Negada', it means that you can't apply for a new visa until 6 months later. If the visa is deemed inadmissible or 'Inadmitida', you can apply for a new one the next day. ",
-  },
-];
+const allVisas = await getAllVisasFromNotion('en');
+const allGuides = await getGuides('en');
 
+// Get popular visas
+const popularVisas = allVisas.filter((visa: any) => visa.isPopular).slice(0, 4);
+
+// Get featured guides
+const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(0, 4);
 ---
 
-<Layout title="Your Colombian Visa Application, made simple ">
+<Layout title="Visa Information - Capital M Law | Colombian Legal Services">
+  <!-- Modern Hero Section -->
+  <VisasHero client:load popularVisas={popularVisas} guides={featuredGuides} lang="en" />
   
-  <VisasHero />
-  <VisasService />
-
-  <div class="mx-auto w-auto md:w-2/3">
-    <GoogleReviews client:load/>
-    <h2 class=" mt-6 text-xl text-primary font-bold">Discover all visa categories</h2>
-    <FilterVisaWidget locale="en" visas={allVisas} client:only="react" />
-    
-    <CalendlyInline/>
-    
-    <div class="mt-20 mb-12">
-      <h3 class="text-terciary font-bold text-3xl mb-8">FAQ</h3>
-      <AccordionFAQ items={visasFAQs} client:load/>
+  <!-- How Our Service Works Section -->
+  <ServiceProcess client:load />
+  
+  <!-- Visa Categories with Filtering -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">
+          Discover All Visa Categories
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Find the perfect visa option for your situation. Use our interactive filter to narrow down your choices based on your country, needs, and preferences.
+        </p>
+      </div>
+      
+      <VisasSectionLegacy visas={allVisas} lang="en" intro={false} />
     </div>
-  </div>
+  </section>
+
+  <!-- Full-Width Consultation Section -->
+  <ConsultationSection client:load />
   
-
-</Layout>
-
+  <BlogPageLatest/>
+</Layout> 
