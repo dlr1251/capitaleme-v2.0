@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist-sync"
+  },
+  "include": ["src/lib/syncNotionToAlgolia.ts"]
+} 

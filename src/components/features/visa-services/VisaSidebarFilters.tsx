@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { Country } from 'data/countries';
-import type { Visa } from '../../../data/visas';
-import { countries } from 'data/countries';
-import { visas } from '../../../data/visas';
+import type { Country } from 'data/countries.js';
+import type { Visa } from '../../../data/visas.js';
+import { countries } from 'data/countries.js';
+import { visas } from '../../../data/visas.js';
 
 interface VisaSidebarFiltersProps {
   visas: Visa[];

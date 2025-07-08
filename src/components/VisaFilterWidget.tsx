@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react';
-import { countries } from '../data/countries';
-import { visas } from '../data/visas';
-import type { Country } from '../data/countries';
-import type { Visa } from '../data/visas';
+import { countries } from '../data/countries.js';
+import { visas } from '../data/visas.js';
+import type { Country } from '../data/countries.js';
+import type { Visa } from '../data/visas.js';
 import {
   filterVisasByCountry,
   filterVisasByType,
   filterVisasByBeneficiaries,
   filterVisasByWorkPermit,
-} from '../filters/visaFilters';
+} from '../filters/visaFilters.js';
 
 export default function VisaFilterWidget() {
   const [selectedCountry, setSelectedCountry] = useState<string>('');

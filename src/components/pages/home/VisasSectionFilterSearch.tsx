@@ -2,8 +2,12 @@
 // The code is unchanged from the original HomePageVisas.tsx.
 
 import { useState, useEffect } from 'react';
-import { countries } from 'data/countries';
-import type { Country } from 'data/countries';
+import { countries } from 'data/countries.js';
+import type { Country } from 'data/countries.js';
+import Fuse from 'fuse.js';
+import Joyride, { STATUS } from 'react-joyride';
+import type { CallBackProps, Step } from 'react-joyride';
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 interface Visa {
   id: string;
@@ -28,7 +32,7 @@ interface VisasSectionLegacyProps {
   intro?: boolean;
 }
 
-const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSectionLegacyProps) => {
+const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: VisasSectionLegacyProps) => {
   const [filteredVisas, setFilteredVisas] = useState(visas);
   const [country, setCountry] = useState(lang === 'es' ? 'Estados Unidos de América' : 'United States');
   const [visaType, setVisaType] = useState('');
@@ -37,6 +41,54 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
   const [isAnimating, setIsAnimating] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [joyrideRun, setJoyrideRun] = useState(false);
+  const joyrideSteps: Step[] = [
+    {
+      target: '#country-filter',
+      content: (
+        <div className="text-primary">
+          <b>Country of Origin</b><br/>
+          The country you select determines which visas are available to you. Some visas are only available to citizens of certain countries.
+        </div>
+      ),
+      disableBeacon: true,
+    },
+    {
+      target: '#beneficiaries-filter',
+      content: (
+        <div className="text-primary">
+          <b>Beneficiaries</b><br/>
+          Not all visas allow beneficiaries. Beneficiaries are your spouse or partner and children under 25 who are economically dependent on you.
+        </div>
+      ),
+    },
+    {
+      target: '#workpermit-filter',
+      content: (
+        <div className="text-primary">
+          <b>Work Permit</b><br/>
+          This filter shows visas that allow you to be employed by Colombian companies under a labor law contract.
+        </div>
+      ),
+    },
+    {
+      target: '#search-bar',
+      content: (
+        <div className="text-primary">
+          <b>Search</b><br/>
+          Use this bar to filter visas by name, description, or category. Combine with filters for best results.
+        </div>
+      ),
+    },
+  ];
+
+  // Fuse.js setup
+  const fuse = new Fuse(visas, {
+    keys: ['title', 'description', 'category'],
+    threshold: 0.3,
+    minMatchCharLength: 2,
+  });
 
   // Separate popular visas
   const popularVisas = visas.filter(visa => visa.isPopular);
@@ -93,77 +145,39 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
     canHelp: 'Can you help me with more information?'
   };
 
-  // Filter visas based on selected criteria
+  // Sorting: V types first, then M, then R, then alphabetically
+  function sortVisas(visas: Visa[]) {
+    return [...visas].sort((a, b) => {
+      const getTypeOrder = (title: string) => {
+        if (title.startsWith('V')) return 0;
+        if (title.startsWith('M')) return 1;
+        if (title.startsWith('R')) return 2;
+        return 3;
+      };
+      const typeOrderA = getTypeOrder(a.title);
+      const typeOrderB = getTypeOrder(b.title);
+      if (typeOrderA !== typeOrderB) return typeOrderA - typeOrderB;
+      return a.title.localeCompare(b.title);
+    });
+  }
+
+  // Filter visas based on selected criteria and search
   useEffect(() => {
     let filtered = [...visas];
 
-    // Filter by country - using the same logic as AllVisaFilterWidget
+    // Filter by country
     if (country) {
-      const countryInfo = countries.find((info: Country) => info.name === country);
+      // Find the country object
+      const countryInfo = countries.find((info: Country) => info.name === country || info.nameEn === country);
+      // Get the country code for filtering
+      let countryCode = '';
       if (countryInfo) {
-        const categories: string[] = [];
-        if (countryInfo?.excempted === "Yes") categories.push("Exempted");
-        if (countryInfo?.excempted === "No") categories.push("Not exempted");
-        if (countryInfo?.excempted === "Schengen visa") categories.push("Schengen visa");
-        if (countryInfo.treaties && countryInfo.treaties !== "null") {
-          categories.push(...countryInfo.treaties.split(", "));
-        }
-
+        countryCode = lang === 'es' ? countryInfo.name : countryInfo.nameEn;
+      }
+      if (countryCode) {
         filtered = filtered.filter(visa => {
-          const visaCountries = visa.countries || [];
-          
-          // If visa has no country restrictions (empty array), treat it as "Not exempted" 
-          // since that's the most restrictive and safest option
-          const effectiveVisaCountries = visaCountries.length === 0 ? ["Not exempted"] : visaCountries;
-          
-          // If visa has "All countries", it applies to everyone
-          if (effectiveVisaCountries.includes("All countries")) {
-            return true;
-          }
-          
-          const isExemptedCountry = categories.includes("Exempted");
-          const isNotExemptedCountry = categories.includes("Not exempted");
-          const isCAN = categories.includes("CAN");
-          const isMercosur = categories.includes("Mercosur");
-          const isWorkingHolidays = categories.includes("Working holidays");
-          
-          const hasExemptedVisa = effectiveVisaCountries.includes("Exempted") || effectiveVisaCountries.includes("Excempted");
-          const hasNotExemptedVisa = effectiveVisaCountries.includes("Not exempted") || effectiveVisaCountries.includes("Not excempted");
-          const hasCANVisa = effectiveVisaCountries.includes("CAN");
-          const hasMercosurVisa = effectiveVisaCountries.includes("Mercosur");
-          const hasWorkingHolidayVisa = effectiveVisaCountries.includes("Working holidays");
-          
-          // Use the exact same logic as AllVisaFilterWidget
-          const countryDecision = (
-            // For exempted countries: show exempted visas, or treaty visas if they have the treaty
-            (isExemptedCountry && hasExemptedVisa && !hasNotExemptedVisa) ||
-            (isExemptedCountry && isCAN && hasCANVisa && !hasNotExemptedVisa) ||
-            (isExemptedCountry && isMercosur && hasMercosurVisa && !hasNotExemptedVisa) ||
-            (isExemptedCountry && isWorkingHolidays && hasWorkingHolidayVisa && !hasNotExemptedVisa) ||
-            
-            // For non-exempted countries: show non-exempted visas, or treaty visas if they have the treaty
-            (isNotExemptedCountry && hasNotExemptedVisa && !hasExemptedVisa) ||
-            (isNotExemptedCountry && isCAN && hasCANVisa && !hasExemptedVisa) ||
-            (isNotExemptedCountry && isMercosur && hasMercosurVisa && !hasExemptedVisa) ||
-            (isNotExemptedCountry && isWorkingHolidays && hasWorkingHolidayVisa && !hasExemptedVisa) ||
-            
-            // For CAN countries: show CAN visas, or exempted/non-exempted based on their status
-            (isCAN && hasCANVisa) ||
-            (isCAN && isExemptedCountry && hasExemptedVisa) ||
-            (isCAN && isNotExemptedCountry && hasNotExemptedVisa) ||
-            
-            // For Mercosur countries: show Mercosur visas, or exempted/non-exempted based on their status
-            (isMercosur && hasMercosurVisa) ||
-            (isMercosur && isExemptedCountry && hasExemptedVisa) ||
-            (isMercosur && isNotExemptedCountry && hasNotExemptedVisa) ||
-            
-            // For Working Holidays countries: show Working Holiday visas, or exempted/non-exempted based on their status
-            (isWorkingHolidays && hasWorkingHolidayVisa) ||
-            (isWorkingHolidays && isExemptedCountry && hasExemptedVisa) ||
-            (isWorkingHolidays && isNotExemptedCountry && hasNotExemptedVisa)
-          );
-          
-          return countryDecision;
+          // Accept 'All' as a wildcard for all countries
+          return visa.countries.includes(countryCode) || visa.countries.includes('All');
         });
       }
     }
@@ -186,12 +200,25 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
       filtered = filtered.filter(visa => visa.workPermit && visa.workPermit !== 'No work permit');
     }
 
+    // Fuse.js search (applied last, so it always narrows down the filtered set)
+    if (searchQuery.trim().length > 1) {
+      const fuseFiltered = new Fuse(filtered, {
+        keys: ['title', 'description', 'category'],
+        threshold: 0.3,
+        minMatchCharLength: 2,
+      });
+      filtered = fuseFiltered.search(searchQuery).map((result: { item: Visa }) => result.item);
+    }
+
+    // Sort visas
+    filtered = sortVisas(filtered);
+
     setFilteredVisas(filtered);
+    setShowAll(false); // Reset showAll when filters/search change
     setIsAnimating(true);
     const timer = setTimeout(() => setIsAnimating(false), 300);
-    
     return () => clearTimeout(timer);
-  }, [country, visaType, beneficiaries, workPermit, visas]);
+  }, [country, visaType, beneficiaries, workPermit, visas, searchQuery]);
 
   const clearFilters = () => {
     setCountry(lang === 'es' ? 'Estados Unidos de América' : 'United States');
@@ -234,13 +261,39 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
     window.open(whatsappUrl, '_blank');
   };
 
-  // Get displayed visas (9 initially, then all)
+  // Show more/less logic
   const displayedVisas = showAll ? filteredVisas : filteredVisas.slice(0, 9);
   const hasMoreVisas = filteredVisas.length > 9;
 
   return (
     <section className="py-32 bg-gradient-to-br from-gray-50 to-white">
+      <Joyride
+        steps={joyrideSteps}
+        run={joyrideRun}
+        continuous
+        showSkipButton
+        showProgress
+        disableScrolling={true}
+        styles={{
+          options: {
+            backgroundColor: '#fff',
+            primaryColor: '#16345F', // primary
+            textColor: '#222',
+            zIndex: 10000,
+            overlayColor: 'rgba(22,52,95,0.1)',
+          },
+          buttonClose: { color: '#16345F' },
+          buttonNext: { background: '#16345F', color: '#fff' },
+          buttonBack: { color: '#16345F' },
+          tooltip: { border: '1px solid #16345F', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' },
+        }}
+        locale={{ last: 'Finish', skip: 'Skip', next: 'Next', back: 'Back' }}
+        callback={(data: CallBackProps) => {
+          if (data.status === 'finished' || data.status === 'skipped') setJoyrideRun(false);
+        }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
         {/* Header */}
         {intro && (
           <div className="text-center mb-20">
@@ -251,50 +304,25 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {content.description}
             </p>
+            <div className="mt-6 max-w-2xl mx-auto text-base text-gray-800 bg-primary-50 border border-primary-200 rounded-lg p-5 shadow-sm">
+              <div className="mb-2 font-semibold text-primary-700 text-lg flex items-center gap-2">
+                <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                How to use the Visa Finder
+              </div>
+              <ol className="list-decimal list-inside text-base text-gray-700 space-y-1">
+                <li><b>Country:</b> Select your country of origin to see visas relevant to your nationality.</li>
+                <li><b>Visa Type:</b> Filter by visa type (V, M, R, etc.) to narrow down categories.</li>
+                <li><b>Beneficiaries/Work Permit:</b> Use the checkboxes to show only visas that allow beneficiaries or work permits.</li>
+                <li><b>Search:</b> Use the search bar below to find visas by name, description, or category. The search works instantly as you type and combines with the filters above.</li>
+                <li><b>Show More:</b> If there are many results, click "Show more visas" to see all. Click "Show less" to collapse the list.</li>
+              </ol>
+              <div className="mt-2 text-sm text-primary-700">Tip: You can combine filters and search for best results!</div>
+            </div>
           </div>
         )}
 
-        {/* Popular Visas Section */}
-        {popularVisas.length > 0 && (
-          <div className="mb-16">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-primary mb-4">
-                {content.popularTitle}
-              </h3>
-              <p className="text-lg text-gray-600">
-                {content.popularSubtitle}
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {popularVisas.slice(0, 4).map((visa) => (
-                <div key={visa.id} className="bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-xl border-2 border-secondary/20 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {visa.emoji && (
-                        <span className="text-2xl">{visa.emoji}</span>
-                      )}
-                      <h4 className="text-lg font-semibold text-primary group-hover:text-secondary transition-colors">
-                        {visa.title}
-                      </h4>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {visa.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      {getBeneficiariesLabel(visa.beneficiaries)}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {getWorkPermitLabel(visa.workPermit)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
+
 
         {/* Filters Section */}
         <div className="mb-12">
@@ -302,10 +330,19 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
             {content.filterTitle}
           </h3>
           
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 relative">
+            {/* Joyride Help Button (top-right of filter card) */}
+            <button
+              className="absolute top-4 right-4 z-20 bg-primary text-white rounded-full p-2 shadow-lg hover:bg-secondary transition-colors flex items-center"
+              onClick={() => setJoyrideRun(true)}
+              aria-label="Show tutorial"
+              style={{ boxShadow: '0 2px 8px rgba(22,52,95,0.12)' }}
+            >
+              <QuestionMarkCircleIcon className="w-6 h-6" />
+            </button>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Country Filter */}
-              <div>
+              <div id="country-filter">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {content.countryLabel}
                 </label>
@@ -321,6 +358,8 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
                   ))}
                 </select>
               </div>
+
+              
 
               {/* Visa Type Filter */}
               <div>
@@ -342,7 +381,7 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
               </div>
 
               {/* Beneficiaries Filter */}
-              <div className="flex items-center">
+              <div className="flex items-center" id="beneficiaries-filter">
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -357,7 +396,7 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
               </div>
 
               {/* Work Permit Filter */}
-              <div className="flex items-center">
+              <div className="flex items-center" id="workpermit-filter">
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -372,16 +411,31 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
               </div>
             </div>
 
-            {/* Clear Filters Button */}
-            <div className="mt-6 text-center">
+            {/* Clear Filters Button - small, right-aligned */}
+            <div className="mt-4 flex justify-end">
               <button
                 onClick={clearFilters}
-                className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 border border-gray-300 transition-colors"
+                style={{ minWidth: 0 }}
               >
                 {content.clearFilters}
               </button>
             </div>
           </div>
+        </div>
+
+          {/* Search Bar */}
+          <div className="mb-10 flex justify-center" id="search-bar">
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder={lang === 'es' ? 'Buscar visas...' : 'Search visas...'}
+            className="w-full max-w-xl px-6 py-3 rounded-full border border-gray-300 shadow focus:ring-2 focus:ring-primary focus:border-primary text-lg transition-all duration-200 bg-white placeholder-gray-400"
+            style={{ fontWeight: 500 }}
+            autoComplete="off"
+            spellCheck={false}
+          />
         </div>
 
         {/* Results Section */}
@@ -395,7 +449,12 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
           {/* Visa Cards Grid */}
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ${isAnimating ? 'opacity-50' : 'opacity-100'}`}>
             {displayedVisas.map((visa) => (
-              <div key={visa.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <a
+                key={visa.id}
+                href={`/${lang}/visas/${visa.slug}`}
+                className="group bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer block focus:outline-none focus:ring-2 focus:ring-primary"
+                tabIndex={0}
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     {visa.emoji && (
@@ -404,13 +463,19 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
                     <h4 className="text-lg font-semibold text-primary">
                       {visa.title}
                     </h4>
+                    {visa.isPopular && (
+                      <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full font-semibold">Popular</span>
+                    )}
                   </div>
                 </div>
-                
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                <p className="text-gray-600 text-sm mb-2 line-clamp-3">
                   {visa.description}
                 </p>
-                
+                <div className="text-xs text-primary font-medium mb-2">
+                  {visa.alcance && (
+                    <span>{lang === 'es' ? 'Alcance: ' : 'Scope: '}{visa.alcance}</span>
+                  )}
+                </div>
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-500">{lang === 'es' ? 'Beneficiarios' : 'Beneficiaries'}:</span>
@@ -421,23 +486,20 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
                     <span className="font-medium">{getWorkPermitLabel(visa.workPermit)}</span>
                   </div>
                 </div>
-                
                 <div className="flex items-center justify-between">
-                  <a
-                    href={`/${lang}/visas/${visa.slug}`}
-                    className="text-primary hover:text-secondary font-medium text-sm"
-                  >
+                  <span className="text-primary hover:text-secondary font-medium text-sm underline group-hover:no-underline">
                     {lang === 'es' ? 'Ver detalles' : 'View details'}
-                  </a>
+                  </span>
                   <button
-                    onClick={() => handleWhatsAppContact(visa.title)}
+                    type="button"
+                    onClick={e => { e.preventDefault(); handleWhatsAppContact(visa.title); }}
                     className="flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors"
                   >
                     <span>💬</span>
                     {content.contactWhatsApp}
                   </button>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
 
@@ -446,7 +508,7 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
             <div className="text-center mt-8">
               {!showAll ? (
                 <button
-                  onClick={handleShowMore}
+                  onClick={() => setShowAll(true)}
                   disabled={isLoading}
                   className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50"
                 >
@@ -456,7 +518,7 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
                       {lang === 'es' ? 'Cargando...' : 'Loading...'}
                     </span>
                   ) : (
-                    content.showMore
+                    lang === 'es' ? 'Ver más visas' : 'Show more visas'
                   )}
                 </button>
               ) : (
@@ -464,7 +526,7 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
                   onClick={() => setShowAll(false)}
                   className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  {content.showLess}
+                  {lang === 'es' ? 'Ver menos' : 'Show less'}
                 </button>
               )}
             </div>
@@ -475,4 +537,4 @@ const VisasSectionLegacy = ({ visas = [], lang = 'es', intro = true }: VisasSect
   );
 };
 
-export default VisasSectionLegacy; 
+export default VisasSectionFilterSearch; 

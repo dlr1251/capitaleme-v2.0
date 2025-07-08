@@ -11,22 +11,27 @@ import CalendlyInline from '../../components/shared/CalendlyInline.astro';
 import { getAllVisasFromNotion, getGuides } from '../../utils/menuData.js';
 import { getCollection } from 'astro:content';
 import GoogleReviews from '../../components/ui/cards/GoogleReviews.jsx';
+import { getFeaturedProperty } from '../../utils/menuData.js';
+import { getAllMenuData } from '../../utils/menuData.js';
 
 // Get all visas from Notion
 const allVisas = await getAllVisasFromNotion('es');
 const guides = await getGuides('es');
+const featuredProperty = await getFeaturedProperty('es');
+const menuData = await getAllMenuData('es');
 
 // Fetch all properties from the content collection
 const properties = await getCollection('properties', ({ id }) => id.startsWith('es/'));
 const propertiesArray = properties as any[];
+
 ---
 
-<Layout title="Capital M Law - Inicio">
+<Layout title="Capital M Law - Inicio" menuData={menuData}>
 	<main class="">        
         <HomePageHero/>
         <AboutPageSection/>
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="es" />
-        <HomeRealEstateSection properties={propertiesArray} features={[]} lang="es" />
+        <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="es" client:load />
         <HomePageCLKR lang="es" client:load />
     		<CalendlyInline />        
         <GoogleReviews client:load/>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { getPageTitle, getPageDescription, getPageSelectValue } from '../../../../utils/notionHelpers.js';
 
 interface BlogMegaMenuProps {
   lang?: string;

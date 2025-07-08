@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { EnvelopeIcon, ClipboardIcon } from '@heroicons/react/24/solid';
 
 interface SocialSharingProps {
   title: string;
@@ -74,20 +75,14 @@ const SocialSharing = ({ title, description, url, imageUrl }: SocialSharingProps
     },
     {
       name: 'Email',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-      ),
+      icon: <EnvelopeIcon className="w-5 h-5" />,
       color: 'hover:text-gray-700',
       platform: 'email',
       aria: 'Share by Email'
     },
     {
       name: 'Copy Link',
-      icon: copied ? (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-      ) : (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-      ),
+      icon: copied ? <ClipboardIcon className="w-5 h-5 text-green-600" /> : <ClipboardIcon className="w-5 h-5" />,
       color: copied ? 'text-green-600' : 'hover:text-purple-600',
       platform: 'copy',
       aria: copied ? 'Link copied!' : 'Copy link to clipboard'

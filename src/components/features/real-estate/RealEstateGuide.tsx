@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import PropertyListing from './PropertyListing';
-import PropertySearchService from './PropertySearchService';
+import PropertyListing from './PropertyListing.tsx';
+import PropertySearchService from './PropertySearchService.tsx';
 
 // Type definitions
 interface Property {

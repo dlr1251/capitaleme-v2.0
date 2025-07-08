@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 // import { getCollection, getEntry } from 'astro:content';
 import { motion } from 'framer-motion';
 
-import { countries } from 'data/countries';
-import type { Country } from 'data/countries';
+import { countries } from 'data/countries.js';
+import type { Country } from 'data/countries.js';
 // Import the list of all the countries in JSON. 
 // The format of the JSON file is like thins:
 // {

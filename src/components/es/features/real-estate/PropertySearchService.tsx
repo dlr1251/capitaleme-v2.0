@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
 import type { ChangeEvent } from "react";
 
 interface UserDetails {
@@ -95,30 +94,30 @@ const PropertyServiceComponent = () => {
 
           {/* Social Media Links */}
           <div className="flex justify-center lg:justify-start gap-4 mt-4">
-            <a
+            {/* <a
               href="https://youtube.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-red-600 text-2xl"
             >
               <FaYoutube />
-            </a>
-            <a
+            </a> */}
+            {/* <a
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-pink-500 text-2xl"
             >
               <FaInstagram />
-            </a>
-            <a
+            </a> */}
+            {/* <a
               href="https://tiktok.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-black text-2xl"
             >
               <FaTiktok />
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

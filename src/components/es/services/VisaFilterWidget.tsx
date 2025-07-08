@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { countries } from 'data/countries';
-import type { Country } from 'data/countries';
-import { FaThLarge, FaList } from "react-icons/fa"; // Import icons for button
+import { countries } from 'data/countries.js';
+import type { Country } from 'data/countries.js';
+import { Squares2X2Icon, Bars3Icon } from '@heroicons/react/24/solid';
 
 interface VisaData {
   title: string;
@@ -206,7 +206,7 @@ const FilterVisaWidget = ({locale, visas}: FilterVisaWidgetProps) => {
           <button className="mt-4 flex items-center px-4 py-2 border text-gray-800 rounded-lg group hover:border-primary"
             onClick={() => setViewMode(viewMode === "cards" ? "list" : "cards")}
           >
-            {viewMode === "cards" ? <FaList  size={20} /> : <FaThLarge  size={20} />}
+            {viewMode === "cards" ? <Bars3Icon className="h-5 w-5 text-primary" /> : <Squares2X2Icon className="h-5 w-5 text-primary" />}
             <span className="ml-2 text-sm text-primary">{viewMode === "cards" ? "List View" : "Card View"}</span>
           </button>
         </div>

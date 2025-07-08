@@ -1,5 +1,5 @@
-import type { Visa } from '../data/visas';
-import type { Country } from '../data/countries';
+import type { Visa } from '../data/visas.js';
+import type { Country } from '../data/countries.js';
 
 /**
  * Filter visas by country. Only returns visas available to the given country code.

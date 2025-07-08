@@ -1,12 +1,12 @@
 import { Client } from '@notionhq/client';
-import type { NotionPage, NotionBlock } from './notionTypes';
+import type { NotionPage, NotionBlock } from './notionTypes.js';
 import { 
   transformPage, 
   transformBlock, 
   fetchBlockChildren, 
   fetchPageWithBlocks,
   fetchDatabaseWithTransformation 
-} from './notionTransform';
+} from './notionTransform.js';
 
 const notion = new Client({
   auth: import.meta.env.NOTION_API_KEY,
@@ -83,7 +83,6 @@ export async function getNotionDatabase(databaseId: string = import.meta.env.NOT
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying Notion API request for database ${databaseId} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         await delay(1000 * (retryCount + 1)); // Exponential backoff
         return getNotionDatabase(databaseId, retryCount + 1);
       }
@@ -126,7 +125,6 @@ export async function getNotionDatabase(databaseId: string = import.meta.env.NOT
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      console.log(`Retrying Notion API request for database ${databaseId} due to error ${error.status} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
       await delay(1000 * (retryCount + 1)); // Exponential backoff
       return getNotionDatabase(databaseId, retryCount + 1);
     }
@@ -160,7 +158,6 @@ export async function getNotionPage(pageId: string, retryCount = 0): Promise<Not
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying Notion API request for page ${pageId} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         await delay(1000 * (retryCount + 1)); // Exponential backoff
         return getNotionPage(pageId, retryCount + 1);
       }
@@ -170,7 +167,6 @@ export async function getNotionPage(pageId: string, retryCount = 0): Promise<Not
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      console.log(`Retrying Notion API request for page ${pageId} due to error ${error.status} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
       await delay(1000 * (retryCount + 1)); // Exponential backoff
       return getNotionPage(pageId, retryCount + 1);
     }
@@ -203,7 +199,6 @@ export async function getNotionPageWithBlocks(pageId: string, retryCount = 0): P
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying Notion API request for page with blocks ${pageId} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         await delay(1000 * (retryCount + 1)); // Exponential backoff
         return getNotionPageWithBlocks(pageId, retryCount + 1);
       }
@@ -213,7 +208,6 @@ export async function getNotionPageWithBlocks(pageId: string, retryCount = 0): P
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      console.log(`Retrying Notion API request for page with blocks ${pageId} due to error ${error.status} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
       await delay(1000 * (retryCount + 1)); // Exponential backoff
       return getNotionPageWithBlocks(pageId, retryCount + 1);
     }
@@ -243,7 +237,6 @@ export async function getNotionDatabaseWithTransformation(databaseId: string = i
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying Notion API request for database with transformation ${databaseId} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
         await delay(1000 * (retryCount + 1)); // Exponential backoff
         return getNotionDatabaseWithTransformation(databaseId, retryCount + 1);
       }
@@ -253,7 +246,6 @@ export async function getNotionDatabaseWithTransformation(databaseId: string = i
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      console.log(`Retrying Notion API request for database with transformation ${databaseId} due to error ${error.status} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
       await delay(1000 * (retryCount + 1)); // Exponential backoff
       return getNotionDatabaseWithTransformation(databaseId, retryCount + 1);
     }

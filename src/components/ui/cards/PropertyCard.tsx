@@ -15,7 +15,10 @@ interface PropertyCardProps {
   bathrooms?: number;
   propertyType?: string;
   status: 'available' | 'sold' | 'pending';
+  gallery?: string[];
 }
+
+import { useState } from 'react';
 
 const PropertyCard = ({
   image,
@@ -32,8 +35,16 @@ const PropertyCard = ({
   bedrooms,
   bathrooms,
   propertyType,
-  status
+  status,
+  gallery = []
 }: PropertyCardProps) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const hasGallery = Array.isArray(gallery) && gallery.length > 0;
+  const images = hasGallery ? gallery : [image];
+  const nextImage = () => setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  const prevImage = () => setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  const goToImage = (index: number) => setCurrentImageIndex(index);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
@@ -50,11 +61,45 @@ const PropertyCard = ({
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-lg transition-shadow duration-300">
       <div className="relative">
-        <img
-          src={image}
-          alt={title}
-          className="rounded-lg mb-4 w-full h-48 object-cover"
-        />
+        {/* Gallery Carousel */}
+        <div className="relative mb-4">
+          <img
+            src={images[currentImageIndex]}
+            alt={title}
+            className="rounded-lg w-full h-48 object-cover"
+          />
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg z-10"
+              >
+                <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button
+                onClick={nextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg z-10"
+              >
+                <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-10">
+                {images.map((_: string, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => goToImage(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                      index === currentImageIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
         <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(status)}`}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </div>

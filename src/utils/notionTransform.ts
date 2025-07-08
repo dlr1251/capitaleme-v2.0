@@ -10,7 +10,7 @@ import type {
   NotionCheckboxProperty,
   NotionDateProperty,
   NotionFilesProperty
-} from './notionTypes';
+} from './notionTypes.js';
 
 // --- Property Extraction Helpers ---
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { TeamMemberData } from '../../../types/index';
+import type { TeamMemberData } from '../../../types/index.ts';
 
 interface OurTeamProps {
   members: TeamMemberData[];

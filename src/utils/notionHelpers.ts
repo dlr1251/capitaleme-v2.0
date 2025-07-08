@@ -8,7 +8,7 @@ import type {
   NotionCheckboxProperty,
   NotionDateProperty,
   NotionFilesProperty
-} from './notionTypes';
+} from './notionTypes.js';
 import { 
   extractTitle, 
   extractRichText, 
@@ -16,7 +16,7 @@ import {
   extractCheckbox, 
   extractDate, 
   extractFiles 
-} from './notionTransform';
+} from './notionTransform.js';
 
 // --- Safe Property Access Helpers ---
 

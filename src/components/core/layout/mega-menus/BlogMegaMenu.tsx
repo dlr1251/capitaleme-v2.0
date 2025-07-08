@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { getPageTitle, getPageDescription, getPageSelectValue } from '../../../../utils/notionHelpers.js';
 
 interface BlogMegaMenuProps {
   lang?: string;
   menuData?: any;
+  currentPath?: string;
 }
 
 interface BlogPost {
@@ -22,7 +24,7 @@ interface BlogPost {
   };
 }
 
-const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {} }) => {
+const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {}, currentPath }) => {
   const [latestBlogPosts, setLatestBlogPosts] = useState<BlogPost[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -195,7 +197,9 @@ const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {} }) => {
                 <a 
                   key={post.href} 
                   href={post.href}
-                  className="block group p-3 rounded-lg hover:bg-gray-50 border border-gray-100 hover:border-primary transition-all duration-200"
+                  className={`block group p-3 rounded-lg border transition-all duration-200
+                    ${currentPath && currentPath.startsWith(post.href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30'}
+                  `}
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">

@@ -1,3 +1,6 @@
+import { HomeModernIcon, BuildingStorefrontIcon, ArrowTrendingUpIcon, KeyIcon, UsersIcon } from '@heroicons/react/24/solid';
+import PropertyCard from '../../ui/cards/PropertyCard.tsx';
+import { useEffect, useState } from 'react';
 
 // Property type
 interface Property {
@@ -23,15 +26,12 @@ interface RealEstateFeature {
 }
 
 interface HomeRealEstateSectionProps {
-  properties: Property[];
+  featuredProperty: any;
   features: RealEstateFeature[];
   lang?: 'en' | 'es';
 }
 
-const HomeRealEstateSection = ({ properties = [], features = [], lang = 'en' }: HomeRealEstateSectionProps) => {
-  // Get featured property
-  const featuredProperty = properties.find(p => p.featured) || properties[0];
-
+const HomeRealEstateSection = ({ featuredProperty, features = [], lang = 'en' }: HomeRealEstateSectionProps) => {
   // Section content
   const content = lang === 'es' ? {
     title: 'Inversión Inmobiliaria',
@@ -97,6 +97,26 @@ const HomeRealEstateSection = ({ properties = [], features = [], lang = 'en' }: 
 
   const displayFeatures = features.length > 0 ? features : defaultFeatures;
 
+  // Carousel state for featured property gallery
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const gallery = featuredProperty?.gallery || (featuredProperty?.image ? [featuredProperty.image] : []);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev === gallery.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? gallery.length - 1 : prev - 1
+    );
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
     <section className="relative py-32 bg-gradient-to-br from-primary via-primary/90 to-secondary/20 overflow-hidden">
       {/* Background decorative elements */}
@@ -107,150 +127,76 @@ const HomeRealEstateSection = ({ properties = [], features = [], lang = 'en' }: 
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Column - Hero Content and Features */}
-          <div className="lg:col-span-2">
+          <div>
             {/* Hero Content */}
-            <div className="text-center mb-20">
-              <div className="flex justify-center mb-8">
-                <div className="relative">
-                  <span className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
-                    <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M3 7l9-4 9 4M3 7v10l9 4 9-4V7M3 7l9 4 9-4" />
-                      <path d="M12 11l9-4M12 11v10M12 11L3 7" />
-                    </svg>
-                  </span>
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 w-24 h-24 rounded-full bg-white/10 blur-xl animate-pulse"></div>
-                </div>
+            <div className="text-center mb-16">
+              <div className="flex justify-center mb-6">
+                <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
+                  <HomeModernIcon className="w-8 h-8 text-white" />
+                </span>
               </div>
-              
-              <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-                {content.title}
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+                Real Estate
               </h2>
-              <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-8 leading-relaxed">
-                {content.description}
+              <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8 leading-relaxed">
+                We assist you through your property search, negotiation, title search and legal due diligence with compliance with local regulations.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex justify-center items-center">
                 <a 
                   href={lang === 'es' ? '/es/real-estate' : '/en/real-estate'} 
                   className="inline-block px-10 py-4 bg-white text-primary rounded-full font-bold text-lg shadow-2xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 transform"
                 >
-                  {content.cta}
+                  Learn more
                 </a>
-                <a 
-                  href={lang === 'es' ? '/es/contact' : '/en/contact'} 
-                  className="inline-block px-10 py-4 border-2 border-white/30 text-white rounded-full font-semibold text-lg hover:bg-white/10 hover:border-white/50 transition-all duration-300"
-                >
-                  {content.contactUs}
-                </a>
-              </div>
-            </div>
-
-            {/* Features Section */}
-            <div>
-              <h3 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">{content.features}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {displayFeatures.map((feature, idx) => (
-                  <div key={feature.id} className="group bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20 p-8 flex flex-col hover:bg-white/20 hover:scale-105 transition-all duration-300 transform">
-                    <div className="flex items-center gap-4 mb-6">
-                      <span className="text-4xl">{feature.icon}</span>
-                      <h4 className="text-xl font-bold text-white">{feature.title}</h4>
-                    </div>
-                    <p className="text-white/80 text-lg leading-relaxed">{feature.description}</p>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
 
           {/* Right Column - Featured Property */}
           {featuredProperty && (
-            <div className="lg:col-span-1">
-              <div className="sticky top-8">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center lg:text-left">{content.featuredProperty}</h3>
-                <div className="bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20 p-6">
-                  <div className="space-y-4">
-                    {/* Property Image */}
-                    <div className="relative h-48 rounded-2xl overflow-hidden bg-gradient-to-br from-white/20 to-white/10">
-                      {featuredProperty.image ? (
-                        <img 
-                          src={featuredProperty.image} 
-                          alt={featuredProperty.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-6xl">🏠</span>
-                        </div>
-                      )}
-                      <div className="absolute top-3 right-3">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-sm">
-                          ⭐ {lang === 'es' ? 'Destacada' : 'Featured'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Property Info */}
-                    <div className="space-y-3">
-                      <h4 className="text-lg font-bold text-white line-clamp-2">{featuredProperty.title}</h4>
-                      <p className="text-white/80 text-sm line-clamp-2">{featuredProperty.description}</p>
-                      
-                      {/* Property Details */}
-                      <div className="grid grid-cols-2 gap-3 text-xs">
-                        {featuredProperty.price && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60">{content.price}:</span>
-                            <span className="text-white font-semibold">{featuredProperty.price}</span>
-                          </div>
-                        )}
-                        {featuredProperty.location && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60">{content.location}:</span>
-                            <span className="text-white font-semibold">{featuredProperty.location}</span>
-                          </div>
-                        )}
-                        {featuredProperty.bedrooms && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60">{content.bedrooms}:</span>
-                            <span className="text-white font-semibold">{featuredProperty.bedrooms}</span>
-                          </div>
-                        )}
-                        {featuredProperty.bathrooms && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60">{content.bathrooms}:</span>
-                            <span className="text-white font-semibold">{featuredProperty.bathrooms}</span>
-                          </div>
-                        )}
-                        {featuredProperty.area && (
-                          <div className="flex items-center gap-2 col-span-2">
-                            <span className="text-white/60">{content.area}:</span>
-                            <span className="text-white font-semibold">{featuredProperty.area}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-col gap-2 pt-2">
-                        <a 
-                          href={`/${lang}/real-estate/properties/${featuredProperty.slug}`} 
-                          className="inline-block px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 transition-all duration-300 text-sm font-semibold backdrop-blur-sm text-center"
-                        >
-                          {content.viewProperty}
-                        </a>
-                        <a 
-                          href={`/${lang}/real-estate`} 
-                          className="inline-block px-4 py-2 border border-white/30 text-white rounded-full hover:bg-white/10 transition-all duration-300 text-sm font-medium text-center"
-                        >
-                          {content.viewAll}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div>
+              {/* Image Carousel replaces PropertyCard image */}
+              <PropertyCard
+                image={gallery[currentImageIndex]}
+                title={featuredProperty.title}
+                location={featuredProperty.location}
+                price={featuredProperty.price}
+                area={featuredProperty.area || ''}
+                link={featuredProperty.href}
+                status={'available'}
+                gallery={gallery}
+              />
             </div>
           )}
+        </div>
+
+        {/* Services Section - 4 columns at the bottom */}
+        <div className="mt-20">
+          <h3 className="text-2xl md:text-3xl font-bold text-white mb-10 text-center">Our Services</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
+              <KeyIcon className="w-8 h-8 text-white mb-3" />
+              <h4 className="text-lg font-semibold text-white mb-2">Buying Property</h4>
+              <p className="text-white/80 text-center">Guidance through thezx entire purchase process, from search to closing.</p>
+            </div>
+            <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
+              <ArrowTrendingUpIcon className="w-8 h-8 text-white mb-3" />
+              <h4 className="text-lg font-semibold text-white mb-2">Selling Property</h4>
+              <p className="text-white/80 text-center">Professional support to market and sell your property efficiently.</p>
+            </div>
+            <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
+              <BuildingStorefrontIcon className="w-8 h-8 text-white mb-3" />
+              <h4 className="text-lg font-semibold text-white mb-2">Renting Property</h4>
+              <p className="text-white/80 text-center">Legal and practical assistance for property rentals and tenant management.</p>
+            </div>
+            <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
+              <UsersIcon className="w-8 h-8 text-white mb-3" />
+              <h4 className="text-lg font-semibold text-white mb-2">HOA Representation</h4>
+              <p className="text-white/80 text-center">Expert legal representation for Homeowners Associations (HOA).</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

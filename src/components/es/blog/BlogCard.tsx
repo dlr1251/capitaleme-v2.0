@@ -1,5 +1,5 @@
 // React import removed - not needed in React 17+
-import CoverImage from './CoverImage';
+import CoverImage from './CoverImage.tsx';
 
 export interface BlogPost {
   id: string;

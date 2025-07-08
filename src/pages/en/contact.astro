@@ -4,33 +4,24 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
 ---
 
 <Layout title="Contact - Capital M Law">
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  <div class="min-h-screen bg-primary-50">
     <!-- Hero Section -->
-    <div class="relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10"></div>
+    <div class="relative overflow-hidden mb-4">      
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <div class="text-center">          
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">
             Let's talk about your case
           </h1>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Our team of legal experts is ready to help you. 
             Tell us about your situation and we'll respond within 24 hours.
-          </p>
-          <div class="flex items-center justify-center gap-8 text-sm text-gray-500">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-              <span>24h Response</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-              <span>Free Consultation</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 bg-purple-400 rounded-full"></span>
-              <span>Certified Experts</span>
+          </p>  
+          <div class="max-w-xl mx-auto mb-4">
+            <div class="bg-blue-100 border border-blue-300 text-blue-800 rounded-lg px-4 py-3 text-base font-medium">
+              Please note: Our primary contact methods are <span class="font-semibold">email</span>, <span class="font-semibold">WhatsApp</span>, and <span class="font-semibold">Calendly</span>. We do not accept direct phone calls.
             </div>
           </div>
+         
         </div>
       </div>
     </div>
@@ -40,91 +31,90 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
       <div class="grid lg:grid-cols-3 gap-12">
         <!-- Contact Information -->
         <div class="lg:col-span-1">
-          <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 sticky top-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sticky top-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
               <span class="mr-3">📍</span>
               Contact Information
             </h2>
-            
             <!-- Contact Methods -->
-            <div class="space-y-6">
+            <div class="space-y-4">
               <!-- Email -->
-              <div class="flex items-start space-x-4 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span class="text-white text-xl">✉️</span>
+              <div class="flex items-start space-x-3 p-3 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
+                <div class="flex-shrink-0 w-10 h-10 bg-primary rounded-md flex items-center justify-center">
+                  <span class="text-white text-lg">✉️</span>
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-semibold text-gray-900 mb-1">Email</h3>
-                  <a href="mailto:info@capitaleme.com" class="text-blue-600 hover:text-blue-800 transition-colors">
+                  <h3 class="font-semibold text-gray-900 mb-0.5">Email</h3>
+                  <a href="mailto:info@capitaleme.com" class="text-primary hover:underline">
                     info@capitaleme.com
                   </a>
-                  <p class="text-sm text-gray-500 mt-1">Response within 24 hours</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Response within 24 hours</p>
                 </div>
               </div>
-
-              <!-- Phone -->
-              <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
-                <div class="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                  <span class="text-white text-xl">📱</span>
-                </div>
-                <div class="flex-1">
-                  <h3 class="font-semibold text-gray-900 mb-1">Phone</h3>
-                  <a href="tel:+573146022411" class="text-green-600 hover:text-green-800 transition-colors">
-                    +57 314 602 2411
-                  </a>
-                  <p class="text-sm text-gray-500 mt-1">Mon-Fri 9:00 AM - 6:00 PM</p>
-                </div>
-              </div>
-
               <!-- WhatsApp -->
-              <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
-                <div class="flex-shrink-0 w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                  <span class="text-white text-xl">💬</span>
+              <div class="flex items-start space-x-3 p-3 bg-secondary-50 rounded-lg hover:bg-secondary-100 transition-colors">
+                <div class="flex-shrink-0 w-10 h-10 bg-secondary rounded-md flex items-center justify-center">
+                  <span class="text-white text-lg">💬</span>
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-semibold text-gray-900 mb-1">WhatsApp</h3>
-                  <a href="https://wa.me/573146022411" target="_blank" class="text-green-600 hover:text-green-800 transition-colors">
+                  <h3 class="font-semibold text-gray-900 mb-0.5">WhatsApp</h3>
+                  <a href="https://wa.me/573146022411" target="_blank" class="text-secondary hover:underline">
                     +57 314 602 2411
                   </a>
-                  <p class="text-sm text-gray-500 mt-1">Instant response</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Instant response</p>
                 </div>
               </div>
-
-              <!-- Address -->
-              <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors">
-                <div class="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
-                  <span class="text-white text-xl">🏢</span>
+              <!-- Calendly -->
+              <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h4l2 4"/></svg>
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-semibold text-gray-900 mb-1">Main Office</h3>
-                  <address class="text-purple-600 not-italic">
+                  <h3 class="font-semibold text-gray-900 mb-0.5">Calendly</h3>
+                  <a href="https://calendly.com/capitaleme" target="_blank" class="text-gray-700 hover:underline">
+                    Book a meeting
+                  </a>
+                  <p class="text-xs text-gray-500 mt-0.5">Schedule a call or video meeting</p>
+                </div>
+              </div>
+              <!-- Address -->
+              <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-md flex items-center justify-center">
+                  <span class="text-white text-lg">🏢</span>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 mb-0.5">Main Office</h3>
+                  <address class="text-gray-700 not-italic text-sm">
                     Transversal 39B #73-23<br>
                     Inspira Coworking<br>
                     Laureles - Medellín - Colombia
                   </address>
-                  <p class="text-sm text-gray-500 mt-1">Appointment required</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Appointment required</p>
                 </div>
               </div>
             </div>
-
             <!-- Social Media -->
-            <div class="mt-8 pt-8 border-t border-gray-200">
-              <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
                 <span class="mr-2">🌐</span>
                 Follow Us
               </h3>
-              <div class="flex space-x-4">
-                <a href="#" class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
-                  <span class="text-white text-lg">📺</span>
+              <div class="flex space-x-3">
+                <!-- Instagram -->
+                <a href="https://instagram.com/capitalemelaw" target="_blank" aria-label="Instagram" class="w-9 h-9 bg-gray-100 rounded-md flex items-center justify-center hover:bg-primary-100 transition-colors">
+                  <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
                 </a>
-                <a href="#" class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
-                  <span class="text-white text-lg">📘</span>
+                <!-- Facebook -->
+                <a href="https://facebook.com/capitalemelaw" target="_blank" aria-label="Facebook" class="w-9 h-9 bg-gray-100 rounded-md flex items-center justify-center hover:bg-primary-100 transition-colors">
+                  <svg class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.5 9.95v-7.05h-2.1V12h2.1v-1.6c0-2.07 1.23-3.22 3.12-3.22.9 0 1.84.16 1.84.16v2.02h-1.04c-1.03 0-1.35.64-1.35 1.3V12h2.3l-.37 2.9h-1.93v7.05A10 10 0 0 0 22 12"/></svg>
                 </a>
-                <a href="#" class="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-gray-800 transition-colors">
-                  <span class="text-white text-lg">🎵</span>
+                <!-- TikTok -->
+                <a href="https://tiktok.com/@capitalemelaw" target="_blank" aria-label="TikTok" class="w-9 h-9 bg-gray-100 rounded-md flex items-center justify-center hover:bg-secondary-100 transition-colors">
+                  <svg class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24"><path d="M12.75 2v12.19a2.06 2.06 0 1 1-2.06-2.06c.11 0 .22.01.33.03V9.7a5.06 5.06 0 1 0 5.06 5.06V7.5c.44.32.93.59 1.47.77V9.7a7.53 7.53 0 0 1-2.47-.41V2h-2.33z"/></svg>
                 </a>
-                <a href="#" class="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center hover:bg-pink-700 transition-colors">
-                  <span class="text-white text-lg">📷</span>
+                <!-- YouTube -->
+                <a href="https://youtube.com/@capitalemelaw" target="_blank" aria-label="YouTube" class="w-9 h-9 bg-gray-100 rounded-md flex items-center justify-center hover:bg-secondary-100 transition-colors">
+                  <svg class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24"><path d="M21.8 8.001a2.75 2.75 0 0 0-1.94-1.94C18.2 6 12 6 12 6s-6.2 0-7.86.06a2.75 2.75 0 0 0-1.94 1.94A28.6 28.6 0 0 0 2 12a28.6 28.6 0 0 0 .2 3.999 2.75 2.75 0 0 0 1.94 1.94C5.8 18 12 18 12 18s6.2 0 7.86-.06a2.75 2.75 0 0 0 1.94-1.94A28.6 28.6 0 0 0 22 12a28.6 28.6 0 0 0-.2-3.999zM10 15V9l6 3-6 3z"/></svg>
                 </a>
               </div>
             </div>

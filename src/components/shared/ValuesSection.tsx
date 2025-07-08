@@ -1,36 +1,37 @@
 // React import removed - not needed in React 17+
-import { 
-  HiUserGroup, 
-  HiGlobeAlt, 
-  HiShieldCheck, 
-  HiDocumentText, 
-  HiHeart, 
-  HiSparkles 
-} from 'react-icons/hi';
+import {
+  UserGroupIcon,
+  GlobeAltIcon,
+  ShieldCheckIcon,
+  DocumentTextIcon,
+  HeartIcon,
+  SparklesIcon
+} from '@heroicons/react/24/solid';
 
 interface ValuesSectionProps {
   messages: string[];
+  lang?: 'en' | 'es';
 }
 
-const ValuesSection = ({ messages }: ValuesSectionProps) => {
+const ValuesSection = ({ messages, lang = 'en' }: ValuesSectionProps) => {
   const getIcon = (index: number) => {
     const iconClasses = "w-6 h-6";
     
     switch (index) {
       case 0:
-        return <HiUserGroup className={`${iconClasses} text-blue-600`} />;
+        return <UserGroupIcon className={`${iconClasses} text-blue-600`} />;
       case 1:
-        return <HiGlobeAlt className={`${iconClasses} text-green-600`} />;
+        return <GlobeAltIcon className={`${iconClasses} text-green-600`} />;
       case 2:
-        return <HiShieldCheck className={`${iconClasses} text-purple-600`} />;
+        return <ShieldCheckIcon className={`${iconClasses} text-purple-600`} />;
       case 3:
-        return <HiDocumentText className={`${iconClasses} text-indigo-600`} />;
+        return <DocumentTextIcon className={`${iconClasses} text-indigo-600`} />;
       case 4:
-        return <HiHeart className={`${iconClasses} text-teal-600`} />;
+        return <HeartIcon className={`${iconClasses} text-teal-600`} />;
       case 5:
-        return <HiSparkles className={`${iconClasses} text-pink-600`} />;
+        return <SparklesIcon className={`${iconClasses} text-pink-600`} />;
       default:
-        return <HiSparkles className={`${iconClasses} text-gray-600`} />;
+        return <SparklesIcon className={`${iconClasses} text-gray-600`} />;
     }
   };
 
@@ -51,10 +52,12 @@ const ValuesSection = ({ messages }: ValuesSectionProps) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-            Nuestros Valores Fundamentales y Misión
+            {lang === 'es' ? 'Nuestros Valores Fundamentales y Misión' : 'Our Core Values & Mission'}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Creemos en hacer los servicios legales colombianos accesibles, transparentes y efectivos para clientes internacionales.
+            {lang === 'es'
+              ? 'Creemos en hacer los servicios legales colombianos accesibles, transparentes y efectivos para clientes internacionales.'
+              : 'We believe in making Colombian legal services accessible, transparent, and effective for international clients.'}
           </p>
         </div>
 

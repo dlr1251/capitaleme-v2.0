@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import Logo from '../../../assets/logo/color-horizontal.svg';
-import NavbarMobile from './NavbarMobile';
-import VisasMegaMenu from './mega-menus/VisasMegaMenu';
-import RealEstateMegaMenu from './mega-menus/RealEstateMegaMenu';
-import ResourcesMegaMenu from './mega-menus/ResourcesMegaMenu';
-import BlogMegaMenu from './mega-menus/BlogMegaMenu';
+import NavbarMobile from './NavbarMobile.tsx';
+import RealEstateMegaMenu from './mega-menus/RealEstateMegaMenu.tsx';
+import ResourcesMegaMenu from './mega-menus/ResourcesMegaMenu.tsx';
+import BlogMegaMenu from './mega-menus/BlogMegaMenu.tsx';
+import VisasMegaMenu from './mega-menus/VisasMegaMenu.tsx';
 
 interface MenuDataType {
   popularVisas?: any[];
@@ -99,9 +99,9 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
 
   const links = [
     { href: lang === 'en' ? '/en/about' : '/es/about', text: lang === 'en' ? 'About Us' : 'Nosotros' },
-    { href: lang === 'en' ? '/en/visas' : '/es/visas', text: lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas', hasMegaMenu: true },
+    { href: lang === 'en' ? '/en/visas' : '/es/visas', text: lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas', hasMegaMenu: false },
     { href: lang === 'en' ? '/en/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario', hasMegaMenu: true },
-    { href: lang === 'en' ? '/en/resources' : '/es/resources', text: lang === 'en' ? 'Resources' : 'Recursos', hasMegaMenu: true },
+    { href: lang === 'en' ? '/en/resources' : '/es/resources', text: 'CLKR', hasMegaMenu: true },
     { href: lang === 'en' ? '/en/blog' : '/es/blog', text: lang === 'en' ? 'Blog' : 'Blog', hasMegaMenu: true },
     { href: lang === 'en' ? '/en/contact' : '/es/contact', text: lang === 'en' ? 'Contact' : 'Contacto' },
   ];
@@ -208,9 +208,7 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
                       onClick={() => handleMegaMenuClick(link.text)}
                       className={`group flex items-center py-2 px-3 text-gray-700 border-b border-gray-100 lg:border-0 lg:hover:text-secondary lg:p-0 transition-all duration-300 relative overflow-hidden ${
                         isLinkActive(link.href) ? 'text-primary font-semibold' : ''
-                      } ${pathname?.includes(link.href) && link.href !== '/' ? 'text-primary font-semibold' : ''} ${
-                        activeMegaMenu === link.text ? 'text-secondary' : ''
-                      }`}
+                      } ${activeMegaMenu === link.text ? 'text-secondary' : ''}`}
                     >
                       {/* Special styling for Resources when on guides/CLKR routes */}
                       {link.href.includes('/resources') && (isOnGuidesRoute() || isOnCLKRRoute()) ? (
@@ -233,8 +231,8 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
                       </svg>
                       {/* Active indicator for mega menu items */}
-                      {isLinkActive(link.href) && !link.href.includes('/resources') && (
-                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-secondary to-secondary/80 rounded-full"></div>
+                      {isLinkActive(link.href) && (
+                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full"></div>
                       )}
                       {/* Animated background indicator */}
                       <div className={`absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 transition-all duration-300 ${
@@ -247,13 +245,13 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
                     <a
                       href={link.href}
                       className={`block py-2 px-3 text-gray-700 border-b border-gray-100 lg:border-0 lg:hover:text-secondary lg:p-0 transition-all duration-200 relative ${
-                        isLinkActive(link.href) ? 'text-secondary font-semibold' : ''
-                      } ${pathname?.includes(link.href) && link.href !== '/' ? 'text-secondary font-semibold' : ''}`}
+                        isLinkActive(link.href) ? 'text-primary font-semibold' : ''
+                      }`}
                     >
                       <span className="relative z-10">{link.text}</span>
                       {/* Active indicator for About Us and other non-mega menu items */}
                       {isLinkActive(link.href) && (
-                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-secondary to-secondary/80 rounded-full"></div>
+                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full"></div>
                       )}
                       {/* Hover effect */}
                       <div className="absolute inset-0 bg-secondary/10 opacity-0 hover:opacity-100 transition-opacity duration-200 rounded-lg"></div>
@@ -286,27 +284,28 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
       {activeMegaMenu && (
         <div 
           ref={megaMenuRef}
-          className="fixed top-24 left-0 w-full bg-white shadow-xl border-t border-gray-200 py-8 z-30 animate-in slide-in-from-top-2 duration-300 mega-menu-backdrop"
+          onMouseDown={e => e.stopPropagation()}
+          className="fixed top-26 left-0 w-full bg-white shadow-xl border-t border-gray-200 py-8 z-30 animate-in slide-in-from-top-2 duration-300 mega-menu-backdrop"
         >
           <div className="max-w-screen-xl mx-auto px-4">
-            {/* Visas Mega Menu */}
-            {activeMegaMenu === (lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas') && (
-              <VisasMegaMenu lang={lang} menuData={menuData} />
-            )}
-
             {/* Real Estate Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'Real Estate' : 'Inmobiliario') && (
-              <RealEstateMegaMenu lang={lang} menuData={menuData} />
+              <RealEstateMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
             )}
 
             {/* Resources Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'Resources' : 'Recursos') && (
-              <ResourcesMegaMenu lang={lang} menuData={menuData} />
+              <ResourcesMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
             )}
 
             {/* Blog Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'Blog' : 'Blog') && (
-              <BlogMegaMenu lang={lang} menuData={menuData} />
+              <BlogMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
+            )}
+
+            {/* Visas Mega Menu */}
+            {activeMegaMenu === (lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas') && (
+              <VisasMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
             )}
           </div>
         </div>

@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 interface RealEstateMegaMenuProps {
   lang?: string;
   menuData?: any;
+  currentPath?: string;
 }
 
-const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData = {} }) => {
+const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData = {}, currentPath }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const featuredProperty = menuData.featuredProperty || {
@@ -52,6 +53,55 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
     setCurrentImageIndex(index);
   };
 
+  // Helper to render price (string or object)
+  const renderPrice = (price: any) => {
+    if (typeof price === 'string' || typeof price === 'number') return price;
+    if (price && typeof price === 'object') {
+      return (
+        <>
+          {price.usd && <span>{price.usd} USD</span>}
+          {price.cop && <span className="ml-2">{price.cop} COP</span>}
+        </>
+      );
+    }
+    return null;
+  };
+
+  // Helper to render price per m2 (string or object)
+  const renderPricePerM2 = (ppm2: any) => {
+    if (typeof ppm2 === 'string' || typeof ppm2 === 'number') return ppm2;
+    if (ppm2 && typeof ppm2 === 'object') {
+      return (
+        <>
+          {ppm2.usd && <span>{ppm2.usd} USD/m²</span>}
+          {ppm2.cop && <span className="ml-2">{ppm2.cop} COP/m²</span>}
+        </>
+      );
+    }
+    return null;
+  };
+
+  // Helper to render area (string or object)
+  const renderArea = (area: any) => {
+    if (typeof area === 'string' || typeof area === 'number') return area;
+    if (area && typeof area === 'object') {
+      return (
+        <>
+          {area.m2 && <span>{area.m2} m²</span>}
+          {area.ft2 && <span className="ml-2">{area.ft2} ft²</span>}
+        </>
+      );
+    }
+    return '120m²';
+  };
+
+  // Helper to get image src (string or object)
+  const getImageSrc = (img: any) => {
+    if (typeof img === 'string') return img;
+    if (img && typeof img === 'object') return img.url || img.src || '';
+    return '';
+  };
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -69,7 +119,7 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
                 <div className="relative bg-gray-100 rounded-lg overflow-hidden mb-3">
                   <div className="relative h-48">
                     <img 
-                      src={featuredProperty.images?.[currentImageIndex] || featuredProperty.image} 
+                      src={getImageSrc(featuredProperty.images?.[currentImageIndex] || featuredProperty.image)}
                       alt={featuredProperty.title} 
                       className="w-full h-full object-cover" 
                     />
@@ -92,9 +142,9 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
                       </button>
                     </div>
                     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                      {(featuredProperty.images || [featuredProperty.image]).map((_: any, index: number) => (
+                      {(featuredProperty.images || [featuredProperty.image]).map((img: any, index: number) => (
                         <button
-                          key={index}
+                          key={getImageSrc(img) || index}
                           onClick={() => goToImage(index)}
                           className={`w-2 h-2 rounded-full transition-all duration-200 ${
                             index === currentImageIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
@@ -117,16 +167,16 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-primary">💰 {featuredProperty.price}</span>
+                        <span className="text-lg font-bold text-primary">💰 {renderPrice(featuredProperty.price)}</span>
                       </div>
                       <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded flex items-center">
-                        📐 {featuredProperty.area || '120m²'}
+                        📐 {renderArea(featuredProperty.area)}
                       </span>
                     </div>
                     
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-600 flex items-center">
-                        📊 {lang === 'en' ? 'Price per m²:' : 'Precio por m²:'} {featuredProperty.pricePerM2}
+                        📊 {lang === 'en' ? 'Price per m²:' : 'Precio por m²:'} {renderPricePerM2(featuredProperty.pricePerM2)}
                       </span>
                     </div>
                     
@@ -237,7 +287,13 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pr-2">
               {realEstateArticles.length > 0 ? (
                 realEstateArticles.map((article: any, index: number) => (
-                  <a key={article.href} href={article.href} className="block group p-3 rounded-lg hover:bg-gray-50 border border-gray-100 hover:border-secondary transition-all duration-200">
+                  <a
+                    key={article.href}
+                    href={article.href}
+                    className={`block group p-3 rounded-lg border transition-all duration-200
+                      ${currentPath && currentPath.startsWith(article.href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30'}
+                    `}
+                  >
                     <div className="flex items-start gap-3">
                       <div className="w-6 h-6 bg-gradient-to-br from-secondary to-primary rounded-md flex items-center justify-center flex-shrink-0">
                         <span className="text-white text-xs">{index + 1}</span>

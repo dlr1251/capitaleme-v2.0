@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 
 // Import countries data
-import { countries } from 'data/countries';
-import type { Country } from 'data/countries';
+import { countries } from 'data/countries.js';
+import type { Country } from 'data/countries.js';
 
 const SearchComponent = () => {
   const [query, setQuery] = useState<string>('');

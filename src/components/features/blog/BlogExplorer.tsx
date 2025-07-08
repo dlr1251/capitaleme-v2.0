@@ -1,8 +1,8 @@
 // import React, { useState, useMemo } from 'react'; // UNUSED React import - commenting out
 import { useState, useMemo } from 'react';
-import BlogCard from './BlogCard';
-import type { NotionPage } from '../../../utils/notionTypes';
-import { getPageTitle, getPageDescription, getPageSelectValue } from '../../../utils/notionHelpers';
+import BlogCard from './BlogCard.jsx';
+import type { NotionPage } from '../../../utils/notionTypes.js';
+import { getPageTitle, getPageDescription, getPageSelectValue } from '../../../utils/notionHelpers.js';
 
 interface BlogExplorerProps {
   posts?: NotionPage[];

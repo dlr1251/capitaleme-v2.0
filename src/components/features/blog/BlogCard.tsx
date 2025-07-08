@@ -1,5 +1,5 @@
 // import React from 'react'; // UNUSED - commenting out
-import CoverImage from './CoverImage';
+import CoverImage from './CoverImage.jsx';
 
 // Type definitions
 interface Properties {

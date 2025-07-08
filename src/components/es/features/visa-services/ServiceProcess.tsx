@@ -1,27 +1,27 @@
 // React import removed - not needed in React 17+
-import { 
-  HiChatAlt2, 
-  HiDocumentText, 
-  HiCheckCircle, 
-  HiArrowRight 
-} from 'react-icons/hi';
+// import { 
+//   HiChatAlt2, 
+//   HiDocumentText, 
+//   HiCheckCircle, 
+//   HiArrowRight 
+// } from 'react-icons/hi';
 
 const ServiceProcess = () => {
   const steps = [
     {
-      icon: <HiChatAlt2 className="w-8 h-8" />,
+      icon: <div className="w-8 h-8" />,
       title: "Consulta Inicial",
       description: "Reserva una consulta de 45 minutos donde evaluaremos tu situación y te recomendaremos la mejor opción de visa para ti.",
       features: ["Evaluación personalizada", "Recomendación de categoría de visa", "Planificación de cronograma"]
     },
     {
-      icon: <HiDocumentText className="w-8 h-8" />,
+      icon: <div className="w-8 h-8" />,
       title: "Preparación de Documentos",
       description: "Te guiaremos en la recopilación de todos los documentos necesarios y nos aseguraremos de que todo esté correctamente preparado.",
       features: ["Lista de verificación de documentos", "Servicios de traducción", "Apoyo para notarización"]
     },
     {
-      icon: <HiCheckCircle className="w-8 h-8" />,
+      icon: <div className="w-8 h-8" />,
       title: "Solicitud y Seguimiento",
       description: "Manejamos todo el proceso de solicitud y te mantenemos informado sobre su progreso hasta la aprobación.",
       features: ["Presentación de solicitud", "Seguimiento del progreso", "Enlace con el gobierno"]
@@ -73,7 +73,7 @@ const ServiceProcess = () => {
                   <ul className="space-y-2">
                     {step.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center text-sm text-gray-600">
-                        <HiCheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                        <div className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
@@ -84,7 +84,7 @@ const ServiceProcess = () => {
                 {index < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20">
                     <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                      <HiArrowRight className="w-4 h-4 text-blue-600" />
+                      <div className="w-4 h-4 text-blue-600" />
                     </div>
                   </div>
                 )}

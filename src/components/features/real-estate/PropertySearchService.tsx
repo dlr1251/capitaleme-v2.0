@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
+// import { FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
 
 // Type definitions
 interface UserDetails {
@@ -100,7 +100,7 @@ const PropertyServiceComponent = () => {
               rel="noopener noreferrer"
               className="text-red-600 text-2xl"
             >
-              <FaYoutube />
+              {/* <FaYoutube /> */}
             </a>
             <a
               href="https://instagram.com"
@@ -108,7 +108,7 @@ const PropertyServiceComponent = () => {
               rel="noopener noreferrer"
               className="text-pink-500 text-2xl"
             >
-              <FaInstagram />
+              {/* <FaInstagram /> */}
             </a>
             <a
               href="https://tiktok.com"
@@ -116,7 +116,7 @@ const PropertyServiceComponent = () => {
               rel="noopener noreferrer"
               className="text-black text-2xl"
             >
-              <FaTiktok />
+              {/* <FaTiktok /> */}
             </a>
           </div>
         </div>

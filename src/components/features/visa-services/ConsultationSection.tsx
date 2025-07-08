@@ -1,20 +1,20 @@
 // React import removed - not needed in React 17+
-import { HiCalendar, HiClock, HiUser, HiCheckCircle } from 'react-icons/hi';
+import { UserIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 
 const ConsultationSection = () => {
   const benefits = [
     {
-      icon: <HiUser className="w-6 h-6" />,
+      icon: <UserIcon className="w-6 h-6" />,
       title: "Personalized Assessment",
       description: "Get a customized visa strategy based on your specific situation"
     },
     {
-      icon: <HiClock className="w-6 h-6" />,
+      icon: <ClockIcon className="w-6 h-6" />,
       title: "45-Minute Session",
       description: "Comprehensive consultation to answer all your questions"
     },
     {
-      icon: <HiCheckCircle className="w-6 h-6" />,
+      icon: <CheckCircleIcon className="w-6 h-6" />,
       title: "Expert Guidance",
       description: "Professional advice from experienced immigration lawyers"
     }
@@ -27,7 +27,7 @@ const ConsultationSection = () => {
           {/* Left Column: Content */}
           <div className="space-y-8">
             <div className="inline-flex items-center px-4 py-2 bg-blue-600/20 border border-blue-400/30 rounded-full text-blue-200 text-sm font-medium">
-              <HiCalendar className="w-4 h-4 mr-2" />
+              {/* HiCalendar icon removed */}
               Free Initial Consultation
             </div>
             
@@ -63,7 +63,7 @@ const ConsultationSection = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center">
-                <HiCalendar className="w-5 h-5 mr-2" />
+                {/* HiCalendar icon removed */}
                 Book Free Consultation
               </button>
               <button className="border border-blue-400/30 hover:bg-blue-600/20 text-blue-200 px-8 py-4 rounded-lg font-semibold transition-colors duration-200">
@@ -76,7 +76,8 @@ const ConsultationSection = () => {
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-blue-600/30 rounded-full flex items-center justify-center mx-auto">
-                <HiCalendar className="w-8 h-8 text-blue-300" />
+                {/* HiCalendar icon removed */}
+                <CheckCircleIcon className="w-8 h-8 text-blue-300" />
               </div>
               <h3 className="text-xl font-semibold text-white">
                 Schedule Your Consultation
@@ -88,7 +89,8 @@ const ConsultationSection = () => {
               {/* Placeholder for Calendly widget */}
               <div className="bg-white/20 rounded-lg p-8 text-center">
                 <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <HiCalendar className="w-6 h-6 text-white" />
+                  {/* HiCalendar icon removed */}
+                  <CheckCircleIcon className="w-6 h-6 text-white" />
                 </div>
                 <p className="text-blue-200 text-sm">
                   Calendly widget will be integrated here

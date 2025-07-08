@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { countries } from '../../../data/countries';
-import type { Country } from '../../../data/countries';
+import { countries } from '../../../data/countries.js';
+import type { Country } from '../../../data/countries.js';
 
 interface Visa {
   id: string;

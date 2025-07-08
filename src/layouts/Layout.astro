@@ -3,7 +3,7 @@ import Navbar from '../components/core/layout/Navbar';
 import Footer from '../components/core/layout/Footer.astro';
 import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
 import GoogleTag from '../components/core/common/GoogleTag.astro'
-import SpeedInsights from "@vercel/speed-insights/astro"
+// import SpeedInsights from "@vercel/speed-insights/astro"
 import ContactBar from '../components/core/layout/ContactBar.astro';
 import { getAllMenuData } from '../utils/menuDataOptimized.js';
 
@@ -39,7 +39,7 @@ import { ClientRouter } from "astro:transitions";
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 		<GoogleTag/>
-		<SpeedInsights/>
+		<!-- <SpeedInsights/> -->
 		<link rel="stylesheet" href="/src/styles/blog.css" />
 	</head>
 	<body>
@@ -49,7 +49,8 @@ import { ClientRouter } from "astro:transitions";
 			<Navbar client:load lang={lang} pathname={pathname} menuData={menuData} />
 		</div>
 		<main>
-			<slot />
+			<slot />			
+
 		</main>
 		<Footer lang={lang} />
 
@@ -58,14 +59,11 @@ import { ClientRouter } from "astro:transitions";
 		<!-- <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
 		
 		<script>
-			// Handle sticky header when mega menu is open
+			// Sticky header logic for mega menu
 			document.addEventListener('DOMContentLoaded', function() {
 				const stickyHeader = document.getElementById('sticky-header');
-				
-				// Listen for custom event from Navbar component
-				document.addEventListener('megaMenuToggle', function(event: any) {
-					const isOpen = event.detail?.isOpen;
-					
+				document.addEventListener('megaMenuToggle', function(event) {
+					const isOpen = (event as CustomEvent).detail?.isOpen;
 					if (stickyHeader && isOpen) {
 						stickyHeader.classList.add('sticky', 'top-0', 'z-50', 'shadow-lg');
 					} else if (stickyHeader) {
@@ -82,45 +80,30 @@ import { ClientRouter } from "astro:transitions";
 		--color-primary: #16345F;
 		--color-secondary: #00AA81;
 	}
-	
-	* {
-		box-sizing: border-box;
-	}
-	
-	html {
-		font-family: 'Outfit', system-ui, sans-serif;
+	#algolia-searchbar, #algolia-hits {
+		display: block;
+		min-height: 40px;
 		background: #fff;
-		background-size: 224px;
-	}
-	
-	code {
-		background-color: #f1f5f9;
-		border-radius: 0.25rem;
-		padding: 0.125rem 0.25rem;
-	}
-	
-	pre {
-		background-color: #f1f5f9;
+		color: #000;
+		z-index: 9999;
+		position: relative;
+		padding: 0.5rem 1rem;
+		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
-		padding: 1rem;
-		overflow-x: auto;
+		margin-bottom: 1rem;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 	}
-	
-	pre code {
-		background-color: transparent;
-		padding: 0;
+	.algolia-no-results {
+		color: #b91c1c;
+		font-weight: 500;
+		padding: 0.5rem 0;
 	}
-	
-	.astro-code {
-		background-color: #f1f5f9;
-		border-radius: 0.5rem;
-		padding: 1rem;
-		overflow-x: auto;
+	.algolia-hit-item {
+		padding: 0.5rem 0;
+		border-bottom: 1px solid #e5e7eb;
 	}
-	
-	.astro-code code {
-		background-color: transparent;
-		padding: 0;
+	.algolia-hit-item:last-child {
+		border-bottom: none;
 	}
 </style>
 

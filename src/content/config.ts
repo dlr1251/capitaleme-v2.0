@@ -50,6 +50,8 @@ const propertiesCollection = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/properties' }),
   schema: z.object({
     title: z.string(),
+    lang: z.string(),
+    featured: z.boolean(),
     location: z.string(),
     price: z.object({
       usd: z.number(),

@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 import Navbar from '../components/core/layout/Navbar.tsx';
 import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
 import GoogleTag from '../components/core/common/GoogleTag.astro'
-import SpeedInsights from "@vercel/speed-insights/astro"
+// import SpeedInsights from "@vercel/speed-insights/astro"
 import ResourcesTOC from '../components/core/navigation/ResourcesTOC.jsx'
 import Breadcrumb from '../components/core/navigation/BreadCrumb.astro';
 
@@ -38,7 +38,7 @@ const url = Astro.url
     <title>{title}</title>
     <link rel="sitemap" href="/sitemap-index.xml" />
     <GoogleTag/>
-    <SpeedInsights/>
+    {/* <SpeedInsights/> */}
     <meta property="og:title" content={title}>
     <meta property="og:description" content="Learn about Colombian visas categories and current regulations" />
     <meta property="og:url" content="https://www.capitaleme.com/"/>		

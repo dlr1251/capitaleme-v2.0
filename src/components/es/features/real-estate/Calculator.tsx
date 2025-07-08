@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { HiCurrencyDollar, HiCalculator, HiInformationCircle, HiCheckCircle } from 'react-icons/hi';
+import { CurrencyDollarIcon, CalculatorIcon, InformationCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 
 interface CalculatorProps {
   initialValue?: number;
@@ -114,7 +114,7 @@ function Calculator({ initialValue }: CalculatorProps) {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center px-4 py-2 bg-emerald-100 border border-emerald-200 rounded-full text-emerald-800 text-sm font-medium mb-6">
-            <HiCalculator className="w-4 h-4 mr-2" />
+            <CalculatorIcon className="w-4 h-4 mr-2" />
             Calculadora de Gastos Inmobiliarios
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -132,7 +132,7 @@ function Calculator({ initialValue }: CalculatorProps) {
           <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <HiCurrencyDollar className="w-6 h-6" />
+                <CurrencyDollarIcon className="w-6 h-6" />
                 <span className="text-lg font-semibold">Tipo de Cambio Actual</span>
               </div>
               <div className="text-right">
@@ -218,9 +218,9 @@ function Calculator({ initialValue }: CalculatorProps) {
                 }`}>
                   <div className="flex items-center">
                     {qualifiesForVisa ? (
-                      <HiCheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                      <CheckCircleIcon className="w-5 h-5 text-green-600 mr-3" />
                     ) : (
-                      <HiInformationCircle className="w-5 h-5 text-yellow-600 mr-3" />
+                      <InformationCircleIcon className="w-5 h-5 text-yellow-600 mr-3" />
                     )}
                     <div>
                       <h4 className="font-semibold text-gray-900">

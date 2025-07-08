@@ -8,26 +8,24 @@ import HomeRealEstateSection from '../../components/pages/home/HomeRealEstateSec
 import HomeVisaAssistanceSection from '../../components/pages/home/HomeVisaAssistanceSection';
 import HomePageCLKR from '../../components/pages/home/HomePageCLKR.jsx';
 import CalendlyInline from '../../components/shared/CalendlyInline.astro';
-import { getAllVisasFromNotion, getGuides } from '../../utils/menuData.js';
-import { getCollection } from 'astro:content';
+import HowWeWork from '../../components/shared/HowWeWork.astro';
+import { getAllMenuData } from '../../utils/menuData.js';
 
-// Get all visas from Notion
-const allVisas = await getAllVisasFromNotion('en');
-const guides = await getGuides('en');
+const menuData = await getAllMenuData('en');
+const allVisas = menuData?.allVisas || [];
+const guides = menuData?.guides || [];
+const featuredProperty = menuData?.featuredProperty || null;
 
-// Fetch all properties from the content collection
-const properties = await getCollection('properties', ({ id }) => id.startsWith('en/'));
-const propertiesArray = properties as any[];
 ---
-
-<Layout title="Capital M Law - Home">
+<Layout title="Capital M Law - Home" menuData={menuData}>
 	<main class="">        
         <HomePageHero/>
         <AboutPageSection/>
-        <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" />
-        <HomeRealEstateSection properties={propertiesArray} features={[]} lang="en" />
+        <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
+        <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load />
         <HomePageCLKR lang="en" client:load />
-    		<CalendlyInline />
+    		<!-- <CalendlyInline /> -->
+        <HowWeWork lang="en"/>
 		    <BlogPageLatest/>
 	</main>
 </Layout>

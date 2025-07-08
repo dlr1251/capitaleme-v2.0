@@ -1,10 +1,13 @@
 ---
-
+import SearchBar from '../../shared/SearchBar.jsx';
 ---
 
 <section class="bg-gray-100 py-16">
   <div class="container mx-auto max-w-screen-xl">
     <h2 class="text-3xl font-bold text-primary mb-8 text-center">Discover Resources</h2>
+
+    <!-- Algolia Search Bar -->
+    <SearchBar client:load />
 
     <!-- Filter Section -->
     <div class="flex flex-wrap justify-center mb-8">

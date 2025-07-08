@@ -1,6 +1,6 @@
 // Menu data utilities for dynamic megamenus - OPTIMIZED VERSION
 import { getCollection } from 'astro:content';
-import { getNotionDatabase } from './notion';
+import { getNotionDatabase } from './notion.js';
 
 // Function to match author by email from authors collection
 async function matchAuthorByEmail(authorEmail) {

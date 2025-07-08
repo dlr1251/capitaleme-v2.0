@@ -3,6 +3,7 @@ import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
 import { getAllMenuData } from '../utils/menuDataOptimized.js';
 import VisaSidebarFilters from '../components/features/visa-services/VisaSidebarFilters.jsx';
+import SocialSharing from '../components/core/common/SocialSharing.tsx';
 
 export interface Props {
 	title: string;
@@ -13,17 +14,19 @@ export interface Props {
 	lastEdited?: string;
 	showBreadcrumb?: boolean;
 	currentSlug?: string;
+	readingTime?: number;
 }
 
-const { 
-	title, 
-	description, 
-	lang = 'en', 
+const {
+	title,
+	description,
+	lang = 'en',
 	pathname,
 	headings = [],
 	lastEdited,
 	showBreadcrumb = false,
-	currentSlug
+	currentSlug,
+	readingTime
 } = Astro.props;
 
 // Get optimized menu data
@@ -74,6 +77,47 @@ const visaTypes = menuData?.visaTypes || [];
 					</nav>
 				)}
 
+				<!-- Sticky Header for actions -->
+				<div id="visa-sticky-header" class="sticky top-[100px] z-40 bg-white border-b border-gray-200 shadow-lg transition-all duration-300 mb-8">
+					<div class="flex items-center justify-between py-3 px-2">
+						<div class="flex-1 min-w-0">
+							<h1 class="text-lg font-medium text-gray-900 truncate">{title}</h1>
+						</div>
+						<div class="flex items-center space-x-2 ml-4">
+							<!-- PDF Download -->
+							<button
+								onclick={`downloadVisaPDF('${title.replace(/'/g, "\'")}')`}
+								class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+								title={lang === 'es' ? 'Descargar PDF' : 'Download PDF'}
+							>
+								<svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+								</svg>
+								{lang === 'es' ? 'Descargar PDF' : 'Download PDF'}
+							</button>
+							<!-- WhatsApp Inquiry -->
+							<a
+								href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about the visa category: ${title}`)}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+								title="WhatsApp"
+							>
+								<svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
+									<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+								</svg>
+								WhatsApp
+							</a>
+							<!-- Social Sharing -->
+							<SocialSharing 
+								title={title}
+								description={description || ''}
+								url={typeof window !== 'undefined' ? window.location.href : ''}
+							/>
+						</div>
+					</div>
+				</div>
+
 				<!-- Header -->
 				<header class="mb-8">
 					<h1 class="text-3xl sm:text-4xl font-light text-gray-900 mb-4">{title}</h1>
@@ -82,16 +126,25 @@ const visaTypes = menuData?.visaTypes || [];
 							{description}
 						</p>
 					)}
-					
 					<!-- Meta information -->
-					{lastEdited && (
+					{(lastEdited || readingTime) && (
 						<div class="flex items-center gap-6 text-sm text-gray-500">
-							<div class="flex items-center gap-2">
-								<span class="w-2 h-2 bg-green-400 rounded-full"></span>
-								<span>
-									{lang === 'es' ? 'Última actualización' : 'Last updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US')}
-								</span>
-							</div>
+							{lastEdited && (
+								<div class="flex items-center gap-2">
+									<span class="w-2 h-2 bg-green-400 rounded-full"></span>
+									<span>
+										{lang === 'es' ? 'Última actualización' : 'Last updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US')}
+									</span>
+								</div>
+							)}
+							{readingTime && (
+								<div class="flex items-center gap-2">
+									<span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+									<span>
+										{lang === 'es' ? 'Tiempo de lectura' : 'Reading time'}: {readingTime} {lang === 'es' ? 'min' : 'min'}
+									</span>
+								</div>
+							)}
 						</div>
 					)}
 				</header>
@@ -125,3 +178,40 @@ const visaTypes = menuData?.visaTypes || [];
 		scroll-margin-top: 120px;
 	}
 </style>
+
+<script>
+  /**
+   * Download the current visa page as a PDF
+   * @param {string} title
+   */
+  async function downloadVisaPDF(title: string) {
+    const [{ jsPDF }, html2canvas] = await Promise.all([
+      import('jspdf'),
+      import('html2canvas')
+    ]);
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.top = '0';
+    tempContainer.style.width = '800px';
+    tempContainer.style.padding = '40px';
+    tempContainer.style.backgroundColor = 'white';
+    tempContainer.style.fontFamily = 'Arial, sans-serif';
+    const content = document.querySelector('article');
+    if (content) {
+      tempContainer.innerHTML = content.innerHTML;
+      document.body.appendChild(tempContainer);
+      /** @param {HTMLCanvasElement} canvas */
+      html2canvas.default(tempContainer).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgWidth = pageWidth - 40;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+        pdf.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+        document.body.removeChild(tempContainer);
+      });
+    }
+  }
+</script>

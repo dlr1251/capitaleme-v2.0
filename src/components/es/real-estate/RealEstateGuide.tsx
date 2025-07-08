@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import PropertyListing from '../features/real-estate/PropertyListing';
-import PropertySearchService from '../features/real-estate/PropertySearchService';
+import PropertyListing from '../features/real-estate/PropertyListing.tsx';
+import PropertySearchService from '../features/real-estate/PropertySearchService.tsx';
 
 interface Step {
   title: string;

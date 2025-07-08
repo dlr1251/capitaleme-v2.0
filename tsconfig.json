@@ -9,6 +9,9 @@
     "jsxImportSource": "react",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "moduleResolution": "nodenext",
+    "module": "NodeNext",
+    "target": "ES2020"
   }
 }

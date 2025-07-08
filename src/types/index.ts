@@ -68,11 +68,11 @@ export type {
   CodeBlock,
   ImageBlock,
   VideoBlock
-} from '../utils/notionTypes';
+} from '../utils/notionTypes.js';
 
 // Legacy types for backward compatibility (deprecated)
 export interface NotionDatabaseResponse {
-  results: import('../utils/notionTypes').NotionPage[];
+  results: import('../utils/notionTypes.js').NotionPage[];
   next_cursor?: string;
   has_more: boolean;
 }

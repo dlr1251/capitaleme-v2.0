@@ -10,9 +10,13 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "sync-notion-algolia": "ts-node --loader ts-node/esm src/lib/syncNotionToAlgolia.ts"
   },
   "dependencies": {
+    "@algolia/autocomplete-js": "^1.19.2",
+    "@algolia/autocomplete-theme-classic": "^1.19.2",
+    "@algolia/client-search": "^5.30.0",
     "@astrojs/check": "^0.9.4",
     "@astrojs/markdown-remark": "^6.3.2",
     "@astrojs/mdx": "^4.2.3",
@@ -28,10 +32,10 @@
     "@notionhq/client": "^2.3.0",
     "@sendgrid/mail": "^8.1.0",
     "@supabase/supabase-js": "^2.39.0",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
+    "@types/algoliasearch": "^3.34.11",
     "@vercel/analytics": "^1.2.2",
     "@vercel/speed-insights": "^1.0.10",
+    "algoliasearch": "^4.25.2",
     "astro": "^5.6.1",
     "astro-feelback": "^0.3.4",
     "astro-seo": "^0.8.3",
@@ -42,8 +46,13 @@
     "flowbite-react": "^0.11.8",
     "formik": "^2.4.5",
     "framer-motion": "^12.19.1",
+    "fuse.js": "^7.1.0",
     "googleapis": "^144.0.0",
+    "grapheme-splitter": "^1.0.4",
+    "html-react-parser": "^5.2.5",
     "html2canvas": "^1.4.1",
+    "instantsearch.css": "^8.5.1",
+    "instantsearch.js": "^4.79.0",
     "jspdf": "^3.0.1",
     "marked": "^15.0.12",
     "mdast-util-to-string": "^4.0.0",
@@ -51,7 +60,9 @@
     "react": "^18.3.1",
     "react-datepicker": "^6.3.0",
     "react-dom": "^18.3.1",
-    "react-icons": "^5.5.0",
+    "react-instantsearch": "^6.12.0-alpha.2",
+    "react-instantsearch-dom": "^6.40.4",
+    "react-joyride": "^2.7.1",
     "react-markdown": "^9.0.1",
     "react-number-format": "^5.4.2",
     "react-slick": "^0.30.3",
@@ -61,13 +72,16 @@
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.6",
     "tailwindcss": "^3.0.24",
-    "typescript": "^5.3.3",
+    "vite": "^7.0.2",
     "zod": "^3.22.4",
     "zod-to-ts": "^1.0.0"
   },
   "devDependencies": {
-    "@iconify-json/heroicons-outline": "^1.2.0",
     "@tailwindcss/typography": "^0.5.10",
-    "unplugin-icons": "^0.21.0"
+    "@types/node": "^24.0.10",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

@@ -3,9 +3,10 @@ import { useState, useMemo } from 'react';
 interface ResourcesMegaMenuProps {
   lang?: string;
   menuData?: any;
+  currentPath?: string;
 }
 
-const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = {} }) => {
+const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = {}, currentPath }) => {
   const [selectedCLKRModule, setSelectedCLKRModule] = useState<string>('All');
   const [clkrSortOrder, setClkrSortOrder] = useState<string>('desc');
 
@@ -180,7 +181,13 @@ const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = 
             <div className="space-y-2 h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
               {filteredCLKRArticles.length > 0 ? (
                 filteredCLKRArticles.map((article: any, index: number) => (
-                  <a key={article.href} href={article.href} className="block group p-3 rounded-lg hover:bg-gray-50 border border-gray-100 hover:border-secondary transition-all duration-200">
+                  <a
+                    key={article.href}
+                    href={article.href}
+                    className={`block group p-3 rounded-lg border transition-all duration-200
+                      ${currentPath && currentPath.startsWith(article.href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30'}
+                    `}
+                  >
                     <div className="flex items-start gap-3">
                       <div className="w-6 h-6 bg-gradient-to-br from-secondary to-primary rounded-md flex items-center justify-center flex-shrink-0">
                         <span className="text-white text-xs">{index + 1}</span>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import BlogCard from './BlogCard';
-import type { BlogPost } from './BlogCard';
+import BlogCard from './BlogCard.jsx';
+import type { BlogPost } from './BlogCard.jsx';
 
 interface BlogExplorerProps {
   posts: BlogPost[];

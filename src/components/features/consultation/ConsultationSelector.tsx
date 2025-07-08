@@ -7,7 +7,7 @@ interface ConsultationOption {
   title: string;
   description: string;
   calendly: string;
-  icon: JSX.Element;
+  icon: React.ReactElement;
 }
 
 const CONSULTATION_OPTIONS: ConsultationOption[] = [
@@ -19,7 +19,7 @@ const CONSULTATION_OPTIONS: ConsultationOption[] = [
     description: 'Book as soon as 4 hours • Emergency legal matters',
     calendly: 'https://calendly.com/capital-m-law/rush-consultation?back=1&month=2025-07',
     icon: (
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+      <svg fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd"></path>
       </svg>
     ),
@@ -32,7 +32,7 @@ const CONSULTATION_OPTIONS: ConsultationOption[] = [
     description: 'Book as soon as 3 days • Regular legal guidance',
     calendly: 'https://calendly.com/capital-m-law/standard-initial-consultation?back=1&month=2025-07',
     icon: (
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+      <svg fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path>
       </svg>
     ),
@@ -45,7 +45,7 @@ const CONSULTATION_OPTIONS: ConsultationOption[] = [
     description: 'Book within 7 days • Planned legal services',
     calendly: 'https://calendly.com/capital-m-law/programmed-consultation?back=1&month=2025-07',
     icon: (
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+      <svg fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
       </svg>
     ),
@@ -86,9 +86,7 @@ export default function ConsultationSelector() {
                   ? 'w-8 h-8 bg-white/20 rounded-md flex items-center justify-center flex-shrink-0'
                   : 'w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center flex-shrink-0'
               }>
-                {React.cloneElement(opt.icon, {
-                  className: selected === opt.key ? 'w-4 h-4 text-white' : 'w-4 h-4 text-primary',
-                })}
+                {opt.icon}
               </div>
               <div className="text-left">
                 <div className={selected === opt.key ? 'font-medium text-sm text-white' : 'font-medium text-sm text-primary'}>
@@ -108,9 +106,7 @@ export default function ConsultationSelector() {
                   ? 'w-8 h-8 bg-white/20 rounded-md flex items-center justify-center mx-auto'
                   : 'w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center mx-auto'
               }>
-                {React.cloneElement(opt.icon, {
-                  className: selected === opt.key ? 'w-4 h-4 text-white' : 'w-4 h-4 text-primary',
-                })}
+                {opt.icon}
               </div>
               <div className="text-center mt-2">
                 <div className={selected === opt.key ? 'font-medium text-xs text-white' : 'font-medium text-xs text-primary'}>{opt.label}</div>
@@ -130,7 +126,7 @@ export default function ConsultationSelector() {
         >
           <div className="flex items-center justify-center gap-4 lg:gap-5">
             <div className="w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-              {React.cloneElement(option.icon, { className: 'w-6 h-6 lg:w-7 lg:h-7 text-white' })}
+              {option.icon}
             </div>
             <div className="text-center">
               <span className="text-base lg:text-lg font-semibold text-white block">{option.title}</span>

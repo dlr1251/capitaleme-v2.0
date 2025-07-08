@@ -1,6 +1,9 @@
 // Menu data utilities for dynamic megamenus - OPTIMIZED VERSION
 import { getCollection } from 'astro:content';
-import { getNotionDatabase } from './notion';
+import { getNotionDatabase } from './notion.js';
+import GraphemeSplitter from 'grapheme-splitter';
+
+const splitter = new GraphemeSplitter();
 
 // Function to match author by email from authors collection
 async function matchAuthorByEmail(authorEmail) {
@@ -115,19 +118,16 @@ function processVisasData(visasData, lang) {
         description: properties.Words?.rich_text?.[0]?.plain_text || properties.Description?.rich_text?.[0]?.plain_text || '',
         category: properties.Tipo?.select?.name || properties.VisaType?.select?.name || 'visa',
         country: properties.Countries?.select?.name || properties.Country?.select?.name || '',
-        countries: properties.Countries?.select?.name ? [properties.Countries.select.name] : 
-                  properties.Countries?.multi_select?.map(item => item.name) || [],
+        countries: properties.Countries?.select?.name ? [properties.Countries.select.name] : [],
         isPopular: properties.Popular?.checkbox || false,
-        beneficiaries: properties.Beneficiaries?.select?.name || 
-                      properties.Beneficiaries?.multi_select?.[0]?.name || '',
-        workPermit: properties.WorkPermit?.select?.name || 
-                   (properties.WorkPermit?.checkbox ? 'Yes' : 'No') || '',
+        emojis: splitter.splitGraphemes(properties.emojis?.rich_text?.[0]?.plain_text || ''),
+        alcance: properties.Alcance?.rich_text?.[0]?.plain_text || '',
+        beneficiaries: properties.Beneficiaries?.checkbox,
+        workPermit: properties.WorkPermit?.checkbox,
         processingTime: properties.ProcessingTime?.rich_text?.[0]?.plain_text || '',
         requirements: properties.Requirements?.rich_text?.[0]?.plain_text || '',
         url: `/${lang}/visas/${properties.slug?.rich_text?.[0]?.plain_text || properties.Slug?.rich_text?.[0]?.plain_text || page.id}`,
         lastEdited: page.last_edited_time,
-        emoji: properties.Emoji?.rich_text?.[0]?.plain_text || '📋',
-        alcance: properties.Alcance?.rich_text?.[0]?.plain_text || '',
         duration: properties.Duration?.rich_text?.[0]?.plain_text || ''
       };
     });
@@ -170,6 +170,7 @@ function processGuidesData(guidesData, lang) {
         title: properties.Name?.title?.[0]?.plain_text || '',
         slug: properties.slug?.rich_text?.[0]?.plain_text || '',
         description: properties.Description?.rich_text?.[0]?.plain_text || '',
+        excerpt: properties.excerpt?.rich_text?.[0]?.plain_text || '',
         category: properties.Category?.select?.name || 'guide',
         url: `/${lang}/guides/${properties.slug?.rich_text?.[0]?.plain_text || page.id}`,
         lastEdited: page.last_edited_time,
@@ -204,7 +205,10 @@ function processCLKRData(clkrData, lang) {
       const properties = page.properties;
       return {
         id: page.id,
-        title: properties["Topic Name"]?.title?.[0]?.plain_text || '',
+        title: properties["Topic Name"]?.title?.[0]?.plain_text
+            || properties["Name"]?.title?.[0]?.plain_text
+            || properties["Title"]?.title?.[0]?.plain_text
+            || '',
         slug: properties.slug?.rich_text?.[0]?.plain_text || '',
         description: properties.Description?.rich_text?.[0]?.plain_text || '',
         module: properties.Module?.multi_select?.[0]?.name || 'CLKR',
@@ -294,7 +298,7 @@ function getImagePath(slug) {
 }
 
 // Get featured property from Astro collections
-async function getFeaturedProperty(lang) {
+export async function getFeaturedProperty(lang) {
   try {
     const properties = await getCollection('properties', ({ data }) => {
       return data.lang === lang && data.featured === true;
@@ -302,12 +306,26 @@ async function getFeaturedProperty(lang) {
     
     if (properties.length > 0) {
       const property = properties[0];
+      // Format price and area as strings
+      const priceObj = property.data.price;
+      const areaObj = property.data.area;
+      const price = priceObj
+        ? `$${priceObj.usd.toLocaleString()} USD / $${priceObj.cop.toLocaleString()} COP`
+        : '';
+      const area = areaObj
+        ? `${areaObj.total} ${areaObj.unit}`
+        : '';
+      const gallery = Array.isArray(property.data.images)
+        ? property.data.images.map(img => img.url)
+        : [];
       return {
         title: property.data.title,
         href: `/${lang}/real-estate/properties/${property.slug}`,
-        image: property.data.featuredImage || property.data.images?.[0] || '/images/real-estate/placeholder.jpg',
-        price: property.data.price || '',
-        location: property.data.location || 'Medellín, Colombia'
+        image: property.data.featuredImage || property.data.images?.[0]?.url || '/images/real-estate/placeholder.jpg',
+        price,
+        area,
+        location: property.data.location || 'Medellín, Colombia',
+        gallery
       };
     }
     
@@ -336,6 +354,9 @@ export async function getAllMenuData(lang = 'en') {
     const guidesProcessed = processGuidesData(guidesData, lang);
     const clkrProcessed = processCLKRData(clkrData, lang);
     const blogProcessed = await processBlogData(blogData, lang);
+
+    // TEMP DEBUG LOG: Output CLKR processed data
+    console.log('[DEBUG] CLKR Processed:', JSON.stringify(clkrProcessed, null, 2));
     
     // Get featured property (this is from Astro collections, not Notion)
     const featuredProperty = await getFeaturedProperty(lang);

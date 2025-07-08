@@ -171,7 +171,10 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData = 
                 </svg>
               </button>
             </div>
-
+            {/* SearchBar for mobile */}
+            <div className="block lg:hidden px-2 pt-2 pb-4">
+              
+            </div>
             {/* Menu content */}
             <div className="px-4 py-6 space-y-6 mobile-content-fade-in">
               {/* Main navigation links */}
@@ -269,7 +272,7 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData = 
                                   {lang === 'en' ? 'Get Consultation' : 'Obtener Consulta'}
                                 </a>
                                 <a
-                                  href={lang === 'en' ? '/en/visas2' : '/es/visas2'}
+                                  href={lang === 'en' ? '/en/visas' : '/es/visas'}
                                   onClick={handleMobileMenuClose}
                                   className="block w-full bg-white text-blue-600 text-center py-2 px-4 rounded-md border border-blue-600 hover:bg-blue-50 transition-colors text-sm font-medium mobile-button-scale mobile-menu-focus"
                                 >

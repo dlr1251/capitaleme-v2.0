@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content';
 import Navbar from '../components/core/layout/Navbar.tsx';
 import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
 import GoogleTag from '../components/core/common/GoogleTag.astro'
-import SpeedInsights from "@vercel/speed-insights/astro"
+// import SpeedInsights from "@vercel/speed-insights/astro"
 
 interface Props {
 	title: string;		
@@ -45,7 +45,7 @@ const url = Astro.url
 		<meta property="og:description" content="Find insightful content about the Colombian Legal system from local attorneys" />
 		<meta property="og:url" content="https://www.capitaleme.com/">		
 		<GoogleTag/>
-		<SpeedInsights/>
+		{/* <SpeedInsights/> */}
 
 	</head>
 	<body>

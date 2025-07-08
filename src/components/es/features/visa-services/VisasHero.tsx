@@ -1,14 +1,14 @@
 // React import removed - not needed in React 17+
-import { 
-  HiDocumentText, 
-  HiShieldCheck, 
-  HiClock, 
-  HiCurrencyDollar, 
-  HiUserGroup,
-  HiEye,
-  HiSparkles,
-  HiDesktopComputer
-} from 'react-icons/hi';
+import {
+  DocumentTextIcon,
+  ShieldCheckIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  UserGroupIcon,
+  EyeIcon,
+  SparklesIcon,
+  ComputerDesktopIcon
+} from '@heroicons/react/24/solid';
 
 interface Visa {
   id: string;
@@ -30,22 +30,22 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'es' }: { popularVis
   // Top section features (4 cards)
   const topFeatures = [
     {
-      icon: <HiCurrencyDollar className="w-6 h-6" />,
+      icon: <CurrencyDollarIcon className="w-6 h-6" />,
       title: "Precios Transparentes",
       description: "Costos claros sin tarifas ocultas"
     },
     {
-      icon: <HiShieldCheck className="w-6 h-6" />,
+      icon: <ShieldCheckIcon className="w-6 h-6" />,
       title: "Orientación Experta",
       description: "Asistencia legal profesional durante todo el proceso"
     },
     {
-      icon: <HiClock className="w-6 h-6" />,
+      icon: <ClockIcon className="w-6 h-6" />,
       title: "Procesamiento Rápido",
       description: "Manejo eficiente para minimizar los tiempos de espera"
     },
     {
-      icon: <HiDesktopComputer className="w-6 h-6" />,
+      icon: <ComputerDesktopIcon className="w-6 h-6" />,
       title: "100% Virtual y Personalizado",
       description: "Proceso completo en línea adaptado a tus necesidades"
     }
@@ -115,15 +115,15 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'es' }: { popularVis
             
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center text-blue-200">
-                <HiShieldCheck className="w-5 h-5 mr-2 text-blue-400" />
+                <ShieldCheckIcon className="w-5 h-5 mr-2 text-blue-400" />
                 {content.legalExpertise}
               </div>
               <div className="flex items-center text-blue-200">
-                <HiDocumentText className="w-5 h-5 mr-2 text-blue-400" />
+                <DocumentTextIcon className="w-5 h-5 mr-2 text-blue-400" />
                 {content.documentPreparation}
               </div>
               <div className="flex items-center text-blue-200">
-                <HiUserGroup className="w-5 h-5 mr-2 text-blue-400" />
+                <UserGroupIcon className="w-5 h-5 mr-2 text-blue-400" />
                 {content.familyApplications}
               </div>
             </div>
@@ -167,7 +167,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'es' }: { popularVis
                     className="inline-flex items-center px-6 py-3 bg-white/20 text-white rounded-full hover:bg-white/30 transition-all duration-300 font-medium backdrop-blur-sm"
                   >
                     {content.discoverAll}
-                    <HiEye className="w-4 h-4 ml-2" />
+                    <EyeIcon className="w-4 h-4 ml-2" />
                   </a>
                 </div>
               </div>
@@ -248,7 +248,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'es' }: { popularVis
               className="inline-flex items-center px-8 py-4 bg-white/20 text-white rounded-full hover:bg-white/30 transition-all duration-300 font-medium backdrop-blur-sm"
             >
               {content.viewAllGuides}
-              <HiSparkles className="w-5 h-5 ml-2" />
+              <SparklesIcon className="w-5 h-5 ml-2" />
             </a>
           </div>
         </div>

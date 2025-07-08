@@ -1,5 +1,5 @@
 // React import removed - not needed in React 17+
-import { HiArrowRight, HiCalendar, HiClock } from 'react-icons/hi';
+// import { HiArrowRight, HiCalendar, HiClock } from 'react-icons/hi';
 
 const LatestBlogSection = ({ posts = [] }) => {
   // Mock data for demonstration - replace with actual blog posts
@@ -66,10 +66,10 @@ const LatestBlogSection = ({ posts = [] }) => {
               {/* Content */}
               <div className="p-6">
                 <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <HiCalendar className="w-4 h-4 mr-1" />
+                  {/* <HiCalendar className="w-4 h-4 mr-1" /> */}
                   <span>{post.date}</span>
                   <span className="mx-2">•</span>
-                  <HiClock className="w-4 h-4 mr-1" />
+                  {/* <HiClock className="w-4 h-4 mr-1" /> */}
                   <span>{post.readingTime} min read</span>
                 </div>
                 
@@ -84,7 +84,7 @@ const LatestBlogSection = ({ posts = [] }) => {
                 <div className="flex items-center justify-between">
                   <button className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200 flex items-center group">
                     Read More
-                    <HiArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-200" />
+                    {/* <HiArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-200" /> */}
                   </button>
                 </div>
               </div>
@@ -96,7 +96,7 @@ const LatestBlogSection = ({ posts = [] }) => {
         <div className="text-center mt-12">
           <button className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl">
             View All Posts
-            <HiArrowRight className="w-5 h-5 ml-2" />
+            {/* <HiArrowRight className="w-5 h-5 ml-2" /> */}
           </button>
         </div>
       </div>
