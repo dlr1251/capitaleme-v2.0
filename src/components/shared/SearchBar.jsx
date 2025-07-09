@@ -1,49 +1,20 @@
-// Updated to use react-instantsearch-core instead of deprecated react-instantsearch
-// This fixes the react-native dependency conflict
+import React, { useState, useRef } from 'react';
+import Fuse from 'fuse.js';
 
-import React, { useRef, useState } from 'react';
-import { InstantSearch, SearchBox, Hits, useInstantSearch } from 'react-instantsearch-core';
-import { algoliasearch } from 'algoliasearch';
-
-const ALGOLIA_APP_ID = import.meta.env.PUBLIC_ALGOLIA_APP_ID;
-const ALGOLIA_SEARCH_KEY = import.meta.env.PUBLIC_ALGOLIA_SEARCH_API_KEY;
-const ALGOLIA_INDEX = import.meta.env.PUBLIC_ALGOLIA_INDEX_NAME;
-
-if (!ALGOLIA_APP_ID || !ALGOLIA_SEARCH_KEY || !ALGOLIA_INDEX) {
-  throw new Error('Algolia environment variables are missing. Please set PUBLIC_ALGOLIA_APP_ID, PUBLIC_ALGOLIA_SEARCH_KEY, and PUBLIC_ALGOLIA_INDEX in your .env file.');
-}
-
-const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_SEARCH_KEY);
-
-function Hit({ hit }) {
-  return (
-    <div className="p-4 hover:bg-blue-50 cursor-pointer rounded">
-      <div className="font-semibold text-blue-700">{hit.name || hit.title || hit.objectID}</div>
-      {hit.description && <div className="text-gray-600 text-sm">{hit.description}</div>}
-    </div>
-  );
-}
-
-// Move useHasResults and panel logic into a child component
-function SearchPanel({ isFocused }) {
-  const { results } = useInstantSearch();
-  const hasResults = results && results.nbHits > 0;
-
-  if (!isFocused) return null;
-  return (
-    <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-      {hasResults ? (
-        <Hits hitComponent={Hit} />
-      ) : (
-        <div className="p-4 text-gray-500 text-center">No results found.</div>
-      )}
-    </div>
-  );
-}
-
-const SearchBar = ({ lang = 'es' }) => {
+// Usage: <SearchBar items={arrayOfDocs} lang="en" />
+const SearchBar = ({ items = [], lang = 'es' }) => {
+  const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const panelRef = useRef(null);
+
+  // Configure Fuse.js
+  const fuse = new Fuse(items, {
+    keys: ['title', 'description'],
+    threshold: 0.3,
+    minMatchCharLength: 2,
+  });
+
+  const results = query ? fuse.search(query).map(r => r.item) : [];
 
   React.useEffect(() => {
     function handleClick(e) {
@@ -59,17 +30,40 @@ const SearchBar = ({ lang = 'es' }) => {
 
   return (
     <div className="relative w-full max-w-2xl mx-auto my-8" ref={panelRef}>
-      <InstantSearch searchClient={searchClient} indexName={ALGOLIA_INDEX} future={{ preserveSharedStateOnUnmount: true }}>
-        <SearchBox
+      <div className="relative w-full">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
+        <input
+          type="search"
           placeholder={lang === 'es' ? 'Buscar en el repositorio legal...' : 'Search the legal repository...'}
-          classNames={{
-            root: 'mb-0',
-            input: 'w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500',
-          }}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
         />
-        <SearchPanel isFocused={isFocused} />
-      </InstantSearch>
+      </div>
+      {isFocused && query && (
+        <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+          {results.length > 0 ? (
+            results.map((item, idx) => (
+              <a
+                key={item.id || idx}
+                href={item.href || item.url || '#'}
+                className="block p-4 hover:bg-blue-50 cursor-pointer rounded"
+              >
+                <div className="font-semibold text-blue-700">{item.title || item.name}</div>
+                {item.description && <div className="text-gray-600 text-sm">{item.description}</div>}
+              </a>
+            ))
+          ) : (
+            <div className="p-4 text-gray-500 text-center">{lang === 'es' ? 'No se encontraron resultados.' : 'No results found.'}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
