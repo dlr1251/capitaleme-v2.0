@@ -79,14 +79,23 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData = 
   const isLinkActive = (linkHref: string) => {
     if (!pathname) return false;
     
-    // Exact match
+    // Exact match (href already includes language prefix)
     if (pathname === linkHref) return true;
     
     // For About Us, check if we're on the about page
     if (linkHref.includes('/about') && pathname.includes('/about')) return true;
     
-    // For Visas & Immigration, check if we're on visas2 route
-    if (linkHref.includes('/visas2') && pathname.includes('/visas2')) return true;
+    // For Visas & Immigration, check if we're on visas or visas2 route
+    if (linkHref.includes('/visas') && (pathname.includes('/visas') || pathname.includes('/visas2'))) return true;
+    
+    // For Real Estate, check if we're on real-estate routes
+    if (linkHref.includes('/real-estate') && pathname.includes('/real-estate')) return true;
+    
+    // For Blog, check if we're on blog routes
+    if (linkHref.includes('/blog') && pathname.includes('/blog')) return true;
+    
+    // For Contact, check if we're on contact page
+    if (linkHref.includes('/contact') && pathname.includes('/contact')) return true;
     
     // For Resources, check if we're on guides or CLKR routes
     if (linkHref.includes('/resources')) {
@@ -184,35 +193,45 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData = 
                     {link.hasMegaMenu ? (
                       <button
                         onClick={() => handleMobileSectionToggle(link.text)}
-                        className={`w-full flex items-center justify-between p-4 rounded-lg transition-all duration-300 mobile-menu-touch-target mobile-button-scale mobile-menu-focus ${
+                        className={`w-full flex items-center justify-between p-5 rounded-lg transition-all duration-300 mobile-menu-touch-target mobile-button-scale mobile-menu-focus relative overflow-hidden ${
                           isLinkActive(link.href) 
-                            ? 'bg-blue-50 text-blue-600 border border-blue-200' 
+                            ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg' 
                             : 'hover:bg-gray-50 text-gray-700'
                         }`}
                       >
-                        <span className="font-medium">{link.text}</span>
+                        <span className="font-medium relative z-10">{link.text}</span>
                         <svg 
-                          className={`w-5 h-5 transition-transform duration-300 mobile-arrow-rotate ${
+                          className={`w-5 h-5 transition-transform duration-300 mobile-arrow-rotate relative z-10 ${
                             isMobileSectionExpanded(link.text) ? 'expanded' : ''
-                          }`}
+                          } ${isLinkActive(link.href) ? 'text-white' : ''}`}
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
                         </svg>
+                        
+                        {/* Active background gradient */}
+                        {isLinkActive(link.href) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg"></div>
+                        )}
                       </button>
                     ) : (
                       <a
                         href={link.href}
                         onClick={handleMobileMenuClose}
-                        className={`block p-4 rounded-lg transition-all duration-300 mobile-menu-touch-target mobile-menu-focus ${
+                        className={`block p-5 rounded-lg transition-all duration-300 mobile-menu-touch-target mobile-menu-focus relative overflow-hidden ${
                           isLinkActive(link.href) 
-                            ? 'bg-blue-50 text-blue-600 border border-blue-200' 
+                            ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg' 
                             : 'hover:bg-gray-50 text-gray-700'
                         }`}
                       >
-                        <span className="font-medium">{link.text}</span>
+                        <span className="font-medium relative z-10">{link.text}</span>
+                        
+                        {/* Active background gradient */}
+                        {isLinkActive(link.href) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg"></div>
+                        )}
                       </a>
                     )}
 

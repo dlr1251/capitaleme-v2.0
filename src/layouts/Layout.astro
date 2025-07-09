@@ -16,7 +16,10 @@ export interface Props {
 	customBreadcrumbs?: Array<{ label: string; href?: string }>;
 }
 
-const { title, description, lang = 'en', pathname, menuData: propMenuData } = Astro.props;
+const { title, description, lang = 'en', pathname: propPathname, menuData: propMenuData } = Astro.props;
+
+// Get the current pathname from Astro.url if not provided
+const pathname = propPathname || Astro.url.pathname;
 
 // Get optimized menu data if not provided
 const menuData = propMenuData || await getAllMenuData(lang);

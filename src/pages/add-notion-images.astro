@@ -1,0 +1,198 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getNotionDatabase } from '../utils/notion';
+import type { NotionPage, NotionProperty, NotionTitleProperty, NotionRichTextProperty, NotionSelectProperty, NotionCheckboxProperty } from '../utils/notionTypes';
+
+// Get all pages to show which ones need images
+const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
+const allPages = await getNotionDatabase(databaseId);
+
+// Type guards for Notion properties
+function isTitleProperty(prop: NotionProperty): prop is NotionTitleProperty {
+  return prop.type === 'title';
+}
+
+function isRichTextProperty(prop: NotionProperty): prop is NotionRichTextProperty {
+  return prop.type === 'rich_text';
+}
+
+function isSelectProperty(prop: NotionProperty): prop is NotionSelectProperty {
+  return prop.type === 'select';
+}
+
+function isCheckboxProperty(prop: NotionProperty): prop is NotionCheckboxProperty {
+  return prop.type === 'checkbox';
+}
+
+// Filter for English posts only and published posts
+const pages = allPages.filter(page => {
+  const langProp = page.properties?.Lang;
+  const langValue = isSelectProperty(langProp) ? langProp.select?.name : null;
+  const isEnglish = langValue === 'En' || langValue === 'EN' || langValue === 'English';
+  
+  const publishedProp = page.properties?.Published;
+  const isPublished = isCheckboxProperty(publishedProp) ? publishedProp.checkbox : false;
+  
+  return isEnglish && isPublished;
+});
+
+// Helper function to get cover image URL
+function getCoverImageUrl(page: NotionPage) {
+  if (page.cover?.type === 'external') {
+    return page.cover.external?.url || null;
+  } else if (page.cover?.type === 'file') {
+    return page.cover.file?.url || null;
+  }
+  return null;
+}
+---
+
+<Layout title="Add Notion Images">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">🖼️ Add Cover Images to Notion</h1>
+    
+    <div class="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4 text-yellow-800">📋 Instructions</h2>
+      <div class="space-y-4 text-yellow-700">
+        <p><strong>Step 1:</strong> Open your Notion database in the browser</p>
+        <p><strong>Step 2:</strong> For each page that needs a cover image:</p>
+        <ul class="list-disc list-inside ml-4 space-y-2">
+          <li>Click on the page to open it</li>
+          <li>Click the "Add cover" button at the top of the page</li>
+          <li>Choose "Upload image" or "Link" to add an external image</li>
+          <li>Select a high-quality image (recommended: 1200x630px)</li>
+        </ul>
+        <p><strong>Step 3:</strong> Save the page and repeat for all posts</p>
+      </div>
+    </div>
+
+    <div class="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4 text-blue-800">💡 Image Recommendations</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-semibold mb-2">📐 Dimensions</h3>
+          <ul class="text-sm space-y-1">
+            <li>• Recommended: 1200x630px (2:1 ratio)</li>
+            <li>• Minimum: 600x315px</li>
+            <li>• Maximum: 2000x1000px</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">🎨 Format & Quality</h3>
+          <ul class="text-sm space-y-1">
+            <li>• Format: JPG, PNG, or WebP</li>
+            <li>• File size: Under 5MB</li>
+            <li>• High contrast for readability</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-6">📄 Pages That Need Cover Images</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {pages.map((page) => {
+          const nameProp = page.properties?.Nombre;
+          const title = isTitleProperty(nameProp) && nameProp.title?.[0]?.plain_text 
+            ? nameProp.title[0].plain_text 
+            : 'Untitled';
+          
+          const descProp = page.properties?.Description;
+          const description = isRichTextProperty(descProp) && descProp.rich_text?.[0]?.plain_text 
+            ? descProp.rich_text[0].plain_text 
+            : '';
+          
+          const coverImage = getCoverImageUrl(page);
+          const hasCover = !!coverImage;
+          
+          const categoryProp = page.properties?.Category;
+          const category = isSelectProperty(categoryProp) ? categoryProp.select?.name : 'None';
+          
+          return (
+            <div class={`border rounded-lg p-4 ${hasCover ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+              <div class="flex items-start justify-between mb-3">
+                <h3 class="font-semibold text-gray-900">{title}</h3>
+                <span class={`px-2 py-1 text-xs rounded-full ${hasCover ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {hasCover ? '✅ Has Cover' : '❌ No Cover'}
+                </span>
+              </div>
+              
+              {description && (
+                <p class="text-sm text-gray-600 mb-3 line-clamp-2">{description}</p>
+              )}
+              
+              <div class="text-xs text-gray-500">
+                <p>ID: {page.id}</p>
+                <p>Category: {category}</p>
+              </div>
+              
+              {!hasCover && (
+                <div class="mt-3 p-3 bg-white border border-red-200 rounded text-sm">
+                  <p class="text-red-800 font-medium mb-2">⚠️ Needs Cover Image</p>
+                  <p class="text-red-600 text-xs">
+                    Open this page in Notion and add a cover image to improve the blog appearance.
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <div class="p-6 bg-gray-50 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4">🔧 Alternative Solutions</h2>
+      
+      <div class="space-y-4">
+        <div>
+          <h3 class="font-semibold mb-2">1. Use Default Images</h3>
+          <p class="text-sm text-gray-600 mb-2">
+            If you can't add cover images to Notion, we can use default images based on categories:
+          </p>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+            <div class="bg-blue-100 p-2 rounded">Immigration → 🛂</div>
+            <div class="bg-green-100 p-2 rounded">Business → 💼</div>
+            <div class="bg-purple-100 p-2 rounded">Lifestyle → 🏠</div>
+            <div class="bg-orange-100 p-2 rounded">Legal → ⚖️</div>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="font-semibold mb-2">2. Generate AI Images</h3>
+          <p class="text-sm text-gray-600">
+            We could integrate with an AI image service to generate relevant images based on post titles and content.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-semibold mb-2">3. Use Unsplash Integration</h3>
+          <p class="text-sm text-gray-600">
+            Automatically fetch relevant images from Unsplash based on post keywords.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center">
+      <a 
+        href="/en/blog" 
+        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Blog
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

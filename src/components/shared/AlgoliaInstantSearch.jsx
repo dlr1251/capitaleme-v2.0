@@ -1,6 +1,12 @@
+// TODO: Fix react-instantsearch CommonJS module import issue
+// Temporarily commented out due to Vite module resolution errors
+// Need to resolve: Named export 'default' not found for react-instantsearch
+
+/*
 import React, { useState, useRef, useEffect } from 'react';
 import algoliasearch from 'algoliasearch/lite';
-import { InstantSearch, Highlight, connectHits, connectSearchBox } from 'react-instantsearch-dom';
+import pkg from 'react-instantsearch';
+const { InstantSearch, Highlight, connectHits, connectSearchBox } = pkg;
 
 console.log('[AlgoliaInstantSearch] component loaded');
 
@@ -139,6 +145,38 @@ export default function AlgoliaInstantSearch({ lang = 'en' }) {
           font-weight: bold;
         }
       `}</style>
+    </div>
+  );
+}
+*/
+
+// Temporary placeholder component
+export default function AlgoliaInstantSearch({ lang = 'en' }) {
+  return (
+    <div className="relative my-10 mx-auto w-full max-w-4xl flex flex-col items-center">
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="relative w-full">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <input
+            type="search"
+            placeholder={lang === 'es' ? 'Buscar en el repositorio legal...' : 'Search the legal repository...'}
+            className="w-full rounded-full border border-gray-200 bg-white py-3 pl-12 pr-4 text-lg shadow-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none placeholder-gray-400"
+            style={{ fontWeight: 500 }}
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={512}
+            disabled
+          />
+        </div>
+      </div>
+      <div className="mt-4 text-center text-gray-500 text-sm">
+        🔧 Search functionality temporarily disabled - TODO: Fix react-instantsearch module import
+      </div>
     </div>
   );
 } 

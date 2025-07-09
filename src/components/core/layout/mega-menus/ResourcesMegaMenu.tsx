@@ -11,16 +11,30 @@ const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = 
   const [clkrSortOrder, setClkrSortOrder] = useState<string>('desc');
 
   const clkrModules = menuData.clkrModules || [];
+  
+  // DEBUG: Log the menuData to see what's being passed
+  console.log('[DEBUG] ResourcesMegaMenu menuData:', menuData);
+  console.log('[DEBUG] ResourcesMegaMenu clkrServices:', menuData.clkrServices);
+  console.log('[DEBUG] ResourcesMegaMenu clkrModules:', menuData.clkrModules);
 
-  // Filter CLKR articles based on selected module and only show categories with content
+  // Filter and sort CLKR articles based on selected module and only show categories with content
   const filteredCLKRArticles = useMemo(() => {
+    let articles = [];
     if (selectedCLKRModule === 'All') {
-      return menuData.clkrServices || [];
+      articles = menuData.clkrServices || [];
+    } else {
+      articles = (menuData.clkrServices || []).filter((article: any) => 
+        article.module === selectedCLKRModule
+      );
     }
-    return (menuData.clkrServices || []).filter((article: any) => 
-      article.module === selectedCLKRModule
-    );
-  }, [menuData.clkrServices, selectedCLKRModule]);
+    
+    // Sort articles based on sort order
+    return articles.sort((a: any, b: any) => {
+      const dateA = new Date(a.lastUpdated || a.date || '2024-01-01');
+      const dateB = new Date(b.lastUpdated || b.date || '2024-01-01');
+      return clkrSortOrder === 'desc' ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+    });
+  }, [menuData.clkrServices, selectedCLKRModule, clkrSortOrder]);
 
   // Filter out empty categories
   const nonEmptyModules = useMemo(() => {
@@ -182,10 +196,10 @@ const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = 
               {filteredCLKRArticles.length > 0 ? (
                 filteredCLKRArticles.map((article: any, index: number) => (
                   <a
-                    key={article.href}
+                    key={article.id || article.href || index}
                     href={article.href}
-                    className={`block group p-3 rounded-lg border transition-all duration-200
-                      ${currentPath && currentPath.startsWith(article.href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30'}
+                    className={`block group p-3 rounded-lg border transition-all duration-200 hover:shadow-md
+                      ${currentPath && currentPath.startsWith(article.href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30 bg-white'}
                     `}
                   >
                     <div className="flex items-start gap-3">
@@ -193,10 +207,16 @@ const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = 
                         <span className="text-white text-xs">{index + 1}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 group-hover:text-secondary text-sm line-clamp-2 transition-colors duration-200">
-                          {article.title}
+                        <h4 className={`font-semibold text-sm line-clamp-2 transition-colors duration-200 ${
+                          currentPath && currentPath.startsWith(article.href) 
+                            ? 'text-white' 
+                            : 'text-gray-900 group-hover:text-secondary'
+                        }`}>
+                          {article.title || `Untitled Article (ID: ${article.id})`}
                         </h4>              
-                        <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                        <div className={`flex items-center gap-3 mt-2 text-xs ${
+                          currentPath && currentPath.startsWith(article.href) ? 'text-white/80' : 'text-gray-500'
+                        }`}>
                           <span className="flex items-center">
                             <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -211,10 +231,22 @@ const ResourcesMegaMenu: React.FC<ResourcesMegaMenuProps> = ({ lang, menuData = 
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            currentPath && currentPath.startsWith(article.href) 
+                              ? 'bg-white/20 text-white' 
+                              : 'bg-primary/10 text-primary'
+                          }`}>
                             {article.module || 'CLKR'}
                           </span>
                         </div>
+                      </div>
+                      {/* Arrow indicator for hover */}
+                      <div className={`opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+                        currentPath && currentPath.startsWith(article.href) ? 'text-white' : 'text-secondary'
+                      }`}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+                        </svg>
                       </div>
                     </div>
                   </a>

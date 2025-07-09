@@ -9,6 +9,8 @@ interface RealEstateMegaMenuProps {
 const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData = {}, currentPath }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
+
+  
   const featuredProperty = menuData.featuredProperty || {
     title: 'Finca en Caldas',
     href: lang === 'en' ? '/en/real-estate/properties/cielo' : '/es/real-estate/properties/cielo',
@@ -28,14 +30,17 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
     area: '120m²',
   };
 
-  const realEstateArticles = menuData.realEstateArticles || [
-    { title: lang === 'en' ? 'Real Estate vs Business Visa' : 'Inmobiliario vs Visa de Negocios', href: lang === 'en' ? '/en/clkr/real-estate-vs-business-visa' : '/es/clkr/real-estate-vs-business-visa' },
-    { title: lang === 'en' ? 'Realtors in Colombia' : 'Agentes Inmobiliarios en Colombia', href: lang === 'en' ? '/en/clkr/realtors-in-colombia' : '/es/clkr/realtors-in-colombia' },
-    { title: lang === 'en' ? 'Property Investment Guide' : 'Guía de Inversión Inmobiliaria', href: lang === 'en' ? '/en/clkr/property-investment-guide' : '/es/clkr/property-investment-guide' },
-    { title: lang === 'en' ? 'Legal Requirements for Foreign Buyers' : 'Requisitos Legales para Compradores Extranjeros', href: lang === 'en' ? '/en/clkr/legal-requirements-foreign-buyers' : '/es/clkr/legal-requirements-foreign-buyers' },
-    { title: lang === 'en' ? 'Tax Implications of Real Estate Investment' : 'Implicaciones Fiscales de la Inversión Inmobiliaria', href: lang === 'en' ? '/en/clkr/tax-implications-real-estate' : '/es/clkr/tax-implications-real-estate' },
-    { title: lang === 'en' ? 'Due Diligence Process' : 'Proceso de Debida Diligencia', href: lang === 'en' ? '/en/clkr/due-diligence-process' : '/es/clkr/due-diligence-process' }
-  ];
+  // Use menuData.realEstateArticles if available, otherwise use fallback
+  const realEstateArticles = menuData.realEstateArticles && menuData.realEstateArticles.length > 0 
+    ? menuData.realEstateArticles 
+    : [
+        { title: lang === 'en' ? 'Real Estate vs Business Visa' : 'Inmobiliario vs Visa de Negocios', href: lang === 'en' ? '/en/clkr/real-estate-vs-business-visa' : '/es/clkr/real-estate-vs-business-visa' },
+        { title: lang === 'en' ? 'Realtors in Colombia' : 'Agentes Inmobiliarios en Colombia', href: lang === 'en' ? '/en/clkr/realtors-in-colombia' : '/es/clkr/realtors-in-colombia' },
+        { title: lang === 'en' ? 'Property Investment Guide' : 'Guía de Inversión Inmobiliaria', href: lang === 'en' ? '/en/clkr/property-investment-guide' : '/es/clkr/property-investment-guide' },
+        { title: lang === 'en' ? 'Legal Requirements for Foreign Buyers' : 'Requisitos Legales para Compradores Extranjeros', href: lang === 'en' ? '/en/clkr/legal-requirements-foreign-buyers' : '/es/clkr/legal-requirements-foreign-buyers' },
+        { title: lang === 'en' ? 'Tax Implications of Real Estate Investment' : 'Implicaciones Fiscales de la Inversión Inmobiliaria', href: lang === 'en' ? '/en/clkr/tax-implications-real-estate' : '/es/clkr/tax-implications-real-estate' },
+        { title: lang === 'en' ? 'Due Diligence Process' : 'Proceso de Debida Diligencia', href: lang === 'en' ? '/en/clkr/due-diligence-process' : '/es/clkr/due-diligence-process' }
+      ];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => 
@@ -285,35 +290,38 @@ const RealEstateMegaMenu: React.FC<RealEstateMegaMenuProps> = ({ lang, menuData 
           </h3>
           <div className="flex-1 flex flex-col">
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pr-2">
-              {realEstateArticles.length > 0 ? (
-                realEstateArticles.map((article: any, index: number) => (
-                  <a
-                    key={article.href}
-                    href={article.href}
-                    className={`block group p-3 rounded-lg border transition-all duration-200
-                      ${currentPath && currentPath.startsWith(article.href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30'}
-                    `}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 bg-gradient-to-br from-secondary to-primary rounded-md flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-xs">{index + 1}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 group-hover:text-primary text-sm line-clamp-2 transition-colors duration-200">
-                          {article.title}
-                        </h4>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                          <span className="flex items-center">
-                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            5 min read
-                          </span>      
+              {realEstateArticles && realEstateArticles.length > 0 ? (
+                realEstateArticles.map((article: any, index: number) => {
+                  const href = article.href || article.url || `/${lang}/clkr/${article.slug || article.id || index}`;
+                  return (
+                    <a
+                      key={article.id || article.href || index}
+                      href={href}
+                      className={`block group p-3 rounded-lg border transition-all duration-200
+                        ${currentPath && currentPath.startsWith(href) ? 'bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg' : 'hover:bg-primary/5 hover:border-primary/30'}
+                      `}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 bg-gradient-to-br from-secondary to-primary rounded-md flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-xs">{index + 1}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 group-hover:text-primary text-sm line-clamp-2 transition-colors duration-200">
+                            {article.title || '[No Title]'}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                            <span className="flex items-center">
+                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                              </svg>
+                              {article.readingTime || 5} min read
+                            </span>      
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </a>
-                ))
+                    </a>
+                  );
+                })
               ) : (
                 <div className="text-gray-500 text-sm p-4 text-center flex-1 flex items-center justify-center">
                   {lang === 'en' ? 'No real estate articles available at the moment.' : 'No hay artículos inmobiliarios disponibles en este momento.'}

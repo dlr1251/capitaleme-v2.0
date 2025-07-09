@@ -184,83 +184,110 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
   const hasMoreVisas = filteredVisas.length > 9;
 
   return (
-    <section className="py-32 bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-32 overflow-hidden">
+      {/* Liquid Crystal Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_50%)]"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-6xl font-bold text-primary tracking-tight mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-white/20 shadow-lg mb-6">
+            <span className="text-2xl">🌟</span>
+            <span className="text-sm font-medium text-gray-700">Servicios de Visa</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight mb-6">
             Explora Nuestros
-            <span className="block text-secondary">Servicios de Visa</span>
+            <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Servicios de Visa
+            </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Descubre la categoría de visa perfecta para tu viaje a Colombia. Filtra por tu país y requisitos para encontrar la mejor opción.
           </p>
         </div>
 
         {/* Popular Visas Section */}
         {popularVisas.length > 0 && (
-          <div className="mb-16">
+          <div className="mb-20">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-primary mb-4">
-                🌟 Categorías de Visa Populares
-              </h3>
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/90 backdrop-blur-sm rounded-2xl border border-white/30 shadow-xl mb-6">
+                <span className="text-3xl">✨</span>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Categorías de Visa Populares
+                </h3>
+              </div>
               <p className="text-lg text-gray-600">
                 Nuestros servicios de visa más solicitados
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {popularVisas.slice(0, 4).map((visa: Visa) => (
-                <div key={visa.id} className="bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-xl border-2 border-secondary/20 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {visa.emoji && (
-                        <span className="text-2xl">{visa.emoji}</span>
+                <div key={visa.id} className="group relative">
+                  {/* Liquid Crystal Card */}
+                  <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl border border-white/40 p-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden">
+                    {/* Animated background gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    {/* Glass effect overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          {visa.emoji && (
+                            <span className="text-2xl">{visa.emoji}</span>
+                          )}
+                          <h4 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {visa.title}
+                          </h4>
+                        </div>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg">
+                          Popular
+                        </span>
+                      </div>
+                      
+                      {visa.alcance && (
+                        <p className="text-sm text-gray-600 mb-4 font-medium">
+                          📋 {visa.alcance}
+                        </p>
                       )}
-                      <h4 className="text-lg font-semibold text-primary group-hover:text-secondary transition-colors">
-                        {visa.title}
-                      </h4>
+                      
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1.5 bg-blue-100/80 text-blue-800 rounded-full text-xs font-medium backdrop-blur-sm border border-blue-200/50">
+                            {getBeneficiariesLabel(String(visa.beneficiaries))}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1.5 bg-green-100/80 text-green-800 rounded-full text-xs font-medium backdrop-blur-sm border border-green-200/50">
+                            {getWorkPermitLabel(String(visa.workPermit))}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <a 
+                          href={`/${lang}/visas2/${visa.slug}`}
+                          className="flex-1 inline-flex items-center justify-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl px-4 py-2.5 hover:bg-blue-50/80 hover:shadow-lg"
+                        >
+                          Saber más
+                        </a>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWhatsAppContact(visa.title);
+                          }}
+                          className="inline-flex items-center justify-center text-green-600 hover:text-green-700 font-medium text-sm transition-colors bg-green-50/80 backdrop-blur-sm border border-green-200/50 rounded-xl px-4 py-2.5 hover:bg-green-100/80 hover:shadow-lg"
+                        >
+                          💬 Contactar
+                        </button>
+                      </div>
                     </div>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary/20 text-secondary">
-                      Popular
-                    </span>
-                  </div>
-                  
-                  {visa.alcance && (
-                    <p className="text-sm text-gray-600 mb-3 font-medium">
-                      📋 {visa.alcance}
-                    </p>
-                  )}
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
-                        Beneficiarios: {getBeneficiariesLabel(String(visa.beneficiaries))}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full font-medium">
-                        Permiso de Trabajo: {getWorkPermitLabel(String(visa.workPermit))}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <a 
-                      href={`/${lang}/visas2/${visa.slug}`}
-                      className="flex-1 inline-flex items-center justify-center text-secondary hover:text-primary font-medium text-sm transition-colors bg-white border border-secondary/20 rounded-lg px-3 py-2 hover:bg-secondary/5"
-                    >
-                      Saber más
-                    </a>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleWhatsAppContact(visa.title);
-                      }}
-                      className="inline-flex items-center justify-center text-green-600 hover:text-green-700 font-medium text-sm transition-colors bg-green-50 border border-green-200 rounded-lg px-3 py-2 hover:bg-green-100"
-                    >
-                      💬 Contactar
-                    </button>
                   </div>
                 </div>
               ))}
@@ -269,19 +296,21 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
         )}
 
         {/* Filters Section */}
-        <div className={`mb-12 p-6 rounded-xl border transition-all duration-300 ${
-          isAnimating ? 'bg-secondary/10 border-secondary' : 'bg-white border-gray-200 shadow-lg'
+        <div className={`mb-12 p-8 rounded-2xl border transition-all duration-500 ${
+          isAnimating 
+            ? 'bg-gradient-to-r from-blue-100/50 to-indigo-100/50 border-blue-300 shadow-xl' 
+            : 'bg-white/90 backdrop-blur-sm border-white/40 shadow-xl'
         }`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Country Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
                 País de Origen
               </label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-200"
               >
                 {countries
                   .sort((a: Country, b: Country) => (a.nameEn || '').localeCompare(b.nameEn || ''))
@@ -295,13 +324,13 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
 
             {/* Visa Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Tipo de Visa
               </label>
               <select
                 value={visaType}
                 onChange={(e) => setVisaType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/80 backdrop-blur-sm transition-all duration-200"
               >
                 <option value="">Todos los Tipos</option>
                 <option value="visitor">Visitante (V)</option>
@@ -312,14 +341,14 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
 
             {/* Beneficiaries Filter */}
             <div className="flex items-center">
-              <label className="flex items-center space-x-2 cursor-pointer">
+              <label className="flex items-center space-x-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={beneficiaries}
                   onChange={(e) => setBeneficiaries(e.target.checked)}
-                  className="w-4 h-4 text-secondary border-gray-300 rounded focus:ring-secondary"
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-semibold text-gray-700">
                   Permite Beneficiarios
                 </span>
               </label>
@@ -327,14 +356,14 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
 
             {/* Work Permit Filter */}
             <div className="flex items-center">
-              <label className="flex items-center space-x-2 cursor-pointer">
+              <label className="flex items-center space-x-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={workPermit}
                   onChange={(e) => setWorkPermit(e.target.checked)}
-                  className="w-4 h-4 text-secondary border-gray-300 rounded focus:ring-secondary"
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-semibold text-gray-700">
                   Permiso de Trabajo
                 </span>
               </label>
@@ -343,10 +372,10 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
 
           {/* Clear Filters Button */}
           {(country || visaType || beneficiaries || workPermit) && (
-            <div className="mt-4 flex justify-center">
+            <div className="mt-6 flex justify-center">
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-6 py-3 text-sm font-medium text-gray-600 bg-gray-100/80 backdrop-blur-sm rounded-xl hover:bg-gray-200/80 transition-all duration-200 border border-gray-200/50"
               >
                 Limpiar Todos los Filtros
               </button>
@@ -354,8 +383,8 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
           )}
 
           {/* Results Count */}
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 font-medium">
               Mostrando {displayedVisas.length} de {filteredVisas.length} categorías de visa
             </p>
           </div>
@@ -364,58 +393,68 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
         {/* All Visa Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedVisas.map((visa: Visa) => (
-            <div key={visa.id} className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  {visa.emoji && (
-                    <span className="text-xl">{visa.emoji}</span>
+            <div key={visa.id} className="group relative">
+              <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl border border-white/40 p-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden">
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-blue-50/50 to-indigo-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                {/* Glass effect overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      {visa.emoji && (
+                        <span className="text-xl">{visa.emoji}</span>
+                      )}
+                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {visa.title}
+                      </h3>
+                    </div>
+                    {visa.isPopular && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg">
+                        Popular
+                      </span>
+                    )}
+                  </div>
+                  
+                  {visa.alcance && (
+                    <p className="text-sm text-gray-600 mb-4 font-medium">
+                      📋 {visa.alcance}
+                    </p>
                   )}
-                  <h3 className="text-lg font-semibold text-primary group-hover:text-secondary transition-colors">
-                    {visa.title}
-                  </h3>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1.5 bg-blue-100/80 text-blue-800 rounded-full text-xs font-medium backdrop-blur-sm border border-blue-200/50">
+                        {getBeneficiariesLabel(String(visa.beneficiaries))}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1.5 bg-green-100/80 text-green-800 rounded-full text-xs font-medium backdrop-blur-sm border border-green-200/50">
+                        {getWorkPermitLabel(String(visa.workPermit))}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <a 
+                      href={`/${lang}/visas2/${visa.slug}`}
+                      className="flex-1 inline-flex items-center justify-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-xl px-4 py-2.5 hover:bg-blue-50/80 hover:shadow-lg"
+                    >
+                      Saber más
+                    </a>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWhatsAppContact(visa.title);
+                      }}
+                      className="inline-flex items-center justify-center text-green-600 hover:text-green-700 font-medium text-sm transition-colors bg-green-50/80 backdrop-blur-sm border border-green-200/50 rounded-xl px-4 py-2.5 hover:bg-green-100/80 hover:shadow-lg"
+                    >
+                      💬 Contactar
+                    </button>
+                  </div>
                 </div>
-                {visa.isPopular && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
-                    Popular
-                  </span>
-                )}
-              </div>
-              
-              {visa.alcance && (
-                <p className="text-sm text-gray-600 mb-3 font-medium">
-                  📋 {visa.alcance}
-                </p>
-              )}
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
-                    Beneficiarios: {getBeneficiariesLabel(String(visa.beneficiaries))}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full font-medium">
-                    Permiso de Trabajo: {getWorkPermitLabel(String(visa.workPermit))}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <a 
-                  href={`/${lang}/visas2/${visa.slug}`}
-                  className="flex-1 inline-flex items-center justify-center text-secondary hover:text-primary font-medium text-sm transition-colors bg-white border border-secondary/20 rounded-lg px-3 py-2 hover:bg-secondary/5"
-                >
-                  Saber más
-                </a>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWhatsAppContact(visa.title);
-                  }}
-                  className="inline-flex items-center justify-center text-green-600 hover:text-green-700 font-medium text-sm transition-colors bg-green-50 border border-green-200 rounded-lg px-3 py-2 hover:bg-green-100"
-                >
-                  💬 Contactar
-                </button>
               </div>
             </div>
           ))}
@@ -423,15 +462,15 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
 
         {/* Show More Button */}
         {hasMoreVisas && !showAll && (
-          <div className="text-center mt-8">
+          <div className="text-center mt-12">
             <button
               onClick={handleShowMore}
               disabled={isLoading}
-              className="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   Cargando...
                 </div>
               ) : (
@@ -442,13 +481,13 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
         )}
 
         {/* View All Visas Link */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-16">
           <a
             href={`/${lang}/visas2`}
-            className="inline-flex items-center text-secondary hover:text-primary font-medium text-lg transition-colors"
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-lg transition-colors group"
           >
             Ver Todas las Categorías de Visa
-            <svg className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
             </svg>
           </a>
@@ -456,19 +495,19 @@ const HomePageVisas = ({ visas = [], lang = 'es' }: HomePageVisasProps) => {
 
         {/* No Results Message */}
         {filteredVisas.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+          <div className="text-center py-16">
+            <div className="text-gray-400 mb-6">
+              <svg className="w-20 h-20 mx-auto" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron visas</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">No se encontraron visas</h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
               Intenta ajustar tus filtros para ver más opciones de visa.
             </p>
             <button
               onClick={clearFilters}
-              className="px-4 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               Limpiar Todos los Filtros
             </button>

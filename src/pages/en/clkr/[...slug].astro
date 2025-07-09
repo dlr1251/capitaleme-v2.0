@@ -3,146 +3,179 @@ import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
 import CLKRLayout from '../../../layouts/CLKRLayout.astro';
 import NotionBlock from '../../../components/content/NotionBlock.astro';
 import { Client } from '@notionhq/client';
-import type { PageObjectResponse, BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { PageObjectResponse, BlockObjectResponse, PartialBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { calculateReadingTime } from '../../../utils/readingTime';
+
+type NotionPage = PageObjectResponse & {
+  properties: {
+    Name: {
+      type: 'title';
+      title: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Description: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Content: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Lang: {
+      type: 'select';
+      select: {
+        name: string;
+      } | null;
+    };
+    Published: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+    slug?: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+  };
+  icon?: {
+    type: 'emoji';
+    emoji: string;
+  };
+  cover?: {
+    type: 'external';
+    external: {
+      url: string;
+    };
+  } | {
+    type: 'file';
+    file: {
+      url: string;
+    };
+  };
+  last_edited_time: string;
+};
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  // Helper function to get page title from database
-  function getPageTitle(item: any): string {
-    try {
-      const titleProperty = item.properties?.['Topic Name'];
-      if (titleProperty?.title?.[0]?.plain_text) {
-        return titleProperty.title[0].plain_text;
-      }
-      return 'Untitled';
-    } catch (error) {
-      return 'Untitled';
-    }
-  }
-
-  // Helper function to get slug from database
-  function getSlug(item: any): string {
-    try {
-      const slugProperty = item.properties?.['slug'];
-      if (slugProperty?.rich_text?.[0]?.plain_text) {
-        return slugProperty.rich_text[0].plain_text;
-      }
-      return '';
-    } catch (error) {
-      return '';
-    }
-  }
-
-  // Helper function to check if a page is published
-  function isPublished(item: any): boolean {
-    try {
-      const publishedProperty = item.properties?.['Published'];
-      if (publishedProperty && 'checkbox' in publishedProperty) {
-        return publishedProperty.checkbox === true;
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  // Helper function to check if a page is in English
-  function isEnglish(item: any): boolean {
-    try {
-      const langProperty = item.properties?.['Lang'];
-      if (langProperty && 'select' in langProperty && langProperty.select) {
-        return langProperty.select.name === 'En' || langProperty.select.name === 'EN' || langProperty.select.name === 'English';
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  // Get all Notion pages that match our criteria
-  const notionDatabaseId = '20d0a3cd15e38169928fff5c6f2b219c';
-  const notionContent = await getNotionDatabase(notionDatabaseId);
-
-  return notionContent
-    .filter((item: any) => {
-      const title = getPageTitle(item);
-      const slug = getSlug(item);
-      const published = isPublished(item);
-      const english = isEnglish(item);
+  const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
+  
+  try {
+    const pages = await getNotionDatabase(databaseId) as NotionPage[];
+    
+    // Filter pages to only include those with Lang="En" or "EN" or "English" AND Published=true
+    const englishPages = pages.filter(page => {
+      const langValue = page.properties.Lang?.select?.name;
+      const isEnglish = langValue === "En" || langValue === "EN" || langValue === "English";
       
-      // Only include items with valid titles, slugs, published status, and English language
-      return title !== 'Untitled' && slug !== '' && published && english;
-    })
-    .map((item: any) => {
-      const title = getPageTitle(item);
-      const slug = getSlug(item);
+      // Check if published (assuming there's a Published checkbox property)
+      const isPublished = page.properties.Published?.checkbox === true;
+      
+      return isEnglish && isPublished;
+    });
+    
+    return englishPages.map((page) => {
+      const nameProperty = page.properties?.Name;
+      
+      if (!nameProperty?.title?.[0]?.plain_text) {
+        return {
+          params: { slug: 'untitled' },
+          props: { pageId: page.id }
+        };
+      }
+      
+      const title = nameProperty.title[0].plain_text;
+      // Check if slug property exists, otherwise generate from title
+      const slugProperty = page.properties?.slug;
+      const slug = slugProperty?.rich_text?.[0]?.plain_text || 
+                   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       
       return {
         params: { slug },
-        props: { 
-          pageId: item.id,
-          title,
-          slug,
-          icon: item.icon,
-          lastEdited: item.last_edited_time
-        }
+        props: { pageId: page.id }
       };
     });
+  } catch (error) {
+    console.error('Failed to fetch CLKR pages from Notion:', error);
+    // Return empty array to prevent build failure
+    return [];
+  }
 }
 
-const { pageId, title, lastEdited } = Astro.props;
+const { pageId } = Astro.props;
+
+const page = await getNotionPage(pageId) as NotionPage;
+if (!page) {
+  throw new Error(`Page ${pageId} not found`);
+}
+
+const title = page.properties.Name?.title?.[0]?.plain_text || 'Untitled';
+const cover = page.cover;
+const description = page.properties.Description?.rich_text?.[0]?.plain_text || '';
 
 // Fetch the page blocks
-const notion = new Client({
-  auth: import.meta.env.NOTION_API_KEY,
-});
+const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
+const blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 200 });
 
-const blocks = await notion.blocks.children.list({
-  block_id: pageId,
-  page_size: 100,
-});
+// Enhanced type for blocks with children
+type BlockWithChildren = BlockObjectResponse & {
+  has_children: true;
+  children: BlockObjectResponse[];
+};
 
-// Function to fetch children blocks recursively
-async function fetchChildrenBlocks(blockId: string): Promise<BlockObjectResponse[]> {
-  const response = await notion.blocks.children.list({
-    block_id: blockId,
-    page_size: 200,
-  });
-  
-  // Process each child block recursively
+// Type guard for blocks with children
+function hasChildren(block: BlockObjectResponse): block is BlockWithChildren {
+  return block.has_children === true;
+}
+
+// Recursively fetch children blocks
+async function fetchChildrenBlocks(blockId: string): Promise<(BlockObjectResponse | BlockWithChildren)[]> {
+  const response = await notion.blocks.children.list({ block_id: blockId, page_size: 200 });
   const processedChildren = await Promise.all(
-    response.results.map(async (child: any) => {
-      if (child.has_children) {
+    response.results.map(async (child: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
+      if ('has_children' in child && child.has_children) {
         const grandChildren = await fetchChildrenBlocks(child.id);
-        return {
-          ...child,
-          children: grandChildren
-        };
+        return { ...child, children: grandChildren } as BlockWithChildren;
       }
-      return child;
+      return child as BlockObjectResponse;
     })
   );
-  
   return processedChildren;
 }
 
-// Process blocks and fetch children if needed
 const processedBlocks = await Promise.all(
-  blocks.results.map(async (block: any) => {
-    if (block.has_children) {
+  blocks.results.map(async (block: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
+    if ('has_children' in block && block.has_children) {
       const children = await fetchChildrenBlocks(block.id);
-      return {
-        ...block,
-        children: children
-      };
+      return { ...block, children } as BlockWithChildren;
     }
-    return block;
+    return block as BlockObjectResponse;
   })
 );
 
-// Extract headings from blocks for TOC
+// Extract headings for TOC
 const headings: any[] = [];
 processedBlocks.forEach((block: any) => {
   if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
@@ -166,7 +199,7 @@ const readingTime = calculateReadingTime(processedBlocks);
 
 <CLKRLayout 
   title={title} 
-  lastEdited={lastEdited}
+  lastEdited={page.last_edited_time}
   readingTime={readingTime}
   headings={headings}
   showBreadcrumb={false}

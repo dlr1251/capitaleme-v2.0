@@ -1,202 +1,523 @@
 ---
-export const prerender = true;
 import Layout from "../../../layouts/Layout.astro";
 import { getNotionDatabase } from '../../../utils/notion';
-import CLKRConsultationForm from '../../../components/features/clkr/CLKRConsultationForm.tsx';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-// Get all CLKR pages for the navigation
-const allCLKRPages = await getNotionDatabase('20d0a3cd15e38169928fff5c6f2b219c');
-const englishCLKRPages = allCLKRPages
-  .filter((page: any) => 
-    page.properties?.Lang?.select?.name === "En" || 
-    page.properties?.Lang?.select?.name === "EN" ||
-    page.properties?.Lang?.select?.name === "English"
-  )
-  .map((page: any) => ({
-    title: page.properties?.['Topic Name']?.title?.[0]?.plain_text || 'Untitled',
-    slug: page.properties?.slug?.rich_text?.[0]?.plain_text || 
-          (page.properties?.['Topic Name']?.title?.[0]?.plain_text || 'untitled')
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, ''),
-    description: page.properties?.Description?.rich_text?.[0]?.plain_text || '',
-    category: page.properties?.Module?.multi_select?.[0]?.name || 'General',
-    icon: page.icon
-  }))
-  .filter((page: any) => page.title !== 'Untitled');
+type NotionPage = PageObjectResponse & {
+  properties: {
+    'Topic Name': {
+      type: 'title';
+      title: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Description: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Content: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    Lang: {
+      type: 'select';
+      select: {
+        name: string;
+      } | null;
+    };
+    Published: {
+      type: 'checkbox';
+      checkbox: boolean;
+    };
+    Module?: {
+      type: 'multi_select';
+      multi_select: Array<{
+        name: string;
+      }>;
+    };
+    slug?: {
+      type: 'rich_text';
+      rich_text: Array<{
+        type: 'text';
+        text: {
+          content: string;
+        };
+        plain_text: string;
+      }>;
+    };
+    ReadingTime?: {
+      type: 'number';
+      number: number;
+    };
+  };
+  icon?: {
+    type: 'emoji';
+    emoji: string;
+  };
+  cover?: {
+    type: 'external';
+    external: {
+      url: string;
+    };
+  } | {
+    type: 'file';
+    file: {
+      url: string;
+    };
+  };
+  last_edited_time: string;
+};
 
-// Group pages by category
-const pagesByCategory = englishCLKRPages.reduce((acc: Record<string, any[]>, page: any) => {
-  if (!acc[page.category]) {
-    acc[page.category] = [];
+// Helper functions
+function getCoverImageUrl(page: NotionPage): string | null {
+  if (page.cover?.type === 'external') {
+    return page.cover.external?.url || null;
+  } else if (page.cover?.type === 'file') {
+    return page.cover.file?.url || null;
   }
-  acc[page.category].push(page);
-  return acc;
-}, {} as Record<string, any[]>);
+  return null;
+}
 
-const pageTitle = "CLKR - Colombian Legal Knowledge Repository";
+function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+  if (diffInDays > 0) {
+    return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+  } else {
+    return 'Just now';
+  }
+}
+
+function getModuleColor(module: string): { bg: string; text: string; border: string } {
+  const moduleLower = module.toLowerCase();
+  
+  if (moduleLower.includes('labor') || moduleLower.includes('employment')) {
+    return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' };
+  } else if (moduleLower.includes('tax') || moduleLower.includes('fiscal')) {
+    return { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' };
+  } else if (moduleLower.includes('civil') || moduleLower.includes('family')) {
+    return { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' };
+  } else if (moduleLower.includes('commercial') || moduleLower.includes('business')) {
+    return { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' };
+  } else if (moduleLower.includes('constitutional') || moduleLower.includes('rights')) {
+    return { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' };
+  } else {
+    return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+  }
+}
+
+// Fetch CLKR database content
+const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
+const allPages = await getNotionDatabase(databaseId) as NotionPage[];
+
+// Filter for English posts only and published posts
+const pages = allPages.filter(page => {
+  const langValue = page.properties.Lang?.select?.name;
+  const isEnglish = langValue === 'En' || langValue === 'EN' || langValue === 'English';
+  const isPublished = page.properties.Published?.checkbox === true;
+  
+  return isEnglish && isPublished;
+});
+
+// Sort by last edited time (newest first)
+pages.sort((a, b) => new Date(b.last_edited_time).getTime() - new Date(a.last_edited_time).getTime());
+
+// Get unique modules
+const allModules = pages.flatMap(page => 
+  page.properties.Module?.multi_select?.map(m => m.name) || []
+);
+const modules = [...new Set(allModules)];
+
+// Calculate total reading time
+const totalReadingTime = pages.reduce((total, page) => {
+  return total + (page.properties.ReadingTime?.number || 15);
+}, 0);
+
+// Calculate total articles
+const totalArticles = pages.length;
 ---
 
-<Layout title={pageTitle}>
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
-    <!-- Hero Section -->
-    <div class="text-center py-12">
-      <div class="mb-6">
-        <span class="text-6xl">⚖️</span>
-      </div>
-      <h1 class="text-4xl md:text-5xl font-light text-gray-900 mb-4">
-        Colombian Legal Knowledge Repository
-      </h1>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-        Your comprehensive guide to Colombian legal matters. Find detailed information about visas, 
-        real estate, legal procedures, and more.
-      </p>
-      <div class="flex items-center justify-center gap-4 text-sm text-gray-500">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-          <span>{englishCLKRPages.length} resources available</span>
+<Layout title="CLKR - Colombian Law Knowledge Repository">
+  <!-- Hero Section -->
+  <section class="relative bg-background py-20">
+    <div class="absolute inset-0 bg-gradient-to-br from-muted/50 to-background"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <div class="mb-6">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            AI-Enhanced Legal Research
+          </span>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-          <span>{Object.keys(pagesByCategory).length} categories</span>
+        
+        <h1 class="text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
+          CLKR
+        </h1>
+        <p class="text-xl md:text-2xl font-light text-muted-foreground mb-8">
+          Colombian Law Knowledge Repository
+        </p>
+        
+        <div class="max-w-3xl mx-auto">
+          <p class="text-lg text-muted-foreground leading-relaxed mb-8">
+            A comprehensive legal knowledge base powered by deep AI research and validated by professional Colombian attorneys. 
+            Explore detailed legal frameworks, practical examples, and comparative analysis.
+          </p>
         </div>
-      </div>
-    </div>
-
-    <!-- Categories Grid -->
-    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
-      {Object.entries(pagesByCategory).map(([category, pages]: [string, any[]]) => (
-        <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-          <div class="p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-              <span class="mr-2">
-                {category === 'Visas' ? '🛂' : 
-                 category === 'Real Estate' ? '🏠' : 
-                 category === 'Procedures' ? '📋' : 
-                 category === 'Legal' ? '⚖️' : '📄'}
-              </span>
-              {category}
-            </h2>
-            <p class="text-gray-600 text-sm mb-4">
-              {pages.length} {pages.length === 1 ? 'resource' : 'resources'} available
-            </p>
-            <div class="space-y-2">
-              {pages.slice(0, 3).map((page: any) => (
-                <a
-                  href={`/en/clkr/${page.slug}`}
-                  class="block p-3 rounded-md hover:bg-gray-50 transition-colors group"
-                >
-                  <div class="flex items-start gap-3">
-                    {page.icon?.type === 'emoji' && (
-                      <span class="text-lg group-hover:scale-110 transition-transform">
-                        {page.icon.emoji}
-                      </span>
-                    )}
-                    <div class="flex-1 min-w-0">
-                      <h3 class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {page.title}
-                      </h3>
-                      {page.description && (
-                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">
-                          {page.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </a>
-              ))}
-              {pages.length > 3 && (
-                <div class="pt-2 border-t border-gray-100">
-                  <a 
-                    href={`/en/clkr?category=${category.toLowerCase().replace(/\s+/g, '-')}`}
-                    class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    View all {pages.length} resources →
-                  </a>
-                </div>
-              )}
-            </div>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="text-2xl font-bold text-foreground mb-1">{totalArticles}</div>
+            <div class="text-sm text-muted-foreground">Legal Articles</div>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="text-2xl font-bold text-foreground mb-1">{totalReadingTime}</div>
+            <div class="text-sm text-muted-foreground">Minutes of Content</div>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="text-2xl font-bold text-foreground mb-1">{modules.length}</div>
+            <div class="text-sm text-muted-foreground">Legal Modules</div>
           </div>
         </div>
-      ))}
+      </div>
     </div>
+  </section>
 
-    <!-- Consultation Form Section -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-12">
-      <div class="text-center mb-8">
-        <h2 class="text-3xl font-semibold text-gray-900 mb-4">
-          Need specific legal help?
-        </h2>
-        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-          Our legal experts are here to help you. Complete the consultation form 
-          and schedule a personalized appointment to resolve your doubts and find the best solution.
+   <!-- Features Section -->
+   <section class="py-16 bg-background">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-foreground mb-4">Why CLKR?</h2>
+        <p class="text-lg text-muted-foreground max-w-3xl mx-auto">
+          A revolutionary approach to legal knowledge, combining AI-powered research with professional validation
         </p>
       </div>
       
-      <div class="max-w-4xl mx-auto">
-        <CLKRConsultationForm 
-          client:load
-          topic=""
-          category=""
-        />
-      </div>
-    </div>
-
-    <!-- All Resources List -->
-    <div class="bg-white rounded-lg shadow-md border border-gray-200">
-      <div class="p-6 border-b border-gray-200">
-        <h2 class="text-2xl font-semibold text-gray-900">All Resources</h2>
-        <p class="text-gray-600 mt-2">Explore all our legal resources organized by category</p>
-      </div>
-      <div class="divide-y divide-gray-200">
-        {Object.entries(pagesByCategory).map(([category, pages]: [string, any[]]) => (
-          <div class="p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <span class="mr-2">
-                {category === 'Visas' ? '🛂' : 
-                 category === 'Real Estate' ? '🏠' : 
-                 category === 'Procedures' ? '📋' : 
-                 category === 'Legal' ? '⚖️' : '📄'}
-              </span>
-              {category}
-            </h3>
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {pages.map((page: any) => (
-                <a
-                  href={`/en/clkr/${page.slug}`}
-                  class="block p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all group"
-                >
-                  <div class="flex items-start gap-3">
-                    {page.icon?.type === 'emoji' && (
-                      <span class="text-xl group-hover:scale-110 transition-transform">
-                        {page.icon.emoji}
-                      </span>
-                    )}
-                    <div class="flex-1 min-w-0">
-                      <h4 class="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {page.title}
-                      </h4>
-                      {page.description && (
-                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">
-                          {page.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
           </div>
-        ))}
+          <h3 class="text-lg font-semibold text-foreground mb-2">AI-Enhanced Research</h3>
+          <p class="text-muted-foreground text-sm">Deep AI analysis of Colombian legal frameworks, statutes, and jurisprudence</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-foreground mb-2">Professional Validation</h3>
+          <p class="text-muted-foreground text-sm">All articles reviewed and validated by experienced Colombian attorneys</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-foreground mb-2">Comparative Analysis</h3>
+          <p class="text-muted-foreground text-sm">Cross-cultural legal insights and translation challenges explained</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-foreground mb-2">Practical Examples</h3>
+          <p class="text-muted-foreground text-sm">Real-world scenarios involving expats, investors, and foreign businesses</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-foreground mb-2">Shareable Content</h3>
+          <p class="text-muted-foreground text-sm">Easy sharing and learning for legal professionals and students</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-foreground mb-2">Fun Facts & Insights</h3>
+          <p class="text-muted-foreground text-sm">Engaging cultural and historical context for legal concepts</p>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Search and Filters Section -->
+  <section class="py-8 bg-background border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row gap-4 items-start">
+        <!-- Search -->
+        <div class="flex-1">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search legal articles, topics, or concepts..."
+              class="block w-full pl-10 pr-3 py-3 border border-input rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
+            />
+          </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="flex gap-3">
+          <select id="module-filter" class="px-3 py-3 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground">
+            <option value="">All Modules</option>
+            {modules.map(module => (
+              <option value={module}>{module}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- Articles Grid -->
+  <section class="py-12 bg-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-foreground mb-2">Legal Articles</h2>
+        <p class="text-muted-foreground">Deep research, professional validation, comprehensive analysis</p>
+      </div>
+      
+      <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {pages.map((page) => {
+          const title = page.properties['Topic Name']?.title?.[0]?.plain_text || 'Untitled';
+          const description = page.properties.Description?.rich_text?.[0]?.plain_text || '';
+          const slug = page.properties.slug?.rich_text?.[0]?.plain_text || 
+                      (title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+          const coverImage = getCoverImageUrl(page);
+          const module = page.properties.Module?.multi_select?.[0]?.name;
+          const readingTime = page.properties.ReadingTime?.number || 15;
+          const relativeTime = getRelativeTime(page.last_edited_time);
+          const moduleColors = module ? getModuleColor(module) : { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+          
+          return (
+            <article class="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300" data-title={title.toLowerCase()} data-module={module?.toLowerCase()}>
+              <!-- Cover Image -->
+              <div class="relative h-48 overflow-hidden bg-muted">
+                {coverImage ? (
+                  <img 
+                    src={coverImage} 
+                    alt={title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                )}
+                
+                {/* Module Badge */}
+                {module && (
+                  <div class={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${moduleColors.bg} ${moduleColors.text} ${moduleColors.border}`}>
+                    {module}
+                  </div>
+                )}
+                
+                {/* Reading Time */}
+                <div class="absolute top-3 right-3 px-2 py-1 bg-background/80 backdrop-blur-sm rounded-full text-xs font-medium text-muted-foreground">
+                  <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {readingTime} min
+                </div>
+              </div>
+              
+              <!-- Content -->
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-xs text-muted-foreground font-medium">{relativeTime}</span>
+                  {page.icon?.type === 'emoji' && (
+                    <span class="text-lg">{page.icon.emoji}</span>
+                  )}
+                </div>
+                
+                <h3 class="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                  <a href={`/en/clkr/${slug}`} class="block">
+                    {title}
+                  </a>
+                </h3>
+                
+                {description && (
+                  <p class="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                    {description}
+                  </p>
+                )}
+                
+                <!-- Features -->
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center space-x-3 text-xs text-muted-foreground">
+                    <span class="flex items-center">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      AI Research
+                    </span>
+                    <span class="flex items-center">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      Legal Validation
+                    </span>
+                  </div>
+                </div>
+                
+                <a
+                  href={`/en/clkr/${slug}`}
+                  class="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors duration-200 group/link"
+                >
+                  Read Article
+                  <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      
+      {pages.length === 0 && (
+        <div class="text-center py-12">
+          <svg class="w-16 h-16 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p class="text-muted-foreground text-lg">No articles found.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+ 
 </Layout>
+
+<script>
+  // Search functionality
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const moduleFilter = document.getElementById('module-filter') as HTMLSelectElement;
+  const articlesGrid = document.getElementById('articles-grid');
+  
+  function filterArticles() {
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    const selectedModule = moduleFilter?.value?.toLowerCase() || '';
+    
+    const articles = Array.from(document.querySelectorAll('[data-title]')).map(article => ({
+      element: article as HTMLElement,
+      title: (article as HTMLElement).dataset.title || '',
+      module: (article as HTMLElement).dataset.module || ''
+    }));
+    
+    let results = articles;
+    
+    // Apply search
+    if (searchTerm) {
+      results = articles.filter(article => 
+        article.title.toLowerCase().includes(searchTerm) ||
+        article.module.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // Apply filters
+    results = results.filter(article => {
+      const matchesModule = !selectedModule || article.module === selectedModule;
+      return matchesModule;
+    });
+    
+    // Update visibility
+    articles.forEach(article => {
+      const isVisible = results.includes(article);
+      article.element.style.display = isVisible ? 'block' : 'none';
+    });
+    
+    // Show/hide no results message
+    const visibleArticles = results.length;
+    const noResultsMessage = document.querySelector('.no-results');
+    if (visibleArticles === 0) {
+      if (!noResultsMessage) {
+        const message = document.createElement('div');
+        message.className = 'no-results text-center py-12 col-span-full';
+        message.innerHTML = `
+          <svg class="w-16 h-16 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p class="text-muted-foreground text-lg">No articles found matching your criteria.</p>
+        `;
+        articlesGrid?.appendChild(message);
+      }
+    } else {
+      if (noResultsMessage) {
+        noResultsMessage.remove();
+      }
+    }
+  }
+  
+  // Event listeners
+  searchInput?.addEventListener('input', filterArticles);
+  moduleFilter?.addEventListener('change', filterArticles);
+</script>
 
 <style>
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

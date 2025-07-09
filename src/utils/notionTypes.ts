@@ -68,6 +68,13 @@ export type NotionPage = {
   created_time?: string;
   object: 'page';
   icon?: { type: 'emoji'; emoji: string };
+  cover?: {
+    type: 'external';
+    external: { url: string };
+  } | {
+    type: 'file';
+    file: { url: string };
+  };
 };
 
 // --- Block Types ---

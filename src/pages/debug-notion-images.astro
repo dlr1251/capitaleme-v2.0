@@ -1,0 +1,225 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getNotionDatabase } from '../utils/notion';
+import type { NotionPage, NotionProperty, NotionTitleProperty, NotionRichTextProperty, NotionSelectProperty, NotionCheckboxProperty } from '../utils/notionTypes';
+
+// Debug Notion images
+const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
+const allPages = await getNotionDatabase(databaseId);
+
+// Type guards for Notion properties
+function isTitleProperty(prop: NotionProperty): prop is NotionTitleProperty {
+  return prop.type === 'title';
+}
+
+function isRichTextProperty(prop: NotionProperty): prop is NotionRichTextProperty {
+  return prop.type === 'rich_text';
+}
+
+function isSelectProperty(prop: NotionProperty): prop is NotionSelectProperty {
+  return prop.type === 'select';
+}
+
+function isCheckboxProperty(prop: NotionProperty): prop is NotionCheckboxProperty {
+  return prop.type === 'checkbox';
+}
+
+// Filter for English posts only and published posts
+const pages = allPages.filter(page => {
+  const langProp = page.properties?.Lang;
+  const langValue = isSelectProperty(langProp) ? langProp.select?.name : null;
+  const isEnglish = langValue === 'En' || langValue === 'EN' || langValue === 'English';
+  
+  const publishedProp = page.properties?.Published;
+  const isPublished = isCheckboxProperty(publishedProp) ? publishedProp.checkbox : false;
+  
+  return isEnglish && isPublished;
+});
+
+// Helper function to get cover image URL
+function getCoverImageUrl(page: NotionPage) {
+  if (page.cover?.type === 'external') {
+    return page.cover.external?.url || null;
+  } else if (page.cover?.type === 'file') {
+    return page.cover.file?.url || null;
+  }
+  return null;
+}
+
+// Helper function to format relative time
+function getRelativeTime(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+  if (diffInDays > 0) {
+    return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+  } else {
+    return 'Just now';
+  }
+}
+---
+
+<Layout title="Debug Notion Images">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">🔍 Notion Image Debug</h1>
+    
+    <div class="mb-8 p-6 bg-blue-50 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4">📊 Summary</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-lg">
+          <div class="text-2xl font-bold text-blue-600">{allPages.length}</div>
+          <div class="text-sm text-gray-600">Total Pages</div>
+        </div>
+        <div class="bg-white p-4 rounded-lg">
+          <div class="text-2xl font-bold text-green-600">{pages.length}</div>
+          <div class="text-sm text-gray-600">English Published</div>
+        </div>
+        <div class="bg-white p-4 rounded-lg">
+          <div class="text-2xl font-bold text-purple-600">{pages.filter(p => p.cover).length}</div>
+          <div class="text-sm text-gray-600">With Cover</div>
+        </div>
+        <div class="bg-white p-4 rounded-lg">
+          <div class="text-2xl font-bold text-orange-600">{pages.filter(p => p.icon).length}</div>
+          <div class="text-sm text-gray-600">With Icon</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      {pages.map((page) => {
+        const nameProp = page.properties?.Nombre;
+        const title = isTitleProperty(nameProp) && nameProp.title?.[0]?.plain_text 
+          ? nameProp.title[0].plain_text 
+          : 'Untitled';
+        
+        const descProp = page.properties?.Description;
+        const description = isRichTextProperty(descProp) && descProp.rich_text?.[0]?.plain_text 
+          ? descProp.rich_text[0].plain_text 
+          : '';
+        
+        const coverImage = getCoverImageUrl(page);
+        const relativeTime = getRelativeTime(page.last_edited_time);
+        
+        const categoryProp = page.properties?.Category;
+        const category = isSelectProperty(categoryProp) ? categoryProp.select?.name : null;
+        
+        const langProp = page.properties?.Lang;
+        const lang = isSelectProperty(langProp) ? langProp.select?.name : null;
+        
+        return (
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+                <p class="text-sm text-gray-500 mb-2">ID: {page.id}</p>
+                <p class="text-sm text-gray-500">Last edited: {relativeTime}</p>
+              </div>
+              <div class="text-right">
+                {category && (
+                  <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full mb-2">
+                    {category}
+                  </span>
+                )}
+                <br />
+                {lang && (
+                  <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                    {lang}
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            {description && (
+              <p class="text-gray-600 mb-4">{description}</p>
+            )}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Cover Image Section -->
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-3">🖼️ Cover Image</h4>
+                {coverImage ? (
+                  <div>
+                    <img 
+                      src={coverImage} 
+                      alt={title}
+                      class="w-full h-48 object-cover rounded-lg border border-gray-200"
+                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    />
+                    <div class="hidden mt-2 p-3 bg-red-50 border border-red-200 rounded text-sm">
+                      <p class="text-red-800 font-medium">❌ Image failed to load</p>
+                      <p class="text-red-600 text-xs mt-1">URL: {coverImage}</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Type: {page.cover?.type}</p>
+                    <p class="text-xs text-gray-500">URL: {coverImage}</p>
+                  </div>
+                ) : (
+                  <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div class="text-center text-gray-500">
+                      <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p class="text-sm">No cover image</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <!-- Icon Section -->
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-3">🎨 Icon</h4>
+                {page.icon ? (
+                  <div class="text-center">
+                    {page.icon.type === 'emoji' ? (
+                      <div class="text-6xl mb-4">{page.icon.emoji}</div>
+                    ) : (
+                      <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    )}
+                    <p class="text-sm text-gray-600">Type: {page.icon.type}</p>
+                  </div>
+                ) : (
+                  <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div class="text-center text-gray-500">
+                      <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                      <p class="text-sm">No icon</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <!-- Properties Debug -->
+            <div class="mt-6">
+              <h4 class="font-semibold text-gray-900 mb-3">📋 All Properties</h4>
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <pre class="text-xs text-gray-700 overflow-x-auto">{JSON.stringify(page.properties, null, 2)}</pre>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    
+    {pages.length === 0 && (
+      <div class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p class="text-gray-500 text-lg">No English published posts found.</p>
+      </div>
+    )}
+  </div>
+</Layout> 

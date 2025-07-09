@@ -28,24 +28,24 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
 const funFacts = [
   {
-    icon: <InformationCircleIcon className="text-primary text-2xl mb-2" />,
+    icon: <InformationCircleIcon className="text-primary w-5 h-5 mb-2" />,
     text: "Colombia's Constitution guarantees due process in Article 29.",
   },
   {
-    icon: <BookOpenIcon className="text-primary text-2xl mb-2" />,
+    icon: <BookOpenIcon className="text-primary w-5 h-5 mb-2" />,
     text: "Restorative justice is a core principle in Colombian plea bargaining.",
   },
   {
-    icon: <UsersIcon className="text-primary text-2xl mb-2" />,
+    icon: <UsersIcon className="text-primary w-5 h-5 mb-2" />,
     text: "The Special Jurisdiction for Peace (JEP) is unique in Latin America.",
   },
 ];
 
 const categories = [
-  { icon: <BriefcaseIcon className="text-primary text-2xl mb-2" />, name: "Criminal Law", count: 12 },
-  { icon: <UsersIcon className="text-primary text-2xl mb-2" />, name: "Family Law", count: 8 },
-  { icon: <BookOpenIcon className="text-primary text-2xl mb-2" />, name: "Tax Law", count: 7 },
-  { icon: <HomeIcon className="text-primary text-2xl mb-2" />, name: "Real Estate", count: 5 },
+  { icon: <BriefcaseIcon className="text-primary w-5 h-5 mb-2" />, name: "Criminal Law", count: 12 },
+  { icon: <UsersIcon className="text-primary w-5 h-5 mb-2" />, name: "Family Law", count: 8 },
+  { icon: <BookOpenIcon className="text-primary w-5 h-5 mb-2" />, name: "Tax Law", count: 7 },
+  { icon: <HomeIcon className="text-primary w-5 h-5 mb-2" />, name: "Real Estate", count: 5 },
 ];
 
 const HomePageCLKR = ({ lang = 'es' }: HomePageCLKRProps) => {
@@ -68,7 +68,7 @@ const HomePageCLKR = ({ lang = 'es' }: HomePageCLKRProps) => {
             <AlgoliaInstantSearch lang={lang} />
           </ErrorBoundary>
           <div className="bg-white border-l-8 border-primary rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-4 md:gap-6 mx-auto max-w-2xl mt-8">
-            <BookOpenIcon className="text-primary text-4xl flex-shrink-0 mb-2 md:mb-0" />
+            <BookOpenIcon className="text-primary w-6 h-6 flex-shrink-0 mb-2 md:mb-0" />
             <div>
               <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-1">
                 Featured Article: Plea Bargaining in Colombia
@@ -129,13 +129,13 @@ const HomePageCLKR = ({ lang = 'es' }: HomePageCLKRProps) => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <ul className="space-y-3 text-base md:text-lg text-gray-700 flex-1">
             <li className="flex items-center gap-2">
-              <CheckCircleIcon className="text-primary" /> Learn about Colombian law in English, for free.
+              <CheckCircleIcon className="text-primary w-6 h-6" /> Learn about Colombian law in English, for free.
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircleIcon className="text-primary" /> Compare Colombian law to the US, UK, and Europe.
+              <CheckCircleIcon className="text-primary w-6 h-6" /> Compare Colombian law to the US, UK, and Europe.
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircleIcon className="text-primary" /> Understand legal terms with our glossary.
+              <CheckCircleIcon className="text-primary w-6 h-6" /> Understand legal terms with our glossary.
             </li>
           </ul>
           <div className="text-center md:text-right flex-shrink-0">

@@ -12,13 +12,13 @@ const notion = new Client({
   auth: import.meta.env.NOTION_API_KEY,
 });
 
-// Timeout configuration (30 seconds)
-const TIMEOUT_MS = 30000;
-const MAX_RETRIES = 2;
+// Timeout configuration (90 seconds for large databases)
+const TIMEOUT_MS = 90000;
+const MAX_RETRIES = 4;
 
 // Rate limiting configuration
 let lastApiCall = 0;
-const RATE_LIMIT_DELAY = 1000; // 1 second between calls
+const RATE_LIMIT_DELAY = 3000; // 3 seconds between calls to be even more conservative
 
 // Helper function to delay execution
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -80,13 +80,15 @@ export async function getNotionDatabase(databaseId: string = import.meta.env.NOT
   } catch (error: any) {
     // Handle timeout error
     if (error.name === 'AbortError') {
+      console.warn(`Notion API timeout for database ${databaseId}, retry ${retryCount + 1}/${MAX_RETRIES}`);
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        await delay(1000 * (retryCount + 1)); // Exponential backoff
+        await delay(3000 * (retryCount + 1)); // Exponential backoff with longer delays
         return getNotionDatabase(databaseId, retryCount + 1);
       }
       
+      console.error(`Notion API timeout after ${MAX_RETRIES} retries for database ${databaseId}`);
       return []; // Return empty array after max retries
     }
     
@@ -125,7 +127,7 @@ export async function getNotionDatabase(databaseId: string = import.meta.env.NOT
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      await delay(1000 * (retryCount + 1)); // Exponential backoff
+      await delay(3000 * (retryCount + 1)); // Exponential backoff
       return getNotionDatabase(databaseId, retryCount + 1);
     }
     
@@ -155,19 +157,21 @@ export async function getNotionPage(pageId: string, retryCount = 0): Promise<Not
   } catch (error: any) {
     // Handle timeout error
     if (error.name === 'AbortError') {
+      console.warn(`Notion API timeout for page ${pageId}, retry ${retryCount + 1}/${MAX_RETRIES}`);
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        await delay(1000 * (retryCount + 1)); // Exponential backoff
+        await delay(3000 * (retryCount + 1)); // Exponential backoff
         return getNotionPage(pageId, retryCount + 1);
       }
       
+      console.error(`Notion API timeout after ${MAX_RETRIES} retries for page ${pageId}`);
       return null; // Return null after max retries
     }
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      await delay(1000 * (retryCount + 1)); // Exponential backoff
+      await delay(3000 * (retryCount + 1)); // Exponential backoff
       return getNotionPage(pageId, retryCount + 1);
     }
     
@@ -196,19 +200,21 @@ export async function getNotionPageWithBlocks(pageId: string, retryCount = 0): P
   } catch (error: any) {
     // Handle timeout error
     if (error.name === 'AbortError') {
+      console.warn(`Notion API timeout for page with blocks ${pageId}, retry ${retryCount + 1}/${MAX_RETRIES}`);
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        await delay(1000 * (retryCount + 1)); // Exponential backoff
+        await delay(3000 * (retryCount + 1)); // Exponential backoff
         return getNotionPageWithBlocks(pageId, retryCount + 1);
       }
       
+      console.error(`Notion API timeout after ${MAX_RETRIES} retries for page with blocks ${pageId}`);
       return null; // Return null after max retries
     }
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      await delay(1000 * (retryCount + 1)); // Exponential backoff
+      await delay(3000 * (retryCount + 1)); // Exponential backoff
       return getNotionPageWithBlocks(pageId, retryCount + 1);
     }
     
@@ -234,19 +240,21 @@ export async function getNotionDatabaseWithTransformation(databaseId: string = i
   } catch (error: any) {
     // Handle timeout error
     if (error.name === 'AbortError') {
+      console.warn(`Notion API timeout for database with transformation ${databaseId}, retry ${retryCount + 1}/${MAX_RETRIES}`);
       
       // Retry on timeout if we haven't exceeded max retries
       if (retryCount < MAX_RETRIES) {
-        await delay(1000 * (retryCount + 1)); // Exponential backoff
+        await delay(3000 * (retryCount + 1)); // Exponential backoff
         return getNotionDatabaseWithTransformation(databaseId, retryCount + 1);
       }
       
+      console.error(`Notion API timeout after ${MAX_RETRIES} retries for database with transformation ${databaseId}`);
       return []; // Return empty array after max retries
     }
     
     // Retry on other errors if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES && (error.status === 429 || error.status >= 500)) {
-      await delay(1000 * (retryCount + 1)); // Exponential backoff
+      await delay(3000 * (retryCount + 1)); // Exponential backoff
       return getNotionDatabaseWithTransformation(databaseId, retryCount + 1);
     }
     

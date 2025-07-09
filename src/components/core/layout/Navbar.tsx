@@ -50,7 +50,6 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMenuToggle }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isLanguageChanging, setIsLanguageChanging] = useState<boolean>(false);
@@ -110,14 +109,25 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
   const isLinkActive = (linkHref: string) => {
     if (!pathname) return false;
     
-    // Exact match
+
+    
+    // Exact match (href already includes language prefix)
     if (pathname === linkHref) return true;
     
     // For About Us, check if we're on the about page
     if (linkHref.includes('/about') && pathname.includes('/about')) return true;
     
-    // For Visas & Immigration, check if we're on visas2 route
-    if (linkHref.includes('/visas') && pathname.includes('/visas')) return true;
+    // For Visas & Immigration, check if we're on visas or visas2 route
+    if (linkHref.includes('/visas') && (pathname.includes('/visas') || pathname.includes('/visas2'))) return true;
+    
+    // For Real Estate, check if we're on real-estate routes
+    if (linkHref.includes('/real-estate') && pathname.includes('/real-estate')) return true;
+    
+    // For Blog, check if we're on blog routes
+    if (linkHref.includes('/blog') && pathname.includes('/blog')) return true;
+    
+    // For Contact, check if we're on contact page
+    if (linkHref.includes('/contact') && pathname.includes('/contact')) return true;
     
     // For Resources, check if we're on guides or CLKR routes
     if (linkHref.includes('/resources')) {
@@ -206,23 +216,33 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
                   {link.hasMegaMenu ? (
                     <button
                       onClick={() => handleMegaMenuClick(link.text)}
-                      className={`group flex items-center py-2 px-3 text-gray-700 border-b border-gray-100 lg:border-0 lg:hover:text-secondary lg:p-0 transition-all duration-300 relative overflow-hidden ${
-                        isLinkActive(link.href) ? 'text-primary font-semibold' : ''
+                      className={`group flex items-center py-4 px-8 text-gray-700 border-b border-gray-100 lg:border-0 lg:p-0 transition-all duration-300 relative overflow-hidden rounded-lg ${
+                        isLinkActive(link.href) 
+                          ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg' 
+                          : 'lg:hover:text-secondary'
                       } ${activeMegaMenu === link.text ? 'text-secondary' : ''}`}
                     >
                       {/* Special styling for Resources when on guides/CLKR routes */}
                       {link.href.includes('/resources') && (isOnGuidesRoute() || isOnCLKRRoute()) ? (
-                        <span className="mr-1 relative z-10 text-secondary font-semibold border-b-2 border-secondary pb-1">
+                        <span className={`mr-1 relative z-10 font-semibold ${
+                          isLinkActive(link.href) ? 'text-white' : 'text-secondary'
+                        }`}>
                           {isOnGuidesRoute() ? (lang === 'en' ? 'Guides' : 'Guías') : 'CLKR'}
                         </span>
                       ) : (
-                        <span className="mr-1 relative z-10">{link.text}</span>
+                        <span className={`mr-1 relative z-10 ${
+                          isLinkActive(link.href) ? 'text-white px-2' : ''
+                        }`}>{link.text}</span>
                       )}
                       
                       {/* Animated arrow icon */}
                       <svg 
                         className={`w-4 h-4 transition-all duration-300 transform arrow-rotate relative z-10 ${
-                          activeMegaMenu === link.text ? 'rotate-180 text-secondary' : 'rotate-0 group-hover:rotate-90'
+                          activeMegaMenu === link.text 
+                            ? 'rotate-180 text-secondary' 
+                            : isLinkActive(link.href)
+                            ? 'rotate-0 text-white'
+                            : 'rotate-0 group-hover:rotate-90'
                         }`}
                         fill="none" 
                         stroke="currentColor" 
@@ -230,31 +250,37 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
                       </svg>
-                      {/* Active indicator for mega menu items */}
+                      
+                      {/* Active background gradient */}
                       {isLinkActive(link.href) && (
-                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg"></div>
                       )}
-                      {/* Animated background indicator */}
-                      <div className={`absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 transition-all duration-300 ${
-                        activeMegaMenu === link.text ? 'opacity-100' : 'group-hover:opacity-50'
-                      }`}></div>
-                      {/* Hover effect overlay */}
-                      <div className="absolute inset-0 bg-secondary opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-lg"></div>
+                      
+                      {/* Hover effect for non-active items */}
+                      {!isLinkActive(link.href) && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                      )}
                     </button>
                   ) : (
                     <a
                       href={link.href}
-                      className={`block py-2 px-3 text-gray-700 border-b border-gray-100 lg:border-0 lg:hover:text-secondary lg:p-0 transition-all duration-200 relative ${
-                        isLinkActive(link.href) ? 'text-primary font-semibold' : ''
+                      className={`block py-4 px-8 text-gray-700 border-b border-gray-100 lg:border-0 lg:p-0 transition-all duration-300 relative rounded-lg ${
+                        isLinkActive(link.href) 
+                          ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg' 
+                          : 'lg:hover:text-secondary'
                       }`}
                     >
-                      <span className="relative z-10">{link.text}</span>
-                      {/* Active indicator for About Us and other non-mega menu items */}
+                      <span className="relative z-10 px-2">{link.text}</span>
+                      
+                      {/* Active background gradient */}
                       {isLinkActive(link.href) && (
-                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-primary/80 rounded-full"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg px-2"></div>
                       )}
-                      {/* Hover effect */}
-                      <div className="absolute inset-0 bg-secondary/10 opacity-0 hover:opacity-100 transition-opacity duration-200 rounded-lg"></div>
+                      
+                      {/* Hover effect for non-active items */}
+                      {!isLinkActive(link.href) && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 hover:opacity-100 transition-all duration-300"></div>
+                      )}
                     </a>
                   )}
                 </li>
@@ -294,7 +320,7 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
             )}
 
             {/* Resources Mega Menu */}
-            {activeMegaMenu === (lang === 'en' ? 'Resources' : 'Recursos') && (
+            {activeMegaMenu === (lang === 'en' ? 'CLKR' : 'CLKR') && (
               <ResourcesMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
             )}
 

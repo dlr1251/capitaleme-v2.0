@@ -203,15 +203,21 @@ const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {}, curren
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                      <img 
-                        src={post.image} 
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/blog/counting-your-days/img-1.webp';
-                        }}
-                      />
+                      {post.image ? (
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-full h-full flex items-center justify-center text-white text-xs font-medium ${post.image ? 'hidden' : ''}`}>
+                        📝
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-semibold text-gray-900 group-hover:text-primary line-clamp-2 transition-colors duration-200">
@@ -278,15 +284,21 @@ const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {}, curren
               <div className="group flex-1 flex flex-col">
                 <div className="relative bg-gray-100 rounded-lg overflow-hidden mb-3">
                   <div className="relative h-32">
-                    <img 
-                      src={latestBlogPosts[0].image} 
-                      alt={latestBlogPosts[0].title} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/blog/counting-your-days/img-1.webp';
-                      }}
-                    />
+                    {latestBlogPosts[0].image ? (
+                      <img 
+                        src={latestBlogPosts[0].image} 
+                        alt={latestBlogPosts[0].title} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <div className={`w-full h-full flex items-center justify-center text-gray-400 text-2xl ${latestBlogPosts[0].image ? 'hidden' : ''}`}>
+                      📝
+                    </div>
 
                     {/* Beautiful last edited date overlay */}
                     {latestBlogPosts[0].lastEdited && (

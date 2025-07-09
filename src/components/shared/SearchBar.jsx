@@ -1,9 +1,15 @@
+// TODO: Fix react-instantsearch CommonJS module import issue
+// Temporarily commented out due to Vite module resolution errors
+// Need to resolve: Named export 'default' not found for react-instantsearch
+
+/*
 // Capital M colors: blue (#2563eb), indigo (#6366f1)
 // This is a vanilla JS Algolia InstantSearch widget for use in any frontend (Astro, React, etc.)
 // Usage: <div id="algolia-searchbar"></div> in your page/component
 
 import React, { useRef, useState } from 'react';
-import { InstantSearch, SearchBox, Hits, useInstantSearch } from 'react-instantsearch';
+import pkg from 'react-instantsearch';
+const { InstantSearch, SearchBox, Hits, useInstantSearch } = pkg;
 import { algoliasearch } from 'algoliasearch';
 
 const ALGOLIA_APP_ID = import.meta.env.PUBLIC_ALGOLIA_APP_ID;
@@ -71,6 +77,36 @@ const SearchBar = ({ lang = 'es' }) => {
         />
         <SearchPanel isFocused={isFocused} />
       </InstantSearch>
+    </div>
+  );
+};
+
+export default SearchBar;
+*/
+
+// Temporary placeholder component
+import React from 'react';
+
+const SearchBar = ({ lang = 'es' }) => {
+  return (
+    <div className="relative w-full max-w-2xl mx-auto my-8">
+      <div className="relative w-full">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
+        <input
+          type="search"
+          placeholder={lang === 'es' ? 'Buscar en el repositorio legal...' : 'Search the legal repository...'}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled
+        />
+      </div>
+      <div className="mt-2 text-center text-gray-500 text-sm">
+        🔧 Search functionality temporarily disabled - TODO: Fix react-instantsearch module import
+      </div>
     </div>
   );
 };

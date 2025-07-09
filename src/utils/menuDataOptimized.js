@@ -72,6 +72,9 @@ function clearCache() {
   };
 }
 
+// Export clearCache for external use
+export { clearCache };
+
 // Fetch all databases in parallel
 async function fetchAllDatabases(lang) {
   
@@ -194,6 +197,14 @@ function processGuidesData(guidesData, lang) {
 
 // Process CLKR data
 function processCLKRData(clkrData, lang) {
+  // DEBUG: Log the first page to see available properties
+  if (clkrData.length > 0) {
+    console.log('[DEBUG] First CLKR page properties:', Object.keys(clkrData[0].properties));
+    console.log('[DEBUG] First CLKR page Topic Name:', clkrData[0].properties["Topic Name"]);
+    console.log('[DEBUG] First CLKR page Name:', clkrData[0].properties["Name"]);
+    console.log('[DEBUG] First CLKR page Title:', clkrData[0].properties["Title"]);
+  }
+
   const allCLKRServices = clkrData
     .filter(page => {
       const pageLang = page.properties.Lang?.select?.name;
@@ -202,13 +213,20 @@ function processCLKRData(clkrData, lang) {
     })
     .map(page => {
       const properties = page.properties;
+      
+      // Try multiple possible title property names
+      const title = properties["Topic Name"]?.title?.[0]?.plain_text || 
+                   properties["Name"]?.title?.[0]?.plain_text ||
+                   properties["Title"]?.title?.[0]?.plain_text ||
+                   '';
+      
       return {
         id: page.id,
-        title: properties["Topic Name"]?.title?.[0]?.plain_text || '',
+        title: title,
         slug: properties.slug?.rich_text?.[0]?.plain_text || '',
         description: properties.Description?.rich_text?.[0]?.plain_text || '',
         module: properties.Module?.multi_select?.[0]?.name || 'CLKR',
-        url: `/${lang}/clkr/${properties.slug?.rich_text?.[0]?.plain_text || page.id}`,
+        href: `/${lang}/clkr/${properties.slug?.rich_text?.[0]?.plain_text || page.id}`,
         lastEdited: page.last_edited_time,
         readingTime: properties.ReadingTime?.number || 5
       };
@@ -225,6 +243,14 @@ function processCLKRData(clkrData, lang) {
 
 // Process blog data
 async function processBlogData(blogData, lang) {
+  // DEBUG: Log the first blog page to see available properties
+  if (blogData.length > 0) {
+    console.log('[DEBUG] First blog page properties:', Object.keys(blogData[0].properties));
+    console.log('[DEBUG] First blog page cover:', blogData[0].cover);
+    console.log('[DEBUG] First blog page CoverImage:', blogData[0].properties.CoverImage);
+    console.log('[DEBUG] First blog page Image:', blogData[0].properties.Image);
+  }
+
   const allBlogPosts = await Promise.all(
     blogData
       .filter(page => {
@@ -249,13 +275,50 @@ async function processBlogData(blogData, lang) {
           role: 'Legal Expert'
         };
         
+        // Extract cover image from Notion
+        let coverImage = '';
+        
+        // Try to get cover image from page cover
+        if (page.cover) {
+          if (page.cover.type === 'external' && page.cover.external) {
+            coverImage = page.cover.external.url;
+          } else if (page.cover.type === 'file' && page.cover.file) {
+            coverImage = page.cover.file.url;
+          }
+        }
+        
+        // If no cover, try to get from files property
+        if (!coverImage && properties.CoverImage?.files?.length > 0) {
+          const file = properties.CoverImage.files[0];
+          if (file.type === 'external' && file.external) {
+            coverImage = file.external.url;
+          } else if (file.type === 'file' && file.file) {
+            coverImage = file.file.url;
+          }
+        }
+        
+        // If no cover, try to get from Image property
+        if (!coverImage && properties.Image?.files?.length > 0) {
+          const file = properties.Image.files[0];
+          if (file.type === 'external' && file.external) {
+            coverImage = file.external.url;
+          } else if (file.type === 'file' && file.file) {
+            coverImage = file.file.url;
+          }
+        }
+        
+        // Fallback to hardcoded image if no cover found
+        if (!coverImage) {
+          coverImage = getImagePath(slug, title);
+        }
+        
         return {
           id: page.id,
           title,
           slug,
           description: properties.Description?.rich_text?.[0]?.plain_text || '',
           excerpt: properties.Description?.rich_text?.[0]?.plain_text || '',
-          image: getImagePath(slug),
+          image: coverImage,
           date: properties.PubDate?.date?.start || page.last_edited_time,
           pubDate: properties.PubDate?.date?.start || page.last_edited_time,
           href: `/${lang}/blog/${slug}`,
@@ -278,7 +341,8 @@ async function processBlogData(blogData, lang) {
 }
 
 // Helper function to get image path for blog posts
-function getImagePath(slug) {
+function getImagePath(slug, title = '') {
+  // First try exact slug matches
   switch (slug) {
     case 'counting-your-days':
       return '/blog/counting-your-days.webp';
@@ -288,7 +352,33 @@ function getImagePath(slug) {
       return '/blog/gringo-prices/img-1.webp';
     case 'apostille':
       return '/blog/apostille/img-1.webp';
+    case 'real-estate-vs-business-investment-visas':
+      return '/blog/real-estate/img-1.webp';
+    case 'on-gringo-prices':
+      return '/blog/gringo-prices/img-1.webp';
+    case 'the-digital-nomad-visa-confusion':
+      return '/blog/dnv-confusion/img-1.webp';
+    case 'the-realtors-in-colombia-an-unregulated-landscape':
+      return '/blog/real-estate/img-2.webp';
     default:
+      // Try to match based on title keywords
+      const lowerTitle = title.toLowerCase();
+      if (lowerTitle.includes('gringo') || lowerTitle.includes('prices')) {
+        return '/blog/gringo-prices/img-1.webp';
+      }
+      if (lowerTitle.includes('dnv') || lowerTitle.includes('digital nomad') || lowerTitle.includes('nomad')) {
+        return '/blog/dnv-confusion/img-1.webp';
+      }
+      if (lowerTitle.includes('real estate') || lowerTitle.includes('realtor') || lowerTitle.includes('property')) {
+        return '/blog/real-estate/img-1.webp';
+      }
+      if (lowerTitle.includes('apostille') || lowerTitle.includes('document')) {
+        return '/blog/apostille/img-1.webp';
+      }
+      if (lowerTitle.includes('counting') || lowerTitle.includes('days') || lowerTitle.includes('time')) {
+        return '/blog/counting-your-days.webp';
+      }
+      // Default fallback
       return '/blog/counting-your-days.webp';
   }
 }
@@ -337,6 +427,11 @@ export async function getAllMenuData(lang = 'en') {
     const clkrProcessed = processCLKRData(clkrData, lang);
     const blogProcessed = await processBlogData(blogData, lang);
     
+    // DEBUG LOG: Output CLKR processed data
+    console.log('[DEBUG] CLKR Processed:', JSON.stringify(clkrProcessed, null, 2));
+    console.log('[DEBUG] CLKR Services count:', clkrProcessed.allCLKRServices.length);
+    console.log('[DEBUG] CLKR Modules:', clkrProcessed.modules);
+    
     // Get featured property (this is from Astro collections, not Notion)
     const featuredProperty = await getFeaturedProperty(lang);
     
@@ -356,9 +451,16 @@ export async function getAllMenuData(lang = 'en') {
     const realEstateArticles = clkrProcessed.allCLKRServices
       .filter(service => {
         const module = service.module.toLowerCase();
-        return module.includes('real estate') || module.includes('urbanism');
+        const title = service.title.toLowerCase();
+        return module.includes('real estate') || 
+               module.includes('urbanism') ||
+               module.includes('inmobiliario') ||
+               title.includes('real estate') ||
+               title.includes('property') ||
+               title.includes('inmobiliario') ||
+               title.includes('propiedad');
       })
-      .slice(0, 3);
+      .slice(0, 6); // Show more articles
 
     // Compile final data structure
     const menuData = {

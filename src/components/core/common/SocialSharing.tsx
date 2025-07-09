@@ -5,10 +5,9 @@ interface SocialSharingProps {
   title: string;
   description: string;
   url: string;
-  imageUrl?: string;
 }
 
-const SocialSharing = ({ title, description, url, imageUrl }: SocialSharingProps) => {
+const SocialSharing = ({ title, description, url }: SocialSharingProps) => {
   const shareUrls: { [key in 'facebook' | 'twitter' | 'whatsapp' | 'telegram' | 'email' | 'copy']: string } = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
