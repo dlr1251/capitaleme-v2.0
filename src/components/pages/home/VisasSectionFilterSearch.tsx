@@ -5,8 +5,7 @@ import { useState, useEffect } from 'react';
 import { countries } from 'data/countries.js';
 import type { Country } from 'data/countries.js';
 import Fuse from 'fuse.js';
-import Joyride, { STATUS } from 'react-joyride';
-import type { CallBackProps, Step } from 'react-joyride';
+import TutorialOverlay from '../../shared/TutorialOverlay.jsx';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 interface Visa {
@@ -42,20 +41,22 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
   const [showAll, setShowAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [joyrideRun, setJoyrideRun] = useState(false);
-  const joyrideSteps: Step[] = [
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+  
+  const tutorialSteps = [
     {
       target: '#country-filter',
+      title: lang === 'es' ? 'País de Origen' : 'Country of Origin',
       content: (
         <div className="text-primary">
           <b>Country of Origin</b><br/>
           The country you select determines which visas are available to you. Some visas are only available to citizens of certain countries.
         </div>
       ),
-      disableBeacon: true,
     },
     {
       target: '#beneficiaries-filter',
+      title: lang === 'es' ? 'Beneficiarios' : 'Beneficiaries',
       content: (
         <div className="text-primary">
           <b>Beneficiaries</b><br/>
@@ -65,6 +66,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
     },
     {
       target: '#workpermit-filter',
+      title: lang === 'es' ? 'Permiso de Trabajo' : 'Work Permit',
       content: (
         <div className="text-primary">
           <b>Work Permit</b><br/>
@@ -74,6 +76,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
     },
     {
       target: '#search-bar',
+      title: lang === 'es' ? 'Búsqueda' : 'Search',
       content: (
         <div className="text-primary">
           <b>Search</b><br/>
@@ -200,60 +203,45 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
       filtered = filtered.filter(visa => visa.workPermit && visa.workPermit !== 'No work permit');
     }
 
-    // Fuse.js search (applied last, so it always narrows down the filtered set)
-    if (searchQuery.trim().length > 1) {
-      const fuseFiltered = new Fuse(filtered, {
-        keys: ['title', 'description', 'category'],
-        threshold: 0.3,
-        minMatchCharLength: 2,
-      });
-      filtered = fuseFiltered.search(searchQuery).map((result: { item: Visa }) => result.item);
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const searchResults = fuse.search(searchQuery);
+      const searchResultIds = new Set(searchResults.map(result => result.item.id));
+      filtered = filtered.filter(visa => searchResultIds.has(visa.id));
     }
 
-    // Sort visas
-    filtered = sortVisas(filtered);
-
-    setFilteredVisas(filtered);
-    setShowAll(false); // Reset showAll when filters/search change
-    setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 300);
-    return () => clearTimeout(timer);
-  }, [country, visaType, beneficiaries, workPermit, visas, searchQuery]);
+    // Sort the filtered results
+    const sortedFiltered = sortVisas(filtered);
+    setFilteredVisas(sortedFiltered);
+  }, [country, visaType, beneficiaries, workPermit, searchQuery, visas, lang]);
 
   const clearFilters = () => {
     setCountry(lang === 'es' ? 'Estados Unidos de América' : 'United States');
     setVisaType('');
     setBeneficiaries(false);
     setWorkPermit(false);
+    setSearchQuery('');
   };
 
-  // Helper function to get label for beneficiaries
   const getBeneficiariesLabel = (beneficiaries: any) => {
-    if (!beneficiaries) return content.noBeneficiaries;
-    if (beneficiaries.toLowerCase().includes('yes')) return content.withBeneficiaries;
-    if (beneficiaries.toLowerCase().includes('no')) return content.withoutBeneficiaries;
-    return beneficiaries;
+    if (beneficiaries === 'Yes') return content.withBeneficiaries;
+    return content.withoutBeneficiaries;
   };
 
-  // Helper function to get label for work permit
   const getWorkPermitLabel = (workPermit: any) => {
-    if (!workPermit) return content.noWorkPermit;
-    if (workPermit.toLowerCase().includes('open work permit')) return content.openWorkPermit;
-    if (workPermit.toLowerCase().includes('authorized activity')) return content.authorizedActivity;
-    if (workPermit.toLowerCase().includes('no')) return content.withoutWorkPermit;
-    return workPermit;
+    if (workPermit === 'Open work permit') return content.openWorkPermit;
+    if (workPermit === 'Authorized activity') return content.authorizedActivity;
+    return content.withoutWorkPermit;
   };
 
-  // Handle show more with loading animation
   const handleShowMore = () => {
-    setIsLoading(true);
+    setIsAnimating(true);
     setTimeout(() => {
-      setShowAll(true);
-      setIsLoading(false);
-    }, 800);
+      setShowAll(!showAll);
+      setIsAnimating(false);
+    }, 150);
   };
 
-  // Handle WhatsApp contact
   const handleWhatsAppContact = (visaTitle: string) => {
     const message = `${content.whatsappMessage} ${visaTitle}. ${content.canHelp}`;
     const encodedMessage = encodeURIComponent(message);
@@ -267,30 +255,11 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
 
   return (
     <section className="py-32 bg-gradient-to-br from-gray-50 to-white">
-      <Joyride
-        steps={joyrideSteps}
-        run={joyrideRun}
-        continuous
-        showSkipButton
-        showProgress
-        disableScrolling={true}
-        styles={{
-          options: {
-            backgroundColor: '#fff',
-            primaryColor: '#16345F', // primary
-            textColor: '#222',
-            zIndex: 10000,
-            overlayColor: 'rgba(22,52,95,0.1)',
-          },
-          buttonClose: { color: '#16345F' },
-          buttonNext: { background: '#16345F', color: '#fff' },
-          buttonBack: { color: '#16345F' },
-          tooltip: { border: '1px solid #16345F', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' },
-        }}
-        locale={{ last: 'Finish', skip: 'Skip', next: 'Next', back: 'Back' }}
-        callback={(data: CallBackProps) => {
-          if (data.status === 'finished' || data.status === 'skipped') setJoyrideRun(false);
-        }}
+      <TutorialOverlay
+        steps={tutorialSteps}
+        isOpen={tutorialOpen}
+        onClose={() => setTutorialOpen(false)}
+        onFinish={() => setTutorialOpen(false)}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
@@ -331,10 +300,10 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
           </h3>
           
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 relative">
-            {/* Joyride Help Button (top-right of filter card) */}
+            {/* Tutorial Help Button (top-right of filter card) */}
             <button
               className="absolute top-4 right-4 z-20 bg-primary text-white rounded-full p-2 shadow-lg hover:bg-secondary transition-colors flex items-center"
-              onClick={() => setJoyrideRun(true)}
+              onClick={() => setTutorialOpen(true)}
               aria-label="Show tutorial"
               style={{ boxShadow: '0 2px 8px rgba(22,52,95,0.12)' }}
             >
@@ -457,47 +426,51 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    {visa.emoji && (
-                      <span className="text-2xl">{visa.emoji}</span>
-                    )}
-                    <h4 className="text-lg font-semibold text-primary">
-                      {visa.title}
-                    </h4>
-                    {visa.isPopular && (
-                      <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full font-semibold">Popular</span>
-                    )}
+                    <span className="text-2xl">{visa.emoji}</span>
+                    <div>
+                      <h4 className="font-bold text-lg text-primary group-hover:text-secondary transition-colors">
+                        {visa.title}
+                      </h4>
+                      <p className="text-sm text-gray-600">{visa.category}</p>
+                    </div>
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm mb-2 line-clamp-3">
+
+                <p className="text-gray-700 mb-4 line-clamp-3">
                   {visa.description}
                 </p>
-                <div className="text-xs text-primary font-medium mb-2">
-                  {visa.alcance && (
-                    <span>{lang === 'es' ? 'Alcance: ' : 'Scope: '}{visa.alcance}</span>
-                  )}
-                </div>
+
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">{lang === 'es' ? 'Beneficiarios' : 'Beneficiaries'}:</span>
-                    <span className="font-medium">{getBeneficiariesLabel(visa.beneficiaries)}</span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-500">👥 {lang === 'es' ? 'Beneficiarios:' : 'Beneficiaries:'}</span>
+                    <span className={`font-medium ${visa.beneficiaries === 'Yes' ? 'text-green-600' : 'text-red-600'}`}>
+                      {getBeneficiariesLabel(visa.beneficiaries)}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">{lang === 'es' ? 'Permiso de trabajo' : 'Work permit'}:</span>
-                    <span className="font-medium">{getWorkPermitLabel(visa.workPermit)}</span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-500">💼 {lang === 'es' ? 'Permiso de trabajo:' : 'Work permit:'}</span>
+                    <span className={`font-medium ${visa.workPermit && visa.workPermit !== 'No work permit' ? 'text-green-600' : 'text-red-600'}`}>
+                      {getWorkPermitLabel(visa.workPermit)}
+                    </span>
                   </div>
                 </div>
+
                 <div className="flex items-center justify-between">
-                  <span className="text-primary hover:text-secondary font-medium text-sm underline group-hover:no-underline">
-                    {lang === 'es' ? 'Ver detalles' : 'View details'}
-                  </span>
                   <button
-                    type="button"
-                    onClick={e => { e.preventDefault(); handleWhatsAppContact(visa.title); }}
-                    className="flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleWhatsAppContact(visa.title);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
                   >
-                    <span>💬</span>
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                    </svg>
                     {content.contactWhatsApp}
                   </button>
+                  <span className="text-sm text-gray-500">
+                    {visa.duration || 'N/A'}
+                  </span>
                 </div>
               </a>
             ))}
@@ -506,29 +479,12 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
           {/* Show More/Less Button */}
           {hasMoreVisas && (
             <div className="text-center mt-8">
-              {!showAll ? (
-                <button
-                  onClick={() => setShowAll(true)}
-                  disabled={isLoading}
-                  className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition-colors disabled:opacity-50"
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      {lang === 'es' ? 'Cargando...' : 'Loading...'}
-                    </span>
-                  ) : (
-                    lang === 'es' ? 'Ver más visas' : 'Show more visas'
-                  )}
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowAll(false)}
-                  className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  {lang === 'es' ? 'Ver menos' : 'Show less'}
-                </button>
-              )}
+              <button
+                onClick={handleShowMore}
+                className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition-colors font-medium"
+              >
+                {showAll ? content.showLess : content.showMore}
+              </button>
             </div>
           )}
         </div>
