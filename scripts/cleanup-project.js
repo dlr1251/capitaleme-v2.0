@@ -181,7 +181,7 @@ class ProjectCleanup {
     this.log('\n🔍 Running TypeScript check...', 'cyan');
     
     try {
-      const result = execSync('npx tsc --noEmit', { 
+      execSync('npx tsc --noEmit', { 
         encoding: 'utf8',
         stdio: 'pipe'
       });

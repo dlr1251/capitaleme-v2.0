@@ -1,233 +1,68 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { getNotionDatabase } from '../../../utils/notion';
-import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { getAllContentData } from '../../../lib/contentData.js';
+import { getBlogPostsFromSupabase, getFeaturedBlogPosts, getBlogCategories, getRelativeTime, formatDate, getCategoryStyling, generateGradient } from '../../../lib/blogData.ts';
 
-type NotionPage = PageObjectResponse & {
-  properties: {
-    Nombre: {
-      type: 'title';
-      title: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Description: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-        annotations?: {
-          bold?: boolean;
-          italic?: boolean;
-          strikethrough?: boolean;
-          underline?: boolean;
-          code?: boolean;
-          color?: string;
-        };
-        href?: string;
-      }>;
-    };
-    Content: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-        annotations?: {
-          bold?: boolean;
-          italic?: boolean;
-          strikethrough?: boolean;
-          underline?: boolean;
-          code?: boolean;
-          color?: string;
-        };
-        href?: string;
-      }>;
-    };
-    Lang: {
-      type: 'select';
-      select: {
-        name: string;
-      } | null;
-    };
-    Published: {
-      type: 'checkbox';
-      checkbox: boolean;
-    };
-    Featured: {
-      type: 'checkbox';
-      checkbox: boolean;
-    };
-    Category?: {
-      type: 'select';
-      select: {
-        name: string;
-      } | null;
-    };
-    Slug?: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-  };
-  icon?: {
-    type: 'emoji';
-    emoji: string;
-  };
-  cover?: {
-    type: 'external';
-    external: {
-      url: string;
-    };
-  } | {
-    type: 'file';
-    file: {
-      url: string;
-    };
-  };
-  last_edited_time: string;
+const lang = 'en';
+const menuData = await getAllContentData('en');
+
+// Fetch blog data from Supabase
+let allPosts = [];
+let featuredPosts = [];
+let categories = [];
+let error = null;
+
+try {
+  [allPosts, featuredPosts, categories] = await Promise.all([
+    getBlogPostsFromSupabase(lang, { limit: 50 }),
+    getFeaturedBlogPosts(lang, 3),
+    getBlogCategories(lang)
+  ]);
+} catch (err) {
+  console.error('Error fetching blog data:', err);
+  error = 'Failed to load blog posts';
+}
+
+// Sort posts by publication date (newest first)
+allPosts.sort((a: any, b: any) => new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime());
+
+const textContent = {
+  en: {
+    heroTitle: 'Our Blog',
+    heroDescription: 'Insights, updates, and stories from our team. Discover the latest in immigration, business, and life in Colombia.',
+    featuredArticles: 'Featured Articles',
+    featuredDescription: 'Our latest and most important stories',
+    allArticles: 'All Articles',
+    allArticlesDescription: 'Browse all our articles and insights',
+    noArticles: 'No articles found.',
+    addCoverImages: 'Add Cover Images'
+  },
+  es: {
+    heroTitle: 'Nuestro Blog',
+    heroDescription: 'Perspectivas, actualizaciones e historias de nuestro equipo. Descubre lo último en inmigración, negocios y vida en Colombia.',
+    featuredArticles: 'Artículos Destacados',
+    featuredDescription: 'Nuestras historias más recientes e importantes',
+    allArticles: 'Todos los Artículos',
+    allArticlesDescription: 'Explora todos nuestros artículos y perspectivas',
+    noArticles: 'No se encontraron artículos.',
+    addCoverImages: 'Agregar Imágenes de Portada'
+  }
 };
 
-// Helper function to format relative time
-function getRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-
-  if (diffInDays > 0) {
-    return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
-  } else if (diffInHours > 0) {
-    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
-  } else if (diffInMinutes > 0) {
-    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
-  } else {
-    return 'Just now';
-  }
-}
-
-// Helper function to get cover image URL
-function getCoverImageUrl(page: NotionPage): string | null {
-  if (page.cover?.type === 'external') {
-    return page.cover.external?.url || null;
-  } else if (page.cover?.type === 'file') {
-    return page.cover.file?.url || null;
-  }
-  return null;
-}
-
-// Helper function to get category-based default image
-function getCategoryDefaultImage(category: string | null): { gradient: string; icon: string; color: string } {
-  const categoryLower = category?.toLowerCase() || '';
-  
-  if (categoryLower.includes('immigration') || categoryLower.includes('visa')) {
-    return {
-      gradient: 'from-blue-500 to-indigo-600',
-      icon: '🛂',
-      color: 'blue'
-    };
-  } else if (categoryLower.includes('business') || categoryLower.includes('company')) {
-    return {
-      gradient: 'from-green-500 to-emerald-600',
-      icon: '💼',
-      color: 'green'
-    };
-  } else if (categoryLower.includes('lifestyle') || categoryLower.includes('life')) {
-    return {
-      gradient: 'from-purple-500 to-pink-600',
-      icon: '🏠',
-      color: 'purple'
-    };
-  } else if (categoryLower.includes('legal') || categoryLower.includes('law')) {
-    return {
-      gradient: 'from-orange-500 to-red-600',
-      icon: '⚖️',
-      color: 'orange'
-    };
-  } else if (categoryLower.includes('tax') || categoryLower.includes('finance')) {
-    return {
-      gradient: 'from-teal-500 to-cyan-600',
-      icon: '💰',
-      color: 'teal'
-    };
-  } else {
-    return {
-      gradient: 'from-slate-500 to-gray-600',
-      icon: '📄',
-      color: 'slate'
-    };
-  }
-}
-
-// Helper function to generate gradient based on title
-function generateGradient(text: string): string {
-  const colors = [
-    'from-blue-500 to-purple-600',
-    'from-green-400 to-blue-500',
-    'from-purple-500 to-pink-500',
-    'from-orange-400 to-red-500',
-    'from-teal-400 to-blue-500',
-    'from-indigo-500 to-purple-600',
-    'from-pink-400 to-red-500',
-    'from-yellow-400 to-orange-500'
-  ];
-  
-  const hash = text.split('').reduce((a: number, b: string) => {
-    a = ((a << 5) - a) + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-  
-  return colors[Math.abs(hash) % colors.length];
-}
-
-// Fetch Notion database content
-const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
-const allPages = await getNotionDatabase(databaseId) as NotionPage[];
-
-// Filter for English posts only and published posts
-const pages = allPages.filter(page => {
-  const langValue = page.properties.Lang?.select?.name;
-  const isEnglish = langValue === 'En' || langValue === 'EN' || langValue === 'English';
-  const isPublished = page.properties.Published?.checkbox === true;
-  
-  return isEnglish && isPublished;
-});
-
-// Sort by last edited time (newest first)
-pages.sort((a, b) => new Date(b.last_edited_time).getTime() - new Date(a.last_edited_time).getTime());
-
-// Get featured posts (first 3)
-const featuredPosts = pages.slice(0, 3);
-const regularPosts = pages.slice(3);
+const content = textContent[lang as keyof typeof textContent] || textContent.en;
 ---
 
-<Layout title="Blog - Capital EME">
+<Layout title="Blog - Capital M Law" menuData={menuData} lang={lang}>
   <!-- Hero Section -->
   <section class="relative bg-gradient-to-br from-slate-50 to-blue-50 py-20">
     <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center">
         <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-          Our Blog
+          {content.heroTitle}
         </h1>
         <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-          Insights, updates, and stories from our team. Discover the latest in immigration, business, and life in Spain.
+          {content.heroDescription}
         </p>
         <div class="mt-8">
           <a 
@@ -237,211 +72,207 @@ const regularPosts = pages.slice(3);
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Add Cover Images
+            {content.addCoverImages}
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Featured Posts Section -->
-  {featuredPosts.length > 0 && (
+  {error ? (
+    <!-- Error Section -->
     <section class="py-16 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-12">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">Featured Articles</h2>
-          <p class="text-slate-600">Our latest and most important stories</p>
-        </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {featuredPosts.map((post) => {
-            const title = post.properties.Nombre?.title?.[0]?.plain_text || 'Untitled';
-            const description = post.properties.Description?.rich_text?.[0]?.plain_text || '';
-            const slug = post.properties.Slug?.rich_text?.[0]?.plain_text || '';
-            const coverImage = getCoverImageUrl(post);
-            const category = post.properties.Category?.select?.name;
-            const categoryDefaults = getCategoryDefaultImage(category || null);
-            const gradientClass = coverImage ? generateGradient(title) : categoryDefaults.gradient;
-            const relativeTime = getRelativeTime(post.last_edited_time);
-            
-            return (
-              <article class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-100">
-                <!-- Cover Image -->
-                <div class="relative h-64 overflow-hidden">
-                  {coverImage ? (
-                    <img 
-                      src={coverImage} 
-                      alt={title}
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                    />
-                  ) : null}
-                  
-                  <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${coverImage ? 'hidden' : ''}`}>
-                    <div class="text-center text-white">
-                      {post.icon?.type === 'emoji' ? (
-                        <div class="text-4xl mb-2">{post.icon.emoji}</div>
-                      ) : (
-                        <div class="text-4xl mb-2">{categoryDefaults.icon}</div>
-                      )}
-                      <div class="text-sm font-medium opacity-90">{title}</div>
-                      {category && (
-                        <div class="text-xs opacity-75 mt-1">{category}</div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Icon overlay */}
-                  {(post.icon?.type === 'emoji' || categoryDefaults.icon) && (
-                    <div class="absolute top-4 right-4 text-2xl bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
-                      {post.icon?.type === 'emoji' ? post.icon.emoji : categoryDefaults.icon}
-                    </div>
-                  )}
-                </div>
-                
-                <!-- Content -->
-                <div class="p-6">
-                  <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
-                    {category && (
-                      <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-${categoryDefaults.color}-50 text-${categoryDefaults.color}-700`}>
-                        {category}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <h3 class="text-xl font-semibold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                    <a href={`/en/blog/${slug}`} class="block">
-                      {title}
-                    </a>
-                  </h3>
-                  
-                  {description && (
-                    <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                      {description}
-                    </p>
-                  )}
-                  
-                  <a
-                    href={`/en/blog/${slug}`}
-                    class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
-                  >
-                    Read more
-                    <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                </div>
-              </article>
-            );
-          })}
+        <div class="text-center">
+          <div class="text-red-500 mb-4">
+            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <p class="text-gray-600 text-lg">{error}</p>
         </div>
       </div>
     </section>
-  )}
-
-  <!-- All Posts Section -->
-  <section class="py-16 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-12">
-        <h2 class="text-3xl font-bold text-slate-900 mb-4">All Articles</h2>
-        <p class="text-slate-600">Browse all our articles and insights</p>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {regularPosts.map((post) => {
-          const title = post.properties.Nombre?.title?.[0]?.plain_text || 'Untitled';
-          const description = post.properties.Description?.rich_text?.[0]?.plain_text || '';
-          const slug = post.properties.Slug?.rich_text?.[0]?.plain_text || '';
-          const coverImage = getCoverImageUrl(post);
-          const category = post.properties.Category?.select?.name;
-          const categoryDefaults = getCategoryDefaultImage(category || null);
-          const gradientClass = coverImage ? generateGradient(title) : categoryDefaults.gradient;
-          const relativeTime = getRelativeTime(post.last_edited_time);
-          
-          return (
-            <article class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100">
-              <!-- Cover Image -->
-              <div class="relative h-48 overflow-hidden">
-                {coverImage ? (
-                  <img 
-                    src={coverImage} 
-                    alt={title}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                  />
-                ) : null}
+  ) : (
+    <>
+      <!-- Featured Posts Section -->
+      {featuredPosts.length > 0 && (
+        <section class="py-16 bg-white">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+              <h2 class="text-3xl font-bold text-slate-900 mb-4">{content.featuredArticles}</h2>
+              <p class="text-slate-600">{content.featuredDescription}</p>
+            </div>
+            
+                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+               {featuredPosts.map((post: any) => {
+                const categoryDefaults = getCategoryStyling(post.category);
+                const gradientClass = post.image ? generateGradient(post.title) : categoryDefaults.gradient;
+                const relativeTime = getRelativeTime(post.pub_date);
                 
-                <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${coverImage ? 'hidden' : ''}`}>
-                  <div class="text-center text-white">
-                    {post.icon?.type === 'emoji' ? (
-                      <div class="text-3xl mb-2">{post.icon.emoji}</div>
-                    ) : (
-                      <div class="text-3xl mb-2">{categoryDefaults.icon}</div>
-                    )}
-                    <div class="text-xs font-medium opacity-90">{title}</div>
-                    {category && (
-                      <div class="text-xs opacity-75 mt-1">{category}</div>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Icon overlay */}
-                {(post.icon?.type === 'emoji' || categoryDefaults.icon) && (
-                  <div class="absolute top-3 right-3 text-xl bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
-                    {post.icon?.type === 'emoji' ? post.icon.emoji : categoryDefaults.icon}
-                  </div>
-                )}
-              </div>
-              
-              <!-- Content -->
-              <div class="p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
-                  {category && (
-                    <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-${categoryDefaults.color}-50 text-${categoryDefaults.color}-700`}>
-                      {category}
-                    </span>
-                  )}
-                </div>
-                
-                <h3 class="text-lg font-semibold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                  <a href={`/en/blog/${slug}`} class="block">
-                    {title}
-                  </a>
-                </h3>
-                
-                {description && (
-                  <p class="text-slate-600 text-sm leading-relaxed mb-3 line-clamp-2">
-                    {description}
-                  </p>
-                )}
-                
-                <a
-                  href={`/en/blog/${slug}`}
-                  class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
-                >
-                  Read more
-                  <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      
-      {regularPosts.length === 0 && (
-        <div class="text-center py-12">
-          <svg class="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <p class="text-slate-500 text-lg">No articles found.</p>
-        </div>
+                return (
+                  <article class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-100">
+                    <!-- Cover Image -->
+                    <div class="relative h-64 overflow-hidden">
+                      {post.image ? (
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                        />
+                      ) : null}
+                      
+                      <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+                        <div class="text-center text-white">
+                          <div class="text-4xl mb-2">{categoryDefaults.icon}</div>
+                          <div class="text-sm font-medium opacity-90">{post.title}</div>
+                          {post.category && (
+                            <div class="text-xs opacity-75 mt-1">{post.category}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Icon overlay */}
+                      <div class="absolute top-4 right-4 text-2xl bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+                        {categoryDefaults.icon}
+                      </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6">
+                      <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
+                        {post.category && (
+                          <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${categoryDefaults.bgColor} ${categoryDefaults.textColor}`}>
+                            {post.category}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <h3 class="text-xl font-semibold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                        <a href={`/${lang}/blog/${post.slug}`} class="block">
+                          {post.title}
+                        </a>
+                      </h3>
+                      
+                      {post.description && (
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                          {post.description}
+                        </p>
+                      )}
+                      
+                      <a
+                        href={`/${lang}/blog/${post.slug}`}
+                        class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
+                      >
+                        Read more
+                        <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </a>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
       )}
-    </div>
-  </section>
+
+      <!-- All Posts Section -->
+      <section class="py-16 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mb-12">
+            <h2 class="text-3xl font-bold text-slate-900 mb-4">{content.allArticles}</h2>
+            <p class="text-slate-600">{content.allArticlesDescription}</p>
+          </div>
+          
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+             {allPosts.map((post: any) => {
+              const categoryDefaults = getCategoryStyling(post.category);
+              const gradientClass = post.image ? generateGradient(post.title) : categoryDefaults.gradient;
+              const relativeTime = getRelativeTime(post.pub_date);
+              
+              return (
+                <article class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100">
+                  <!-- Cover Image -->
+                  <div class="relative h-48 overflow-hidden">
+                    {post.image ? (
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                      />
+                    ) : null}
+                    
+                    <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+                      <div class="text-center text-white">
+                        <div class="text-3xl mb-2">{categoryDefaults.icon}</div>
+                        <div class="text-xs font-medium opacity-90">{post.title}</div>
+                        {post.category && (
+                          <div class="text-xs opacity-75 mt-1">{post.category}</div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Icon overlay */}
+                    <div class="absolute top-3 right-3 text-xl bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
+                      {categoryDefaults.icon}
+                    </div>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div class="p-4">
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
+                      {post.category && (
+                        <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${categoryDefaults.bgColor} ${categoryDefaults.textColor}`}>
+                          {post.category}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                      <a href={`/${lang}/blog/${post.slug}`} class="block">
+                        {post.title}
+                      </a>
+                    </h3>
+                    
+                    {post.description && (
+                      <p class="text-slate-600 text-sm leading-relaxed mb-3 line-clamp-2">
+                        {post.description}
+                      </p>
+                    )}
+                    
+                    <a
+                      href={`/${lang}/blog/${post.slug}`}
+                      class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
+                    >
+                      Read more
+                      <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          
+          {allPosts.length === 0 && (
+            <div class="text-center py-12">
+              <svg class="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p class="text-slate-500 text-lg">{content.noArticles}</p>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
+  )}
 </Layout>
 
 <style>

@@ -3,7 +3,10 @@ interface PropertyCardProps {
   image: string;
   title: string;
   location: string;
-  price: string;
+  price: {
+    usd: number;
+    cop: number;
+  };
   hoaFee?: string;
   area: string;
   cadastralAppraisal?: string;
@@ -112,7 +115,11 @@ const PropertyCard = ({
           <span className="text-gray-400">📍</span>
           {location}
         </p>
-        <p className="text-lg font-semibold text-secondary">{price}</p>
+        <p className="text-lg font-semibold text-secondary">
+          {price.usd ? `$${price.usd.toLocaleString()} USD` : ''}
+          {price.usd && price.cop ? ' / ' : ''}
+          {price.cop ? `$${price.cop.toLocaleString()} COP` : ''}
+        </p>
         <div className="flex items-center gap-4 text-sm text-gray-600">
           {bedrooms && (
             <span className="flex items-center gap-1">

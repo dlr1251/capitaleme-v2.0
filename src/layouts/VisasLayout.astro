@@ -1,8 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
-import { getAllMenuData } from '../utils/menuDataOptimized.js';
-import VisaSidebarFilters from '../components/features/visa-services/VisaSidebarFilters.jsx';
+import VisaSidebarFilters from '../components/visas/VisaSidebarFilters.tsx';
 import SocialSharing from '../components/core/common/SocialSharing.tsx';
 
 export interface Props {
@@ -15,6 +14,7 @@ export interface Props {
 	showBreadcrumb?: boolean;
 	currentSlug?: string;
 	readingTime?: number;
+	menuData?: any; // Add menuData to the interface
 }
 
 const {
@@ -26,11 +26,12 @@ const {
 	lastEdited,
 	showBreadcrumb = false,
 	currentSlug,
-	readingTime
+	readingTime,
+	menuData // <-- add menuData to Astro.props
 } = Astro.props;
 
 // Get optimized menu data
-const menuData = await getAllMenuData(lang);
+// Remove: const menuData = await getAllMenuData(lang);
 
 // Get visa services for sidebar navigation
 const allVisas = menuData?.allVisas || [];
@@ -39,9 +40,11 @@ const hasHeadings = headings && headings.length > 0;
 // Get unique countries and visa types for filters from the menu data
 const countries = menuData?.visaCountries || [];
 const visaTypes = menuData?.visaTypes || [];
+
+const safeLang = lang === 'es' ? 'es' : 'en';
 ---
 
-<Layout title={title} description={description} lang={lang} pathname={pathname} menuData={menuData}>
+<Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
 	<div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
 		<div class="flex gap-8">
 			<!-- Left Navigation Panel with Filters -->

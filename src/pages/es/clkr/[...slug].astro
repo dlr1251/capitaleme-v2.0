@@ -1,283 +1,127 @@
 ---
-import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
 import CLKRLayout from '../../../layouts/CLKRLayout.astro';
-import NotionBlock from '../../../components/content/NotionBlock.astro';
-import { Client } from '@notionhq/client';
-import type { PageObjectResponse, BlockObjectResponse, PartialBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import CLKRConsultationForm from '../../../components/es/CLKRConsultationForm.jsx';
-import TableOfContents from '../../../components/core/navigation/TableOfContents.astro';
-import { calculateReadingTime } from '../../../utils/readingTime';
-
-type NotionPage = PageObjectResponse & {
-  properties: {
-    Name: {
-      type: 'title';
-      title: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Description: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Content: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Lang: {
-      type: 'select';
-      select: {
-        name: string;
-      } | null;
-    };
-    Published: {
-      type: 'checkbox';
-      checkbox: boolean;
-    };
-    Category?: {
-      type: 'select';
-      select: {
-        name: string;
-      } | null;
-    };
-    slug?: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-  };
-  icon?: {
-    type: 'emoji';
-    emoji: string;
-  };
-  cover?: {
-    type: 'external';
-    external: {
-      url: string;
-    };
-  } | {
-    type: 'file';
-    file: {
-      url: string;
-    };
-  };
-  last_edited_time: string;
-};
+import CLKRConsultationForm from '../../../components/clkr/CLKRConsultationForm.tsx';
+import { calculateReadingTimeFromText } from '../../../utils/readingTime';
+import { getAllContentData } from '../../../lib/contentData.js';
 
 export const prerender = true;
 
+interface CLKRArticle {
+  slug: string;
+  title: string;
+  description?: string;
+  content: string;
+  reading_time?: number;
+  last_edited?: string;
+  [key: string]: any;
+}
+
 export async function getStaticPaths() {
-  const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
-  const pages = await getNotionDatabase(databaseId) as NotionPage[];
-  
-  // Filter pages to only include those with Lang="Es" or "ES" or "Spanish" AND Published=true
-  const spanishPages = pages.filter(page => {
-    const langValue = page.properties.Lang?.select?.name;
-    const isSpanish = langValue === "Es" || langValue === "ES" || langValue === "Spanish";
-    
-    // Check if published (assuming there's a Published checkbox property)
-    const isPublished = page.properties.Published?.checkbox === true;
-    
-    return isSpanish && isPublished;
-  });
-  
-  return spanishPages.map((page) => {
-    const nameProperty = page.properties?.Name;
-    
-    if (!nameProperty?.title?.[0]?.plain_text) {
-      return {
-        params: { slug: 'sin-titulo' },
-        props: { pageId: page.id }
-      };
-    }
-    
-    const title = nameProperty.title[0].plain_text;
-    // Check if slug property exists, otherwise generate from title
-    const slugProperty = page.properties?.slug;
-    const slug = slugProperty?.rich_text?.[0]?.plain_text || 
-                 title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    
-    return {
-      params: { slug },
-      props: { pageId: page.id }
-    };
-  });
+  try {
+    const { getCLKRArticlesFromSupabase } = await import('../../../lib/syncNotionToSupabase.js');
+    const articlesResult = await getCLKRArticlesFromSupabase('es');
+    if (!Array.isArray(articlesResult)) return [];
+    return articlesResult.map((article: CLKRArticle) => ({
+      params: { slug: article.slug },
+      props: { article }
+    }));
+  } catch (error) {
+    return [];
+  }
 }
 
-const { pageId } = Astro.props;
-const page = await getNotionPage(pageId) as NotionPage;
-const title = page.properties.Name?.title?.[0]?.plain_text || 'Sin título';
-const cover = page.cover;
-const description = page.properties.Description?.rich_text?.[0]?.plain_text || '';
+const { article } = Astro.props;
 
-// Fetch the page blocks
-const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
-const blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 200 });
-
-// Enhanced type for blocks with children
-type BlockWithChildren = BlockObjectResponse & {
-  has_children: true;
-  children: BlockObjectResponse[];
-};
-
-// Type guard for blocks with children
-function hasChildren(block: BlockObjectResponse): block is BlockWithChildren {
-  return block.has_children === true;
+if (!article) {
+  return Astro.redirect('/404');
 }
 
-// Recursively fetch children blocks
-async function fetchChildrenBlocks(blockId: string): Promise<(BlockObjectResponse | BlockWithChildren)[]> {
-  const response = await notion.blocks.children.list({ block_id: blockId, page_size: 200 });
-  const processedChildren = await Promise.all(
-    response.results.map(async (child: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
-      if ('has_children' in child && child.has_children) {
-        const grandChildren = await fetchChildrenBlocks(child.id);
-        return { ...child, children: grandChildren } as BlockWithChildren;
-      }
-      return child as BlockObjectResponse;
-    })
-  );
-  return processedChildren;
-}
+const title = article.title;
+const description = article.description;
+const content = article.content;
+const readingTime = article.reading_time || calculateReadingTimeFromText(content);
 
-const processedBlocks = await Promise.all(
-  blocks.results.map(async (block: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
-    if ('has_children' in block && block.has_children) {
-      const children = await fetchChildrenBlocks(block.id);
-      return { ...block, children } as BlockWithChildren;
-    }
-    return block as BlockObjectResponse;
-  })
-);
-
-// Function to extract headings from blocks for table of contents
-function extractHeadings(blocks: any[]): { id: string; text: string; depth: number }[] {
+// Extract headings from content for table of contents
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
   const headings: { id: string; text: string; depth: number }[] = [];
+  const lines = content.split('\n');
   
-  blocks.forEach((block: any) => {
-    if (block.type.startsWith('heading_')) {
-      const depth = parseInt(block.type.split('_')[1]);
-      const text = block[block.type].rich_text.map((t: any) => t.plain_text).join('');
-      if (text) {
-        // Create a slug from the text for the ID
-        const slug = text.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '');
-        headings.push({ id: slug, text, depth });
-      }
-    }
-    // Check children blocks recursively
-    if (block.children) {
-      headings.push(...extractHeadings(block.children));
+  lines.forEach((line) => {
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const depth = headingMatch[1].length;
+      const text = headingMatch[2].trim();
+      const id = text.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      headings.push({ id, text, depth });
     }
   });
   
   return headings;
 }
 
-// Get all CLKR pages for the navigation
-const allCLKRPages = await getNotionDatabase('20d0a3cd15e38169928fff5c6f2b219c') as NotionPage[];
-const spanishCLKRPages = allCLKRPages
-  .filter((page: any) => {
-    const langValue = page.properties.Lang?.select?.name;
-    const isSpanish = langValue === "Es" || langValue === "ES" || langValue === "Spanish";
-    const isPublished = page.properties.Published?.checkbox === true;
-    return isSpanish && isPublished;
-  })
-  .map((page: any) => {
-    const nameProperty = page.properties['Name'];
-    const title = nameProperty?.title?.[0]?.plain_text || 'Sin título';
-    return {
-      title,
-      slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-      description: page.properties.Description?.rich_text?.[0]?.plain_text || '',
-      category: page.properties.Category?.select?.name || 'General'
-    };
-  })
-  .filter((page: any) => page.title !== 'Sin título');
+const headings = extractHeadings(content);
 
-// Group pages by category
-const pagesByCategory = spanishCLKRPages.reduce((acc: Record<string, any[]>, page: any) => {
-  if (!acc[page.category]) {
-    acc[page.category] = [];
-  }
-  acc[page.category].push(page);
-  return acc;
-}, {} as Record<string, any[]>);
+// Convert markdown content to HTML
+function markdownToHtml(markdown: string): string {
+  return markdown
+    // Headings
+    .replace(/^### (.*$)/gim, '<h3 id="$1">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 id="$1">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 id="$1">$1</h1>')
+    // Bold
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Code blocks
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+    // Inline code
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Images
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // Lists
+    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    // Paragraphs
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
+    // Clean up
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
+    .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
+    .replace(/<ul><ul>/g, '<ul>')
+    .replace(/<\/ul><\/ul>/g, '</ul>');
+}
 
-// Extract headings for table of contents
-const headings = extractHeadings(processedBlocks);
+const htmlContent = markdownToHtml(content);
 
-// Calculate reading time from the processed blocks
-const readingTime = calculateReadingTime(processedBlocks);
-
-// Get category for the current page
-const currentPageCategory = page.properties.Category?.select?.name || 'General';
-
+// Get menu data for the sidebar
+const menuData = await getAllContentData('es');
 ---
 
 <CLKRLayout 
   title={title} 
-  lastEdited={page.last_edited_time}
-  readingTime={readingTime}
+  description={description} 
+  lang="es" 
+  pathname={Astro.url.pathname}
   headings={headings}
-  showBreadcrumb={true}
-  lang="es"
+  lastEdited={article.last_edited}
+  readingTime={readingTime}
+  menuData={menuData}
 >
-  <!-- Content -->
   <div class="prose prose-lg max-w-none">
-    {processedBlocks.map((block: any) => {
-      // Add ID to heading blocks
-      if (block.type.startsWith('heading_')) {
-        const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || '';
-        const slug = text.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '');
-        block.id = slug;
-      }
-      return <NotionBlock block={block} />;
-    })}
+    <div set:html={htmlContent} />
   </div>
-
-  <!-- Consultation Form Section -->
-  <div class="mt-16 pt-8 border-t border-gray-200">
-    <div class="text-center mb-8">
-      <h2 class="text-2xl font-semibold text-gray-900 mb-4">
-        ¿Necesitas ayuda con este tema?
-      </h2>
-      <p class="text-gray-600 max-w-2xl mx-auto">
-        Completa el formulario de consulta y agenda una cita personalizada con nuestros expertos legales. 
-        Te ayudaremos a resolver tus dudas y encontrar la mejor solución para tu caso.
-      </p>
-    </div>
-    
-    <CLKRConsultationForm 
-      client:load
-      topic={title}
-      category={currentPageCategory}
-    />
-  </div>
+  
+  <CLKRConsultationForm 
+    topic={title} 
+    category="CLKR" 
+    lang="es"
+    client:load 
+  />
 </CLKRLayout>
 
 <style>

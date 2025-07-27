@@ -1,112 +1,48 @@
 ---
-const lang = Astro.currentLocale
-import Footer from '../components/core/layout/Footer.astro';
-import { getCollection } from 'astro:content';
+import { ViewTransitions } from 'astro:transitions';
 import Navbar from '../components/core/layout/Navbar.tsx';
-import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
-import GoogleTag from '../components/core/common/GoogleTag.astro'
-// import SpeedInsights from "@vercel/speed-insights/astro"
-import ResourcesTOC from '../components/core/navigation/ResourcesTOC.jsx'
-import Breadcrumb from '../components/core/navigation/BreadCrumb.astro';
+import Footer from '../components/core/layout/Footer.astro';
+import ContactBar from '../components/core/layout/ContactBar.astro';
+import type { Lang } from '../context/LanguageContext.tsx';
 
-interface Props {
-  showBreadcrumb?: boolean;
-  title: string;		
-  frontmatter?: any;
-  headings?: any;
+export interface Props {
+	title: string;
+	description?: string;
+	lang?: Lang;
+	pathname?: string;
+	menuData?: any;
 }
 
-const locale = Astro.currentLocale
-const { title, showBreadcrumb = true, headings } = Astro.props
-const { headings: headingsFromProps } = Astro.props
+const { title, description, lang = 'en', pathname, menuData } = Astro.props;
+const currentLang = lang || (Astro.url.pathname.startsWith('/es') ? 'es' : 'en');
 
-const sidebarProperties = await getCollection("properties",({ id }) => {
-  if (locale == "en") {
-    return id.startsWith('en/');
-  } else {
-    return id.startsWith('es/');
-  }
-});
+// Get menu data from props or use empty object
+const menuDataFromProps = menuData || {};
 
-const url = Astro.url
-
+// Get current pathname from props or use Astro.url.pathname
+const currentPathname = pathname || Astro.url.pathname;
 ---
 
 <!doctype html>
-<html lang={lang}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="Discover premium real estate opportunities in Colombia" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/icons/isotipo-color.svg" />
-    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>{title}</title>
-    <link rel="sitemap" href="/sitemap-index.xml" />
-    <GoogleTag/>
-    {/* <SpeedInsights/> */}
-    <meta property="og:title" content={title}>
-    <meta property="og:description" content="Discover premium real estate opportunities in Colombia" />
-    <meta property="og:url" content="https://www.capitaleme.com/"/>		
-  </head>
-  <body>
-    <WhatsAppButton/>
-    <Navbar lang={Astro.currentLocale} pathname={Astro.url.pathname} client:load />	
-
-    <div class="flex min-h-screen p-0 sm:ml-0">
-      <aside id="sidebar-multi-level-sidebar" class="hidden fixed top-0 left-0 z-40 w-72 h-[64rem] pt-16 lg:block sticky transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
-        <div class="h-full px-3 py-4 overflow-y-auto bg-slate-100">
-          <div class="my-4 mx-2 text-primary border-b pb-2">
-            {lang === 'en' ? 'Discover premium real estate opportunities in Colombia.' : 'Descubre oportunidades inmobiliarias premium en Colombia.'}
-          </div>
-          <ul class="space-y-2 font-medium"> 						
-            <li>											  							   
-              <div class="flex flex-row items-center justify-between w-full pt-2 text-base text-primary transition duration-75 hover:bg-secondary hover:text-white">								
-                <span class="p-0 group-hover:text-white">{lang == 'en' ? 'All Properties' : 'Todas las Propiedades' }</span>               
-              </div>
-              <ul class="py-2 space-y-2 flex flex-col">
-                { sidebarProperties.map( (property) => (
-					<a href={`/${lang}/real-estate/properties/${property.id.replace(`${lang}/`, '')}`} 
-					class={`font-light text-md text-primary my-3 pt-4 hover:bg-white ${ url.pathname.includes('/real-estate/properties/' + property.id.replace(`${lang}/`, '')) ? `text-secondary` : `text-terciary`}`}>
-						{property.data.title}
-					</a>
-				)) }
-              </ul>
-            </li>
-
-          </ul>
-        </div>
-      </aside>	
-      <!-- Main content container -->
-      <div class="flex-none w-full md:w-auto">
-        <div class="p-4 rounded-lg mt-14 prose prose-slate prose-lg lg:prose-xl prose-headings:text-primary prose-h2:text-2xl prose-h2:underline prose-h3:text-xl prose-h3:text-slate-500 border-r">
-          <div class="max-w-screen-sm md:max-w-screen-2xl mx-auto">											
-            {showBreadcrumb && <Breadcrumb pathname={Astro.url.pathname} />}
-            <slot/>						
-          </div>
-        </div>
-      </div>			
-      <!-- Sticky TableOfContents -->
-      <div class="hidden 2xl:block sticky top-4 h-screen z-40">
-        <div class="h-full overflow-y-auto">
-          <ResourcesTOC 
-            data={headings || headingsFromProps || []} 
-            title={lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'} 
-            style={{ width: 'full', top: '100px', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '8px' }} 
-            linkStyle={{ color: '#333', fontWeight: '500' }} 
-            client:load
-          />
-        </div>
-      </div>
-    </div>					
-    <Footer/>			
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/3.0.0/flowbite.min.js"></script>		
-    <script>
-      // Log the content when the page loads
-      document.addEventListener('DOMContentLoaded', () => {
-        // Content loaded
-      });
-    </script>
-  </body>
+<html lang={currentLang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+		<ViewTransitions />
+	</head>
+	<body>
+		<ContactBar lang={currentLang} />
+		<Navbar client:load lang={currentLang} pathname={currentPathname} menuData={menuData} />
+		<main>
+			<slot />
+		</main>
+		<Footer lang={currentLang} />
+	</body>
 </html> 

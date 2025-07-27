@@ -1,7 +1,10 @@
 ---
-import Layout from '../../layouts/Layout.astro'
+import Layout from '../../layouts/Layout.astro';
+import { getAllContentData } from '../../lib/contentData.js';
+const lang = 'en';
+const menuData = await getAllContentData(lang);
 ---
-<Layout title='404 - Page not found'>
+<Layout title='404 - Page not found' lang={lang} menuData={menuData}>
 <section class="h-screen flex flex-col justify-center items-center">
     <h1 class="text-4xl">404 page not found</h1>
     <h2 class="text-primary text-xl mb-5">Oops! What used to be here is not  here anymore...</h2>

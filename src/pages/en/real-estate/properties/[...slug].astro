@@ -2,13 +2,13 @@
 export const prerender = true;
 import Layout from "../../../../layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
-import PropertyGallery from '../../../../components/features/real-estate/PropertyGallery.jsx';
-import Calculator from '../../../../components/features/real-estate/Calculator.jsx';
+import PropertyGallery from 'components/real-estate/PropertyGallery.tsx';
+import Calculator from 'components/real-estate/Calculator.tsx';
 
 export async function getStaticPaths() {
-  const properties = await getCollection('properties', ({ id }) => id.startsWith('en/'));
+  const properties = await getCollection('properties', (entry) => typeof entry.data.lang === 'string' && entry.data.lang === 'en');
   return properties.map(property => ({
-    params: { slug: property.id.replace('en/', '') },
+    params: { slug: property.slug },
     props: { property },
   }));
 }
@@ -20,51 +20,52 @@ if (!property) {
 }
 
 const { Content, headings } = await render(property);
-const pageTitle = property.data.title;
-// Ensure images is always an array of {url, alt, description}
-const images = (property.data.images || []).map(img => {
-  if (typeof img === 'string') return { url: img, alt: property.data.title, description: '' };
-  if (img && img.url) return { url: img.url, alt: img.alt || property.data.title, description: (img as any).description || '' };
-  return { url: property.data.mainImage, alt: property.data.title, description: '' };
-});
+const propertyData = property.data;
+const pageTitle = propertyData.title || 'Property Title';
 
-// Custom breadcrumbs for property detail page
+// Explicitly type images as PropertyImage[]
+const images: { url: string; alt: string; description: string; }[] = (propertyData.images || []).map((img) => ({
+  url: img.url,
+  alt: img.alt || pageTitle,
+  description: 'description' in img && typeof img.description === 'string' ? img.description : ''
+}));
+
 const customBreadcrumbs = [
   { label: 'Home', href: '/en' },
   { label: 'Real Estate', href: '/en/real-estate' },
-  { label: property.data.title }
+  { label: propertyData.title || 'Property Title' }
 ];
+
+const lang = 'en';
 
 ---
 
-<Layout title={pageTitle} customBreadcrumbs={customBreadcrumbs}>
+<Layout title={pageTitle} lang={lang}>
   <!-- Hero Section with Large Image -->
   <div class="relative w-full h-[70vh] overflow-hidden">
     <img 
-      src={property.data.mainImage} 
-      alt={property.data.title} 
+      src={propertyData.mainImage || '/images/placeholder.jpg'} 
+      alt={propertyData.title || 'Property Image'} 
       class="w-full h-full object-cover object-center"
     />
     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-    
     <!-- Property Title Overlay -->
     <div class="absolute bottom-0 left-0 p-8 z-10">
-      <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4">{property.data.title}</h1>
+      <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4">{propertyData.title || 'Property Title'}</h1>
       <div class="flex items-center gap-4 mb-6">
         <span class="inline-block bg-primary text-white px-6 py-2 rounded-full text-lg font-semibold shadow-lg">
-          {property.data.location}
+          {propertyData.location || 'Unknown location'}
         </span>
         <span class={`inline-block px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
-          property.data.status === 'available' ? 'bg-green-500 text-white' : 
-          property.data.status === 'sold' ? 'bg-red-500 text-white' : 
+          propertyData.status === 'available' ? 'bg-green-500 text-white' : 
+          propertyData.status === 'sold' ? 'bg-red-500 text-white' : 
           'bg-yellow-500 text-white'
         }`}>
-          {property.data.status.charAt(0).toUpperCase() + property.data.status.slice(1)}
+          {propertyData.status ? propertyData.status.charAt(0).toUpperCase() + propertyData.status.slice(1) : 'Unknown'}
         </span>
       </div>
     </div>
   </div>
-
   <!-- Property Info & CTA Section -->
   <div class="bg-white py-12">
     <div class="max-w-6xl mx-auto px-4">
@@ -74,140 +75,43 @@ const customBreadcrumbs = [
           <div class="flex flex-wrap gap-8 mb-6">
             <div class="text-center">
               <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                ${property.data.price.usd.toLocaleString()}
+                ${propertyData.price?.usd?.toLocaleString() || 'N/A'}
               </div>
               <div class="text-lg text-gray-600">USD</div>
-              <div class="text-sm text-gray-500">({property.data.price.cop.toLocaleString()} COP)</div>
+              <div class="text-sm text-gray-500">({propertyData.price?.cop?.toLocaleString() || 'N/A'} COP)</div>
             </div>
-            
             <div class="text-center">
-              <div class="text-3xl font-bold text-secondary mb-2">{property.data.area.total} {property.data.area.unit}</div>
+              <div class="text-3xl font-bold text-secondary mb-2">{propertyData.area?.total || 0} {propertyData.area?.unit || ''}</div>
               <div class="text-gray-600">Total Area</div>
             </div>
-            
-            {property.data.bedrooms && (
+            {propertyData.bedrooms && (
               <div class="text-center">
-                <div class="text-3xl font-bold text-secondary mb-2">{property.data.bedrooms}</div>
+                <div class="text-3xl font-bold text-secondary mb-2">{propertyData.bedrooms || 0}</div>
                 <div class="text-gray-600">Bedrooms</div>
               </div>
             )}
-            
-            {property.data.bathrooms && (
+            {propertyData.bathrooms && (
               <div class="text-center">
-                <div class="text-3xl font-bold text-secondary mb-2">{property.data.bathrooms}</div>
+                <div class="text-3xl font-bold text-secondary mb-2">{propertyData.bathrooms || 0}</div>
                 <div class="text-gray-600">Bathrooms</div>
               </div>
             )}
-            
             <div class="text-center">
-              <div class="text-2xl font-bold text-secondary mb-2">{property.data.propertyType}</div>
+              <div class="text-2xl font-bold text-secondary mb-2">{propertyData.propertyType || 'Property'}</div>
               <div class="text-gray-600">Type</div>
             </div>
           </div>
+          <PropertyGallery images={images} />
         </div>
-        
-        <!-- CTA Buttons -->
-        <div class="flex flex-col gap-4">
-          <a 
-            href="#schedule-visit" 
-            class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all duration-200 text-center"
-          >
-            Schedule a Visit
-          </a>
-          <a 
-            href="https://wa.me/573001234567" 
-            target="_blank" 
-            rel="noopener" 
-            class="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all duration-200 text-center flex items-center justify-center gap-3"
-          >
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20.52 3.48A12.07 12.07 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.22-1.63A12.07 12.07 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.21-1.25-6.23-3.48-8.52zM12 22c-1.85 0-3.66-.5-5.22-1.44l-.37-.22-3.69.97.99-3.59-.24-.37A9.94 9.94 0 0 1 2 12C2 6.48 6.48 2 12 2c2.4 0 4.68.84 6.5 2.36A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10zm5.2-7.6c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.28.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.12-.12.28-.32.42-.48.14-.16.18-.28.28-.46.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47-.16-.01-.34-.01-.52-.01-.18 0-.48.07-.73.34-.25.27-.97.95-.97 2.3 0 1.34.99 2.64 1.13 2.82.14.18 1.95 2.98 4.73 4.06.66.28 1.18.45 1.58.58.66.21 1.26.18 1.73.11.53-.08 1.65-.67 1.89-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.18-.53-.32z"/>
-            </svg>
-            WhatsApp
-          </a>
-          <div class="text-center text-sm text-gray-500">
-            or call +57 123 456 7890
-          </div>
+        <!-- Calculator -->
+        <div>
+          <Calculator client:load initialValue={propertyData.price?.cop} lang="en" />
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Image Gallery Section -->
-  <div class="bg-gray-50 py-16">
-    <div class="max-w-6xl mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Property Gallery</h2>
-      <PropertyGallery client:load images={images} />
-    </div>
-  </div>
-
-  <!-- Features Section -->
-  {property.data.features && (
-    <div class="bg-white py-16">
-      <div class="max-w-6xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Property Features</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {property.data.features.map((feature) => (
-            <div class="flex items-center gap-4 bg-gray-50 rounded-xl px-6 py-4 shadow-sm hover:bg-primary/5 transition-colors duration-200">
-              <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-gray-700 font-medium">{feature}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )}
-
-  <!-- Description Section -->
-  <div class="bg-gray-50 py-16">
-    <div class="max-w-4xl mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">About this Property</h2>
-      <div class="prose prose-lg max-w-none bg-white rounded-2xl p-8 shadow-lg">
-        <Content />
-      </div>
-    </div>
-  </div>
-
-  <!-- Map Section -->
-  <div class="bg-white py-16">
-    <div class="max-w-6xl mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Location</h2>
-      <div class="w-full h-80 bg-gray-200 rounded-2xl flex items-center justify-center text-gray-500 text-xl font-semibold shadow-inner">
-        <div class="text-center">
-          <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <p>Map coming soon</p>
-          <p class="text-sm mt-2">{property.data.location}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Calculator Section -->
-  <div class="bg-gray-50 py-16" id="schedule-visit">
-    <div class="max-w-4xl mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Estimate Notary & Registration Fees</h2>
-      <Calculator client:load initialValue={property.data.price.cop} />
-    </div>
-  </div>
-
-  <!-- Contact/CTA Sticky Footer -->
-  <div class="fixed bottom-6 left-0 w-full flex justify-center z-50 pointer-events-none">
-    <div class="pointer-events-auto bg-primary text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4">
-      <span class="font-bold text-lg">Interested in this property?</span>
-      <a href="#schedule-visit" class="bg-white text-primary font-bold px-6 py-2 rounded-full shadow hover:bg-gray-100 transition-colors">
-        Schedule a Visit
-      </a>
-      <a href="https://wa.me/573001234567" target="_blank" rel="noopener" class="bg-green-500 text-white font-bold px-6 py-2 rounded-full shadow hover:bg-green-600 transition-colors flex items-center gap-2">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20.52 3.48A12.07 12.07 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.22-1.63A12.07 12.07 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.21-1.25-6.23-3.48-8.52zM12 22c-1.85 0-3.66-.5-5.22-1.44l-.37-.22-3.69.97.99-3.59-.24-.37A9.94 9.94 0 0 1 2 12C2 6.48 6.48 2 12 2c2.4 0 4.68.84 6.5 2.36A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10zm5.2-7.6c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.28.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.12-.12.28-.32.42-.48.14-.16.18-.28.28-.46.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47-.16-.01-.34-.01-.52-.01-.18 0-.48.07-.73.34-.25.27-.97.95-.97 2.3 0 1.34.99 2.64 1.13 2.82.14.18 1.95 2.98 4.73 4.06.66.28 1.18.45 1.58.58.66.21 1.26.18 1.73.11.53-.08 1.65-.67 1.89-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.18-.53-.32z"/>
-        </svg>
-        WhatsApp
-      </a>
-    </div>
+  <!-- Markdown Content -->
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <Content />
   </div>
 </Layout> 

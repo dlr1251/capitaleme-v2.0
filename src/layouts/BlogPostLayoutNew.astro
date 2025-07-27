@@ -1,8 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
-import { getAllMenuData } from '../utils/menuDataOptimized.js';
-
+import { getAllContentData } from '../lib/contentData.js';
 export interface Props {
   title: string;
   description?: string;
@@ -38,7 +37,7 @@ const {
 } = Astro.props;
 
 // Get optimized menu data
-const menuData = await getAllMenuData(lang);
+const menuData = await getAllContentData(lang);
 
 const url = Astro.url;
 const hasHeadings = headings && headings.length > 0;
@@ -52,7 +51,7 @@ const customBreadcrumbs = [
 ];
 ---
 
-<Layout title={title} description={description} lang={lang} pathname={pathname} menuData={menuData}>
+<Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
   <div class="bg-white">
     <!-- Hero Section -->
     <div class="relative bg-gradient-to-br from-gray-50 to-gray-100 py-16">

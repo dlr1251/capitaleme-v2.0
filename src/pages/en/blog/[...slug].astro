@@ -1,301 +1,627 @@
 ---
 export const prerender = true;
 import BlogPostLayoutNew from '../../../layouts/BlogPostLayoutNew.astro';
-import { getNotionDatabase, getNotionPage } from '../../../utils/notion';
-import NotionBlock from '../../../components/content/NotionBlock.astro';
+import { getAllContentData } from '../../../lib/contentData.js';
 import SocialSharing from '../../../components/core/common/SocialSharing.jsx';
-import { Client } from '@notionhq/client';
-import type { PageObjectResponse, BlockObjectResponse, PartialBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-type NotionPage = PageObjectResponse & {
-  properties: {
-    Nombre: {
-      type: 'title';
-      title: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
+const lang = 'en';
+
+// Utility functions
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+const getRelativeTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+  if (diffInDays > 0) {
+    return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+  } else {
+    return 'Just now';
+  }
+};
+
+const getCategoryStyling = (category: string) => {
+  const categoryLower = category?.toLowerCase() || '';
+  
+  if (categoryLower.includes('immigration') || categoryLower.includes('visa')) {
+    return {
+      gradient: 'from-blue-500 to-indigo-600',
+      icon: '🛂',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-700',
+      borderColor: 'border-blue-200'
     };
-    Lang: {
-      type: 'select';
-      select: {
-        name: string;
-      };
+  } else if (categoryLower.includes('business') || categoryLower.includes('company')) {
+    return {
+      gradient: 'from-green-500 to-emerald-600',
+      icon: '💼',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-700',
+      borderColor: 'border-green-200'
     };
-    Description: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-        annotations?: {
-          bold?: boolean;
-          italic?: boolean;
-          strikethrough?: boolean;
-          underline?: boolean;
-          code?: boolean;
-          color?: string;
-        };
-        href?: string;
-      }>;
+  } else if (categoryLower.includes('lifestyle') || categoryLower.includes('life')) {
+    return {
+      gradient: 'from-purple-500 to-pink-600',
+      icon: '🏠',
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-700',
+      borderColor: 'border-purple-200'
     };
-    Content: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-        annotations?: {
-          bold?: boolean;
-          italic?: boolean;
-          strikethrough?: boolean;
-          underline?: boolean;
-          code?: boolean;
-          color?: string;
-        };
-        href?: string;
-      }>;
+  } else if (categoryLower.includes('legal') || categoryLower.includes('law')) {
+    return {
+      gradient: 'from-orange-500 to-red-600',
+      icon: '⚖️',
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-700',
+      borderColor: 'border-orange-200'
     };
-    Published: {
-      type: 'checkbox';
-      checkbox: boolean;
+  } else if (categoryLower.includes('tax') || categoryLower.includes('finance')) {
+    return {
+      gradient: 'from-teal-500 to-cyan-600',
+      icon: '💰',
+      bgColor: 'bg-teal-50',
+      textColor: 'text-teal-700',
+      borderColor: 'border-teal-200'
     };
-  };
-  icon?: {
-    type: 'emoji';
-    emoji: string;
-  };
-  last_edited_time: string;
+  } else {
+    return {
+      gradient: 'from-slate-500 to-gray-600',
+      icon: '📄',
+      bgColor: 'bg-slate-50',
+      textColor: 'text-slate-700',
+      borderColor: 'border-slate-200'
+    };
+  }
+};
+
+const generateGradient = (text: string): string => {
+  const gradients = [
+    'from-blue-500 to-indigo-600',
+    'from-green-500 to-emerald-600',
+    'from-purple-500 to-pink-600',
+    'from-orange-500 to-red-600',
+    'from-teal-500 to-cyan-600',
+    'from-slate-500 to-gray-600'
+  ];
+  
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  const index = Math.abs(hash) % gradients.length;
+  return gradients[index];
 };
 
 export async function getStaticPaths() {
-  const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
-  const pages = await getNotionDatabase(databaseId) as NotionPage[];
-  
-  // Filter pages to only include those with Lang="En" or "EN" or "English" AND Published=true
-  const englishPages = pages.filter(page => {
-    const langValue = page.properties.Lang?.select?.name;
-    const isEnglish = langValue === "En" || langValue === "EN" || langValue === "English";
+  const lang = 'en';
+  try {
+    const contentData = await getAllContentData(lang);
+    const posts = contentData?.latestNews || [];
     
-    // Check if published (assuming there's a Published checkbox property)
-    const isPublished = page.properties.Published?.checkbox === true;
-    
-    return isEnglish && isPublished;
-  });
-  
-  return englishPages.map((page) => {
-    const nameProperty = page.properties?.Nombre;
-    
-    if (!nameProperty?.title?.[0]?.plain_text) {
-      return {
-        params: { slug: 'untitled' },
-        props: { pageId: page.id }
-      };
-    }
-    
-    const title = nameProperty.title[0].plain_text;
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    return {
-      params: { slug },
-      props: { pageId: page.id }
-    };
-  });
-}
-
-const { pageId } = Astro.props;
-const page = await getNotionPage(pageId) as NotionPage;
-const title = page.properties.Nombre.title[0]?.plain_text || 'Untitled';
-const cover = page.cover;
-const description = page.properties.Description?.rich_text?.[0]?.plain_text || '';
-
-// Fetch the page blocks
-const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
-const blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 200 });
-
-// Enhanced type for blocks with children
-type BlockWithChildren = BlockObjectResponse & {
-  has_children: true;
-  children: BlockObjectResponse[];
-};
-
-// Type guard for blocks with children
-function hasChildren(block: BlockObjectResponse): block is BlockWithChildren {
-  return block.has_children === true;
-}
-
-// Recursively fetch children blocks
-async function fetchChildrenBlocks(blockId: string): Promise<(BlockObjectResponse | BlockWithChildren)[]> {
-  const response = await notion.blocks.children.list({ block_id: blockId, page_size: 200 });
-  const processedChildren = await Promise.all(
-    response.results.map(async (child: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
-      if ('has_children' in child && child.has_children) {
-        const grandChildren = await fetchChildrenBlocks(child.id);
-        return { ...child, children: grandChildren } as BlockWithChildren;
-      }
-      return child as BlockObjectResponse;
-    })
-  );
-  return processedChildren;
-}
-
-const processedBlocks = await Promise.all(
-  blocks.results.map(async (block: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
-    if ('has_children' in block && block.has_children) {
-      const children = await fetchChildrenBlocks(block.id);
-      return { ...block, children } as BlockWithChildren;
-    }
-    return block as BlockObjectResponse;
-  })
-);
-
-// Extract headings for TOC
-function extractHeadings(blocks: (BlockObjectResponse | BlockWithChildren)[]) {
-  const headings: Array<{ depth: number; text: string; id: string }> = [];
-  
-  function walk(blocks: (BlockObjectResponse | BlockWithChildren)[]) {
-    for (const block of blocks) {
-      if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
-        let text = '';
-        if (block.type === 'heading_1' && 'heading_1' in block) {
-          text = block.heading_1.rich_text.map((t: any) => t.plain_text).join('');
-        } else if (block.type === 'heading_2' && 'heading_2' in block) {
-          text = block.heading_2.rich_text.map((t: any) => t.plain_text).join('');
-        } else if (block.type === 'heading_3' && 'heading_3' in block) {
-          text = block.heading_3.rich_text.map((t: any) => t.plain_text).join('');
+    // If no posts from contentData, use static blog posts
+    if (posts.length === 0) {
+      const staticPosts = [
+        {
+          id: 'counting-your-days',
+          title: 'Counting Your Days',
+          slug: 'counting-your-days',
+          description: 'Understanding Colombian immigration time limits',
+          content: 'Content about counting days for Colombian immigration...',
+          category: 'Immigration',
+          image: '/blog/counting-your-days/img-1.webp',
+          lang: 'en',
+          published: true,
+          featured: false,
+          author: 'Daniel Luque',
+          pub_date: '2024-01-15',
+          last_edited: '2024-01-20',
+          reading_time: 5,
+          tags: ['immigration', 'colombia', 'visa']
+        },
+        {
+          id: 'dnv-confusion',
+          title: 'DNV Confusion',
+          slug: 'dnv-confusion',
+          description: 'Decoding Colombia\'s Digital Nomad Visa requirements',
+          content: 'Content about DNV confusion...',
+          category: 'Visa',
+          image: '/blog/dnv-confusion/img-1.webp',
+          lang: 'en',
+          published: true,
+          featured: false,
+          author: 'María Fernanda Duarte',
+          pub_date: '2024-01-12',
+          last_edited: '2024-01-18',
+          reading_time: 4,
+          tags: ['dnv', 'digital-nomad', 'visa']
+        },
+        {
+          id: 'gringo-prices',
+          title: 'On Gringo Prices',
+          slug: 'gringo-prices',
+          description: 'Understanding cost differences in Colombia',
+          content: 'Content about gringo prices...',
+          category: 'Lifestyle',
+          image: '/blog/gringo-prices/img-1.webp',
+          lang: 'en',
+          published: true,
+          featured: false,
+          author: 'Mateo Martínez',
+          pub_date: '2024-01-10',
+          last_edited: '2024-01-16',
+          reading_time: 6,
+          tags: ['lifestyle', 'costs', 'colombia']
+        },
+        {
+          id: 'apostille',
+          title: 'Apostille Services Guide',
+          slug: 'apostille',
+          description: 'Complete guide to apostille services in Colombia',
+          content: 'Content about apostille services...',
+          category: 'Legal',
+          image: '/blog/apostille/img-1.webp',
+          lang: 'en',
+          published: true,
+          featured: false,
+          author: 'Daniel Luque',
+          pub_date: '2024-01-08',
+          last_edited: '2024-01-14',
+          reading_time: 7,
+          tags: ['apostille', 'legal', 'documents']
         }
-        
-        headings.push({
-          depth: block.type === 'heading_1' ? 1 : block.type === 'heading_2' ? 2 : 3,
-          text,
-          id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-        });
-      }
-      if (hasChildren(block)) {
-        walk(block.children);
-      }
-    }
-  }
-  walk(blocks);
-  return headings;
-}
-
-const headings = extractHeadings(processedBlocks);
-
-// Calculate time to read
-function getTextFromBlocks(blocks: (BlockObjectResponse | BlockWithChildren)[]): string {
-  let text = '';
-  
-  function walk(blocks: (BlockObjectResponse | BlockWithChildren)[]) {
-    for (const block of blocks) {
-      // Check if block has rich_text property based on its type
-      if (block.type === 'paragraph' && 'paragraph' in block && block.paragraph.rich_text) {
-        text += block.paragraph.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
-      } else if (block.type === 'heading_1' && 'heading_1' in block && block.heading_1.rich_text) {
-        text += block.heading_1.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
-      } else if (block.type === 'heading_2' && 'heading_2' in block && block.heading_2.rich_text) {
-        text += block.heading_2.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
-      } else if (block.type === 'heading_3' && 'heading_3' in block && block.heading_3.rich_text) {
-        text += block.heading_3.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
-      } else if (block.type === 'bulleted_list_item' && 'bulleted_list_item' in block && block.bulleted_list_item.rich_text) {
-        text += block.bulleted_list_item.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
-      } else if (block.type === 'numbered_list_item' && 'numbered_list_item' in block && block.numbered_list_item.rich_text) {
-        text += block.numbered_list_item.rich_text.map((t: any) => t.plain_text).join(' ') + ' ';
-      }
+      ];
       
-      if (hasChildren(block)) {
-        walk(block.children);
-      }
+      return staticPosts.map((post) => {
+        return {
+          params: { slug: post.slug },
+          props: { post }
+        };
+      });
     }
+    
+    return posts.map((post) => {
+      return {
+        params: { slug: post.slug },
+        props: { post }
+      };
+    });
+  } catch (error) {
+    console.error('Error generating static paths for blog posts:', error);
+    return [];
   }
-  walk(blocks);
-  return text;
 }
 
-const plainText = getTextFromBlocks(processedBlocks);
-const words = plainText.trim().split(/\s+/).length;
-const timeToRead = Math.max(1, Math.round(words / 200)); // 200 wpm
+const { post } = Astro.props;
 
-// Enhanced metadata for SEO and social sharing
-const currentUrl = Astro.url.href;
-const imageUrl = cover?.type === 'external' ? cover.external.url : cover?.file?.url || '/icons/isotipo-color.svg';
-const publishedDate = page.last_edited_time;
-const author = 'CapitalE Team';
-const siteName = 'CapitalE - Colombian Immigration & Legal Services';
+if (!post) {
+  return Astro.redirect('/en/blog');
+}
 
-// Generate structured data for SEO
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": title,
-  "description": description,
-  "image": imageUrl,
-  "author": {
-    "@type": "Organization",
-    "name": author,
-    "url": "https://capitaleme.com"
+const textContent = {
+  en: {
+    backToBlog: 'Back to Blog',
+    publishedOn: 'Published on',
+    updatedOn: 'Updated on',
+    readingTime: 'min read',
+    by: 'by',
+    shareThisPost: 'Share this post',
+    relatedPosts: 'Related Posts',
+    noRelatedPosts: 'No related posts found.',
+    error: 'Post not found'
   },
-  "publisher": {
-    "@type": "Organization",
-    "name": siteName,
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://capitaleme.com/icons/isotipo-color.svg"
-    }
-  },
-  "datePublished": publishedDate,
-  "dateModified": publishedDate,
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": currentUrl
-  },
-  "wordCount": words,
-  "timeRequired": `PT${timeToRead}M`
+  es: {
+    backToBlog: 'Volver al Blog',
+    publishedOn: 'Publicado el',
+    updatedOn: 'Actualizado el',
+    readingTime: 'min de lectura',
+    by: 'por',
+    shareThisPost: 'Compartir esta publicación',
+    relatedPosts: 'Publicaciones Relacionadas',
+    noRelatedPosts: 'No se encontraron publicaciones relacionadas.',
+    error: 'Publicación no encontrada'
+  }
 };
 
+const content = textContent[lang as keyof typeof textContent] || textContent.en;
+
+// Get related posts
+let relatedPosts = [];
+try {
+  const contentData = await getAllContentData(lang);
+  const allPosts = contentData?.latestNews || [];
+  relatedPosts = allPosts
+    .filter(p => p.id !== post.id && p.category === post.category)
+    .slice(0, 3);
+} catch (error) {
+  console.error('Error fetching related posts:', error);
+}
+
+const categoryStyling = getCategoryStyling(post.category);
+const gradientClass = post.image ? generateGradient(post.title) : categoryStyling.gradient;
+
+// Calculate reading time if not provided
+const readingTime = post.reading_time || Math.ceil(post.content.split(' ').length / 200);
+
+// Format dates
+const publishedDate = formatDate(post.pub_date);
+const updatedDate = formatDate(post.last_edited);
 ---
 
 <BlogPostLayoutNew
-  title={title}
-  cover={cover}
-  description={description}
-  headings={headings}
-  timeToRead={timeToRead}
-  lastEdited={page.last_edited_time}
-  currentUrl={currentUrl}
-  imageUrl={imageUrl}
-  structuredData={structuredData}
-  author={author}
-  siteName={siteName}
-  publishedDate={publishedDate}
-  lang="en"
+  title={post.title}
+  description={post.description}
+  lang={lang}
+  cover={post.image ? { url: post.image } : null}
+  timeToRead={readingTime}
+  lastEdited={post.last_edited}
+  author={post.author}
+  publishedDate={post.pub_date}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.description,
+    "author": {
+      "@type": "Person",
+      "name": post.author
+    },
+    "datePublished": post.pub_date,
+    "dateModified": post.last_edited,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Capital M Law"
+    }
+  }}
 >
-  <div class="prose prose-lg max-w-none">
-    {processedBlocks.map((block: any) => (
-      <NotionBlock block={block} />
-    ))}
-  </div>
-  
-  <!-- Social Sharing Component -->
-  <div class="mt-12">
-    <SocialSharing 
-      client:load
-      title={title}
-      description={description}
-      url={currentUrl}
-    />
-  </div>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-slate-50 to-blue-50 py-20">
+    <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-slate-600">
+          <li>
+            <a href={`/${lang}/blog`} class="hover:text-blue-600 transition-colors">
+              {content.backToBlog}
+            </a>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-slate-900 font-medium">{post.title}</span>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Article Header -->
+      <div class="text-center mb-12">
+        {post.category && (
+          <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold mb-6 ${categoryStyling.bgColor} ${categoryStyling.textColor} ${categoryStyling.borderColor}">
+            {categoryStyling.icon} {post.category}
+          </div>
+        )}
+        
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+          {post.title}
+        </h1>
+        
+        {post.description && (
+          <p class="text-xl text-slate-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+            {post.description}
+          </p>
+        )}
+        
+        <!-- Article Meta -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-slate-500">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>{content.by} {post.author}</span>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{content.publishedOn} {publishedDate}</span>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{readingTime} {content.readingTime}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Article Content -->
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-4 gap-12">
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+          <!-- Featured Image -->
+          {post.image && (
+            <div class="relative mb-8 rounded-2xl overflow-hidden">
+              <img 
+                src={post.image} 
+                alt={post.title}
+                class="w-full h-64 md:h-96 object-cover"
+
+              />
+              <div class={`w-full h-64 md:h-96 bg-gradient-to-br ${gradientClass} flex items-center justify-center hidden`}>
+                <div class="text-center text-white">
+                  <div class="text-6xl mb-4">{categoryStyling.icon}</div>
+                  <div class="text-lg font-medium opacity-90">{post.title}</div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <!-- Article Body -->
+          <article class="prose prose-lg max-w-none">
+            <div class="markdown-content" set:html={post.content}></div>
+          </article>
+          
+          <!-- Article Footer -->
+          <div class="mt-12 pt-8 border-t border-slate-200">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div class="text-sm text-slate-500">
+                <p>{content.updatedOn} {updatedDate}</p>
+              </div>
+              
+              <SocialSharing 
+                title={post.title}
+                description={post.description}
+                url={Astro.url.href}
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+          <div class="sticky top-8 space-y-8">
+            <!-- Author Info -->
+            <div class="bg-slate-50 rounded-xl p-6">
+              <h3 class="text-lg font-semibold text-slate-900 mb-4">About the Author</h3>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center text-white font-bold">
+                  {post.author.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p class="font-medium text-slate-900">{post.author}</p>
+                  <p class="text-sm text-slate-600">Legal Expert</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Share Section -->
+            <div class="bg-slate-50 rounded-xl p-6">
+              <h3 class="text-lg font-semibold text-slate-900 mb-4">{content.shareThisPost}</h3>
+              <SocialSharing 
+                title={post.title}
+                description={post.description}
+                url={Astro.url.href}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Posts -->
+  {relatedPosts.length > 0 && (
+    <section class="py-16 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">{content.relatedPosts}</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {relatedPosts.map((relatedPost: any) => {
+            const relatedCategoryStyling = getCategoryStyling(relatedPost.category);
+            const relatedGradientClass = relatedPost.image ? generateGradient(relatedPost.title) : relatedCategoryStyling.gradient;
+            
+            return (
+              <article class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100">
+                {/* Cover Image */}
+                <div class="relative h-48 overflow-hidden">
+                  {relatedPost.image ? (
+                    <img 
+                      src={relatedPost.image} 
+                      alt={relatedPost.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+
+                    />
+                  ) : null}
+                  
+                  <div class={`w-full h-full bg-gradient-to-br ${relatedGradientClass} flex items-center justify-center ${relatedPost.image ? 'hidden' : ''}`}>
+                    <div class="text-center text-white">
+                      <div class="text-3xl mb-2">{relatedCategoryStyling.icon}</div>
+                      <div class="text-xs font-medium opacity-90">{relatedPost.title}</div>
+                    </div>
+                  </div>
+                  
+                  {/* Icon overlay */}
+                  <div class="absolute top-3 right-3 text-xl bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
+                    {relatedCategoryStyling.icon}
+                  </div>
+                </div>
+                
+                {/* Content */}
+                <div class="p-4">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-slate-500 font-medium">{getRelativeTime(relatedPost.pub_date)}</span>
+                    {relatedPost.category && (
+                      <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${relatedCategoryStyling.bgColor} ${relatedCategoryStyling.textColor}`}>
+                        {relatedPost.category}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h3 class="text-lg font-semibold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                    <a href={`/${lang}/blog/${relatedPost.slug}`} class="block">
+                      {relatedPost.title}
+                    </a>
+                  </h3>
+                  
+                  {relatedPost.description && (
+                    <p class="text-slate-600 text-sm leading-relaxed mb-3 line-clamp-2">
+                      {relatedPost.description}
+                    </p>
+                  )}
+                  
+                  <a
+                    href={`/${lang}/blog/${relatedPost.slug}`}
+                    class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
+                  >
+                    Read more
+                    <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
 </BlogPostLayoutNew>
 
-<script>
-  // Log the content when the page loads
-  document.addEventListener('DOMContentLoaded', () => {
-    // Content loaded
-  });
-</script> 
+<style>
+  .bg-grid-slate-100 {
+    background-image: linear-gradient(to right, rgb(241 245 249) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgb(241 245 249) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .prose {
+    color: #374151;
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #111827;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  
+  .prose h1 {
+    font-size: 2.25rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .prose h2 {
+    font-size: 1.875rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h3 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .prose p {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.75;
+  }
+  
+  .prose ul, .prose ol {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.625rem;
+  }
+  
+  .prose li {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .prose blockquote {
+    border-left: 4px solid #3b82f6;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #6b7280;
+  }
+  
+  .prose code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: #dc2626;
+  }
+  
+  .prose pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+  
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+  }
+  
+  .prose img {
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+  
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+  
+  .prose th, .prose td {
+    border: 1px solid #d1d5db;
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  .prose th {
+    background-color: #f9fafb;
+    font-weight: 600;
+  }
+</style> 

@@ -1,6 +1,5 @@
 import { defineCollection, z } from 'astro:content';
 import { Client } from '@notionhq/client';
-import { glob } from 'astro/loaders';
 // import NotionToMarkdown from 'notion-to-md';
 const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
 
@@ -47,7 +46,7 @@ const resourcesCollection = defineCollection({
 });
 
 const propertiesCollection = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/properties' }),
+  type: 'content',
   schema: z.object({
     title: z.string(),
     lang: z.string(),

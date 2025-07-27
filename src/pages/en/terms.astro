@@ -1,12 +1,81 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import TermsConditions from '../../components/terms/en/TermsConditions.mdx';
+import { getAllContentData } from '../../lib/contentData.js';
+const menuData = await getAllContentData('en');
 ---
-<Layout title="Terms & Conditions">
-
-    <div class="mt-16">
-        
-
-        
+<Layout title="Terms & Conditions" menuData={menuData} lang="en">
+  <div class="mt-16 max-w-7xl mx-auto px-4 flex flex-col lg:flex-row gap-8">
+    <!-- Sidebar TOC -->
+    <aside class="hidden lg:block w-72 flex-shrink-0">
+      <nav class="sticky top-24 border-l-4 border-primary pl-6">
+        <h2 class="text-lg font-bold text-primary mb-2">Contents</h2>
+        <ul class="space-y-1 text-sm">
+          <li><a href="#terms-and-conditions-of-use" class="text-primary hover:underline">Terms and Conditions of Use</a></li>
+          <li><a href="#owner" class="text-primary hover:underline">Owner</a></li>
+          <li><a href="#user" class="text-primary hover:underline">User</a></li>
+          <li><a href="#user-declarations" class="text-primary hover:underline">User Declarations</a></li>
+          <li><a href="#access-to-this-website" class="text-primary hover:underline">Access to this website</a></li>
+          <li><a href="#filling-out-forms-for-the-provision-of-service" class="text-primary hover:underline">Filling out forms for the provision of service</a></li>
+          <li><a href="#data-update" class="text-primary hover:underline">Data Update</a></li>
+          <li><a href="#where-do-these-terms-and-conditions-apply" class="text-primary hover:underline">Where do these terms and conditions apply?</a></li>
+          <li><a href="#customer-service-requests-withdrawal-cancellations-claims-and-returns" class="text-primary hover:underline">Customer Service</a></li>
+          <li><a href="#consumer-protection" class="text-primary hover:underline">Consumer Protection</a></li>
+          <li><a href="#websites-liability" class="text-primary hover:underline">Website's Liability</a></li>
+          <li><a href="#applicable-law-and-dispute-resolution" class="text-primary hover:underline">Applicable Law and Dispute Resolution</a></li>
+          <li><a href="#modifications" class="text-primary hover:underline">Modifications</a></li>
+          <li><a href="#assignment" class="text-primary hover:underline">Assignment</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Mobile TOC -->
+    <nav class="lg:hidden mb-8 border-l-4 border-primary pl-4">
+      <h2 class="text-lg font-bold text-primary mb-2">Contents</h2>
+      <ul class="space-y-1 text-sm">
+        <li><a href="#terms-and-conditions-of-use" class="text-primary hover:underline">Terms and Conditions of Use</a></li>
+        <li><a href="#owner" class="text-primary hover:underline">Owner</a></li>
+        <li><a href="#user" class="text-primary hover:underline">User</a></li>
+        <li><a href="#user-declarations" class="text-primary hover:underline">User Declarations</a></li>
+        <li><a href="#access-to-this-website" class="text-primary hover:underline">Access to this website</a></li>
+        <li><a href="#filling-out-forms-for-the-provision-of-service" class="text-primary hover:underline">Filling out forms for the provision of service</a></li>
+        <li><a href="#data-update" class="text-primary hover:underline">Data Update</a></li>
+        <li><a href="#where-do-these-terms-and-conditions-apply" class="text-primary hover:underline">Where do these terms and conditions apply?</a></li>
+        <li><a href="#customer-service-requests-withdrawal-cancellations-claims-and-returns" class="text-primary hover:underline">Customer Service</a></li>
+        <li><a href="#consumer-protection" class="text-primary hover:underline">Consumer Protection</a></li>
+        <li><a href="#websites-liability" class="text-primary hover:underline">Website's Liability</a></li>
+        <li><a href="#applicable-law-and-dispute-resolution" class="text-primary hover:underline">Applicable Law and Dispute Resolution</a></li>
+        <li><a href="#modifications" class="text-primary hover:underline">Modifications</a></li>
+        <li><a href="#assignment" class="text-primary hover:underline">Assignment</a></li>
+      </ul>
+    </nav>
+    <!-- Main Content -->
+    <div class="flex-1 min-w-0">
+      <article class="prose prose-gray max-w-none">
+        <TermsConditions />
+      </article>
     </div>
-
+  </div>
+  <style>
+    .prose h1 {
+      @apply text-3xl font-bold text-primary mt-0 mb-6;
+    }
+    .prose h2 {
+      @apply text-2xl font-semibold text-primary mt-10 mb-4;
+    }
+    .prose h3 {
+      @apply text-xl font-semibold text-primary mt-8 mb-3;
+    }
+    .prose h4 {
+      @apply text-lg font-semibold text-primary mt-6 mb-2;
+    }
+    .prose ul, .prose ol {
+      @apply pl-6 mb-4;
+    }
+    .prose a {
+      @apply text-primary underline hover:text-primary/80;
+    }
+    .prose strong {
+      @apply font-semibold text-primary;
+    }
+  </style>
 </Layout>

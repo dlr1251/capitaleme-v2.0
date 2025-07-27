@@ -1,327 +1,146 @@
 ---
-import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
 import CLKRLayout from '../../../layouts/CLKRLayout.astro';
-import NotionBlock from '../../../components/content/NotionBlock.astro';
-import { Client } from '@notionhq/client';
-import type { PageObjectResponse, BlockObjectResponse, PartialBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import { calculateReadingTime } from '../../../utils/readingTime';
-
-type NotionPage = PageObjectResponse & {
-  properties: {
-    Name: {
-      type: 'title';
-      title: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Description: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Content: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Lang: {
-      type: 'select';
-      select: {
-        name: string;
-      } | null;
-    };
-    Published: {
-      type: 'checkbox';
-      checkbox: boolean;
-    };
-    slug?: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-  };
-  icon?: {
-    type: 'emoji';
-    emoji: string;
-  };
-  cover?: {
-    type: 'external';
-    external: {
-      url: string;
-    };
-  } | {
-    type: 'file';
-    file: {
-      url: string;
-    };
-  };
-  last_edited_time: string;
-};
+import CLKRConsultationForm from '../../../components/clkr/CLKRConsultationForm.tsx';
+import { calculateReadingTimeFromText } from '../../../utils/readingTime';
+import { getAllContentData } from '../../../lib/contentData.js';
 
 export const prerender = true;
 
+interface CLKRArticle {
+  slug: string;
+  title: string;
+  description?: string;
+  content: string;
+  reading_time?: number;
+  last_edited?: string;
+  [key: string]: any;
+}
+
 export async function getStaticPaths() {
-  const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
-  
   try {
-    const pages = await getNotionDatabase(databaseId) as NotionPage[];
-    
-    // Filter pages to only include those with Lang="En" or "EN" or "English" AND Published=true
-    const englishPages = pages.filter(page => {
-      const langValue = page.properties.Lang?.select?.name;
-      const isEnglish = langValue === "En" || langValue === "EN" || langValue === "English";
-      
-      // Check if published (assuming there's a Published checkbox property)
-      const isPublished = page.properties.Published?.checkbox === true;
-      
-      return isEnglish && isPublished;
-    });
-    
-    return englishPages.map((page) => {
-      const nameProperty = page.properties?.Name;
-      
-      if (!nameProperty?.title?.[0]?.plain_text) {
-        return {
-          params: { slug: 'untitled' },
-          props: { pageId: page.id }
-        };
-      }
-      
-      const title = nameProperty.title[0].plain_text;
-      // Check if slug property exists, otherwise generate from title
-      const slugProperty = page.properties?.slug;
-      const slug = slugProperty?.rich_text?.[0]?.plain_text || 
-                   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      
-      return {
-        params: { slug },
-        props: { pageId: page.id }
-      };
-    });
+    const { getCLKRArticlesFromSupabase } = await import('../../../lib/syncNotionToSupabase.js');
+    const articlesResult = await getCLKRArticlesFromSupabase('en');
+    if (!Array.isArray(articlesResult)) return [];
+    const validArticles = articlesResult.filter((article: CLKRArticle) =>
+      article &&
+      article.slug &&
+      article.title &&
+      article.content
+    );
+    return validArticles.map((article: CLKRArticle) => ({
+      params: { slug: article.slug },
+      props: { article }
+    }));
   } catch (error) {
-    console.error('Failed to fetch CLKR pages from Notion:', error);
-    // Return empty array to prevent build failure
     return [];
   }
 }
 
-const { pageId } = Astro.props;
+const { article } = Astro.props;
 
-const page = await getNotionPage(pageId) as NotionPage;
-if (!page) {
-  throw new Error(`Page ${pageId} not found`);
+if (!article) {
+  return Astro.redirect('/404');
 }
 
-const title = page.properties.Name?.title?.[0]?.plain_text || 'Untitled';
-const cover = page.cover;
-const description = page.properties.Description?.rich_text?.[0]?.plain_text || '';
+const title = article.title;
+const description = article.description;
+const content = article.content;
+const readingTime = article.reading_time || calculateReadingTimeFromText(content);
 
-// Fetch the page blocks
-const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
-const blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 200 });
-
-// Enhanced type for blocks with children
-type BlockWithChildren = BlockObjectResponse & {
-  has_children: true;
-  children: BlockObjectResponse[];
-};
-
-// Type guard for blocks with children
-function hasChildren(block: BlockObjectResponse): block is BlockWithChildren {
-  return block.has_children === true;
+// Extract headings from content for table of contents
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
+  const lines = content.split('\n');
+  
+  lines.forEach((line) => {
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const depth = headingMatch[1].length;
+      const text = headingMatch[2].trim();
+      const id = text.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      headings.push({ id, text, depth });
+    }
+  });
+  
+  return headings;
 }
 
-// Recursively fetch children blocks
-async function fetchChildrenBlocks(blockId: string): Promise<(BlockObjectResponse | BlockWithChildren)[]> {
-  const response = await notion.blocks.children.list({ block_id: blockId, page_size: 200 });
-  const processedChildren = await Promise.all(
-    response.results.map(async (child: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
-      if ('has_children' in child && child.has_children) {
-        const grandChildren = await fetchChildrenBlocks(child.id);
-        return { ...child, children: grandChildren } as BlockWithChildren;
-      }
-      return child as BlockObjectResponse;
+const headings = extractHeadings(content);
+
+// Optimized markdown to HTML conversion
+function markdownToHtml(markdown: string): string {
+  if (!markdown) return '';
+  
+  return markdown
+    // Headings with ID generation
+    .replace(/^### (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h3 id="${id}">${text}</h3>`;
     })
-  );
-  return processedChildren;
+    .replace(/^## (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h2 id="${id}">${text}</h2>`;
+    })
+    .replace(/^# (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h1 id="${id}">${text}</h1>`;
+    })
+    // Bold and italic
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Code blocks
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Images
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // Lists
+    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    // Paragraphs (simplified)
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
+    // Clean up
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
+    .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
+    .replace(/<ul><ul>/g, '<ul>')
+    .replace(/<\/ul><\/ul>/g, '</ul>');
 }
 
-const processedBlocks = await Promise.all(
-  blocks.results.map(async (block: BlockObjectResponse | PartialBlockObjectResponse): Promise<BlockObjectResponse | BlockWithChildren> => {
-    if ('has_children' in block && block.has_children) {
-      const children = await fetchChildrenBlocks(block.id);
-      return { ...block, children } as BlockWithChildren;
-    }
-    return block as BlockObjectResponse;
-  })
-);
+const htmlContent = markdownToHtml(content);
 
-// Extract headings for TOC
-const headings: any[] = [];
-processedBlocks.forEach((block: any) => {
-  if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
-    const text = block.heading_1?.rich_text?.[0]?.plain_text || 
-                 block.heading_2?.rich_text?.[0]?.plain_text || 
-                 block.heading_3?.rich_text?.[0]?.plain_text;
-    if (text) {
-      headings.push({
-        depth: block.type === 'heading_1' ? 1 : block.type === 'heading_2' ? 2 : 3,
-        text: text,
-        id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      });
-    }
-  }
-});
-
-// Calculate reading time from the processed blocks
-const readingTime = calculateReadingTime(processedBlocks);
-
+// Get menu data for the sidebar
+const menuData = await getAllContentData('en');
 ---
 
 <CLKRLayout 
   title={title} 
-  lastEdited={page.last_edited_time}
-  readingTime={readingTime}
+  description={description} 
+  lang="en" 
+  pathname={Astro.url.pathname}
   headings={headings}
-  showBreadcrumb={false}
-  lang="en"
+  lastEdited={article.last_edited}
+  readingTime={readingTime}
+  menuData={menuData}
 >
-  <!-- Content -->
   <div class="prose prose-lg max-w-none">
-    {processedBlocks.map((block: any) => {
-      // Add ID to heading blocks
-      if (block.type.startsWith('heading_')) {
-        const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || '';
-        const slug = text.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '');
-        block.id = slug;
-      }
-      return <NotionBlock block={block} />;
-    })}
+    <div set:html={htmlContent} />
   </div>
+  
+  <CLKRConsultationForm 
+    topic={title} 
+    category="CLKR" 
+    lang="en"
+    client:load 
+  />
 </CLKRLayout>
 
 <style>
-  /* Ensure headings have proper scroll margin for navbar offset */
   :global(h2, h3, h4, h5, h6) {
     scroll-margin-top: 160px;
   }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const tocLinks = document.querySelectorAll('.toc-link');
-    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    let currentActiveLink: HTMLElement | null = null;
-
-    // Function to update active link
-    const updateActiveLink = (link: HTMLElement) => {
-      if (currentActiveLink) {
-        currentActiveLink.classList.remove('active');
-      }
-      link.classList.add('active');
-      currentActiveLink = link;
-    };
-
-    // Smooth scroll with offset
-    tocLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = link.getAttribute('href')?.substring(1);
-        const targetElement = document.getElementById(targetId || '');
-        
-        if (targetElement) {
-          const headerOffset = 140;
-          const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-          // Use requestAnimationFrame for smoother scrolling
-          requestAnimationFrame(() => {
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          });
-
-          // Update active link after scrolling
-          setTimeout(() => updateActiveLink(link as HTMLElement), 100);
-        }
-      });
-    });
-
-    // Intersection Observer for scroll spy
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -80% 0px',
-      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`) as HTMLElement;
-          if (tocLink) {
-            updateActiveLink(tocLink);
-          }
-        }
-      });
-    }, observerOptions);
-
-    // Observe all headings
-    headings.forEach(heading => {
-      if (heading.id) {
-        observer.observe(heading);
-      }
-    });
-
-    // Handle initial hash in URL
-    const hash = window.location.hash;
-    if (hash) {
-      const targetId = hash.substring(1);
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        setTimeout(() => {
-          const headerOffset = 140;
-          const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }, 100);
-      }
-    }
-
-    // Update active link on initial load
-    if (hash) {
-      const initialLink = document.querySelector(`.toc-link[href="${hash}"]`) as HTMLElement;
-      if (initialLink) {
-        updateActiveLink(initialLink);
-      }
-    } else if (tocLinks.length > 0) {
-      updateActiveLink(tocLinks[0] as HTMLElement);
-    }
-  });
-</script> 
+</style> 

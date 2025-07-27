@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TermsConditions from '../../components/terms/es/TermsConditions.mdx';
+import { getAllMenuData } from '../../utils/menuDataOptimized.js';
+const lang = 'es';
+const menuData = await getAllMenuData(lang);
+---
+<Layout title="Términos y Condiciones - Capital M Law" menuData={menuData} lang={lang}>
+  <TermsConditions lang="es" />
+</Layout> 

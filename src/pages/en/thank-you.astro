@@ -1,10 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-// import SectionOne from '../components/en/contact/SectionOne.astro';
-// import ContactTabs from '../components/en/common/ContactForm.astro';
-
+import { getAllContentData } from '../../lib/contentData.js';
+const lang = 'en';
+const menuData = await getAllContentData(lang);
 ---
-<Layout title="Contact">
+<Layout title="Contact" lang={lang} menuData={menuData}>
 
     <div class="mt-16">
         Thank you!

@@ -207,3 +207,9 @@ export function renderRichTextSafely(richText: any[]): string {
     return `<span class="${className}">${content}</span>`;
   }).join('');
 } 
+
+// --- Yes/No Normalization Helper ---
+export function normalizeYesNo(value: string | undefined | null): 'yes' | 'no' {
+  if (!value) return 'no';
+  return value.trim().toLowerCase() === 'yes' ? 'yes' : 'no';
+} 

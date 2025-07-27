@@ -1,118 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../../layouts/Layout.astro';
-import ServicesGrid from '../../../components/features/real-estate/ServicesGrid.jsx';
-import SellerFeatures from '../../../components/features/real-estate/SellerFeatures.jsx';
-import RealEstateGuide from '../../../components/features/real-estate/RealEstateGuide.jsx';
-import GoogleReviews from '../../../components/ui/cards/GoogleReviews.jsx'
-import Calculator from "../../../components/features/real-estate/Calculator.jsx";
-import RealEstateHero from "../../../components/features/real-estate/RealEstateHero.astro";
-import CLKRRepository from "../../../components/features/real-estate/CLKRRepository.jsx";
-import ConsultationSection from "../../../components/features/visa-services/ConsultationSection.jsx";
+import Layout from 'layouts/RealEstateLayout.astro';
+import RealEstateHero from 'components/real-estate/RealEstateHero.astro';
+import RealEstateGuide from 'components/real-estate/RealEstateGuide.tsx';
+import SellerFeatures from 'components/real-estate/SellerFeatures.tsx';
+import ServicesGrid from 'components/real-estate/ServicesGrid.tsx';
+import Calculator from 'components/real-estate/Calculator.tsx';
+import CLKRRepository from 'components/real-estate/CLKRRepository.tsx';
+import GoogleReviews from 'components/ui/cards/GoogleReviews.tsx';
+import ConsultationSection from 'components/visas/ConsultationSection.tsx';
+import { getAllContentData } from 'lib/contentData.js';
 
-const pageTitle = "Real Estate Services in Colombia";
-
-// Fetch all properties from the content collection
-const properties = await getCollection('properties', ({ id }) => id.startsWith('en/'));
+const lang = 'en';
+const menuData = await getAllContentData(lang);
 ---
-
-<Layout title={pageTitle}>
-  <!-- Modern Hero Section -->
+<Layout title="Real Estate - Capital M Law" description="Colombian real estate legal services, guides, and property support." menuData={menuData} lang={lang}>
   <RealEstateHero />
-
-  <!-- Fee Calculator Section - Moved up for better lead generation -->
-  <section class="py-20 bg-gradient-to-br from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Calculator client:load />
-    </div>
-  </section>
-
-  <!-- Services Grid Section - Simplified and more prominent -->
-  <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Our Real Estate
-          <span class="block text-emerald-600">Services</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Choose the service that best fits your real estate needs in Colombia
-        </p>
-      </div>
-      
-      <ServicesGrid client:load />
-    </div>
-  </section>
-
-  <!-- Property Listings Section - More prominent placement -->
-  <section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Featured
-          <span class="block text-emerald-600">Properties</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Discover exceptional properties in Colombia's most desirable locations
-        </p>
-      </div>
-      
-      <CLKRRepository lang="en" client:load />
-    </div>
-  </section>
-
-  <!-- Real Estate Guide Section - Simplified -->
-  <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Real Estate
-          <span class="block text-emerald-600">Process Guide</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Understand the complete process of buying property in Colombia
-        </p>
-      </div>
-      
-      <RealEstateGuide client:load properties={properties} />
-    </div>
-  </section>
-
-  <!-- Seller Features Section -->
-  <section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Selling Your
-          <span class="block text-emerald-600">Property?</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          We help sellers maximize their property value and ensure smooth transactions
-        </p>
-      </div>
-      
-      <SellerFeatures client:load />
-    </div>
-  </section>
-
-  <!-- Google Reviews Section -->
-  <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          What Our Clients
-          <span class="block text-emerald-600">Say</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Real testimonials from satisfied clients who trusted us with their real estate transactions
-        </p>
-      </div>
-      
-      <GoogleReviews client:load />
-    </div>
-  </section>
-
-  <!-- Consultation Section -->
-  <ConsultationSection client:load />
+  <Calculator />
+  <SellerFeatures />
+  <ServicesGrid />
+  <RealEstateGuide />
+  <CLKRRepository />
+  <GoogleReviews />
+  <ConsultationSection lang="en" />
 </Layout>
 

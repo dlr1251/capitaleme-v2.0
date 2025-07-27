@@ -1,87 +1,47 @@
 ---
-import Navbar from '../components/core/layout/Navbar';
+
+import Navbar from '../components/core/layout/Navbar.tsx';
 import Footer from '../components/core/layout/Footer.astro';
-import WhatsAppButton from '../components/core/common/WhatsAppButton.astro';
-import GoogleTag from '../components/core/common/GoogleTag.astro'
-// import SpeedInsights from "@vercel/speed-insights/astro"
 import ContactBar from '../components/core/layout/ContactBar.astro';
-import { getAllMenuData } from '../utils/menuDataOptimized.js';
+import type { Lang } from '../context/LanguageContext.tsx';
 
 export interface Props {
 	title: string;
 	description?: string;
-	lang?: string;
+	lang?: Lang;
 	pathname?: string;
-	menuData?: any;
-	customBreadcrumbs?: Array<{ label: string; href?: string }>;
+	menuData?: any; // Add menuData prop for CLKR layout
 }
 
-const { title, description, lang = 'en', pathname: propPathname, menuData: propMenuData } = Astro.props;
+const { title, description, lang = 'en', pathname, menuData } = Astro.props;
+const currentLang = lang || (Astro.url.pathname.startsWith('/es') ? 'es' : 'en');
 
-// Get the current pathname from Astro.url if not provided
-const pathname = propPathname || Astro.url.pathname;
-
-// Get optimized menu data if not provided
-const menuData = propMenuData || await getAllMenuData(lang);
-
-import { ClientRouter } from "astro:transitions";
+// Get current pathname from props or use Astro.url.pathname
+const currentPathname = pathname || Astro.url.pathname;
 
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={currentLang}>
 	<head>
-		<ClientRouter />
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<link rel="sitemap" href="/sitemap-index.xml" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-		<GoogleTag/>
-		<!-- <SpeedInsights/> -->
-		<link rel="stylesheet" href="/src/styles/blog.css" />
+	
 	</head>
 	<body>
-		<WhatsAppButton />
-		<div id="sticky-header" class="transition-all duration-300 sticky top-0 z-50">
-			<ContactBar lang={lang} />
-			<Navbar client:load lang={lang} pathname={pathname} menuData={menuData} />
-		</div>
+		<ContactBar lang={currentLang} />
+		<Navbar client:load lang={currentLang} pathname={currentPathname} menuData={menuData} />
 		<main>
-			<slot />			
-
+			<slot />
 		</main>
-		<Footer lang={lang} />
-
-		<script is:inline src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>
-		<!-- <script is:inline src="https://carrier.formcarry.com/js/v1.js"></script> -->
-		<!-- <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
-		
-		<script>
-			// Sticky header logic for mega menu
-			document.addEventListener('DOMContentLoaded', function() {
-				const stickyHeader = document.getElementById('sticky-header');
-				document.addEventListener('megaMenuToggle', function(event) {
-					const isOpen = (event as CustomEvent).detail?.isOpen;
-					if (stickyHeader && isOpen) {
-						stickyHeader.classList.add('sticky', 'top-0', 'z-50', 'shadow-lg');
-					} else if (stickyHeader) {
-						stickyHeader.classList.remove('sticky', 'top-0', 'z-50', 'shadow-lg');
-					}
-				});
-			});
-		</script>
+		<Footer lang={currentLang} />
 	</body>
 </html>
-
-<style is:global>
-	:root {
-		--color-primary: #16345F;
-		--color-secondary: #00AA81;
-	}
-</style>
 

@@ -1,29 +1,31 @@
 ---
-export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
-import BlogPageLatest from '../../components/features/blog/BlogPageLatest.astro';
-import HomePageHero from '../../components/pages/home/HomePageHero.astro';
-import AboutPageSection from '../../components/pages/about/AboutPageSection.astro';
-import HomeRealEstateSection from '../../components/pages/home/HomeRealEstateSection';
-import HomeVisaAssistanceSection from '../../components/pages/home/HomeVisaAssistanceSection';
-import HomePageCLKR from '../../components/pages/home/HomePageCLKR.jsx';
-import CalendlyInline from '../../components/shared/CalendlyInline.astro';
-import HowWeWork from '../../components/shared/HowWeWork.astro';
-import { getAllMenuData } from '../../utils/menuData.js';
+import HomePageHero from '../../components/shared/HomePageHero.astro';
+import AboutPageSection from '../../components/about/AboutPageSection.astro';
+import HowWeWork from '../../components/home/en/HowWeWork.astro';
+import HomeVisaAssistanceSection from '../../components/visas/HomeVisaAssistanceSection.tsx';
+import HomeRealEstateSection from '../../components/real-estate/en/HomeRealEstateSection.tsx';
+import HomePageCLKR from '../../components/clkr/HomePageCLKR.tsx';
+import BlogPageLatest from '../../components/blog/BlogPageLatest.astro';
+import { getAllContentData } from '../../lib/contentData.js';
 
-const menuData = await getAllMenuData('en');
+const lang = 'en';
+const menuData = await getAllContentData(lang);
+
 const allVisas = menuData?.allVisas || [];
-const guides = menuData?.guides || [];
-const featuredProperty = menuData?.featuredProperty || null;
+const guides = menuData?.allGuides || [];
+const popularVisas = allVisas.filter((v: any) => v.isPopular);
+const featuredProperty = null; // No featuredProperty in new server data
+
 
 ---
-<Layout title="Capital M Law - Home" menuData={menuData}>
+<Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
 	<main class="">        
-        <HomePageHero/>
+        <HomePageHero currentLang="en"/>
         <AboutPageSection/>
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
         <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load />
-        <HomePageCLKR lang="en" client:load />
+        <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />
     		<!-- <CalendlyInline /> -->
         <HowWeWork lang="en"/>
 		    <BlogPageLatest/>

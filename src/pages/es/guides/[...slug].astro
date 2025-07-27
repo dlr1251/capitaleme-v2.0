@@ -1,164 +1,66 @@
 ---
-import { getNotionPage, getNotionDatabase } from '../../../utils/notion';
+import { getGuidesFromSupabase } from '../../../lib/syncNotionToSupabase.js';
 import GuidesLayout from '../../../layouts/GuidesLayout.astro';
-import NotionBlock from '../../../components/content/NotionBlock.astro';
-import { Client } from '@notionhq/client';
-import type { PageObjectResponse, BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export const prerender = true;
 
+interface Guide {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  published?: boolean;
+  last_edited?: string;
+  updated_at?: string;
+}
+
 export async function getStaticPaths() {
-  // Helper function to get page title from database
-  function getPageTitle(item: any): string {
-    try {
-      const titleProperty = item.properties?.['Name'];
-      if (titleProperty?.title?.[0]?.plain_text) {
-        return titleProperty.title[0].plain_text;
-      }
-      return 'Untitled';
-    } catch (error) {
-      return 'Untitled';
-    }
-  }
-
-  // Helper function to get slug from database
-  function getSlug(item: any): string {
-    try {
-      const slugProperty = item.properties?.['slug'];
-      if (slugProperty?.rich_text?.[0]?.plain_text) {
-        return slugProperty.rich_text[0].plain_text;
-      }
-      
-      return '';
-    } catch (error) {
-      return '';
-    }
-  }
-
-  // Helper function to check if a guide is published
-  function isPublished(item: any): boolean {
-    try {
-      const publishedProperty = item.properties?.['Published'];
-      if (publishedProperty && 'checkbox' in publishedProperty) {
-        return publishedProperty.checkbox === true;
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  // Helper function to check if a guide is in Spanish
-  function isSpanish(item: any): boolean {
-    try {
-      const langProperty = item.properties?.['Lang'];
-      if (langProperty && 'select' in langProperty && langProperty.select) {
-        return langProperty.select.name === 'Es' || langProperty.select.name === 'ES' || langProperty.select.name === 'Spanish';
-      }
-      return false;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  // Get all Notion pages that match our criteria
-  const notionDatabaseId = '1cb0a3cd15e3800188b5fb088dafe97c';
-  const notionContent = await getNotionDatabase(notionDatabaseId);
-
-  return notionContent
-    .filter((item: any) => {
-      const title = getPageTitle(item);
-      const slug = getSlug(item);
-      const published = isPublished(item);
-      const spanish = isSpanish(item);
-      
-      // Only include items with valid titles, slugs, published status, and Spanish language
-      return title !== 'Untitled' && slug !== '' && published && spanish;
+  const guides = await getGuidesFromSupabase('es') as Guide[];
+  
+  return guides
+    .filter((guide: Guide) => {
+      return guide.title && guide.slug && guide.published !== false;
     })
-    .map((item: any) => {
-      const title = getPageTitle(item);
-      const slug = getSlug(item);
-      
+    .map((guide: Guide) => {
       return {
-        params: { slug },
+        params: { slug: guide.slug },
         props: { 
-          pageId: item.id,
-          title,
-          slug,
-          icon: item.icon,
-          lastEdited: item.last_edited_time
+          guide,
+          title: guide.title,
+          lastEdited: guide.last_edited || guide.updated_at
         }
       };
     });
 }
 
-const { pageId, title, lastEdited } = Astro.props;
+const { guide, title, lastEdited } = Astro.props as { guide: Guide; title: string; lastEdited?: string };
 
-// Fetch the page blocks
-const notion = new Client({
-  auth: import.meta.env.NOTION_API_KEY,
-});
-
-const blocks = await notion.blocks.children.list({
-  block_id: pageId,
-  page_size: 100,
-});
-
-// Function to fetch children blocks recursively
-async function fetchChildrenBlocks(blockId: string): Promise<BlockObjectResponse[]> {
-  const response = await notion.blocks.children.list({
-    block_id: blockId,
-    page_size: 200,
-  });
-  
-  // Process each child block recursively
-  const processedChildren = await Promise.all(
-    response.results.map(async (child: any) => {
-      if (child.has_children) {
-        const grandChildren = await fetchChildrenBlocks(child.id);
-        return {
-          ...child,
-          children: grandChildren
-        };
-      }
-      return child;
-    })
-  );
-  
-  return processedChildren;
+if (!guide) {
+  throw new Error('Guide not found');
 }
 
-// Process blocks and fetch children if needed
-const processedBlocks = await Promise.all(
-  blocks.results.map(async (block: any) => {
-    if (block.has_children) {
-      const children = await fetchChildrenBlocks(block.id);
-      return {
-        ...block,
-        children: children
-      };
-    }
-    return block;
-  })
-);
+const content = guide.content || '';
 
-// Extract headings from blocks for TOC
-const headings: any[] = [];
-processedBlocks.forEach((block: any) => {
-  if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
-    const text = block.heading_1?.rich_text?.[0]?.plain_text || 
-                 block.heading_2?.rich_text?.[0]?.plain_text || 
-                 block.heading_3?.rich_text?.[0]?.plain_text;
-    if (text) {
-      headings.push({
-        depth: block.type === 'heading_1' ? 1 : block.type === 'heading_2' ? 2 : 3,
-        text: text,
-        id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      });
+// Extract headings for table of contents
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
+  const lines = content.split('\n');
+  
+  lines.forEach((line, index) => {
+    const match = line.match(/^(#{1,6})\s+(.+)$/);
+    if (match) {
+      const depth = match[1].length;
+      const text = match[2];
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      headings.push({ id, text, depth });
     }
-  }
-});
+  });
+  
+  return headings;
+}
 
+const headings = extractHeadings(content);
 ---
 
 <GuidesLayout 
@@ -170,9 +72,7 @@ processedBlocks.forEach((block: any) => {
 >
   <!-- Content -->
   <div class="prose prose-lg max-w-none">
-    {processedBlocks.map((block: any) => (
-      <NotionBlock block={block} />
-    ))}
+    <div set:html={content} />
   </div>
 </GuidesLayout>
 

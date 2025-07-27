@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import whiteVerticalLogo from '../../assets/logo/white-vertical.svg';
 import { ShieldCheckIcon, UserGroupIcon, StarIcon, HeartIcon, GlobeAltIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
 

@@ -1,150 +1,126 @@
 ---
 export const prerender = true;
 import VisasLayout from '../../../layouts/VisasLayout.astro';
-import { getNotionDatabase, getNotionPage } from '../../../utils/notion';
-import NotionBlock from '../../../components/content/NotionBlock.astro';
-import { Client } from '@notionhq/client';
-import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import type { NotionPage } from '../../../utils/notionTypes';
-import { 
-  getPageTitle, 
-  getPageDescription, 
-  getPageSlug, 
-  getPageSelectValue 
-} from '../../../utils/notionHelpers';
+import { getVisasFromSupabase, getVisaBySlugFromSupabase } from '../../../lib/syncNotionToSupabase.js';
+
+interface Visa {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  last_edited?: string;
+  updated_at?: string;
+}
 
 export async function getStaticPaths() {
-  const databaseId = 'eea50d4ca9a64f329585bd8b64a583a6';
-  const pages = await getNotionDatabase(databaseId) as NotionPage[];
+  const visas = await getVisasFromSupabase('en') as Visa[];
   
-  // Filter for English pages
-  const englishPages = pages.filter(page => 
-    getPageSelectValue(page, 'Lang') === "En"
-  );
-  
-  return englishPages.map((page) => {
-    const slug = getPageSlug(page, 'slug');
+  return visas.map((visa: Visa) => {
+    const slug = visa.slug;
     if (!slug) {
       return null;
     }
     
     return {
       params: { slug },
-      props: { pageId: page.id }
+      props: { visa }
     };
   }).filter(Boolean);
 }
 
-const { pageId } = Astro.props;
+const { visa } = Astro.props as { visa: Visa };
 
-const pageResponse = await getNotionPage(pageId);
-// Type guard to ensure we have a valid page response
-if (!pageResponse) {
-  throw new Error('Invalid page response from Notion API');
+if (!visa) {
+  throw new Error('Visa not found');
 }
-const page = pageResponse;
 
-const title = getPageTitle(page, 'Name');
-const description = getPageDescription(page, 'Description');
+const title = visa.title;
+const description = visa.description;
 const currentSlug = Astro.params.slug;
 
-// Fetch the page blocks
-const notion = new Client({
-  auth: import.meta.env.NOTION_API_KEY,
-});
+// Get menu data for the sidebar
+import { getAllContentData } from '../../../lib/contentData.js';
+const menuData = await getAllContentData('en');
 
-const blocks = await notion.blocks.children.list({
-  block_id: pageId,
-  page_size: 100,
-});
+// Convert content to markdown if needed
+const content = visa.content || '';
 
-// Function to fetch children blocks recursively
-async function fetchChildrenBlocks(blockId: string): Promise<BlockObjectResponse[]> {
-  const response = await notion.blocks.children.list({
-    block_id: blockId,
-    page_size: 100,
-  });
-  
-  // Process each child block recursively
-  const processedChildren = await Promise.all(
-    response.results.map(async (child: any) => {
-      if (child.has_children) {
-        const grandChildren = await fetchChildrenBlocks(child.id);
-        return {
-          ...child,
-          children: grandChildren
-        };
-      }
-      return child;
+// Markdown to HTML conversion (same as CLKR)
+function markdownToHtml(markdown: string): string {
+  if (!markdown) return '';
+  return markdown
+    // Headings with ID generation
+    .replace(/^### (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h3 id="${id}">${text}</h3>`;
     })
-  );
-  
-  return processedChildren;
+    .replace(/^## (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h2 id="${id}">${text}</h2>`;
+    })
+    .replace(/^# (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h1 id="${id}">${text}</h1>`;
+    })
+    // Bold and italic
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Code blocks
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Images
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // Lists
+    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    // Paragraphs (simplified)
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
+    // Clean up
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
+    .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
+    .replace(/<ul><ul>/g, '<ul>')
+    .replace(/<\/ul><\/ul>/g, '</ul>');
 }
 
-// Process blocks and fetch children if needed
-const processedBlocks = await Promise.all(
-  blocks.results.map(async (block: any) => {
-    if (block.has_children) {
-      const children = await fetchChildrenBlocks(block.id);
-      return {
-        ...block,
-        children: children
-      };
-    }
-    return block;
-  })
-);
+const htmlContent = markdownToHtml(content);
 
-// Extract headings for table of contents
-function extractHeadings(blocks: any[]): { id: string; text: string; depth: number }[] {
+// Extract headings for table of contents (simplified for now)
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
   const headings: { id: string; text: string; depth: number }[] = [];
+  const lines = content.split('\n');
   
-  blocks.forEach((block: any) => {
-    if (block.type.startsWith('heading_')) {
-      const depth = parseInt(block.type.split('_')[1]);
-      const text = block[block.type].rich_text.map((t: any) => t.plain_text).join('');
-      if (text) {
-        // Create a slug from the text for the ID
-        const slug = text.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '');
-        headings.push({ id: slug, text, depth });
-      }
-    }
-    // Check children blocks recursively
-    if (block.children) {
-      headings.push(...extractHeadings(block.children));
+  lines.forEach((line, index) => {
+    const match = line.match(/^(#{1,6})\s+(.+)$/);
+    if (match) {
+      const depth = match[1].length;
+      const text = match[2];
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      headings.push({ id, text, depth });
     }
   });
   
   return headings;
 }
 
-// Extract headings for table of contents
-const headings = extractHeadings(processedBlocks);
+const headings = extractHeadings(content);
 ---
 
-<VisasLayout 
+<VisasLayout
   title={title}
   description={description}
   lang="en"
   headings={headings}
-  lastEdited={page.last_edited_time}
+  lastEdited={visa.last_edited || visa.updated_at}
   currentSlug={currentSlug}
+  menuData={menuData}
 >
   <div class="prose prose-lg max-w-none">
-    {processedBlocks.map((block: any) => {
-      // Add ID to heading blocks
-      if (block.type.startsWith('heading_')) {
-        const text = block[block.type].rich_text.map((t: any) => t.plain_text).join('');
-        const slug = text.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '');
-        block.id = slug;
-      }
-      return <NotionBlock block={block} />;
-    })}
+    <div set:html={htmlContent} />
   </div>
 </VisasLayout>
 

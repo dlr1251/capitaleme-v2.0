@@ -1,7 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
-import { getAllMenuData } from '../utils/menuDataOptimized.js';
+import { getAllContentData } from '../lib/contentData.js';
 
 export interface Props {
   title: string;
@@ -11,6 +11,10 @@ export interface Props {
   headings?: any[];
   lastEdited?: string;
   showBreadcrumb?: boolean;
+  menuData?: any;
+  timeToRead?: number;
+  author?: string;
+  publishedDate?: string;
 }
 
 const { 
@@ -20,141 +24,190 @@ const {
   pathname,
   headings = [],
   lastEdited,
-  showBreadcrumb = false
+  showBreadcrumb = false,
+  menuData,
+  timeToRead = 5,
+  author = 'Capital M Law',
+  publishedDate
 } = Astro.props;
 
-// Get optimized menu data
-const menuData = await getAllMenuData(lang);
+// Get optimized menu data if not provided
+const optimizedMenuData = menuData || await getAllContentData(lang);
 
 // Get guides for sidebar navigation
-const guidesData = menuData?.guides || [];
+const guidesData = optimizedMenuData?.allGuides || [];
 const hasHeadings = headings && headings.length > 0;
+
+const safeLang = lang === 'es' ? 'es' : 'en';
 ---
 
-<Layout title={title} description={description} lang={lang} pathname={pathname} menuData={menuData}>
-  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
-    <div class="flex gap-8">
-      <!-- Left Navigation Panel -->
-      <aside class="hidden lg:block w-64 shrink-0">
-        <div class="sticky top-32">
-          <nav class="space-y-6">
-            <!-- Header -->
-            <div class="pb-4 border-b border-gray-200">
-              <h2 class="text-lg font-bold text-gray-900 mb-2">📚 {lang === 'es' ? 'Guías Legales' : 'Legal Guides'}</h2>
-              <p class="text-sm text-gray-600">{lang === 'es' ? 'Recursos y guías paso a paso' : 'Step-by-step resources and guides'}</p>
-            </div>
-
-            <!-- Guides Navigation -->
-            {guidesData.length > 0 && (
-              <div class="space-y-2">
-                <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                  {lang === 'es' ? 'Guías Disponibles' : 'Available Guides'}
-                </h3>
-                <div class="space-y-1">
-                  {guidesData.slice(0, 10).map((guide: any) => (
-                    <a
-                      href={guide.url}
-                      class={`block px-3 py-2 text-sm rounded-md transition-all duration-200 ${
-                        guide.slug === Astro.params.slug
-                          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
-                      }`}
-                    >
-                      <div class="font-medium">{guide.title}</div>
-                      {guide.description && (
-                        <div class="text-xs text-gray-500 mt-1 line-clamp-2">
-                          {guide.description}
-                        </div>
-                      )}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <!-- Quick Links -->
-            <div class="pt-4 border-t border-gray-200">
-              <h3 class="text-sm font-semibold text-gray-900 mb-3">
-                {lang === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
-              </h3>
-              <div class="space-y-2">
-                <a href={`/${lang}/guides`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                  <span class="mr-2">🏠</span>
-                  {lang === 'es' ? 'Inicio Guías' : 'Guides Home'}
-                </a>
-                <a href={`/${lang}/contact`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                  <span class="mr-2">📞</span>
-                  {lang === 'es' ? 'Contáctanos' : 'Contact Us'}
-                </a>
-                <a href={`/${lang}/visas`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                  <span class="mr-2">🛂</span>
-                  {lang === 'es' ? 'Visas' : 'Visas'}
-                </a>
-                <a href={`/${lang}/real-estate`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                  <span class="mr-2">🏠</span>
-                  {lang === 'es' ? 'Bienes Raíces' : 'Real Estate'}
-                </a>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <article class="flex-1 min-w-0">
-        <!-- Breadcrumb -->
-        {showBreadcrumb && (
-          <nav class="mb-6" aria-label="Breadcrumb">
-            <ol class="flex items-center space-x-2 text-sm text-gray-500">
-              <li><a href={`/${lang}`} class="hover:text-gray-700">{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
-              <li class="flex items-center">
-                <span class="mx-2">/</span>
-                <a href={`/${lang}/guides`} class="hover:text-gray-700">{lang === 'es' ? 'Guías' : 'Guides'}</a>
-              </li>
-              <li class="flex items-center">
-                <span class="mx-2">/</span>
-                <span class="text-gray-900">{title}</span>
-              </li>
-            </ol>
-          </nav>
-        )}
-
-        <!-- Header -->
-        <header class="mb-8">
-          <h1 class="text-3xl sm:text-4xl font-light text-gray-900 mb-4">{title}</h1>
+<Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData}>
+  <div class="bg-white">
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-blue-50 to-indigo-50 py-16">
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            {title}
+          </h1>
           {description && (
-            <p class="text-lg text-gray-600 max-w-3xl mb-4">
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               {description}
             </p>
           )}
           
-          <!-- Meta information -->
-          {lastEdited && (
-            <div class="flex items-center gap-6 text-sm text-gray-500">
+          <!-- Meta Information -->
+          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 mb-8">
+            {author && (
               <div class="flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span>{author}</span>
+              </div>
+            )}
+            {publishedDate && (
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6m-6 0H8m0 0v4m0-4H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2H8z"/>
+                </svg>
+                <time datetime={publishedDate}>
+                  {new Date(publishedDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+              </div>
+            )}
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>{timeToRead} {lang === 'en' ? 'min read' : 'min de lectura'}</span>
+            </div>
+            {lastEdited && (
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
                 <span>
-                  {lang === 'es' ? 'Última actualización' : 'Last updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US')}
+                  {lang === 'es' ? 'Actualizado' : 'Updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
                 </span>
               </div>
-            </div>
-          )}
-        </header>
-
-        <!-- Content -->
-        <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
-          <slot />
+            )}
+          </div>
         </div>
-      </article>
+      </div>
+    </div>
 
-      <!-- Right Table of Contents -->
-      {hasHeadings && (
-        <aside class="hidden xl:block w-80 shrink-0">
+    <!-- Main Content Section -->
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="flex gap-8">
+        <!-- Left Navigation Panel -->
+        <aside class="hidden lg:block w-64 shrink-0">
           <div class="sticky top-32">
-            <TableOfContents headings={headings} lang={lang} />
+            <nav class="space-y-6">
+              <!-- Header -->
+              <div class="pb-4 border-b border-gray-200">
+                <h2 class="text-lg font-bold text-gray-900 mb-2">📚 {lang === 'es' ? 'Guías Legales' : 'Legal Guides'}</h2>
+                <p class="text-sm text-gray-600">{lang === 'es' ? 'Recursos y guías paso a paso' : 'Step-by-step resources and guides'}</p>
+              </div>
+
+              <!-- Guides Navigation -->
+              {guidesData.length > 0 && (
+                <div class="space-y-2">
+                  <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                    {lang === 'es' ? 'Guías Disponibles' : 'Available Guides'}
+                  </h3>
+                  <div class="space-y-1">
+                    {guidesData.slice(0, 10).map((guide: any) => (
+                      <a
+                        href={guide.url || `/${lang}/guides/${guide.slug}`}
+                        class={`block px-3 py-2 text-sm rounded-md transition-all duration-200 ${
+                          guide.slug === Astro.params.slug
+                            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                        }`}
+                      >
+                        <div class="font-medium">{guide.title}</div>
+                        {guide.description && (
+                          <div class="text-xs text-gray-500 mt-1 line-clamp-2">
+                            {guide.description}
+                          </div>
+                        )}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <!-- Quick Links -->
+              <div class="pt-4 border-t border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                  {lang === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
+                </h3>
+                <div class="space-y-2">
+                  <a href={`/${lang}/guides`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                    <span class="mr-2">🏠</span>
+                    {lang === 'es' ? 'Inicio Guías' : 'Guides Home'}
+                  </a>
+                  <a href={`/${lang}/contact`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                    <span class="mr-2">📞</span>
+                    {lang === 'es' ? 'Contáctanos' : 'Contact Us'}
+                  </a>
+                  <a href={`/${lang}/visas`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                    <span class="mr-2">🛂</span>
+                    {lang === 'es' ? 'Visas' : 'Visas'}
+                  </a>
+                  <a href={`/${lang}/real-estate`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                    <span class="mr-2">🏠</span>
+                    {lang === 'es' ? 'Bienes Raíces' : 'Real Estate'}
+                  </a>
+                </div>
+              </div>
+            </nav>
           </div>
         </aside>
-      )}
+
+        <!-- Main Content -->
+        <article class="flex-1 min-w-0">
+          <!-- Breadcrumb -->
+          {showBreadcrumb && (
+            <nav class="mb-6" aria-label="Breadcrumb">
+              <ol class="flex items-center space-x-2 text-sm text-gray-500">
+                <li><a href={`/${lang}`} class="hover:text-gray-700">{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
+                <li class="flex items-center">
+                  <span class="mx-2">/</span>
+                  <a href={`/${lang}/guides`} class="hover:text-gray-700">{lang === 'es' ? 'Guías' : 'Guides'}</a>
+                </li>
+                <li class="flex items-center">
+                  <span class="mx-2">/</span>
+                  <span class="text-gray-900">{title}</span>
+                </li>
+              </ol>
+            </nav>
+          )}
+
+          <!-- Content -->
+          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
+            <slot />
+          </div>
+        </article>
+
+        <!-- Right Table of Contents -->
+        {hasHeadings && (
+          <aside class="hidden xl:block w-80 shrink-0">
+            <div class="sticky top-32">
+              <TableOfContents headings={headings} lang={lang} />
+            </div>
+          </aside>
+        )}
+      </div>
     </div>
   </div>
 </Layout>

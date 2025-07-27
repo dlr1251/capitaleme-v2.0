@@ -1,0 +1,87 @@
+---
+interface Props {
+  lang?: 'en' | 'es';
+}
+
+const { lang = 'en' } = Astro.props;
+
+// Define content based on language
+const content = lang === 'es' ? {
+  title: "Bienvenido a",
+  subtitle: "Capital M Law",
+  description: "Una firma de abogados colombiana dirigida por Daniel Luque y María Fernanda Duarte",
+  tagline: "Rápido, Asequible, Bilingüe",
+  features: [
+    "Servicios Bilingües",
+    "Asesoría Legal Experta", 
+    "Comprensión Cultural"
+  ],
+  cardTitle: "Organizamos tus procesos legales en Colombia",
+  cardDescription: "Enseñamos y asesoramos sobre el sistema legal colombiano, haciendo tu viaje legal suave y exitoso."
+} : {
+  title: "Welcome to",
+  subtitle: "Capital M Law",
+  description: "A Colombian Law Firm led by Daniel Luque and María Fernanda Duarte",
+  tagline: "Fast, Affordable, Bilingual",
+  features: [
+    "Bilingual Services",
+    "Expert Legal Counsel",
+    "Cultural Understanding"
+  ],
+  cardTitle: "We organize your legal processes in Colombia",
+  cardDescription: "We teach and advice on the Colombian legal system, making your legal journey smooth and successful."
+};
+---
+
+<section class="relative bg-gradient-to-br from-primary to-secondary text-white overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 opacity-20">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:pt-36">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="space-y-8">      
+        
+        <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+          {content.title}
+          <span class="block text-white">{content.subtitle}</span>
+        </h1>
+        
+        <div class="space-y-4">
+          <h2 class="text-2xl md:text-3xl font-semibold text-white">
+            {content.description}
+          </h2>
+          <p class="text-xl text-white font-light">
+            {content.tagline}
+          </p>
+        </div>
+        
+        <div class="flex flex-wrap gap-4">
+          {content.features.map((feature) => (
+            <div class="flex items-center text-grey-900">
+              <svg class="w-5 h-5 mr-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              {feature}
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="relative">
+        <div class="bg-secondary rounded-2xl p-8 border border-blue-400/30">
+          <div class="text-center space-y-4">
+            <div class="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-grey-900">{content.cardTitle}</h3>
+            <p class="text-white-100/80">{content.cardDescription}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 

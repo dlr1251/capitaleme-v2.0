@@ -1,121 +1,49 @@
 # Components Directory Structure
 
-This directory contains all reusable components for the CapitalE website. The structure is organized by functionality and follows clear naming conventions.
+This directory contains all reusable components for the CapitalE website. The structure is organized by functionality, language, and clear naming conventions.
 
 ## 📁 Directory Structure
 
 ```
 src/components/
 ├── README.md                    # This file - component organization guide
-├── core/                        # Core application components
-│   ├── layout/                  # Layout-related components
-│   │   ├── Navbar.tsx          # Main navigation bar
-│   │   ├── NavbarMobile.tsx    # Mobile navigation
-│   │   ├── Footer.astro        # Site footer
-│   │   └── ContactBar.astro    # Contact information bar
-│   ├── navigation/              # Navigation components
-│   │   ├── BreadCrumb.astro    # Breadcrumb navigation
-│   │   ├── TableOfContents.astro # Table of contents
-│   │   ├── MobileTOC.astro     # Mobile table of contents
-│   │   └── ResourcesTOC.jsx    # Resources table of contents
-│   └── common/                  # Common utility components
-│       ├── Accordion.jsx        # Reusable accordion component
-│       ├── AccordionFAQ.jsx     # FAQ accordion component
-│       ├── CalendlyButton.jsx   # Calendly integration button
-│       ├── WhatsAppButton.astro # WhatsApp contact button
-│       ├── SocialSharing.jsx    # Social media sharing
-│       ├── AnimatedNewsPanel.jsx # Animated news panel
-│       └── GoogleTag.astro      # Google Analytics tag
+├── about/                       # About page components (en/es)
+│   ├── en/
+│   └── es/
+├── blog/                        # Blog components (en/es)
+│   ├── en/
+│   └── es/
+├── clkr/                        # CLKR (Colombian Legal Knowledge Repository) components (en/es)
+│   ├── en/
+│   └── es/
+├── contact/                     # Contact page components (en/es)
+│   ├── en/
+│   └── es/
 ├── content/                     # Content rendering components
-│   ├── NotionBlock.astro       # Notion content block renderer
-│   └── TableOfContentsHeading.astro # Table of contents headings
-├── features/                    # Feature-specific components
-│   ├── blog/                    # Blog-related components
-│   │   ├── BlogCard.tsx        # Blog post card
-│   │   ├── BlogExplorer.tsx    # Blog post explorer
-│   │   ├── BlogPageHero.tsx    # Blog page hero section
-│   │   ├── BlogPageLatest.astro # Latest blog posts section
-│   │   └── CoverImage.tsx      # Blog cover image component
-│   ├── real-estate/             # Real estate components
-│   │   ├── PropertyCard.tsx    # Property listing card
-│   │   ├── PropertyGallery.tsx # Property image gallery
-│   │   ├── PropertyFilters.tsx # Property search filters
-│   │   ├── Calculator.tsx      # Real estate calculator
-│   │   ├── CLKRRepository.tsx  # CLKR repository component
-│   │   ├── RealEstateGuide.tsx # Real estate guide
-│   │   ├── SellerFeatures.tsx  # Seller features section
-│   │   └── PropertySearchService.tsx # Property search service
-│   ├── visa-services/           # Visa service components
-│   │   ├── VisaCard.tsx        # Visa information card
-│   │   ├── VisaFilterWidget.tsx # Visa filtering widget
-│   │   ├── AllVisaFilterWidget.tsx # All visa filter widget
-│   │   ├── ConsultationSection.tsx # Visa consultation section
-│   │   ├── ServiceProcess.tsx  # Service process steps
-│   │   ├── VisasHero.tsx       # Visa services hero section
-│   │   ├── LatestBlogSection.tsx # Latest blog section for visas
-│   │   └── ApostilleCountries.tsx # Apostille countries component
-│   ├── clkr/                    # CLKR (Colombian Legal Knowledge Repository)
-│   │   ├── CLKRConsultationForm.tsx # CLKR consultation form
-│   │   └── CLKRRepository.tsx  # CLKR repository component
-│   └── resources/               # Resource components
-│       ├── CountryExemptionCheck.tsx # Country exemption checker
-│       └── DaysCounter.tsx      # Days counter component
-├── pages/                       # Page-specific components
-│   ├── home/                    # Home page components
-│   │   ├── HomePageHero.tsx    # Home page hero section
-│   │   ├── HomePageVisas.tsx   # Home page visas section
-│   │   ├── HomePageRealEstate.tsx # Home page real estate section
-│   │   ├── HomePageCLKR.tsx    # Home page CLKR section
-│   │   ├── ServicesGrid.tsx    # Services grid section
-│   │   ├── ReviewsSection.tsx  # Customer reviews section
-│   │   └── ValuesSection.tsx   # Company values section
-│   ├── about/                   # About page components
-│   │   ├── AboutPageHero.tsx   # About page hero
-│   │   ├── AboutPageMission.tsx # About page mission section
-│   │   ├── AboutPageGallery.astro # About page gallery
-│   │   └── OurTeam.tsx         # Team members section
-│   ├── contact/                 # Contact page components
-│   │   ├── ContactForm.astro   # Contact form
-│   │   └── ContactPageCard.astro # Contact page card
-│   └── services/                # Services page components
-│       ├── ServicesHero.tsx    # Services page hero
-│       └── ServicesGrid.tsx    # Services grid
+│   └── NotionBlock.astro        # Notion content block renderer
+├── core/                        # Core application components
+│   ├── common/                  # Common utility components (e.g., SocialSharing, Accordions)
+│   ├── layout/                  # Layout-related components (Navbar, Footer, etc.)
+│   └── navigation/              # Navigation components (Breadcrumb, TOC, etc.)
+├── home/                        # Home page components (en/es)
+│   ├── en/
+│   └── es/
+├── real-estate/                 # Real estate components (en/es)
+│   ├── en/
+│   └── es/
+├── shared/                      # Shared components across languages (AnimatedLogoIcon, InfoSection, etc.)
+├── terms/                       # Terms & conditions components (en/es)
+│   ├── en/
+│   └── es/
 ├── ui/                          # UI components (design system)
-│   ├── buttons/                 # Button components
-│   │   ├── PrimaryButton.tsx   # Primary button
-│   │   ├── SecondaryButton.tsx # Secondary button
-│   │   └── IconButton.tsx      # Icon button
-│   ├── cards/                   # Card components
-│   │   ├── BaseCard.tsx        # Base card component
-│   │   ├── InfoCard.tsx        # Information card
-│   │   ├── FeatureCard.tsx     # Feature card
-│   │   ├── TestimonialCard.tsx # Testimonial card
-│   │   ├── GoogleReviews.tsx   # Google reviews card
-│   │   └── PropertyCard.tsx    # Property card (moved from features)
-│   ├── forms/                   # Form components
-│   │   ├── Input.tsx           # Input field
-│   │   ├── Select.tsx          # Select dropdown
-│   │   ├── Checkbox.tsx        # Checkbox component
-│   │   ├── TextArea.tsx        # Text area component
-│   │   └── ContactForm.astro   # Contact form (moved from pages)
-│   ├── navigation/              # Navigation UI components
-│   │   ├── Menu.tsx            # Menu component
-│   │   ├── Dropdown.tsx        # Dropdown menu
-│   │   └── Pagination.tsx      # Pagination component
-│   ├── layout/                  # Layout UI components
-│   │   ├── Container.tsx       # Container component
-│   │   ├── Grid.tsx            # Grid layout
-│   │   ├── Flex.tsx            # Flex layout
-│   │   └── Section.tsx         # Section wrapper
-│   └── feedback/                # Feedback components
-│       ├── Loading.tsx         # Loading spinner
-│       ├── Error.tsx           # Error message
-│       └── Success.tsx         # Success message
-└── shared/                      # Shared components across languages
-    ├── AnimatedLogoIcon.tsx    # Animated logo component
-    ├── FloatingTeamAvatars.tsx # Floating team avatars
-    ├── InfoSection.tsx         # Information section
-    └── ValuesSection.tsx       # Values section (moved from pages)
+│   ├── Button.tsx
+│   ├── Card.tsx
+│   ├── Input.tsx
+│   ├── cards/
+│   └── forms/
+├── visas/                       # Visa-related components (en/es)
+│   ├── en/
+│   └── es/
 ```
 
 ## 🏗️ Organization Principles

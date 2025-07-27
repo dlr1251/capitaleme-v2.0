@@ -1,104 +1,35 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+import AboutPageHero from '../../components/about/AboutPageHero.astro';
+import AboutPageSection from '../../components/about/AboutPageSection.astro';
+import ValuesSection from '../../components/about/ValuesSection.tsx';
+import { getTeamMembers } from '../../utils/teamData.js';
+import { getAllContentData } from '../../lib/contentData.js';
+const lang = 'en';
+const menuData = await getAllContentData(lang);
+function getNotionText(prop: any) {
+  if (!prop) return '';
+  if (Array.isArray(prop.title) && prop.title[0]?.plain_text) return prop.title[0].plain_text;
+  if (Array.isArray(prop.rich_text) && prop.rich_text[0]?.plain_text) return prop.rich_text[0].plain_text;
+  if (prop.plain_text) return prop.plain_text;
+  return '';
+}
+const guides = Array.isArray(menuData?.allGuides)
+  ? menuData.allGuides.map(g => ({
+      id: g.id,
+      title: g.title,
+      slug: g.slug,
+      description: g.description,
+      lastEdited: g.lastEdited || g.lastEditedTime || g.last_edited_time || '',
+    }))
+  : [];
 
 
-export const prerender = true;
-import Layout from "../../layouts/Layout.astro";
-import GoogleReviews from "../../components/ui/cards/GoogleReviews.jsx";
-import OurTeam from "../../components/pages/about/OurTeam.tsx";
-// import AboutPageSection from "../../components/en/pages/AboutPageSection.astro"; // UNUSED - commenting out
-import AnimatedLogoIcon from "../../components/shared/AnimatedLogoIcon.jsx";
-import ValuesSection from "../../components/shared/ValuesSection.jsx";
-import { getTeamMembers } from "../../utils/teamData.js";
-import type { TeamMemberData } from "../../types/index";
 
-const pageTitle = "About Us - Capital M Law | Colombian Legal Services";
-
-// Get team members data
-const teamMembers: TeamMemberData[] = await getTeamMembers('en');
-
-const messages = [
-      "We want to help expats, nomads and travelers with their legal processes in Colombia because we know what it means to be playing away from home.",
-      "Ultimately, we want to enrich Colombian culture through cultural exchange with expats, nomads, travelers, and tourists. We understand cultural differences and language barriers can slower down some [already slow] legal processes.",
-      "We are Colombian attorneys - abogados -. We understand the culture, language and common practices of the Colombian legal system.",
-      "We have practiced the Law across different areas gaining valuable insights to protect your interests. We believe that understanding Colombian regulations and operating under the Colombian legal system shouldn't be hard.",
-      "Our philosophy is to simplify the complexities of the legal world and prioritize open communication, trust, and the human aspect of all our interactions.",
-      "We love cats. Harry Potter. Kimetsu no Yaiba. Shakira. Bad Bunny. García Marquez. Hermann Hesse."
-    ];
-import { getAllMenuData } from "../../utils/menuData.js";
-const menuData = await getAllMenuData('en');
 ---
-<Layout title={pageTitle} menuData={menuData}>   
-  
-  <!-- Hero Section -->
-  <section class="relative bg-gradient-to-br from-primary to-secondary text-white overflow-hidden">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
-    </div>
-    
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:pt-36">
-      <div class="grid lg:grid-cols-2 gap-12 items-center">
-        <div class="space-y-8">      
-          
-          <h1 class="text-4xl md:text-6xl font-bold leading-tight">
-            Welcome to 
-            <span class="block text-white">Capital M Law</span>
-          </h1>
-          
-          <div class="space-y-4">
-            <h2 class="text-2xl md:text-3xl font-semibold text-white">
-              A Colombian Law Firm led by Daniel Luque and María Fernanda Duarte
-            </h2>
-            <p class="text-xl text-white font-light">
-              Fast, Affordable, Bilingual
-            </p>
-          </div>
-          
-          <div class="flex flex-wrap gap-4">
-            <div class="flex items-center text-grey-900">
-              <svg class="w-5 h-5 mr-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Bilingual Services
-            </div>
-            <div class="flex items-center text-grey-900">
-              <svg class="w-5 h-5 mr-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Expert Legal Counsel
-            </div>
-            <div class="flex items-center text-grey-900">
-              <svg class="w-5 h-5 mr-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-              Cultural Understanding
-            </div>
-          </div>
-        </div>
-        
-        <div class="relative">
-          <div class="bg-secondary rounded-2xl p-8 border border-blue-400/30">
-            <div class="text-center space-y-4">
-              <AnimatedLogoIcon client:load />
-              <h3 class="text-xl font-semibold text-grey-900">We organize your legal processes in Colombia</h3>
-              <p class="text-white-100/80">We teach and advice on the Colombian legal system, making your legal journey smooth and successful.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Values Section -->
-  <ValuesSection messages={messages} client:load />
-
-  <!-- About Page Section -->
-  <!-- <AboutPageSection /> -->
-
-  <!-- Team Section -->
-  <OurTeam members={teamMembers} client:load />
-
-  <!-- Reviews Section -->
-  <GoogleReviews client:load />
+<Layout title="Capital M Law - About" menuData={menuData} lang={lang}>
+  <AboutPageHero lang="en" />
+  <AboutPageSection lang="en" />
+  <ValuesSection lang="en" />
 </Layout>
                 

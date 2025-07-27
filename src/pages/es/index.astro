@@ -1,40 +1,32 @@
 ---
-export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
-import BlogPageLatest from '../../components/es/features/blog/BlogPageLatest.astro';
-import HomePageHero from '../../components/pages/home/HomePageHero.astro';
-import AboutPageSection from '../../components/pages/about/AboutPageSection.astro';
-import HomeRealEstateSection from '../../components/pages/home/HomeRealEstateSection';
-import HomeVisaAssistanceSection from '../../components/pages/home/HomeVisaAssistanceSection';
-import HomePageCLKR from '../../components/pages/home/HomePageCLKR.jsx';
-import CalendlyInline from '../../components/shared/CalendlyInline.astro';
-import { getAllVisasFromNotion, getGuides } from '../../utils/menuData.js';
-import { getCollection } from 'astro:content';
-import GoogleReviews from '../../components/ui/cards/GoogleReviews.jsx';
-import { getFeaturedProperty } from '../../utils/menuData.js';
-import { getAllMenuData } from '../../utils/menuData.js';
+import HomePageHero from '../../components/shared/HomePageHero.astro';
+import AboutPageSection from '../../components/about/AboutPageSection.astro';
+import HowWeWork from '../../components/home/es/HowWeWork.astro';
+import HomeVisaAssistanceSection from '../../components/visas/HomeVisaAssistanceSection.tsx';
+import HomeRealEstateSection from '../../components/real-estate/es/HomeRealEstateSection.tsx';
+import HomePageCLKR from '../../components/clkr/HomePageCLKR.tsx';
+import BlogPageLatest from '../../components/blog/BlogPageLatest.astro';
+import { getAllContentData } from '../../lib/contentData.js';
 
-// Get all visas from Notion
-const allVisas = await getAllVisasFromNotion('es');
-const guides = await getGuides('es');
-const featuredProperty = await getFeaturedProperty('es');
-const menuData = await getAllMenuData('es');
+const lang = 'es';
+const menuData = await getAllContentData(lang);
 
-// Fetch all properties from the content collection
-const properties = await getCollection('properties', ({ id }) => id.startsWith('es/'));
-const propertiesArray = properties as any[];
+const allVisas = menuData?.allVisas || [];
+const guides = menuData?.allGuides || [];
+const popularVisas = allVisas.filter((v: any) => v.isPopular);
+const featuredProperty = null; // No featuredProperty in new server data
 
 ---
-
-<Layout title="Capital M Law - Inicio" menuData={menuData}>
+<Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
 	<main class="">        
-        <HomePageHero/>
+        <HomePageHero currentLang="es"/>
         <AboutPageSection/>
-        <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="es" />
+        <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="es" client:load />
         <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="es" client:load />
-        <HomePageCLKR lang="es" client:load />
-    		<CalendlyInline />        
-        <GoogleReviews client:load/>
+        <HomePageCLKR lang="es" clkrServices={menuData?.clkrServices || []} client:load />
+    		<!-- <CalendlyInline /> -->
+        <HowWeWork lang="es"/>
 		    <BlogPageLatest/>
 	</main>
 </Layout>

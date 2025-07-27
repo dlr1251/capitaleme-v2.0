@@ -1,6 +1,6 @@
 // Menu data utilities for dynamic megamenus - OPTIMIZED VERSION
 import { getCollection } from 'astro:content';
-import { getNotionDatabase } from './notion.js';
+import { getVisasFromSupabase, getGuidesFromSupabase, getCLKRArticlesFromSupabase } from '../lib/syncNotionToSupabase.js';
 
 // Function to match author by email from authors collection
 async function matchAuthorByEmail(authorEmail) {
@@ -47,14 +47,6 @@ let menuDataCache = {
 // Cache duration: 5 minutes
 const CACHE_DURATION = 5 * 60 * 1000;
 
-// Database IDs
-const DATABASE_IDS = {
-  VISAS: 'eea50d4ca9a64f329585bd8b64a583a6',
-  GUIDES: '1cb0a3cd15e3800188b5fb088dafe97c',
-  CLKR: '20d0a3cd15e38169928fff5c6f2b219c',
-  BLOG: '2130a3cd15e38019bc9fce1432312c6c'
-};
-
 // Check if cache is valid
 function isCacheValid(lang) {
   if (!menuDataCache.data || !menuDataCache.timestamp || menuDataCache.lang !== lang) {
@@ -75,17 +67,18 @@ function clearCache() {
 // Export clearCache for external use
 export { clearCache };
 
-// Fetch all databases in parallel
+// Fetch all databases from Supabase
 async function fetchAllDatabases(lang) {
-  
   try {
-    // Fetch all databases simultaneously
-    const [visasData, guidesData, clkrData, blogData] = await Promise.all([
-      getNotionDatabase(DATABASE_IDS.VISAS),
-      getNotionDatabase(DATABASE_IDS.GUIDES),
-      getNotionDatabase(DATABASE_IDS.CLKR),
-      getNotionDatabase(DATABASE_IDS.BLOG)
+    // Fetch all databases from Supabase
+    const [visasData, guidesData, clkrData] = await Promise.all([
+      getVisasFromSupabase(lang),
+      getGuidesFromSupabase(lang),
+      getCLKRArticlesFromSupabase(lang)
     ]);
+
+    // Blog data is still placeholder for now
+    const blogData = [];
 
     return {
       visasData,
@@ -94,7 +87,7 @@ async function fetchAllDatabases(lang) {
       blogData
     };
   } catch (error) {
-    
+    console.error('Error fetching data from Supabase:', error);
     throw error;
   }
 }
@@ -102,36 +95,29 @@ async function fetchAllDatabases(lang) {
 // Process visas data
 function processVisasData(visasData, lang) {
   const allVisas = visasData
-    .filter(page => {
-      const pageLang = page.properties.Lang?.select?.name;
-      const isCorrectLang = (pageLang === 'En' && lang === 'en') || (pageLang === 'Es' && lang === 'es');
-      return isCorrectLang;
+    .filter(visa => {
+      // Filter by language
+      return visa.lang === lang;
     })
-    .map(page => {
-      const properties = page.properties;
-      const countries = properties.Countries?.select?.name ? [properties.Countries.select.name] : [];
-      
+    .map(visa => {
       return {
-        id: page.id,
-        title: properties.Name?.title?.[0]?.plain_text || properties.Title?.title?.[0]?.plain_text || '',
-        slug: properties.slug?.rich_text?.[0]?.plain_text || properties.Slug?.rich_text?.[0]?.plain_text || '',
-        description: properties.Words?.rich_text?.[0]?.plain_text || properties.Description?.rich_text?.[0]?.plain_text || '',
-        category: properties.Tipo?.select?.name || properties.VisaType?.select?.name || 'visa',
-        country: properties.Countries?.select?.name || properties.Country?.select?.name || '',
-        countries: properties.Countries?.select?.name ? [properties.Countries.select.name] : 
-                  properties.Countries?.multi_select?.map(item => item.name) || [],
-        isPopular: properties.Popular?.checkbox || false,
-        beneficiaries: properties.Beneficiaries?.select?.name || 
-                      properties.Beneficiaries?.multi_select?.[0]?.name || '',
-        workPermit: properties.WorkPermit?.select?.name || 
-                   (properties.WorkPermit?.checkbox ? 'Yes' : 'No') || '',
-        processingTime: properties.ProcessingTime?.rich_text?.[0]?.plain_text || '',
-        requirements: properties.Requirements?.rich_text?.[0]?.plain_text || '',
-        url: `/${lang}/visas/${properties.slug?.rich_text?.[0]?.plain_text || properties.Slug?.rich_text?.[0]?.plain_text || page.id}`,
-        lastEdited: page.last_edited_time,
-        emoji: properties.Emoji?.rich_text?.[0]?.plain_text || '📋',
-        alcance: properties.Alcance?.rich_text?.[0]?.plain_text || '',
-        duration: properties.Duration?.rich_text?.[0]?.plain_text || ''
+        id: visa.id,
+        title: visa.title || '',
+        slug: visa.slug || '',
+        description: visa.description || '',
+        category: visa.category || 'visa',
+        country: visa.country || '',
+        countries: visa.countries || [],
+        isPopular: visa.is_popular || false,
+        beneficiaries: visa.beneficiaries || '',
+        workPermit: visa.work_permit || '',
+        processingTime: visa.processing_time || '',
+        requirements: visa.requirements || '',
+        url: `/${lang}/visas/${visa.slug || visa.id}`,
+        lastEdited: visa.last_edited || visa.updated_at || '',
+        emoji: visa.emoji || '📋',
+        alcance: visa.alcance || '',
+        duration: visa.duration || ''
       };
     });
 
@@ -156,27 +142,22 @@ function processVisasData(visasData, lang) {
 // Process guides data
 function processGuidesData(guidesData, lang) {
   const allGuides = guidesData
-    .filter(page => {
-      const pageLang = page.properties.Lang?.select?.name;
-      const isPublished = page.properties.Published?.checkbox === true;
-      const title = page.properties.Name?.title?.[0]?.plain_text || '';
-      const slug = page.properties.slug?.rich_text?.[0]?.plain_text || '';
-      
-      const isCorrectLang = (pageLang === 'En' && lang === 'en') || (pageLang === 'Es' && lang === 'es');
-      
-      return isCorrectLang && isPublished && title && slug;
+    .filter(guide => {
+      const isPublished = guide.published === true;
+      const title = guide.title || '';
+      const slug = guide.slug || '';
+      return isPublished && title && slug && guide.lang === lang;
     })
-    .map(page => {
-      const properties = page.properties;
+    .map(guide => {
       return {
-        id: page.id,
-        title: properties.Name?.title?.[0]?.plain_text || '',
-        slug: properties.slug?.rich_text?.[0]?.plain_text || '',
-        description: properties.Description?.rich_text?.[0]?.plain_text || '',
-        category: properties.Category?.select?.name || 'guide',
-        url: `/${lang}/guides/${properties.slug?.rich_text?.[0]?.plain_text || page.id}`,
-        lastEdited: page.last_edited_time,
-        isFeatured: properties.Featured?.checkbox || false
+        id: guide.id,
+        title: guide.title || '',
+        slug: guide.slug || '',
+        description: guide.description || '',
+        category: guide.category || 'guide',
+        url: `/${lang}/guides/${guide.slug || guide.id}`,
+        lastEdited: guide.last_edited || guide.updated_at || '',
+        isFeatured: guide.featured || false
       };
     });
 
@@ -197,38 +178,21 @@ function processGuidesData(guidesData, lang) {
 
 // Process CLKR data
 function processCLKRData(clkrData, lang) {
-  // DEBUG: Log the first page to see available properties
-  if (clkrData.length > 0) {
-    console.log('[DEBUG] First CLKR page properties:', Object.keys(clkrData[0].properties));
-    console.log('[DEBUG] First CLKR page Topic Name:', clkrData[0].properties["Topic Name"]);
-    console.log('[DEBUG] First CLKR page Name:', clkrData[0].properties["Name"]);
-    console.log('[DEBUG] First CLKR page Title:', clkrData[0].properties["Title"]);
-  }
-
   const allCLKRServices = clkrData
-    .filter(page => {
-      const pageLang = page.properties.Lang?.select?.name;
-      const isCorrectLang = (pageLang === 'En' && lang === 'en') || (pageLang === 'Es' && lang === 'es');
-      return isCorrectLang;
+    .filter(service => {
+      // Filter by language
+      return service.lang === lang;
     })
-    .map(page => {
-      const properties = page.properties;
-      
-      // Try multiple possible title property names
-      const title = properties["Topic Name"]?.title?.[0]?.plain_text || 
-                   properties["Name"]?.title?.[0]?.plain_text ||
-                   properties["Title"]?.title?.[0]?.plain_text ||
-                   '';
-      
+    .map(service => {
       return {
-        id: page.id,
-        title: title,
-        slug: properties.slug?.rich_text?.[0]?.plain_text || '',
-        description: properties.Description?.rich_text?.[0]?.plain_text || '',
-        module: properties.Module?.multi_select?.[0]?.name || 'CLKR',
-        href: `/${lang}/clkr/${properties.slug?.rich_text?.[0]?.plain_text || page.id}`,
-        lastEdited: page.last_edited_time,
-        readingTime: properties.ReadingTime?.number || 5
+        id: service.id,
+        title: service.title || '',
+        slug: service.slug || '',
+        description: service.description || '',
+        module: service.module || 'CLKR',
+        href: `/${lang}/clkr/${service.slug || service.id}`,
+        lastEdited: service.last_edited || service.updated_at || '',
+        readingTime: service.reading_time || 5
       };
     });
 
@@ -243,14 +207,6 @@ function processCLKRData(clkrData, lang) {
 
 // Process blog data
 async function processBlogData(blogData, lang) {
-  // DEBUG: Log the first blog page to see available properties
-  if (blogData.length > 0) {
-    console.log('[DEBUG] First blog page properties:', Object.keys(blogData[0].properties));
-    console.log('[DEBUG] First blog page cover:', blogData[0].cover);
-    console.log('[DEBUG] First blog page CoverImage:', blogData[0].properties.CoverImage);
-    console.log('[DEBUG] First blog page Image:', blogData[0].properties.Image);
-  }
-
   const allBlogPosts = await Promise.all(
     blogData
       .filter(page => {
@@ -426,11 +382,6 @@ export async function getAllMenuData(lang = 'en') {
     const guidesProcessed = processGuidesData(guidesData, lang);
     const clkrProcessed = processCLKRData(clkrData, lang);
     const blogProcessed = await processBlogData(blogData, lang);
-    
-    // DEBUG LOG: Output CLKR processed data
-    console.log('[DEBUG] CLKR Processed:', JSON.stringify(clkrProcessed, null, 2));
-    console.log('[DEBUG] CLKR Services count:', clkrProcessed.allCLKRServices.length);
-    console.log('[DEBUG] CLKR Modules:', clkrProcessed.modules);
     
     // Get featured property (this is from Astro collections, not Notion)
     const featuredProperty = await getFeaturedProperty(lang);

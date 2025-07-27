@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getPageTitle, getPageDescription, getPageSelectValue } from '../../../../utils/notionHelpers.js';
 
 interface BlogMegaMenuProps {
   lang?: string;
@@ -254,7 +253,7 @@ const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {} }) => {
           </h3>
           <div className="flex-1 flex flex-col">
             <div className="space-y-3 h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-              {latestBlogPosts.slice(0, 6).map((post, index) => (
+              {latestBlogPosts.slice(0, 6).map((post) => (
                 <a 
                   key={post.href} 
                   href={post.href}

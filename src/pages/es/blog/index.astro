@@ -1,172 +1,315 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import { getNotionDatabase } from '../../../utils/notion';
-import BlogExplorer from '../../../components/es/blog/BlogExplorer.jsx';
-import type { BlogPost } from '../../../components/es/blog/BlogCard.tsx';
-import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import Layout from 'layouts/Layout.astro';
+import BlogExplorer from 'components/blog/BlogExplorer.tsx';
+import BlogPageHero from 'components/blog/BlogPageHero.tsx';
+import BlogPageLatest from 'components/blog/BlogPageLatest.astro';
+import { getAllContentData } from 'lib/contentData.js';
+import { getBlogPostsFromSupabase, getFeaturedBlogPosts, getBlogCategories, getRelativeTime, formatDate, getCategoryStyling, generateGradient } from '../../../lib/blogData.ts';
 
-type NotionPage = PageObjectResponse & {
-  properties: {
-    Nombre: {
-      type: 'title';
-      title: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-      }>;
-    };
-    Description: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-        annotations?: {
-          bold?: boolean;
-          italic?: boolean;
-          strikethrough?: boolean;
-          underline?: boolean;
-          code?: boolean;
-          color?: string;
-        };
-        href?: string;
-      }>;
-    };
-    Content: {
-      type: 'rich_text';
-      rich_text: Array<{
-        type: 'text';
-        text: {
-          content: string;
-        };
-        plain_text: string;
-        annotations?: {
-          bold?: boolean;
-          italic?: boolean;
-          strikethrough?: boolean;
-          underline?: boolean;
-          code?: boolean;
-          color?: string;
-        };
-        href?: string;
-      }>;
-    };
-    Lang: {
-      type: 'select';
-      select: {
-        name: string;
-      } | null;
-    };
-    Published: {
-      type: 'checkbox';
-      checkbox: boolean;
-    };
-    Featured: {
-      type: 'checkbox';
-      checkbox: boolean;
-    };
-  };
-  icon?: {
-    type: 'emoji';
-    emoji: string;
-  };
-  cover?: {
-    type: 'external';
-    external: {
-      url: string;
-    };
-  } | {
-    type: 'file';
-    file: {
-      url: string;
-    };
-  };
-  last_edited_time: string;
+const lang = 'es';
+const menuData = await getAllContentData(lang);
+
+// Fetch blog data from Supabase
+let allPosts = [];
+let featuredPosts = [];
+let categories = [];
+let error = null;
+
+try {
+  [allPosts, featuredPosts, categories] = await Promise.all([
+    getBlogPostsFromSupabase(lang, { limit: 50 }),
+    getFeaturedBlogPosts(lang, 3),
+    getBlogCategories(lang)
+  ]);
+} catch (err) {
+  console.error('Error fetching blog data:', err);
+  error = 'Failed to load blog posts';
+}
+
+// Sort posts by publication date (newest first)
+allPosts.sort((a: any, b: any) => new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime());
+
+const textContent = {
+  en: {
+    heroTitle: 'Our Blog',
+    heroDescription: 'Insights, updates, and stories from our team. Discover the latest in immigration, business, and life in Colombia.',
+    featuredArticles: 'Featured Articles',
+    featuredDescription: 'Our latest and most important stories',
+    allArticles: 'All Articles',
+    allArticlesDescription: 'Browse all our articles and insights',
+    noArticles: 'No articles found.',
+    addCoverImages: 'Add Cover Images'
+  },
+  es: {
+    heroTitle: 'Nuestro Blog',
+    heroDescription: 'Perspectivas, actualizaciones e historias de nuestro equipo. Descubre lo último en inmigración, negocios y vida en Colombia.',
+    featuredArticles: 'Artículos Destacados',
+    featuredDescription: 'Nuestras historias más recientes e importantes',
+    allArticles: 'Todos los Artículos',
+    allArticlesDescription: 'Explora todos nuestros artículos y perspectivas',
+    noArticles: 'No se encontraron artículos.',
+    addCoverImages: 'Agregar Imágenes de Portada'
+  }
 };
 
-// Helper function to render rich text
-function renderRichText(richText: Array<{
-  type: 'text';
-  text: {
-    content: string;
-  };
-  plain_text: string;
-  annotations?: {
-    bold?: boolean;
-    italic?: boolean;
-    strikethrough?: boolean;
-    underline?: boolean;
-    code?: boolean;
-    color?: string;
-  };
-  href?: string;
-}>) {
-  return richText.map((item) => {
-    let content = item.text.content;
-    let className = '';
+const content = textContent[lang as keyof typeof textContent] || textContent.en;
 
-    if (item.annotations?.bold) className += 'font-bold ';
-    if (item.annotations?.italic) className += 'italic ';
-    if (item.annotations?.strikethrough) className += 'line-through ';
-    if (item.annotations?.underline) className += 'underline ';
-    if (item.annotations?.code) className += 'font-mono bg-gray-100 px-1 rounded ';
-    if (item.annotations?.color && item.annotations.color !== 'default') className += `text-${item.annotations.color}-600 `;
-
-    if (item.href) {
-      return `<a href="${item.href}" class="${className}">${content}</a>`;
-    }
-
-    return `<span class="${className}">${content}</span>`;
-  }).join('');
-}
-
-// Helper function to format relative time in Spanish
-function getRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-
-  if (diffInDays > 0) {
-    return diffInDays === 1 ? 'hace 1 día' : `hace ${diffInDays} días`;
-  } else if (diffInHours > 0) {
-    return diffInHours === 1 ? 'hace 1 hora' : `hace ${diffInHours} horas`;
-  } else if (diffInMinutes > 0) {
-    return diffInMinutes === 1 ? 'hace 1 minuto' : `hace ${diffInMinutes} minutos`;
-  } else {
-    return 'Ahora mismo';
+// Mock hero post data
+const heroPost = {
+  slug: 'mock-post',
+  data: {
+    title: 'Bienvenido a Nuestro Blog',
+    description: 'Descubre perspectivas y actualizaciones de nuestros expertos legales.',
+    category: 'Perspectivas Legales',
+    author: 'Capital M Law Team',
+    pubDate: new Date().toISOString(),
+    image: { url: '/images/blog/default-hero.jpg' },
+    readTime: '5 min read'
   }
-}
-
-// Fetch Notion database content
-const databaseId = '2130a3cd15e38019bc9fce1432312c6c';
-const allPages = await getNotionDatabase(databaseId) as NotionPage[];
-
-// Filter for Spanish posts only and published posts
-const pages = allPages.filter(page => {
-  const langValue = page.properties.Lang?.select?.name;
-  const isSpanish = langValue === "Es" || langValue === "ES" || langValue === "Spanish";
-  const isPublished = page.properties.Published?.checkbox === true;
-  
-  return isSpanish && isPublished;
-});
-
-// Map NotionPage[] to BlogPost[]
-const blogPosts: BlogPost[] = pages.map(page => ({
-  id: page.id,
-  properties: page.properties as BlogPost['properties'],
-  icon: page.icon,
-  last_edited_time: page.last_edited_time,
-  cover: page.cover
-}));
+};
 ---
 
-<Layout title="Blog - Capital EME">
-  <BlogExplorer client:load posts={blogPosts} />
-</Layout> 
+<Layout title="Blog - Capital M Law" menuData={menuData} lang={lang}>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-slate-50 to-blue-50 py-20">
+    <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
+          {content.heroTitle}
+        </h1>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+          {content.heroDescription}
+        </p>
+        <div class="mt-8">
+          <a 
+            href="/add-notion-images" 
+            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            {content.addCoverImages}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {error ? (
+    <!-- Error Section -->
+    <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <div class="text-red-500 mb-4">
+            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <p class="text-gray-600 text-lg">{error}</p>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <>
+      <!-- Featured Posts Section -->
+      {featuredPosts.length > 0 && (
+        <section class="py-16 bg-white">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+              <h2 class="text-3xl font-bold text-slate-900 mb-4">{content.featuredArticles}</h2>
+              <p class="text-slate-600">{content.featuredDescription}</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {featuredPosts.map((post: any) => {
+                const categoryDefaults = getCategoryStyling(post.category);
+                const gradientClass = post.image ? generateGradient(post.title) : categoryDefaults.gradient;
+                const relativeTime = getRelativeTime(post.pub_date);
+                
+                return (
+                  <article class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-100">
+                    <!-- Cover Image -->
+                    <div class="relative h-64 overflow-hidden">
+                      {post.image ? (
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                        />
+                      ) : null}
+                      
+                      <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+                        <div class="text-center text-white">
+                          <div class="text-4xl mb-2">{categoryDefaults.icon}</div>
+                          <div class="text-sm font-medium opacity-90">{post.title}</div>
+                          {post.category && (
+                            <div class="text-xs opacity-75 mt-1">{post.category}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Icon overlay */}
+                      <div class="absolute top-4 right-4 text-2xl bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+                        {categoryDefaults.icon}
+                      </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6">
+                      <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
+                        {post.category && (
+                          <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${categoryDefaults.bgColor} ${categoryDefaults.textColor}`}>
+                            {post.category}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <h3 class="text-xl font-semibold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                        <a href={`/${lang}/blog/${post.slug}`} class="block">
+                          {post.title}
+                        </a>
+                      </h3>
+                      
+                      {post.description && (
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                          {post.description}
+                        </p>
+                      )}
+                      
+                      <a
+                        href={`/${lang}/blog/${post.slug}`}
+                        class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
+                      >
+                        Leer más
+                        <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </a>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- All Posts Section -->
+      <section class="py-16 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mb-12">
+            <h2 class="text-3xl font-bold text-slate-900 mb-4">{content.allArticles}</h2>
+            <p class="text-slate-600">{content.allArticlesDescription}</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {allPosts.map((post: any) => {
+              const categoryDefaults = getCategoryStyling(post.category);
+              const gradientClass = post.image ? generateGradient(post.title) : categoryDefaults.gradient;
+              const relativeTime = getRelativeTime(post.pub_date);
+              
+              return (
+                <article class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100">
+                  <!-- Cover Image -->
+                  <div class="relative h-48 overflow-hidden">
+                    {post.image ? (
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                      />
+                    ) : null}
+                    
+                    <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+                      <div class="text-center text-white">
+                        <div class="text-3xl mb-2">{categoryDefaults.icon}</div>
+                        <div class="text-xs font-medium opacity-90">{post.title}</div>
+                        {post.category && (
+                          <div class="text-xs opacity-75 mt-1">{post.category}</div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Icon overlay */}
+                    <div class="absolute top-3 right-3 text-xl bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
+                      {categoryDefaults.icon}
+                    </div>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div class="p-4">
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
+                      {post.category && (
+                        <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${categoryDefaults.bgColor} ${categoryDefaults.textColor}`}>
+                          {post.category}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                      <a href={`/${lang}/blog/${post.slug}`} class="block">
+                        {post.title}
+                      </a>
+                    </h3>
+                    
+                    {post.description && (
+                      <p class="text-slate-600 text-sm leading-relaxed mb-3 line-clamp-2">
+                        {post.description}
+                      </p>
+                    )}
+                    
+                    <a
+                      href={`/${lang}/blog/${post.slug}`}
+                      class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
+                    >
+                      Leer más
+                      <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          
+          {allPosts.length === 0 && (
+            <div class="text-center py-12">
+              <svg class="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p class="text-slate-500 text-lg">{content.noArticles}</p>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
+  )}
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .bg-grid-slate-100 {
+    background-image: linear-gradient(to right, rgb(241 245 249) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgb(241 245 249) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+</style> 

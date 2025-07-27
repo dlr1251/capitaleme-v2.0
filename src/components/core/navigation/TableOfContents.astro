@@ -1,5 +1,5 @@
 ---
-import TableOfContentsHeading from "../../content/TableOfContentsHeading.astro";
+import TableOfContentsHeading from "../../shared/TableOfContentsHeading.astro";
 
 interface Heading {
   depth: number;
@@ -10,7 +10,6 @@ interface Heading {
 }
 
 const headings: Heading[] = Astro.props.headings || [];
-const title: string = Astro.props.title || 'Table of Contents';
 const lang: string = Astro.props.lang || 'en';
 
 const toc: Heading[] = buildToc(headings);
@@ -114,7 +113,7 @@ const displayTitle = lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const tocLinks = document.querySelectorAll('.toc-link');
-    const headings = document.querySelectorAll('h2, h3, h4, h5, h6');
+    const headings = document.querySelectorAll('h2, h3, h4, h5, h6') as NodeListOf<HTMLElement>;
     let currentActiveLink: HTMLElement | null = null;
 
     // Function to update active link
@@ -124,6 +123,27 @@ const displayTitle = lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'
       }
       link.classList.add('toc-link-active');
       currentActiveLink = link;
+    };
+
+    // Function to find the closest heading above current scroll position
+    const findClosestHeading = (): HTMLElement | null => {
+      const scrollPosition = window.scrollY + 150; // Offset for navbar
+      let closestHeading: HTMLElement | null = null;
+      let closestDistance = Infinity;
+
+      headings.forEach((heading) => {
+        if (heading.id) {
+          const rect = heading.getBoundingClientRect();
+          const distance = Math.abs(rect.top);
+          
+          if (rect.top <= 150 && distance < closestDistance) {
+            closestDistance = distance;
+            closestHeading = heading as HTMLElement;
+          }
+        }
+      });
+
+      return closestHeading;
     };
 
     // Smooth scroll with navbar offset
@@ -155,7 +175,7 @@ const displayTitle = lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'
     // Intersection Observer for scroll spy
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -80% 0px',
+      rootMargin: '-20% 0px -70% 0px',
       threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     };
 
@@ -176,6 +196,21 @@ const displayTitle = lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'
       if (heading.id) {
         observer.observe(heading);
       }
+    });
+
+    // Fallback scroll listener for better responsiveness
+    let scrollTimeout: ReturnType<typeof setTimeout>;
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const closestHeading = findClosestHeading();
+        if (closestHeading && closestHeading.id) {
+          const tocLink = document.querySelector(`.toc-link[href="#${closestHeading.id}"]`) as HTMLElement;
+          if (tocLink && tocLink !== currentActiveLink) {
+            updateActiveLink(tocLink);
+          }
+        }
+      }, 50);
     });
 
     // Handle initial hash in URL
@@ -204,7 +239,11 @@ const displayTitle = lang === 'en' ? 'Table of Contents' : 'Tabla de Contenidos'
         updateActiveLink(initialLink);
       }
     } else if (tocLinks.length > 0) {
-      updateActiveLink(tocLinks[0] as HTMLElement);
+      // Set the first link as active on initial load
+      const firstLink = tocLinks[0] as HTMLElement;
+      if (firstLink) {
+        updateActiveLink(firstLink);
+      }
     }
   });
 </script>

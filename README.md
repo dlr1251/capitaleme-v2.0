@@ -1,43 +1,56 @@
-# Astro Starter Kit: Basics
+# Capital M Law Website (Astro)
 
+## 🚀 Project Overview
+This is a modern, multilingual legal services website built with [Astro](https://astro.build), using content collections, Supabase, and a clean, maintainable architecture. All data fetching is standardized, and static assets are served from the public directory.
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
+## 📁 Directory Structure
+```
 /
 ├── public/
-│   └── favicon.svg
+│   └── images/           # All static images (team, logo, blog, etc.)
 ├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── assets/           # (Legacy) - All images should be in public/
+│   ├── components/       # Astro/React UI components
+│   ├── content/          # Astro content collections (authors, properties, blog, guides)
+│   ├── layouts/          # Page layouts
+│   ├── lib/              # Core data utilities (menuData.js, supabase.js, etc.)
+│   ├── pages/            # Astro pages (routes)
+│   ├── styles/           # CSS
+│   ├── utils/            # Utility helpers (teamData.js, notion.js, etc.)
+│   └── types/            # TypeScript types
+├── scripts/              # Project scripts (cleanup, sync, etc.)
+├── package.json
+└── README.md
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 🔄 Data Flow & Best Practices
+- **Single Source of Truth:** All menu and page data is fetched via `getAllMenuData` from `src/lib/menuData.js`.
+- **Content Collections:** Team, authors, properties, blog, and guides are managed in `src/content/` and loaded dynamically using Astro's content collections API.
+- **Supabase:** Used for dynamic data (e.g., CLKR articles, visas) via `src/lib/supabase.js`.
+- **Static Assets:** All images are in `public/images/` and referenced with absolute paths (e.g., `/images/team/mafeduarte.jpg`).
+- **Type Safety:** All components and data helpers use explicit TypeScript types and required props.
+- **No Legacy Utilities:** All legacy/duplicate data utilities and scripts have been removed.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## 🧑‍💻 Developer Workflow
+- Run `npm install` to install dependencies.
+- Use `npm run dev` for local development.
+- Use `npm run build` to build for production.
+- All data fetching should use `getAllMenuData` or Astro content collections.
+- Add new content (team, blog, etc.) as MDX files in `src/content/`.
+- Add new images to `public/images/` and reference with absolute paths.
+- Use explicit types for all props and data structures.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## 🧹 Maintenance & Contribution Guidelines
+- Remove unused files, scripts, and legacy directories regularly.
+- Keep all imports explicit (with file extensions) and up to date.
+- Run a linter/formatter before committing (`npm run lint` if configured).
+- Document any new utilities or data flows in this README.
+- See `/scripts/` for project maintenance scripts.
 
-## 🧞 Commands
+## 📚 Learn More
+- [Astro Documentation](https://docs.astro.build)
+- [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
+- [Supabase Documentation](https://supabase.com/docs)
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+---
+For questions or contributions, please open an issue or pull request.

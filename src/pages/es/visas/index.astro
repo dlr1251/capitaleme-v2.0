@@ -1,22 +1,20 @@
 ---
+export const prerender = true; // SSG: esta página se pre-renderiza. Recomendado revalidar cada 30 minutos en el hosting.
 import Layout from "../../../layouts/Layout.astro";
-import { getNotionDatabase } from '../../../utils/notion';
-import type { NotionPage } from '../../../utils/notionTypes';
-import VisasHero from '../../../components/es/features/visa-services/VisasHero.jsx';
-import ServiceProcess from '../../../components/es/features/visa-services/ServiceProcess.jsx';
-import VisasSectionFilterSearch from '../../../components/pages/home/VisasSectionFilterSearch';
-import ConsultationSection from '../../../components/es/features/visa-services/ConsultationSection.jsx';
-import LatestBlogSection from '../../../components/es/features/visa-services/LatestBlogSection.jsx';
-import { getAllVisasFromNotion, getGuides } from '../../../utils/menuData.js';
-import BlogPageLatest from "../../../components/es/features/blog/BlogPageLatest.astro";
-import VisaFilterWidget from '../../../components/VisaFilterWidget';
+import { getAllContentData } from '../../../lib/contentData.js';
+import VisasHero from '../../../components/visas/VisasHero.tsx';
+import ServiceProcess from '../../../components/visas/ServiceProcess.astro';
+import ConsultationSection from '../../../components/visas/ConsultationSection.tsx';
+import BlogPageLatest from '../../../components/blog/BlogPageLatest.astro';
+import VisasSectionFilterSearch from '../../../components/visas/VisasSectionFilterSearch.tsx';
+import ColombiaStayCalculator from '../../../components/visas/ColombiaStayCalculator.tsx';
 
-// Fetch Notion database content
-const databaseId = 'eea50d4ca9a64f329585bd8b64a583a6';
-const pages = await getNotionDatabase(databaseId) as NotionPage[];
+const lang = 'es';
+const menuData = await getAllContentData(lang);
 
-const allVisas = await getAllVisasFromNotion('es');
-const allGuides = await getGuides('es');
+// Get data from menuData with null checks
+const allVisas = menuData?.allVisas || [];
+const allGuides = menuData?.allGuides || [];
 
 // Get popular visas
 const popularVisas = allVisas.filter((visa: any) => visa.isPopular).slice(0, 4);
@@ -25,31 +23,35 @@ const popularVisas = allVisas.filter((visa: any) => visa.isPopular).slice(0, 4);
 const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(0, 4);
 ---
 
-<Layout title="Información de Visas - Capital M Law | Servicios Legales en Colombia">
+<Layout title="Visa Information - Capital M Law | Colombian Legal Services" lang={lang} menuData={menuData}>
   <!-- Modern Hero Section -->
   <VisasHero client:load popularVisas={popularVisas} guides={featuredGuides} lang="es" />
   
   <!-- How Our Service Works Section -->
-  <ServiceProcess client:load />
+  <ServiceProcess lang="es" />
   
   <!-- Visa Categories with Filtering -->
-  <section class="py-20 bg-gray-50">
+  <section class="py-20 bg-muted/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
           Descubre Todas las Categorías de Visa
         </h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p class="text-xl text-muted-foreground max-w-3xl mx-auto">
           Encuentra la opción de visa perfecta para tu situación. Usa nuestro filtro interactivo para reducir tus opciones basado en tu país, necesidades y preferencias.
         </p>
       </div>
-      
-      <VisaFilterWidget client:load />
+      <div class="bg-white border border-muted rounded-2xl shadow-lg p-8">
+        <VisasSectionFilterSearch visas={allVisas} lang="es" client:visible />
+      </div>
     </div>
   </section>
 
   <!-- Full-Width Consultation Section -->
-  <ConsultationSection client:load />
+          <ConsultationSection client:load lang="es" />
   
   <BlogPageLatest/>
+  
+  <!-- Colombia Stay Calculator -->
+  <ColombiaStayCalculator client:load />
 </Layout> 

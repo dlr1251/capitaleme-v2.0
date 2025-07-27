@@ -5,6 +5,10 @@ import RealEstateMegaMenu from './mega-menus/RealEstateMegaMenu.tsx';
 import ResourcesMegaMenu from './mega-menus/ResourcesMegaMenu.tsx';
 import BlogMegaMenu from './mega-menus/BlogMegaMenu.tsx';
 import VisasMegaMenu from './mega-menus/VisasMegaMenu.tsx';
+import LanguageDropdown from '../../shared/LanguageDropdown.tsx';
+// Remove: import { useLanguage } from '../../../context/LanguageContext.tsx';
+
+type Lang = 'en' | 'es';
 
 interface MenuDataType {
   popularVisas?: any[];
@@ -43,16 +47,15 @@ interface MenuDataType {
 }
 
 interface NavbarProps {
-  lang?: string;
+  lang?: Lang;
   pathname?: string;
-  menuData?: MenuDataType;
   onMegaMenuToggle?: (isOpen: boolean) => void;
+  menuData?: MenuDataType;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMenuToggle }) => {
+const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuData }) => {
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [isLanguageChanging, setIsLanguageChanging] = useState<boolean>(false);
   const megaMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Handle scroll effect
@@ -77,30 +80,12 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const getUrlForLang = (path: string, targetLang: string) => {
-    const currentLang = lang || 'en';
-    let cleanedPath = path;
-    
-    // Remove current language prefix if it exists
-    if (cleanedPath.startsWith(`/${currentLang}/`)) {
-      cleanedPath = cleanedPath.substring(`/${currentLang}`.length);
-    } else if (cleanedPath.startsWith(`/${currentLang}`)) {
-      cleanedPath = cleanedPath.substring(`/${currentLang}`.length);
-    }
-    
-    // Add target language prefix - always use /en/ and /es/
-    if (targetLang === 'en') {
-      return `/en${cleanedPath}`;
-    } else {
-      return `/es${cleanedPath}`;
-    }
-  };
-
   const links = [
     { href: lang === 'en' ? '/en/about' : '/es/about', text: lang === 'en' ? 'About Us' : 'Nosotros' },
     { href: lang === 'en' ? '/en/visas' : '/es/visas', text: lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas', hasMegaMenu: false },
+    { href: lang === 'en' ? '/en/guides' : '/es/guides', text: lang === 'en' ? 'Guides' : 'Guías', hasMegaMenu: false },
+    { href: lang === 'en' ? '/en/clkr' : '/es/clkr', text: 'CLKR', hasMegaMenu: false },
     { href: lang === 'en' ? '/en/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario', hasMegaMenu: true },
-    { href: lang === 'en' ? '/en/resources' : '/es/resources', text: 'CLKR', hasMegaMenu: true },
     { href: lang === 'en' ? '/en/blog' : '/es/blog', text: lang === 'en' ? 'Blog' : 'Blog', hasMegaMenu: true },
     { href: lang === 'en' ? '/en/contact' : '/es/contact', text: lang === 'en' ? 'Contact' : 'Contacto' },
   ];
@@ -108,8 +93,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
   // Helper function to check if a link is active
   const isLinkActive = (linkHref: string) => {
     if (!pathname) return false;
-    
-
     
     // Exact match (href already includes language prefix)
     if (pathname === linkHref) return true;
@@ -129,10 +112,11 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
     // For Contact, check if we're on contact page
     if (linkHref.includes('/contact') && pathname.includes('/contact')) return true;
     
-    // For Resources, check if we're on guides or CLKR routes
-    if (linkHref.includes('/resources')) {
-      return pathname.includes('/guides') || pathname.includes('/clkr');
-    }
+    // For Guides, check if we're on guides routes
+    if (linkHref.includes('/guides') && pathname.includes('/guides')) return true;
+    
+    // For CLKR, check if we're on CLKR routes
+    if (linkHref.includes('/clkr') && pathname.includes('/clkr')) return true;
     
     // For other pages, check if pathname includes the link href (but not for root)
     if (linkHref !== '/' && pathname.includes(linkHref)) return true;
@@ -150,6 +134,11 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
     return pathname && pathname.includes('/clkr');
   };
 
+  // Helper function to check if we should show shadow (exclude CLKR pages)
+  const shouldShowShadow = () => {
+    return isScrolled && !isOnCLKRRoute();
+  };
+
   const handleMegaMenuClick = (menuType: string) => {
     if (activeMegaMenu === menuType) {
       setActiveMegaMenu(null);
@@ -164,39 +153,11 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
     }
   };
 
-  const handleLanguageChange = (targetLang: string) => {
-    setIsLanguageChanging(true);
-    
-    // Simulate loading time and then navigate
-    setTimeout(() => {
-      const newUrl = getUrlForLang(pathname || '/', targetLang);
-      window.location.href = newUrl;
-    }, 100);
-  };
-
-  // Language switcher component
-  const LanguageSwitcher = () => (
-    <button
-      type="button"
-      onClick={() => handleLanguageChange(lang === 'en' ? 'es' : 'en')}
-      className={`relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-sm text-gray-700 hover:from-gray-100 hover:to-gray-200 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition-all duration-200 group ${isLanguageChanging ? 'animate-pulse' : ''}`}
-      title={lang === 'en' ? 'Cambiar a Español' : 'Switch to English'}
-      disabled={isLanguageChanging}
-    >
-      {/* Bolita tipo notificación con icono de traducción */}
-      <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary rounded-full flex items-center justify-center border-2 border-white shadow">
-        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-        </svg>
-      </span>
-      {/* Indicador de idioma */}
-      <span className={`text-xs font-medium transition-colors ${isLanguageChanging ? 'text-secondary' : 'text-gray-700 group-hover:text-secondary'}`}>{lang === 'en' ? 'Es' : 'En'}</span>
-    </button>
-  );
+  // Remove handleLanguageChange and getUrlForLang helpers (use LanguageDropdown logic)
 
   return (
     <>
-      <nav className={`bg-white border-gray-200 w-full transition-all duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-sm'}`}>
+      <nav className={`bg-white border-gray-200 w-full transition-all duration-300 sticky top-0 z-50 ${shouldShowShadow() ? 'shadow-lg' : 'shadow-sm'} ${activeMegaMenu ? 'shadow-none' : ''}`}>
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-2 md:p-4">
           <a href={lang === 'es' ? '/es' : '/en'} className="px-0 w-1/3 md:w-auto flex items-center">
             <img
@@ -216,6 +177,9 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
                   {link.hasMegaMenu ? (
                     <button
                       onClick={() => handleMegaMenuClick(link.text)}
+                      onMouseEnter={() => setActiveMegaMenu(link.text)}
+                      onFocus={() => setActiveMegaMenu(link.text)}
+                      onBlur={() => setActiveMegaMenu(null)}
                       className={`group flex items-center py-4 px-8 text-gray-700 border-b border-gray-100 lg:border-0 lg:p-0 transition-all duration-300 relative overflow-hidden rounded-lg ${
                         isLinkActive(link.href) 
                           ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg' 
@@ -288,9 +252,9 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
             </ul>
           </div>
 
-          {/* Language switcher botón simple */}
+          {/* Language dropdown */}
           <div className="relative inline-block text-left order-2 lg:order-2">
-            <LanguageSwitcher />
+            <LanguageDropdown lang={lang || 'en'} pathname={pathname || '/'} />
           </div>
 
           {/* Mobile menu/hamburger y menú mobile */}
@@ -298,9 +262,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
             <NavbarMobile
               lang={lang || 'en'}
               pathname={pathname || '/'}
-              menuData={menuData}
-              handleLanguageChange={handleLanguageChange}
-              isLanguageChanging={isLanguageChanging}
             />
           </div>
         </div>
@@ -316,22 +277,37 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, menuData = {}, onMegaMe
           <div className="max-w-screen-xl mx-auto px-4">
             {/* Real Estate Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'Real Estate' : 'Inmobiliario') && (
-              <RealEstateMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
+              <RealEstateMegaMenu lang={lang} currentPath={pathname} />
             )}
 
             {/* Resources Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'CLKR' : 'CLKR') && (
-              <ResourcesMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
+              <ResourcesMegaMenu 
+                lang={lang} 
+                currentPath={pathname} 
+                clkrData={menuData}
+                loading={false}
+              />
             )}
 
             {/* Blog Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'Blog' : 'Blog') && (
-              <BlogMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
+              <BlogMegaMenu 
+                lang={lang} 
+                currentPath={pathname} 
+                blogData={menuData}
+                loading={false}
+              />
             )}
 
             {/* Visas Mega Menu */}
             {activeMegaMenu === (lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas') && (
-              <VisasMegaMenu lang={lang} menuData={menuData} currentPath={pathname} />
+              <VisasMegaMenu 
+                lang={lang} 
+                currentPath={pathname} 
+                visas={menuData}
+                loading={false}
+              />
             )}
           </div>
         </div>

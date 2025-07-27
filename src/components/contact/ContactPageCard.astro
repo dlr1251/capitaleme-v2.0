@@ -1,0 +1,67 @@
+---
+import ContactForm from '../ui/forms/ContactForm.astro';
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+
+const { lang = 'en' } = Astro.props;
+
+const content = lang === 'es' ? {
+  title: "Nos alegra saber de ti",
+  contactDetails: "Detalles de contacto",
+  email: "Email",
+  phone: "Teléfono",
+  address: "Dirección",
+  followUs: "Síguenos"
+} : {
+  title: "We're happy to hear from you",
+  contactDetails: "Contact details",
+  email: "Email",
+  phone: "Phone",
+  address: "Address",
+  followUs: "Follow us"
+};
+---
+
+<section class="h-fit max-w-screen-lg mx-auto">
+    <h2 class="text-3xl font-bold p-6 text-primary max-w-screen-lg mx-auto">
+        {content.title}
+    </h2>
+    <div class="p-4 bg-slate-100">
+        <div class="flex flex-col md:flex-row justify-center">
+
+            <div class="flex-col bg-primary text-white p-3 w-full md:w-1/3 h-100">
+                <h2 class="text-2xl font-bold mb-3">{content.contactDetails}</h2>
+                <div class="flex flex-col">
+                    <div class="flex flex-row mb-3">
+                        <div class="w-1/5 font-bold">{content.email}</div><a href="#" class="ml-3 w-4/5">info@capitaleme.com</a>
+                    </div>
+                    <div class="flex flex-row mb-3">
+                        <div class="w-1/5 font-bold">{content.phone}</div><a href="#" class="ml-3 w-4/5">+57 314 602 2411</a>
+                    </div>
+                    <div class="flex flex-row mb-3">
+                        <div class="w-1/5 font-bold">{content.address}</div><a href="#" class="ml-3 w-4/5">
+                            Transversal 39B #73-23 <br>
+                            Inspira Coworking <br>
+                            Laureles - Medellín - Colombia <br>
+                        </a>                        
+                    </div>
+                    <div class="text-lg font-bold mt-4 text-white">{content.followUs}</div>
+                    <ul>
+                        <li>YouTube</li>
+                        <li>Facebook</li>
+                        <li>TikTok</li>
+                        <li>Instagram</li>
+                    </ul>
+                </div>
+                
+            </div>
+            <div class="bg-slate-100 w-full md:w-2/3">
+                <ContactForm/>
+                
+            </div>
+            
+        </div>
+    </div>
+</section> 

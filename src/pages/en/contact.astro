@@ -1,9 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import ContactPageCard from '../../components/pages/contact/ContactPageCard.astro';
+import YouTubeChannelSection from '../../components/contact/YouTubeChannelSection.astro';
+import { getAllContentData } from '../../lib/contentData.js';
+import { UserIcon, EnvelopeIcon, DevicePhoneMobileIcon, BriefcaseIcon, ChatBubbleLeftRightIcon, PaperAirplaneIcon, InformationCircleIcon, MapPinIcon, ChatBubbleOvalLeftEllipsisIcon, CalendarIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+const lang = 'en';
+const menuData = await getAllContentData(lang);
 ---
 
-<Layout title="Contact - Capital M Law">
+<Layout title="Contact - Capital M Law" menuData={menuData}>
   <div class="min-h-screen bg-primary-50">
     <!-- Hero Section -->
     <div class="relative overflow-hidden mb-4">      
@@ -33,28 +37,27 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
         <div class="lg:col-span-1">
           <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sticky top-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <span class="mr-3">📍</span>
-              Contact Information
+              <InformationCircleIcon className="w-6 h-6 text-primary mr-3" aria-hidden="true" />
+              Contact information
             </h2>
             <!-- Contact Methods -->
             <div class="space-y-4">
               <!-- Email -->
               <div class="flex items-start space-x-3 p-3 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
                 <div class="flex-shrink-0 w-10 h-10 bg-primary rounded-md flex items-center justify-center">
-                  <span class="text-white text-lg">✉️</span>
+                  <EnvelopeIcon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <div class="flex-1">
                   <h3 class="font-semibold text-gray-900 mb-0.5">Email</h3>
                   <a href="mailto:info@capitaleme.com" class="text-primary hover:underline">
                     info@capitaleme.com
                   </a>
-                  <p class="text-xs text-gray-500 mt-0.5">Response within 24 hours</p>
                 </div>
               </div>
               <!-- WhatsApp -->
               <div class="flex items-start space-x-3 p-3 bg-secondary-50 rounded-lg hover:bg-secondary-100 transition-colors">
                 <div class="flex-shrink-0 w-10 h-10 bg-secondary rounded-md flex items-center justify-center">
-                  <span class="text-white text-lg">💬</span>
+                  <ChatBubbleOvalLeftEllipsisIcon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <div class="flex-1">
                   <h3 class="font-semibold text-gray-900 mb-0.5">WhatsApp</h3>
@@ -67,7 +70,7 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
               <!-- Calendly -->
               <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                 <div class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-md flex items-center justify-center">
-                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h4l2 4"/></svg>
+                  <CalendarIcon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <div class="flex-1">
                   <h3 class="font-semibold text-gray-900 mb-0.5">Calendly</h3>
@@ -80,14 +83,16 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
               <!-- Address -->
               <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                 <div class="flex-shrink-0 w-10 h-10 bg-gray-400 rounded-md flex items-center justify-center">
-                  <span class="text-white text-lg">🏢</span>
+                  <MapPinIcon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <div class="flex-1">
                   <h3 class="font-semibold text-gray-900 mb-0.5">Main Office</h3>
                   <address class="text-gray-700 not-italic text-sm">
-                    Transversal 39B #73-23<br>
-                    Inspira Coworking<br>
-                    Laureles - Medellín - Colombia
+                    <a href="https://www.google.com/maps/place/Transversal+39B+%2373-23,+Laureles,+Medell%C3%ADn,+Antioquia,+Colombia" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+                      Transversal 39B #73-23<br>
+                      Inspira Coworking<br>
+                      Laureles - Medellín - Colombia
+                    </a>
                   </address>
                   <p class="text-xs text-gray-500 mt-0.5">Appointment required</p>
                 </div>
@@ -96,8 +101,8 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
             <!-- Social Media -->
             <div class="mt-6 pt-6 border-t border-gray-200">
               <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
-                <span class="mr-2">🌐</span>
-                Follow Us
+                <GlobeAltIcon className="w-5 h-5 text-primary mr-2" aria-hidden="true" />
+                Follow us
               </h3>
               <div class="flex space-x-3">
                 <!-- Instagram -->
@@ -126,7 +131,7 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
           <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
             <div class="text-center mb-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-4">
-                Send Us Your Inquiry
+                Send us your inquiry
               </h2>
               <p class="text-gray-600 max-w-2xl mx-auto">
                 Complete the form and our team will get in touch with you 
@@ -139,8 +144,8 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
               <!-- Name and Email Row -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                    <span class="mr-2">👤</span>
+                  <label for="name" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <UserIcon className="w-5 h-5 text-primary mr-2" />
                     Full Name *
                   </label>
                   <input
@@ -148,13 +153,15 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
                     id="name"
                     name="name"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                     placeholder="Your full name"
+                    onfocus="this.placeholder=''"
+                    onblur="this.placeholder='Your full name'"
                   />
                 </div>
                 <div>
-                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                    <span class="mr-2">✉️</span>
+                  <label for="email" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <EnvelopeIcon className="w-5 h-5 text-primary mr-2" />
                     Email Address *
                   </label>
                   <input
@@ -162,8 +169,10 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
                     id="email"
                     name="email"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                     placeholder="your@email.com"
+                    onfocus="this.placeholder=''"
+                    onblur="this.placeholder='your@email.com'"
                   />
                 </div>
               </div>
@@ -171,27 +180,29 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
               <!-- Phone and Service Row -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                    <span class="mr-2">📱</span>
+                  <label for="phone" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <DevicePhoneMobileIcon className="w-5 h-5 text-primary mr-2" />
                     Phone Number
                   </label>
                   <input
                     type="tel"
                     id="phone"
                     name="phone"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                     placeholder="+1 555 123 4567"
+                    onfocus="this.placeholder=''"
+                    onblur="this.placeholder='+1 555 123 4567'"
                   />
                 </div>
                 <div>
-                  <label for="service" class="block text-sm font-medium text-gray-700 mb-2">
-                    <span class="mr-2">🛂</span>
+                  <label for="service" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <BriefcaseIcon className="w-5 h-5 text-primary mr-2" />
                     Service of Interest
                   </label>
                   <select
                     id="service"
                     name="service"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-gray-900"
                   >
                     <option value="">Select a service</option>
                     <option value="Visas">Visas & Immigration</option>
@@ -206,8 +217,8 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
 
               <!-- Message -->
               <div>
-                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                  <span class="mr-2">💬</span>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <ChatBubbleLeftRightIcon className="w-5 h-5 text-primary mr-2" />
                   Your Message *
                 </label>
                 <textarea
@@ -215,8 +226,10 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
                   name="message"
                   rows="6"
                   required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none text-gray-900 placeholder:text-gray-400"
                   placeholder="Tell us about your specific situation, needs, and any relevant details that will help us better prepare for your consultation..."
+                  onfocus="this.placeholder=''"
+                  onblur="this.placeholder='Tell us about your specific situation, needs, and any relevant details that will help us better prepare for your consultation...'"
                 ></textarea>
               </div>
 
@@ -228,15 +241,15 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
                     name="accept_terms"
                     type="checkbox"
                     required
-                    class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    class="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                   />
                   <label for="accept_terms" class="ml-3 text-sm text-gray-700">
                     I have read and accept the{' '}
-                    <a href="/en/terms" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                    <a href="/en/terms" target="_blank" class="text-primary hover:text-primary/80 underline">
                       Terms & Conditions
                     </a>{' '}
                     and{' '}
-                    <a href="/en/privacy" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                    <a href="/en/privacy" target="_blank" class="text-primary hover:text-primary/80 underline">
                       Privacy Policy
                     </a>
                     *
@@ -244,9 +257,9 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
                 </div>
                 <button
                   type="submit"
-                  class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
+                  class="w-full sm:w-auto px-8 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
                 >
-                  <span class="mr-2">📤</span>
+                  <PaperAirplaneIcon className="w-5 h-5 text-primary mr-2" />
                   Send Message
                 </button>
               </div>
@@ -255,35 +268,29 @@ import ContactPageCard from '../../components/pages/contact/ContactPageCard.astr
         </div>
       </div>
     </div>
-
-    <!-- YouTube Section -->
-    <div class="bg-gray-50 py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center">
-            <span class="mr-3">📺</span>
-            Visit Our YouTube Channel
-          </h2>
-          <p class="text-gray-600 max-w-2xl mx-auto">
-            Stay updated with the latest legal news, tips, and guides 
-            about visas, real estate, and legal procedures in Colombia.
-          </p>
-        </div>
-        
-        <div class="max-w-4xl mx-auto">
-          <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <iframe 
-              class="w-full aspect-video" 
-              src="https://www.youtube.com/embed/30je3JaSq5U"
-              title="Capital M Law YouTube Channel"
-              style="border: 0;"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          </div>
-        </div>
+    <!-- Prominent Google Map below main grid -->
+    <div class="max-w-4xl mx-auto mt-12">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        <MapPinIcon className="w-6 h-6 text-primary mr-2" aria-hidden="true" />
+        Find us on the map
+      </h2>
+      <div class="rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <iframe
+          title="Capital M Law Office Map"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.803393178563!2d-75.6011776852386!3d6.257222995471998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e4429a7e2e2b6e1%3A0x7e2e2b6e1e2e2b6e!2sTransversal%2039B%20%2373-23%2C%20Laureles%2C%20Medell%C3%ADn%2C%20Antioquia%2C%20Colombia!5e0!3m2!1sen!2sco!4v1680000000000!5m2!1sen!2sco"
+          width="100%"
+          height="350"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="w-full h-64 md:h-80"
+        ></iframe>
       </div>
     </div>
+
+    <!-- YouTube Section -->
+    <YouTubeChannelSection lang="en" />
   </div>
 </Layout>
 

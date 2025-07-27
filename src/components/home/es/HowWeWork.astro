@@ -1,0 +1,197 @@
+---
+// Bilingual HowWeWork section, minimalistic, modern, using only brand colors and Heroicons
+// Props: lang ('en' | 'es')
+import { CalendarDaysIcon, UserIcon, DocumentTextIcon, CreditCardIcon, StarIcon, ShieldCheckIcon, BoltIcon, HeartIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
+const { lang = 'es' }: { lang?: 'en' | 'es' } = Astro.props;
+import ContactForm from "../../ui/forms/ContactForm.astro";
+
+const content = {
+  es: {
+    header: "Cómo Contratamos",
+    subheader: "Obtén orientación legal experta para tu viaje en Colombia. Reserva una consulta o envíanos un mensaje - estamos aquí para ayudarte a tener éxito.",
+    consultation: {
+      title: "Consulta Inicial",
+      subtitle: "Sesión personalizada de 45 minutos",
+      price: "Tarifa de Consulta",
+      usd: "$45 USD",
+      cop: "175,000 COP",
+      payment_methods: "Métodos de Pago",
+      methods: [
+        { label: "Bancolombia: 61400002492" },
+        { label: "Stripe (Tarjetas)" },
+        { label: "Revolut: @daniel8hsk" },
+      ],
+      stripe: "Pagar con Stripe",
+      stripe_url: "https://buy.stripe.com/7sI29Cg361Ja3sI149",
+      includes: "Lo que Incluye:",
+      features: [
+        "Evaluación legal personalizada",
+        "Cotización detallada y cronograma",
+        "Consulta bilingüe",
+        "Soporte de seguimiento"
+      ]
+    },
+    calendly: {
+      title: "Programa tu Consulta",
+      subtitle: "Elige un horario que te funcione"
+    },
+    contact: {
+      title: "Envíanos un Mensaje",
+      subtitle: "Responderemos en 24 horas"
+    },
+    trust: {
+      title: "¿Por qué Elegir Capital M Law?",
+      items: [
+        { icon: "trophy", title: "Equipo Experto", desc: "Abogados bilingües con años de experiencia" },
+        { icon: "bolt", title: "Servicio Rápido", desc: "Tiempos de respuesta rápidos y procesos eficientes" },
+        { icon: "dollar", title: "Precios Transparentes", desc: "Costos claros y directos sin cargos ocultos" },
+        { icon: "star", title: "Resultados Comprobados", desc: "Cientos de casos exitosos completados" }
+      ]
+    },
+    contact_info: {
+      title: "Ponte en Contacto",
+      items: [
+        { icon: "envelope", value: "info@capitaleme.com" },
+        { icon: "phone", value: "+57 314 602 2411" },
+        { icon: "map", value: "Medellín, Colombia" }
+      ]
+    },
+    cta: {
+      title: "¿Listo para Comenzar tu Viaje Legal en Colombia?",
+      subtitle: "Únete a cientos de clientes satisfechos que han confiado en Capital M Law para sus necesidades legales en Colombia.",
+      calendly: "Reservar Consulta",
+      whatsapp: "WhatsApp"
+    }
+  },
+  en: {
+    header: "How We Work",
+    subheader: "Get expert legal guidance for your journey in Colombia. Book a consultation or send us a message – we're here to help you succeed.",
+    consultation: {
+      title: "Initial Consultation",
+      subtitle: "45-minute personalized session",
+      price: "Consultation Fee",
+      usd: "$45 USD",
+      cop: "175,000 COP",
+      payment_methods: "Payment Methods",
+      methods: [
+        { label: "Bancolombia: 61400002492" },
+        { label: "Stripe (Cards)" },
+        { label: "Revolut: @daniel8hsk" },
+      ],
+      stripe: "Pay with Stripe",
+      stripe_url: "https://buy.stripe.com/7sI29Cg361Ja3sI149",
+      includes: "What's Included:",
+      features: [
+        "Personalized legal assessment",
+        "Detailed quote and timeline",
+        "Bilingual consultation",
+        "Follow-up support"
+      ]
+    },
+    calendly: {
+      title: "Book Your Consultation",
+      subtitle: "Choose a time that works for you"
+    },
+    contact: {
+      title: "Send Us a Message",
+      subtitle: "We will reply within 24 hours"
+    },
+    trust: {
+      title: "Why Choose Capital M Law?",
+      items: [
+        { icon: "trophy", title: "Expert Team", desc: "Bilingual lawyers with years of experience" },
+        { icon: "bolt", title: "Fast Service", desc: "Quick response times and efficient processes" },
+        { icon: "dollar", title: "Transparent Pricing", desc: "Clear, direct costs with no hidden fees" },
+        { icon: "star", title: "Proven Results", desc: "Hundreds of successful cases completed" }
+      ]
+    },
+    contact_info: {
+      title: "Get in Touch",
+      items: [
+        { icon: "envelope", value: "info@capitaleme.com" },
+        { icon: "phone", value: "+57 314 602 2411" },
+        { icon: "map", value: "Medellín, Colombia" }
+      ]
+    },
+    cta: {
+      title: "Ready to Start Your Legal Journey in Colombia?",
+      subtitle: "Join hundreds of satisfied clients who have trusted Capital M Law for their legal needs in Colombia.",
+      calendly: "Book Consultation",
+      whatsapp: "WhatsApp"
+    }
+  }
+};
+const t = content[lang] as typeof content['en'];
+
+---
+
+<section class="py-20 bg-gradient-to-br from-secondary to-primary relative overflow-hidden">
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">{t.header}</h2>
+      <p class="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">{t.subheader}</p>
+    </div>
+
+    <!-- Step-by-Step Process (best icons only) -->
+    <div class="flex flex-col md:flex-row justify-center items-center gap-6 mb-16">
+      {[
+        { icon: <CalendarDaysIcon className="w-10 h-10 text-white" />, label: lang === 'es' ? 'Contacto / Consulta Inicial' : 'Contact / Initial Consultation' },
+        { icon: <UserIcon className="w-10 h-10 text-white" />, label: lang === 'es' ? 'Evaluación del Caso' : 'Case Assessment' },
+        { icon: <DocumentTextIcon className="w-10 h-10 text-white" />, label: lang === 'es' ? 'Cotización' : 'Quotation' },
+        { icon: <CreditCardIcon className="w-10 h-10 text-white" />, label: lang === 'es' ? 'Pago' : 'Payment' },
+        { icon: <StarIcon className="w-10 h-10 text-white" />, label: lang === 'es' ? 'Ejecución del Plan' : 'Workplan Execution' }
+      ].map((step, idx, arr) => (
+        <div class="flex items-center gap-3">
+          {step.icon}
+          <span class="text-white font-semibold text-base md:text-lg">{step.label}</span>
+          {idx < arr.length - 1 && <span class="mx-2 text-white/50 text-2xl">→</span>}
+        </div>
+      ))}
+    </div>
+
+    <!-- Why Choose Capital M Law -->
+    <div class="max-w-4xl mx-auto mb-16">
+      <h3 class="text-2xl font-bold text-white text-center mb-8">{t.trust.title}</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        {t.trust.items.map((item: { icon: string; title: string; desc: string }) => (
+          <div class="flex flex-col items-center text-center">
+            {item.icon === 'shield' && <ShieldCheckIcon className="w-8 h-8 text-white mb-3" />}
+            {item.icon === 'bolt' && <BoltIcon className="w-8 h-8 text-white mb-3" />}
+            {item.icon === 'dollar' && <CreditCardIcon className="w-8 h-8 text-white mb-3" />}
+            {item.icon === 'star' && <StarIcon className="w-8 h-8 text-white mb-3" />}
+            {item.icon === 'heart' && <HeartIcon className="w-8 h-8 text-white mb-3" />}
+            <span class="text-white font-semibold text-lg mb-1">{item.title}</span>
+            <span class="text-white/80 text-sm">{item.desc}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Consultation Features -->
+    <div class="max-w-3xl mx-auto mb-16">
+      <h3 class="text-2xl font-bold text-white text-center mb-8">{lang === 'es' ? 'Características de la Consulta' : 'Consultation Features'}</h3>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {t.consultation.features.map((feature: string) => (
+          <li class="flex items-center gap-3 text-white">
+            <CheckCircleIcon className="w-6 h-6" />
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Available Payment Methods -->
+    <div class="max-w-2xl mx-auto">
+      <h3 class="text-2xl font-bold text-white text-center mb-6">{lang === 'es' ? 'Métodos de Pago Disponibles' : 'Available Payment Methods'}</h3>
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+        {t.consultation.methods.map((method: { label: string }) => (
+          <div class="flex items-center gap-2 bg-white/10 rounded-lg px-4 py-2">
+            <CreditCardIcon className="w-5 h-5" />
+            <span class="text-white text-sm">{method.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section> 

@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getAllContentData } from '../../lib/contentData.js';
+const menuData = await getAllContentData('es');
+---
+<Layout title="Gracias - Capital M Law" menuData={menuData} lang="es">
+  <main class="min-h-screen flex flex-col items-center justify-center py-24">
+    <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">¡Gracias por contactarnos!</h1>
+    <p class="text-xl text-gray-600 max-w-2xl text-center mb-8">Hemos recibido tu mensaje y nuestro equipo se pondrá en contacto contigo pronto.</p>
+    <a href="/es" class="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition">Volver al inicio</a>
+  </main>
+</Layout> 

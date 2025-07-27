@@ -1,14 +1,49 @@
+
 import React from 'react';
 
 interface VisasMegaMenuProps {
   lang?: string;
-  menuData?: any;
   currentPath?: string;
+  visas?: any; // Added visas prop
+  loading?: boolean; // Added loading prop
+  error?: string; // Added error prop
+  loadVisasData?: (lang: 'en' | 'es') => void; // Added loadVisasData prop
 }
 
-const VisasMegaMenu: React.FC<VisasMegaMenuProps> = ({ lang = 'en', menuData = {}, currentPath }) => {
-  const popularVisas = menuData.popularVisas || [];
-  const visasGuides = menuData.visasGuides || [];
+const VisasMegaMenu: React.FC<VisasMegaMenuProps> = ({ visas, loading, lang = 'en', currentPath }) => {
+  // Load data if not already loaded
+  React.useEffect(() => {
+    if (!visas && !loading) {
+      // Assuming loadVisasData is passed as a prop or handled elsewhere if needed
+      // For now, we'll just log a message if loadVisasData is not provided
+    }
+  }, [visas, loading]);
+
+  const popularVisas = visas?.popularVisas || [];
+  const visasGuides = visas?.allGuides || [];
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded mb-4"></div>
+          <div className="space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-16 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (visas?.error) { // Assuming error is part of the visas object
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-500">{visas.error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

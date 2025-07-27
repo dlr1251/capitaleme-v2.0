@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getAllContentData } from '../lib/contentData.js';
+
+const lang = 'en';
+const menuData = await getAllContentData(lang);
+const allVisas = menuData?.allVisas || [];
+const popularVisas = allVisas.filter((v: any) => v.isPopular);
+---
+
+<Layout title="Test Visas" lang={lang}>
+  <div class="p-8">
+    <h1 class="text-2xl font-bold mb-4">Visa Data Test</h1>
+    
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold mb-2">Total Visas: {allVisas.length}</h2>
+      <h2 class="text-xl font-semibold mb-2">Popular Visas: {popularVisas.length}</h2>
+    </div>
+    
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold mb-2">Popular Visas:</h3>
+      <ul class="list-disc pl-5">
+        {popularVisas.map((visa: any) => (
+          <li class="mb-1">
+            {visa.title} (isPopular: {visa.isPopular.toString()})
+          </li>
+        ))}
+      </ul>
+    </div>
+    
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold mb-2">Sample Visa Data:</h3>
+      <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">
+        {JSON.stringify(popularVisas[0], null, 2)}
+      </pre>
+    </div>
+  </div>
+</Layout> 

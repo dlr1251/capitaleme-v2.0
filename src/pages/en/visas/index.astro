@@ -1,47 +1,32 @@
 ---
+export const prerender = true; // SSG: this page is pre-rendered. Recommended to revalidate every 30 minutes in hosting.
 import Layout from "../../../layouts/Layout.astro";
-import { getNotionDatabase } from '../../../utils/notion';
-import type { NotionPage } from '../../../utils/notionTypes';
-import VisasHero from '../../../components/features/visa-services/VisasHero.jsx';
-import ServiceProcess from '../../../components/features/visa-services/ServiceProcess.jsx';
-import VisasSectionFilterSearch from '../../../components/pages/home/VisasSectionFilterSearch';
-import ConsultationSection from '../../../components/features/visa-services/ConsultationSection.jsx';
-import LatestBlogSection from '../../../components/features/visa-services/LatestBlogSection.jsx';
-import { getAllVisasFromNotion, getGuides } from '../../../utils/menuData.js';
-import BlogPageLatest from '../../../components/features/blog/BlogPageLatest.astro';
-import HomeVisaAssistanceSection from '../../../components/pages/home/HomeVisaAssistanceSection.tsx';
+import { getAllContentData } from '../../../lib/contentData.js';
+import ServiceProcess from '../../../components/visas/ServiceProcess.astro';
+import VisasSectionFilterSearch from '../../../components/visas/VisasSectionFilterSearch.tsx';
+import ConsultationSection from '../../../components/visas/ConsultationSection.tsx';
+import BlogPageLatest from '../../../components/blog/BlogPageLatest.astro';
+import VisasHero from '../../../components/visas/VisasHero.tsx';
+import ColombiaStayCalculator from "../../../components/visas/ColombiaStayCalculator.tsx";
+const lang = 'en';
+const menuData = await getAllContentData(lang);
 
-// Fetch Notion database content
-const databaseId = 'eea50d4ca9a64f329585bd8b64a583a6';
-const pages = await getNotionDatabase(databaseId) as NotionPage[];
-
-const allVisas = await getAllVisasFromNotion('en');
-const allGuides = await getGuides('en');
+// Get data from menuData with null checks
+const allVisas = menuData?.allVisas || [];
+const allGuides = menuData?.allGuides || [];
 
 // Get popular visas
-const popularVisas = allVisas.filter((visa: any) => visa.isPopular).slice(0, 7);
+const popularVisas = allVisas.filter((visa: any) => visa.isPopular).slice(0, 9);
 
 // Get featured guides
 const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(0, 4);
 ---
 
-<Layout title="Visa Information - Capital M Law | Colombian Legal Services">
-  <!-- Modern Hero Section -->
+<Layout title="Visa Information - Capital M Law | Colombian Legal Services" lang={lang} menuData={menuData}>
   
-  <HomeVisaAssistanceSection visas={popularVisas} guides={featuredGuides} lang="en" client:load />
-  
-  <!-- How Our Service Works Section -->
-  <ServiceProcess client:load />
-  
-  <!-- Visa Categories with Filtering -->
-  <section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">          
-      <VisasSectionFilterSearch visas={allVisas} lang="en" intro={false} client:load/>
-    </div>
-  </section>
-
-  <!-- Full-Width Consultation Section -->
-  <ConsultationSection client:load />
-  
+  <VisasHero client:load popularVisas={popularVisas} guides={featuredGuides} lang="en" />
+  <ServiceProcess lang="en" />
+  <VisasSectionFilterSearch  visas={allVisas} lang="en" intro={true} client:visible/>   
   <BlogPageLatest/>
+  <!-- <ColombiaStayCalculator client:load /> -->
 </Layout> 

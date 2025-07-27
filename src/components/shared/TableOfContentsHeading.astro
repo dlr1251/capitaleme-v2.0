@@ -1,0 +1,122 @@
+---
+const { heading } = Astro.props;
+
+const getIndentation = (depth: number) => {
+  if (depth === 2) return 'pl-0';
+  if (depth === 3) return 'pl-4';
+  if (depth === 4) return 'pl-8';
+  if (depth === 5) return 'pl-12';
+  if (depth === 6) return 'pl-16';
+  return 'pl-0';
+};
+
+const getFontWeight = (depth: number) => {
+  if (depth === 2) return 'font-medium';
+  if (depth === 3) return 'font-normal';
+  return 'font-normal';
+};
+
+const getTextColor = (depth: number) => {
+  if (depth === 2) return 'text-gray-900';
+  if (depth === 3) return 'text-gray-700';
+  return 'text-gray-600';
+};
+
+const indentation = getIndentation(heading.depth);
+const fontWeight = getFontWeight(heading.depth);
+const textColor = getTextColor(heading.depth);
+---
+
+<li class="toc-item">
+  <a 
+    href={'#' + heading.id} 
+    class={`toc-link block px-3 py-2 pl-2 text-sm rounded-md transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 ${indentation} ${fontWeight} ${textColor}`}
+    data-depth={heading.depth}
+  >
+    {heading.text}
+  </a>
+  {
+    heading.subheadings && heading.subheadings.length > 0 && (
+      <ul class="toc-subheadings space-y-1 mt-1">
+        {heading.subheadings.map((subheading: any) => (
+          <Astro.self heading={subheading} />
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .toc-item {
+    position: relative;
+  }
+
+  .toc-link {
+    position: relative;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .toc-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    background-color: #00AA81;
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.125rem;
+  }
+
+  .toc-link:hover::before,
+  .toc-link.toc-link-active::before {
+    width: 0.25rem;
+    height: 1.5rem;
+  }
+
+  .toc-link.toc-link-active {
+    color: #00AA81 !important;
+    background-color: #eff6ff !important;
+    font-weight: 500;
+  }
+
+  .toc-subheadings {
+    border-left: 1px solid #e5e7eb;
+    margin-left: 0.75rem;
+  }
+
+  /* Animation for active state */
+  @keyframes highlightActive {
+    from {
+      background-color: transparent;
+      color: inherit;
+    }
+    to {
+      background-color: #eff6ff;
+      color: #00AA81;
+    }
+  }
+
+  .toc-link-active {
+    animation: highlightActive 0.2s ease-in-out forwards;
+  }
+
+  /* Hover effects for different depths */
+  .toc-link[data-depth="2"]:hover {
+    background-color: #f0f9ff;
+    color: #00AA81;
+  }
+
+  .toc-link[data-depth="3"]:hover {
+    background-color: #f8fafc;
+    color: #16345F;
+  }
+
+  .toc-link[data-depth="4"]:hover,
+  .toc-link[data-depth="5"]:hover,
+  .toc-link[data-depth="6"]:hover {
+    background-color: #f1f5f9;
+    color: #16345F;
+  }
+</style>

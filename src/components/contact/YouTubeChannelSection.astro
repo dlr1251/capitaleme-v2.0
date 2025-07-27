@@ -1,0 +1,119 @@
+---
+interface Props {
+  lang?: 'en' | 'es';
+}
+
+const { lang = 'en' } = Astro.props;
+
+// Define content based on language
+const content = lang === 'es' ? {
+  title: "Canal de YouTube",
+  description: "Suscríbete a nuestro canal para obtener consejos legales y actualizaciones sobre visas y bienes raíces en Colombia.",
+  subscribeButton: "Suscribirse",
+  latestVideos: "Últimos videos",
+  viewAll: "Ver todos los videos"
+} : {
+  title: "YouTube Channel",
+  description: "Subscribe to our channel for legal advice and updates on visas and real estate in Colombia.",
+  subscribeButton: "Subscribe",
+  latestVideos: "Latest videos",
+  viewAll: "View all videos"
+};
+---
+
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        {content.title}
+      </h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        {content.description}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Featured Video -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="aspect-video bg-gray-200 flex items-center justify-center">
+          <div class="text-center">
+            <svg class="w-16 h-16 text-red-600 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            <p class="text-gray-500">{lang === 'es' ? 'Video destacado' : 'Featured video'}</p>
+          </div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            {lang === 'es' ? 'Guía completa de visas en Colombia' : 'Complete Visa Guide in Colombia'}
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            {lang === 'es' ? 'Todo lo que necesitas saber sobre visas y procesos migratorios.' : 'Everything you need to know about visas and immigration processes.'}
+          </p>
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-500">15:42</span>
+            <a href="#" class="text-red-600 hover:text-red-700 font-medium text-sm">
+              {lang === 'es' ? 'Ver video' : 'Watch video'}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Video 1 -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="aspect-video bg-gray-200 flex items-center justify-center">
+          <div class="text-center">
+            <svg class="w-12 h-12 text-red-600 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            <p class="text-gray-500 text-sm">{lang === 'es' ? 'Video reciente' : 'Recent video'}</p>
+          </div>
+        </div>
+        <div class="p-4">
+          <h4 class="font-medium text-gray-900 mb-1">
+            {lang === 'es' ? 'Bienes raíces en Medellín' : 'Real Estate in Medellín'}
+          </h4>
+          <p class="text-gray-600 text-xs mb-2">
+            {lang === 'es' ? 'Inversión y oportunidades.' : 'Investment and opportunities.'}
+          </p>
+          <span class="text-xs text-gray-500">8:15</span>
+        </div>
+      </div>
+
+      <!-- Recent Video 2 -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="aspect-video bg-gray-200 flex items-center justify-center">
+          <div class="text-center">
+            <svg class="w-12 h-12 text-red-600 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            <p class="text-gray-500 text-sm">{lang === 'es' ? 'Video reciente' : 'Recent video'}</p>
+          </div>
+        </div>
+        <div class="p-4">
+          <h4 class="font-medium text-gray-900 mb-1">
+            {lang === 'es' ? 'Procesos legales en Colombia' : 'Legal Processes in Colombia'}
+          </h4>
+          <p class="text-gray-600 text-xs mb-2">
+            {lang === 'es' ? 'Guía paso a paso.' : 'Step-by-step guide.'}
+          </p>
+          <span class="text-xs text-gray-500">12:30</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <a 
+        href="https://www.youtube.com/@capitalmlaw" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition-colors"
+      >
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+        {content.subscribeButton}
+      </a>
+    </div>
+  </div>
+</section> 
