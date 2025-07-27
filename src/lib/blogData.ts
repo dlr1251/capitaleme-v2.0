@@ -1,5 +1,10 @@
-// Type declaration for supabase client to handle the mock client case
-declare const supabase: any;
+// Global declaration for supabase
+declare global {
+  var supabase: any;
+}
+
+// Import supabase with type assertion
+const supabase = (await import('./supabase.js')).supabase as any;
 
 // Static fallback blog posts
 const STATIC_BLOG_POSTS = {
