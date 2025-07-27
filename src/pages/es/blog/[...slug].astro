@@ -4,6 +4,8 @@ import BlogPostLayoutNew from '../../../layouts/BlogPostLayoutNew.astro';
 import { getBlogPostsFromSupabase, getBlogPostBySlug } from '../../../lib/blogData.ts';
 import SocialSharing from '../../../components/core/common/SocialSharing.jsx';
 
+const lang = 'es';
+
 interface Props {
   post: {
     id: string;
@@ -23,8 +25,6 @@ interface Props {
     tags: string[];
   };
 }
-
-const lang = 'es';
 
 // Utility functions
 const formatDate = (dateString: string): string => {
@@ -133,7 +133,7 @@ const generateGradient = (text: string): string => {
 export async function getStaticPaths() {
   try {
     console.log("ES BLOG: Starting getStaticPaths");
-    const posts = await getBlogPostsFromSupabase(lang);
+    const posts = await getBlogPostsFromSupabase('es');
     console.log("ES BLOG: Posts from getBlogPostsFromSupabase:", posts.length);
     console.log("ES BLOG STATIC PATHS:", posts.map((post: any) => post.slug));
     

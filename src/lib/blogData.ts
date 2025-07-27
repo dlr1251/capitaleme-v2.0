@@ -1,4 +1,5 @@
-import { supabase } from './supabase.js';
+// Type declaration for supabase client to handle the mock client case
+declare const supabase: any;
 
 // Static fallback blog posts
 const STATIC_BLOG_POSTS = {
