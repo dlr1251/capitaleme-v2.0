@@ -6,6 +6,9 @@ import { getAllContentData } from '../../../lib/contentData.js';
 // Get CLKR data using the new selective loading approach
 const menuData = await getAllContentData('en');
 
+console.log('CLKR Page Debug - menuData:', JSON.stringify(menuData, null, 2));
+console.log('CLKR Page Debug - clkrServices:', menuData?.clkrServices);
+console.log('CLKR Page Debug - clkrServices length:', menuData?.clkrServices?.length);
 
 // Get CLKR articles from menu data
 const clkrServices = menuData?.clkrServices || [];
