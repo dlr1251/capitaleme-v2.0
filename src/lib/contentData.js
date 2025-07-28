@@ -176,12 +176,12 @@ function processGuidesData(guidesData, lang) {
 
 async function processCLKRData(lang) {
   console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
-  console.log(`[RUNTIME DEBUG] Starting processCLKRData function`);
+  console.log(`[RUNTIME DEBUG] Starting processCLKRData function - UNIQUE ID: CONTENTDATA_PROCESS_CLKR`);
   console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase function type:`, typeof getCLKRArticlesFromSupabase);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   
   // Simple test to see if we can even log
-  console.log(`[RUNTIME DEBUG] Test log - function is working`);
+  console.log(`[RUNTIME DEBUG] Test log - function is working - UNIQUE ID: CONTENTDATA_PROCESS_CLKR`);
   
   console.log(`[RUNTIME DEBUG] About to enter try block`);
   try {
