@@ -180,6 +180,9 @@ async function processCLKRData(lang) {
   console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase function type:`, typeof getCLKRArticlesFromSupabase);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   
+  // Simple test to see if we can even log
+  console.log(`[RUNTIME DEBUG] Test log - function is working`);
+  
   console.log(`[RUNTIME DEBUG] About to enter try block`);
   try {
     console.log(`[RUNTIME DEBUG] Inside try block`);
