@@ -1,10 +1,25 @@
 // Dynamic import for supabase to handle ES module compatibility
 let supabase;
+let supabaseInitialized = false;
 
-(async () => {
-  const supabaseModule = await import('./supabase.js');
-  supabase = supabaseModule.supabase;
-})();
+async function initializeSupabase() {
+  if (supabaseInitialized) return supabase;
+  
+  try {
+    console.log('[DEBUG] Initializing Supabase client...');
+    const supabaseModule = await import('./supabase.js');
+    supabase = supabaseModule.supabase;
+    supabaseInitialized = true;
+    console.log('[DEBUG] Supabase client initialized successfully');
+    return supabase;
+  } catch (error) {
+    console.error('[ERROR] Failed to initialize Supabase client:', error);
+    throw error;
+  }
+}
+
+// Initialize supabase on module load
+initializeSupabase().catch(console.error);
 
 import { Client } from '@notionhq/client';
 import fs from 'fs';
@@ -222,11 +237,14 @@ export async function getVisaBySlugFromSupabase(slug, lang = 'en') {
 
 export async function getCLKRArticlesFromSupabase(lang = 'en') {
     console.log(`[DEBUG] getCLKRArticlesFromSupabase called with lang: ${lang}`);
-    console.log(`[DEBUG] supabase client available: ${!!supabase}`);
     
     try {
+        // Ensure supabase is initialized
+        const supabaseClient = await initializeSupabase();
+        console.log(`[DEBUG] supabase client available: ${!!supabaseClient}`);
+        
         console.log(`[DEBUG] Attempting to fetch CLKR articles from Supabase...`);
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('clkr_articles')
             .select('*')
             .eq('lang', lang)
