@@ -268,6 +268,9 @@ async function processBlogData(blogData, lang) {
 
 // --- Main: get all processed content data (with cache) ---
 async function getAllContentData(lang = 'en') {
+  // Clear cache to ensure fresh data
+  clearContentDataCache();
+  
   if (isCacheValid(lang)) {
     return contentDataCache.data;
   }
