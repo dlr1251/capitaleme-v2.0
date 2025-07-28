@@ -91,7 +91,6 @@ export default defineConfig({
     })
   ],
   adapter: vercel({
-    edgeMiddleware: true,
     webAnalytics: {
       enabled: true
     }

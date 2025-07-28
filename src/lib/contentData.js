@@ -74,11 +74,20 @@ async function fetchAllDatabases(lang) {
       guidesData = [];
     }
     
-    // Only fetch blog from Notion, set clkrData to [] (placeholders for now)
+    // Fetch CLKR data from Supabase
+    let clkrData = [];
+    try {
+      clkrData = await getCLKRArticlesFromSupabase(lang);
+      console.log(`Fetched ${clkrData.length} CLKR articles from Supabase for ${lang}`);
+    } catch (error) {
+      console.error('Error fetching CLKR articles from Supabase:', error);
+      clkrData = [];
+    }
+    
+    // Only fetch blog from Notion (placeholders for now)
     const [blogData] = await Promise.all([
       []  // Placeholder for blog
     ]);
-    const clkrData = []; // CLKR is only fetched from Supabase in processCLKRData
     return {
       visasData,
       guidesData,
@@ -174,10 +183,9 @@ function processGuidesData(guidesData, lang) {
   };
 }
 
-async function processCLKRData(lang) {
+async function processCLKRData(clkrData, lang) {
   console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
   console.log(`[RUNTIME DEBUG] Starting processCLKRData function - UNIQUE ID: CONTENTDATA_PROCESS_CLKR`);
-  console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase function type:`, typeof getCLKRArticlesFromSupabase);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   
   // Simple test to see if we can even log
@@ -186,18 +194,11 @@ async function processCLKRData(lang) {
   console.log(`[RUNTIME DEBUG] About to enter try block`);
   try {
     console.log(`[RUNTIME DEBUG] Inside try block`);
-    console.log(`[RUNTIME DEBUG] About to call getCLKRArticlesFromSupabase`);
-    console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase function:`, getCLKRArticlesFromSupabase);
+    console.log(`[RUNTIME DEBUG] Processing ${clkrData.length} CLKR articles`);
     
-    // Add a timeout to the function call
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('getCLKRArticlesFromSupabase timeout')), 15000); // 15 second timeout
-    });
+    const clkrArticles = clkrData;
     
-    const clkrPromise = getCLKRArticlesFromSupabase(lang);
-    const clkrArticles = await Promise.race([clkrPromise, timeoutPromise]);
-    
-    console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase returned:`, clkrArticles);
+    console.log(`[RUNTIME DEBUG] Processing CLKR articles:`, clkrArticles);
     logToFile('[CLKR] clkrArticles =', clkrArticles);
     
     const allCLKRServices = clkrArticles.map(article => ({
@@ -278,7 +279,7 @@ async function getAllContentData(lang = 'en') {
     const { visasData, guidesData, clkrData, blogData } = await fetchAllDatabases(lang);
     const visasProcessed = processVisasData(visasData, lang);
     const guidesProcessed = processGuidesData(guidesData, lang);
-    const clkrProcessed = await processCLKRData(lang);
+    const clkrProcessed = await processCLKRData(clkrData, lang);
     const blogProcessed = await processBlogData(blogData, lang);
     const contentData = {
       // Visas
@@ -342,7 +343,8 @@ async function getAllContentData(lang = 'en') {
 
 // --- CLKR menu data (from Supabase) ---
 async function getCLKRMenuData(lang = 'en') {
-  return await processCLKRData(lang);
+  const clkrData = await getCLKRArticlesFromSupabase(lang);
+  return await processCLKRData(clkrData, lang);
 }
 
 // --- Guides Export Helper ---

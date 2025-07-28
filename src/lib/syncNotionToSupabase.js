@@ -969,6 +969,216 @@ async function fetchAllFromNotion(notion, databaseId) {
 } 
 
 export async function syncCLKRToSupabase() {
-  // TODO: Implement actual sync logic
-  return { success: true, message: 'CLKR sync placeholder' };
+    const databaseId = '20d0a3cd15e38169928fff5c6f2b219c'; // CLKR database ID
+    
+    try {
+        console.log('🔄 Starting CLKR sync from Notion to Supabase...');
+        
+        // Fetch all CLKR articles from Notion
+        const clkrArticles = await fetchAllCLKRFromNotion();
+        console.log(`📊 Found ${clkrArticles.length} CLKR articles in Notion`);
+        
+        let syncedCount = 0;
+        let updatedCount = 0;
+        let errorCount = 0;
+        
+        // Process each CLKR article
+        for (const article of clkrArticles) {
+            try {
+                const articleData = await extractCLKRData(article, createNotionClient());
+                
+                // Check if article already exists by slug and lang
+                const { data: existingArticle } = await supabase
+                    .from('clkr_articles')
+                    .select('id, notion_id, last_edited')
+                    .eq('slug', articleData.slug)
+                    .eq('lang', articleData.lang)
+                    .single();
+                
+                if (existingArticle) {
+                    // Update existing article if it has been modified
+                    const shouldUpdate = new Date(article.last_edited_time) > new Date(existingArticle.last_edited) || 
+                                       existingArticle.notion_id !== article.id;
+                    
+                    if (shouldUpdate) {
+                        const { error } = await supabase
+                            .from('clkr_articles')
+                            .update({
+                                notion_id: article.id,
+                                title: articleData.title,
+                                slug: articleData.slug,
+                                description: articleData.description,
+                                content: articleData.content,
+                                module: articleData.module,
+                                lang: articleData.lang,
+                                published: articleData.published,
+                                featured: articleData.featured,
+                                reading_time: articleData.reading_time,
+                                last_edited: article.last_edited_time,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', existingArticle.id);
+                        
+                        if (error) {
+                            console.error(`❌ Error updating CLKR article ${articleData.slug}:`, error);
+                            errorCount++;
+                        } else {
+                            console.log(`✅ Updated CLKR article: ${articleData.title}`);
+                            updatedCount++;
+                        }
+                    }
+                } else {
+                    // Insert new article
+                    const { error } = await supabase
+                        .from('clkr_articles')
+                        .insert({
+                            notion_id: article.id,
+                            title: articleData.title,
+                            slug: articleData.slug,
+                            description: articleData.description,
+                            content: articleData.content,
+                            module: articleData.module,
+                            lang: articleData.lang,
+                            published: articleData.published,
+                            featured: articleData.featured,
+                            reading_time: articleData.reading_time,
+                            last_edited: article.last_edited_time,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        });
+                    
+                    if (error) {
+                        console.error(`❌ Error inserting CLKR article ${articleData.slug}:`, error);
+                        errorCount++;
+                    } else {
+                        console.log(`✅ Synced new CLKR article: ${articleData.title}`);
+                        syncedCount++;
+                    }
+                }
+            } catch (error) {
+                console.error(`❌ Error processing CLKR article:`, error);
+                errorCount++;
+            }
+        }
+        
+        console.log(`📊 CLKR sync completed:`);
+        console.log(`   - New articles synced: ${syncedCount}`);
+        console.log(`   - Articles updated: ${updatedCount}`);
+        console.log(`   - Errors: ${errorCount}`);
+        
+        return {
+            success: true,
+            syncedCount,
+            updatedCount,
+            errorCount,
+            totalProcessed: clkrArticles.length
+        };
+        
+    } catch (error) {
+        console.error('❌ CLKR sync failed:', error);
+        throw error;
+    }
+}
+
+async function fetchAllCLKRFromNotion() {
+    const notion = createNotionClient();
+    const databaseId = '20d0a3cd15e38169928fff5c6f2b219c'; // CLKR database ID
+    
+    console.log(`🔍 Fetching CLKR articles from Notion database: ${databaseId}`);
+    
+    try {
+        const response = await notion.databases.query({
+            database_id: databaseId,
+            filter: {
+                property: 'Published',
+                checkbox: {
+                    equals: true
+                }
+            },
+            sorts: [
+                {
+                    property: 'Last edited time',
+                    direction: 'descending'
+                }
+            ]
+        });
+        
+        console.log(`📊 Found ${response.results.length} published CLKR articles in Notion`);
+        return response.results;
+    } catch (error) {
+        console.error('❌ Error fetching CLKR articles from Notion:', error);
+        throw error;
+    }
+}
+
+async function extractCLKRData(article, notion) {
+    console.log(`📝 Extracting data from CLKR article: ${article.id}`);
+    
+    const p = article.properties;
+    
+    // Extract title with fallbacks
+    const title = p.Name?.title?.[0]?.plain_text || 
+                 p.Title?.title?.[0]?.plain_text || 
+                 p.Nombre?.title?.[0]?.plain_text || 
+                 'Untitled';
+    
+    // Generate slug from title
+    const slug = title.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/(^-|-$)/g, '');
+    
+    // Extract description with fallbacks
+    const description = p.Description?.rich_text?.[0]?.plain_text || 
+                      p.Summary?.rich_text?.[0]?.plain_text || 
+                      p.Excerpt?.rich_text?.[0]?.plain_text || 
+                      '';
+    
+    // Extract language with fallbacks
+    const lang = (p.Lang?.select?.name || 
+                 p.Language?.select?.name || 
+                 'en').toLowerCase();
+    
+    // Extract module with fallbacks
+    const module = p.Module?.select?.name || 
+                  p.Category?.select?.name || 
+                  p.Type?.select?.name || 
+                  'General';
+    
+    // Extract boolean flags
+    const published = p.Published?.checkbox || 
+                    p.Public?.checkbox || 
+                    false;
+    
+    const featured = p.Featured?.checkbox || 
+                    p.Highlight?.checkbox || 
+                    false;
+    
+    console.log(`📊 Extracted properties: title="${title}", lang="${lang}", module="${module}"`);
+    
+    // Fetch content
+    console.log('📄 Fetching page content...');
+    const content = await fetchPageContentMarkdown(notion, article.id);
+    
+    // Calculate reading time (rough estimate: 200 words per minute)
+    const wordCount = content.split(/\s+/).length;
+    const readingTime = Math.ceil(wordCount / 200);
+    
+    const data = {
+        title,
+        slug,
+        description,
+        content,
+        module,
+        lang,
+        published,
+        featured,
+        reading_time: readingTime,
+        last_edited: article.last_edited_time,
+        updated_at: new Date().toISOString()
+    };
+    
+    console.log(`✅ CLKR article data extracted successfully. Content length: ${content.length} characters, reading time: ${readingTime} minutes`);
+    return data;
 } 
