@@ -56,6 +56,8 @@ function clearContentDataCache() {
 // --- Fetch all raw data (Supabase/Notion) ---
 async function fetchAllDatabases(lang) {
   try {
+    console.log(`[RUNTIME DEBUG] fetchAllDatabases called with lang: ${lang}`);
+    
     // Fetch visas from Supabase
     let visasData = [];
     try {
@@ -77,10 +79,14 @@ async function fetchAllDatabases(lang) {
     // Fetch CLKR data from Supabase
     let clkrData = [];
     try {
+      console.log(`[RUNTIME DEBUG] Calling getCLKRArticlesFromSupabase for lang: ${lang}`);
       clkrData = await getCLKRArticlesFromSupabase(lang);
+      console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase returned ${clkrData.length} articles`);
+      console.log(`[RUNTIME DEBUG] First CLKR article:`, clkrData[0]);
       console.log(`Fetched ${clkrData.length} CLKR articles from Supabase for ${lang}`);
     } catch (error) {
-      console.error('Error fetching CLKR articles from Supabase:', error);
+      console.error('[RUNTIME DEBUG] Error fetching CLKR articles from Supabase:', error);
+      console.error('[RUNTIME DEBUG] Error stack:', error.stack);
       clkrData = [];
     }
     
@@ -88,6 +94,14 @@ async function fetchAllDatabases(lang) {
     const [blogData] = await Promise.all([
       []  // Placeholder for blog
     ]);
+    
+    console.log(`[RUNTIME DEBUG] fetchAllDatabases returning:`, {
+      visasData: visasData.length,
+      guidesData: guidesData.length,
+      clkrData: clkrData.length,
+      blogData: blogData.length
+    });
+    
     return {
       visasData,
       guidesData,
@@ -95,6 +109,7 @@ async function fetchAllDatabases(lang) {
       blogData
     };
   } catch (error) {
+    console.error('[RUNTIME DEBUG] Error in fetchAllDatabases:', error);
     throw error;
   }
 }
