@@ -1,4 +1,11 @@
-import { supabase } from './supabase.js';
+// Dynamic import for supabase to handle ES module compatibility
+let supabase;
+
+(async () => {
+  const supabaseModule = await import('./supabase.js');
+  supabase = supabaseModule.supabase;
+})();
+
 import { Client } from '@notionhq/client';
 import fs from 'fs';
 

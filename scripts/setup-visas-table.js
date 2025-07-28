@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 
 import 'dotenv/config';
-import { supabase } from '../src/lib/supabase.js';
+
+// Dynamic import for supabase to handle ES module compatibility
+let supabase;
+
+(async () => {
+  const supabaseModule = await import('../src/lib/supabase.js');
+  supabase = supabaseModule.supabase;
+})();
 
 async function setupVisasTable() {
   console.log('🔧 Setting up visas table in Supabase...');
