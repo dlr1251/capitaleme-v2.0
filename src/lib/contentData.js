@@ -201,7 +201,6 @@ function processGuidesData(guidesData, lang) {
 async function processCLKRData(clkrArticles, lang) {
   try {
     console.log(`[RUNTIME DEBUG] processCLKRData called with ${clkrArticles?.length || 0} articles`);
-    console.log(`[RUNTIME DEBUG] First article sample:`, clkrArticles?.[0]);
     
     if (!clkrArticles || clkrArticles.length === 0) {
       console.log(`[RUNTIME DEBUG] No CLKR articles found, returning empty result`);
@@ -212,8 +211,8 @@ async function processCLKRData(clkrArticles, lang) {
     }
     
     console.log(`[RUNTIME DEBUG] Processing CLKR articles:`, clkrArticles);
-    logToFile('[CLKR] clkrArticles =', clkrArticles);
     
+    // Transform articles into services format
     const allCLKRServices = clkrArticles.map(article => ({
       id: article.id,
       title: article.title,
@@ -222,17 +221,18 @@ async function processCLKRData(clkrArticles, lang) {
       module: article.module,
       url: `/${lang}/clkr/${article.slug}`,
       lastEdited: article.last_edited,
-      readingTime: article.reading_time
+      readingTime: article.reading_time || 5
     }));
     
     console.log(`[RUNTIME DEBUG] Processed ${allCLKRServices.length} CLKR services`);
     console.log(`[RUNTIME DEBUG] First processed service:`, allCLKRServices[0]);
     
+    // Extract unique modules
     const modules = [...new Set(allCLKRServices.map(service => service.module).filter(Boolean))].sort();
     console.log(`[RUNTIME DEBUG] Found ${modules.length} unique modules:`, modules);
     
     console.log(`[RUNTIME DEBUG] processCLKRData returning:`, { allCLKRServices, modules });
-    logToFile('[CLKR] processCLKRData returning', { allCLKRServices, modules });
+    
     return {
       allCLKRServices,
       modules
@@ -240,7 +240,6 @@ async function processCLKRData(clkrArticles, lang) {
   } catch (error) {
     console.error(`[RUNTIME DEBUG] processCLKRData error:`, error);
     console.error(`[RUNTIME DEBUG] Error stack:`, error.stack);
-    logToFile('[CLKR] processCLKRData error', error);
     return {
       allCLKRServices: [],
       modules: []
