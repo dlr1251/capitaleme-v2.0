@@ -3,12 +3,18 @@ let supabase;
 let supabaseInitialized = false;
 
 async function initializeSupabase() {
-  if (supabaseInitialized) return supabase;
+  if (supabaseInitialized) {
+    console.log('[DEBUG] Supabase already initialized, returning existing client');
+    return supabase;
+  }
   
   try {
     console.log('[DEBUG] Initializing Supabase client...');
+    console.log('[DEBUG] About to import supabase module...');
     const supabaseModule = await import('./supabase.js');
+    console.log('[DEBUG] Supabase module imported successfully');
     supabase = supabaseModule.supabase;
+    console.log('[DEBUG] Supabase client extracted from module');
     supabaseInitialized = true;
     console.log('[DEBUG] Supabase client initialized successfully');
     return supabase;
