@@ -3,6 +3,11 @@ import { getCLKRArticlesFromSupabase, getVisasFromSupabase, getGuidesFromSupabas
 import fs from 'fs';
 import { Client } from '@notionhq/client';
 
+// Debug the import
+console.log('[DEBUG] getCLKRArticlesFromSupabase imported:', typeof getCLKRArticlesFromSupabase);
+console.log('[DEBUG] getVisasFromSupabase imported:', typeof getVisasFromSupabase);
+console.log('[DEBUG] getGuidesFromSupabase imported:', typeof getGuidesFromSupabase);
+
 // Create Notion client function
 function createNotionClient() {
   const apiKey = process.env.NOTION_API_KEY;
@@ -171,6 +176,7 @@ function processGuidesData(guidesData, lang) {
 
 async function processCLKRData(lang) {
   console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
+  console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase function type:`, typeof getCLKRArticlesFromSupabase);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   try {
     console.log(`[RUNTIME DEBUG] About to call getCLKRArticlesFromSupabase`);
