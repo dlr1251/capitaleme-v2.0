@@ -11,10 +11,32 @@ async function initializeSupabase() {
   try {
     console.log('[DEBUG] Initializing Supabase client...');
     console.log('[DEBUG] About to import supabase module...');
-    const supabaseModule = await import('./supabase.js');
-    console.log('[DEBUG] Supabase module imported successfully');
-    supabase = supabaseModule.supabase;
-    console.log('[DEBUG] Supabase client extracted from module');
+    
+    // Try to import the module
+    let supabaseModule;
+    try {
+      supabaseModule = await import('./supabase.js');
+      console.log('[DEBUG] Supabase module imported successfully');
+    } catch (importError) {
+      console.error('[ERROR] Failed to import supabase module:', importError);
+      throw importError;
+    }
+    
+    // Try to extract the supabase client
+    try {
+      supabase = supabaseModule.supabase;
+      console.log('[DEBUG] Supabase client extracted from module');
+    } catch (extractError) {
+      console.error('[ERROR] Failed to extract supabase client:', extractError);
+      throw extractError;
+    }
+    
+    // Verify the client is valid
+    if (!supabase || typeof supabase.from !== 'function') {
+      console.error('[ERROR] Invalid supabase client:', supabase);
+      throw new Error('Invalid supabase client');
+    }
+    
     supabaseInitialized = true;
     console.log('[DEBUG] Supabase client initialized successfully');
     return supabase;
