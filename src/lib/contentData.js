@@ -173,11 +173,7 @@ async function processCLKRData(lang) {
   console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   try {
-    console.log(`[RUNTIME DEBUG] About to import getCLKRArticlesFromSupabase`);
-    const { getCLKRArticlesFromSupabase } = await import('./syncNotionToSupabase.js');
-    console.log(`[RUNTIME DEBUG] Successfully imported getCLKRArticlesFromSupabase`);
-    
-    console.log(`[RUNTIME DEBUG] Calling getCLKRArticlesFromSupabase for lang: ${lang}`);
+    console.log(`[RUNTIME DEBUG] About to call getCLKRArticlesFromSupabase`);
     const clkrArticles = await getCLKRArticlesFromSupabase(lang);
     console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase returned:`, clkrArticles);
     logToFile('[CLKR] clkrArticles =', clkrArticles);
