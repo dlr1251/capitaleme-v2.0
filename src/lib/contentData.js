@@ -180,7 +180,16 @@ async function processCLKRData(lang) {
   logToFile('[CLKR] processCLKRData CALLED', lang);
   try {
     console.log(`[RUNTIME DEBUG] About to call getCLKRArticlesFromSupabase`);
-    const clkrArticles = await getCLKRArticlesFromSupabase(lang);
+    console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase function:`, getCLKRArticlesFromSupabase);
+    
+    // Add a timeout to the function call
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('getCLKRArticlesFromSupabase timeout')), 15000); // 15 second timeout
+    });
+    
+    const clkrPromise = getCLKRArticlesFromSupabase(lang);
+    const clkrArticles = await Promise.race([clkrPromise, timeoutPromise]);
+    
     console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase returned:`, clkrArticles);
     logToFile('[CLKR] clkrArticles =', clkrArticles);
     
