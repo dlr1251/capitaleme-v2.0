@@ -183,20 +183,18 @@ function processGuidesData(guidesData, lang) {
   };
 }
 
-async function processCLKRData(clkrData, lang) {
-  console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
-  console.log(`[RUNTIME DEBUG] Starting processCLKRData function - UNIQUE ID: CONTENTDATA_PROCESS_CLKR`);
-  logToFile('[CLKR] processCLKRData CALLED', lang);
-  
-  // Simple test to see if we can even log
-  console.log(`[RUNTIME DEBUG] Test log - function is working - UNIQUE ID: CONTENTDATA_PROCESS_CLKR`);
-  
-  console.log(`[RUNTIME DEBUG] About to enter try block`);
+async function processCLKRData(clkrArticles, lang) {
   try {
-    console.log(`[RUNTIME DEBUG] Inside try block`);
-    console.log(`[RUNTIME DEBUG] Processing ${clkrData.length} CLKR articles`);
+    console.log(`[RUNTIME DEBUG] processCLKRData called with ${clkrArticles?.length || 0} articles`);
+    console.log(`[RUNTIME DEBUG] First article sample:`, clkrArticles?.[0]);
     
-    const clkrArticles = clkrData;
+    if (!clkrArticles || clkrArticles.length === 0) {
+      console.log(`[RUNTIME DEBUG] No CLKR articles found, returning empty result`);
+      return {
+        allCLKRServices: [],
+        modules: []
+      };
+    }
     
     console.log(`[RUNTIME DEBUG] Processing CLKR articles:`, clkrArticles);
     logToFile('[CLKR] clkrArticles =', clkrArticles);
@@ -211,7 +209,13 @@ async function processCLKRData(clkrData, lang) {
       lastEdited: article.last_edited,
       readingTime: article.reading_time
     }));
+    
+    console.log(`[RUNTIME DEBUG] Processed ${allCLKRServices.length} CLKR services`);
+    console.log(`[RUNTIME DEBUG] First processed service:`, allCLKRServices[0]);
+    
     const modules = [...new Set(allCLKRServices.map(service => service.module).filter(Boolean))].sort();
+    console.log(`[RUNTIME DEBUG] Found ${modules.length} unique modules:`, modules);
+    
     console.log(`[RUNTIME DEBUG] processCLKRData returning:`, { allCLKRServices, modules });
     logToFile('[CLKR] processCLKRData returning', { allCLKRServices, modules });
     return {
