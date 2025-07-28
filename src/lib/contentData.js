@@ -269,12 +269,8 @@ async function processBlogData(blogData, lang) {
 
 // --- Main: get all processed content data (with cache) ---
 async function getAllContentData(lang = 'en') {
-  // Clear cache to ensure fresh data
+  // Always fetch fresh data for now to ensure CLKR data is loaded
   clearContentDataCache();
-  
-  if (isCacheValid(lang)) {
-    return contentDataCache.data;
-  }
   try {
     const { visasData, guidesData, clkrData, blogData } = await fetchAllDatabases(lang);
     const visasProcessed = processVisasData(visasData, lang);
