@@ -170,9 +170,12 @@ function processGuidesData(guidesData, lang) {
 }
 
 async function processCLKRData(lang) {
+  console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   try {
+    console.log(`[RUNTIME DEBUG] Calling getCLKRArticlesFromSupabase for lang: ${lang}`);
     const clkrArticles = await getCLKRArticlesFromSupabase(lang);
+    console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase returned:`, clkrArticles);
     logToFile('[CLKR] clkrArticles =', clkrArticles);
     const allCLKRServices = clkrArticles.map(article => ({
       id: article.id,
@@ -185,12 +188,14 @@ async function processCLKRData(lang) {
       readingTime: article.reading_time
     }));
     const modules = [...new Set(allCLKRServices.map(service => service.module).filter(Boolean))].sort();
+    console.log(`[RUNTIME DEBUG] processCLKRData returning:`, { allCLKRServices, modules });
     logToFile('[CLKR] processCLKRData returning', { allCLKRServices, modules });
     return {
       allCLKRServices,
       modules
     };
   } catch (error) {
+    console.error(`[RUNTIME DEBUG] processCLKRData error:`, error);
     logToFile('[CLKR] processCLKRData error', error);
     return {
       allCLKRServices: [],
