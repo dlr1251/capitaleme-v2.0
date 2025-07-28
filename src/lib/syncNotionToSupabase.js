@@ -221,23 +221,30 @@ export async function getVisaBySlugFromSupabase(slug, lang = 'en') {
 }
 
 export async function getCLKRArticlesFromSupabase(lang = 'en') {
-    logToFile('[Supabase] getCLKRArticlesFromSupabase CALLED', lang);
+    console.log(`[DEBUG] getCLKRArticlesFromSupabase called with lang: ${lang}`);
+    console.log(`[DEBUG] supabase client available: ${!!supabase}`);
+    
     try {
-        logToFile('[Supabase] getCLKRArticlesFromSupabase: lang =', lang);
+        console.log(`[DEBUG] Attempting to fetch CLKR articles from Supabase...`);
         const { data, error } = await supabase
             .from('clkr_articles')
             .select('*')
             .eq('lang', lang)
             .order('last_edited', { ascending: false });
-        logToFile('[Supabase] getCLKRArticlesFromSupabase: data =', data);
+        
+        console.log(`[DEBUG] Supabase response - data:`, data);
+        console.log(`[DEBUG] Supabase response - error:`, error);
+        
         if (error) {
-            logToFile('[Supabase] getCLKRArticlesFromSupabase: error =', error);
+            console.error(`[ERROR] Supabase error in getCLKRArticlesFromSupabase:`, error);
             return [];
         }
+        
+        console.log(`[DEBUG] Returning ${data?.length || 0} CLKR articles`);
         return data || [];
     }
     catch (error) {
-        logToFile('[Supabase] getCLKRArticlesFromSupabase: exception =', error);
+        console.error(`[ERROR] Exception in getCLKRArticlesFromSupabase:`, error);
         return [];
     }
 }
