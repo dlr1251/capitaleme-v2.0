@@ -173,10 +173,15 @@ async function processCLKRData(lang) {
   console.log(`[RUNTIME DEBUG] processCLKRData called with lang: ${lang}`);
   logToFile('[CLKR] processCLKRData CALLED', lang);
   try {
+    console.log(`[RUNTIME DEBUG] About to import getCLKRArticlesFromSupabase`);
+    const { getCLKRArticlesFromSupabase } = await import('./syncNotionToSupabase.js');
+    console.log(`[RUNTIME DEBUG] Successfully imported getCLKRArticlesFromSupabase`);
+    
     console.log(`[RUNTIME DEBUG] Calling getCLKRArticlesFromSupabase for lang: ${lang}`);
     const clkrArticles = await getCLKRArticlesFromSupabase(lang);
     console.log(`[RUNTIME DEBUG] getCLKRArticlesFromSupabase returned:`, clkrArticles);
     logToFile('[CLKR] clkrArticles =', clkrArticles);
+    
     const allCLKRServices = clkrArticles.map(article => ({
       id: article.id,
       title: article.title,
@@ -196,6 +201,7 @@ async function processCLKRData(lang) {
     };
   } catch (error) {
     console.error(`[RUNTIME DEBUG] processCLKRData error:`, error);
+    console.error(`[RUNTIME DEBUG] Error stack:`, error.stack);
     logToFile('[CLKR] processCLKRData error', error);
     return {
       allCLKRServices: [],
