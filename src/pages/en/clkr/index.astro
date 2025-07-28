@@ -1,293 +1,167 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import CLKRModuleExplorer from '../../../components/clkr/CLKRModuleExplorer.tsx';
+import CLKRModuleExplorer from "../../../components/clkr/CLKRModuleExplorer.tsx";
 import { getAllContentData } from '../../../lib/contentData.js';
 
-// Get CLKR data using the new selective loading approach
+// Get CLKR data
 const menuData = await getAllContentData('en');
 
-console.log('CLKR Page Debug - menuData:', JSON.stringify(menuData, null, 2));
-console.log('CLKR Page Debug - clkrServices:', menuData?.clkrServices);
-console.log('CLKR Page Debug - clkrServices length:', menuData?.clkrServices?.length);
+// Debug logging
+console.log('=== CLKR PAGE DEBUG ===');
+console.log('menuData:', JSON.stringify(menuData, null, 2));
+console.log('clkrServices:', menuData?.clkrServices);
+console.log('clkrServices length:', menuData?.clkrServices?.length);
+console.log('clkrModules:', menuData?.clkrModules);
+console.log('clkrModules length:', menuData?.clkrModules?.length);
+console.log('totalItems:', menuData?.totalItems);
 
-// Get CLKR articles from menu data
 const clkrServices = menuData?.clkrServices || [];
+const clkrModules = menuData?.clkrModules || [];
 
-// Calculate total reading time from Notion data
-const totalReadingTime = clkrServices.reduce((total: number, service: any) => {
-  const readingTime = service.readingTime || 5;
-  return total + readingTime;
-}, 0);
-
-// Calculate total articles
-const totalArticles = clkrServices.length;
-
-// Get unique modules
-const allModules = clkrServices.map((service: any) => service.module || 'General');
-const modules = Array.from(new Set(allModules)).map(String);
-
-// Transform CLKR services into topics format for the component
-const topics = clkrServices.map((service: any) => {
-  return {
-    id: service.id || service.slug,
-    title: service.title,
-    description: service.description,
-    readingTime: service.readingTime || 5,
-    module: service.module || 'General',
-    url: service.url || `/en/clkr/${service.slug}`
-  };
-});
-
-// Create module objects with configurations
-const moduleObjects = modules.map((moduleName: string) => {
-  const moduleTopics = topics.filter((topic: any) => topic.module === moduleName);
-  return {
-    id: moduleName,
-    name: moduleName,
-    description: `Legal topics and procedures in ${moduleName}`,
-    icon: () => null, // We'll need to add proper icons later
-    color: {
-      primary: 'bg-blue-100',
-      secondary: 'bg-blue-50',
-      accent: 'text-blue-600',
-      hover: 'hover:bg-blue-200'
-    },
-    topics: moduleTopics
-  };
-});
-
-
-// Fallback data if no CLKR data is available
-const fallbackTopics = [
-  {
-    id: 'sample-1',
-    title: 'Understanding Colombian Immigration Law',
-    description: 'A comprehensive guide to Colombian immigration procedures and requirements for foreign nationals.',
-    readingTime: 8,
-    module: 'Immigration',
-    url: '/en/clkr/sample-1'
-  },
-  {
-    id: 'sample-2',
-    title: 'Business Registration in Colombia',
-    description: 'Step-by-step process for registering a business in Colombia, including legal requirements and documentation.',
-    readingTime: 12,
-    module: 'Business',
-    url: '/en/clkr/sample-2'
-  },
-  {
-    id: 'sample-3',
-    title: 'Real Estate Law for Foreign Investors',
-    description: 'Legal framework and considerations for foreign investors purchasing property in Colombia.',
-    readingTime: 10,
-    module: 'Real Estate',
-    url: '/en/clkr/sample-3'
-  }
-];
-
-const fallbackModules = [
-  {
-    id: 'Immigration',
-    name: 'Immigration',
-    description: 'Legal topics and procedures in Immigration',
-    icon: () => null,
-    color: {
-      primary: 'bg-blue-100',
-      secondary: 'bg-blue-50',
-      accent: 'text-blue-600',
-      hover: 'hover:bg-blue-200'
-    },
-    topics: [fallbackTopics[0]]
-  },
-  {
-    id: 'Business',
-    name: 'Business',
-    description: 'Legal topics and procedures in Business',
-    icon: () => null,
-    color: {
-      primary: 'bg-green-100',
-      secondary: 'bg-green-50',
-      accent: 'text-green-600',
-      hover: 'hover:bg-green-200'
-    },
-    topics: [fallbackTopics[1]]
-  },
-  {
-    id: 'Real Estate',
-    name: 'Real Estate',
-    description: 'Legal topics and procedures in Real Estate',
-    icon: () => null,
-    color: {
-      primary: 'bg-purple-100',
-      secondary: 'bg-purple-50',
-      accent: 'text-purple-600',
-      hover: 'hover:bg-purple-200'
-    },
-    topics: [fallbackTopics[2]]
-  }
-];
-
-// Use fallback data if no real data is available
-const finalTopics = topics.length > 0 ? topics : fallbackTopics;
-const finalModules = moduleObjects.length > 0 ? moduleObjects : fallbackModules;
-
-console.log('[CLKR DEBUG] topics:', topics);
-console.log('[CLKR DEBUG] moduleObjects:', moduleObjects);
-console.log('[CLKR DEBUG] finalTopics:', finalTopics);
-console.log('[CLKR DEBUG] finalModules:', finalModules);
-console.log('[CLKR DEBUG] clkrServices from menuData:', menuData?.clkrServices);
-
-
+console.log('Final clkrServices:', clkrServices);
+console.log('Final clkrServices length:', clkrServices.length);
+console.log('Final clkrModules:', clkrModules);
+console.log('Final clkrModules length:', clkrModules.length);
 ---
 
-<Layout title="CLKR - Colombian Law Knowledge Repository" lang="en" menuData={menuData}>
-  <!-- Hero Section -->
-  <section class="relative bg-background pt-24 pb-16">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <!-- Badge -->
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20 mb-8">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Colombian Legal Knowledge Repository
-      </div>
-      
-      <!-- Main Heading -->
-      <h1 class="text-4xl md:text-6xl font-bold text-secondary mb-6 tracking-tight">
-        Understanding Colombian Law
-        <span class="text-primary">Made Simple</span>
-      </h1>
-      
-      <!-- Description -->
-      <p class="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-        A comprehensive legal knowledge base that combines AI-powered research with professional attorney validation. 
-        Navigate Colombian law with confidence through clear explanations, practical examples, and cultural context.
-      </p>
-      
-      <!-- Key Benefits -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-slate-600">
-        <div class="text-center">
-          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold mb-2">AI-Enhanced Research</h3>
-          <p class="text-muted-foreground text-sm">Deep analysis of Colombian legal frameworks, statutes, and jurisprudence</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-foreground mb-2">Attorney Validated</h3>
-          <p class="text-muted-foreground text-sm">All content reviewed and validated by experienced Colombian attorneys</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-foreground mb-2">Cultural Context</h3>
-          <p class="text-muted-foreground text-sm">Understanding legal concepts through cultural and historical context</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="py-12 bg-muted/30">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="text-center">
-          <div class="text-3xl font-bold text-secondary mb-2">{totalArticles}</div>
-          <div class="text-sm text-muted-foreground">Legal Articles</div>
-        </div>
-        <div class="text-center">
-          <div class="text-3xl font-bold text-secondary mb-2">{totalReadingTime}</div>
-          <div class="text-sm text-muted-foreground">Minutes of Content</div>
-        </div>
-        <div class="text-center">
-          <div class="text-3xl font-bold text-secondary mb-2">{modules.length}</div>
-          <div class="text-sm text-muted-foreground">Legal Modules</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- What is CLKR Section -->
-  <section class="py-16 bg-background">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-secondary mb-6">What is CLKR?</h2>
-        <p class="text-lg text-slate-600 max-w-3xl mx-auto">
-          CLKR stands for <strong>Colombian Legal Knowledge Repository</strong>. It's a revolutionary approach to legal education 
-          that makes Colombian law accessible to everyone.
+<Layout title="CLKR - Colombian Legal Knowledge Repository" lang="en" menuData={menuData}>
+  <main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary via-primary to-secondary text-white py-20">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">
+          CLKR
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+          A comprehensive legal knowledge base that combines AI-powered research with professional attorney validation.
         </p>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-slate-600">
-        <div class="space-y-6">
-          <div class="flex items-start gap-4">
-            <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-foreground mb-2">Comprehensive Coverage</h3>
-              <p class="text-muted-foreground text-sm">From immigration law to business regulations, we cover all aspects of Colombian legal framework with practical examples.</p>
-            </div>
-          </div>
-          
-          <div class="flex items-start gap-4">
-            <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-foreground mb-2">Real-World Applications</h3>
-              <p class="text-muted-foreground text-sm">Learn through actual scenarios involving expats, investors, and foreign businesses operating in Colombia.</p>
-            </div>
-          </div>
-        </div>
+        <p class="text-lg md:text-xl mb-12 max-w-4xl mx-auto">
+          Navigate Colombian law with confidence through clear explanations, practical examples, and cultural context.
+        </p>
         
-        <div class="space-y-6">
-          <div class="flex items-start gap-4">
-            <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+        <!-- Key Benefits -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-slate-600">
+          <div class="text-center">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
               </svg>
             </div>
-            <div>
-              <h3 class="text-lg font-semibold text-foreground mb-2">Cultural Insights</h3>
-              <p class="text-muted-foreground text-sm">Understand legal concepts through the lens of Colombian culture, history, and social context.</p>
+            <h3 class="text-lg font-semibold mb-2">AI-Enhanced Research</h3>
+            <p class="text-muted-foreground text-sm">Deep analysis of Colombian legal frameworks, statutes, and jurisprudence</p>
+          </div>
+          <div class="text-center">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">Attorney Validated</h3>
+            <p class="text-muted-foreground text-sm">All content reviewed and validated by experienced Colombian attorneys</p>
+          </div>
+          <div class="text-center">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">Cultural Context</h3>
+            <p class="text-muted-foreground text-sm">Understanding legal concepts through cultural and historical context</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-muted/30">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-secondary mb-2">{menuData?.totalItems?.clkr || 0}</div>
+            <div class="text-sm text-muted-foreground">Legal Articles</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-secondary mb-2">{Math.round((menuData?.totalItems?.clkr || 0) * 8)}</div>
+            <div class="text-sm text-muted-foreground">Minutes of Content</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-secondary mb-2">{clkrModules.length}</div>
+            <div class="text-sm text-muted-foreground">Legal Modules</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What is CLKR Section -->
+    <section class="py-16 bg-background">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-secondary mb-6">What is CLKR?</h2>
+          <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+            CLKR stands for <strong>Colombian Legal Knowledge Repository</strong>. It's a revolutionary approach to legal education
+            that makes Colombian law accessible to everyone.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-slate-600">
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-foreground mb-2">Comprehensive Coverage</h3>
+                <p class="text-muted-foreground text-sm">From immigration law to business regulations, we cover all aspects of Colombian legal framework with practical examples.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-foreground mb-2">Real-World Applications</h3>
+                <p class="text-muted-foreground text-sm">Learn through actual scenarios involving expats, investors, and foreign businesses operating in Colombia.</p>
+              </div>
             </div>
           </div>
-          
-          <div class="flex items-start gap-4">
-            <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-foreground mb-2">Cultural Insights</h3>
+                <p class="text-muted-foreground text-sm">Understand legal concepts through the lens of Colombian culture, history, and social context.</p>
+              </div>
             </div>
-            <div>
-              <h3 class="text-lg font-semibold text-foreground mb-2">Professional Validation</h3>
-              <p class="text-muted-foreground text-sm">Every article is reviewed and validated by experienced Colombian attorneys to ensure accuracy and reliability.</p>
+            <div class="flex items-start gap-4">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-foreground mb-2">Professional Validation</h3>
+                <p class="text-muted-foreground text-sm">Every article is reviewed and validated by experienced Colombian attorneys to ensure accuracy and reliability.</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Module Explorer Section -->
-  <CLKRModuleExplorer client:load topics={finalTopics} modules={finalModules} lang="en" />
+    <!-- CLKR Module Explorer -->
+    <CLKRModuleExplorer 
+      topics={clkrServices} 
+      modules={clkrModules} 
+      lang="en" 
+    />
+  </main>
 </Layout>
 
  
