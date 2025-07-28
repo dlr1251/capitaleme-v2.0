@@ -269,14 +269,19 @@ async function processBlogData(blogData, lang) {
 
 // --- Main: get all processed content data (with cache) ---
 async function getAllContentData(lang = 'en') {
-  // Always fetch fresh data for now to ensure CLKR data is loaded
-  clearContentDataCache();
+  // Siempre obtener datos frescos para asegurar que los datos de CLKR se carguen
+  // clearContentDataCache(); // Comentado para evitar problemas de caché
+  
   try {
     const { visasData, guidesData, clkrData, blogData } = await fetchAllDatabases(lang);
     const visasProcessed = processVisasData(visasData, lang);
     const guidesProcessed = processGuidesData(guidesData, lang);
     const clkrProcessed = await processCLKRData(clkrData, lang);
     const blogProcessed = await processBlogData(blogData, lang);
+    
+    console.log(`[DEBUG] CLKR data processed:`, clkrProcessed);
+    console.log(`[DEBUG] CLKR services count:`, clkrProcessed.allCLKRServices?.length);
+    
     const contentData = {
       // Visas
       allVisas: visasProcessed.allVisas,
@@ -307,13 +312,19 @@ async function getAllContentData(lang = 'en') {
         blog: blogProcessed.allBlogPosts.length
       }
     };
+    
+    // Actualizar el caché con los datos frescos
     contentDataCache = {
       data: contentData,
       timestamp: Date.now(),
       lang
     };
+    
+    console.log(`[DEBUG] Final contentData.clkrServices length:`, contentData.clkrServices?.length);
+    
     return contentData;
   } catch (error) {
+    console.error('Error in getAllContentData:', error);
     // Return empty structure on error
     return {
       allVisas: [],
