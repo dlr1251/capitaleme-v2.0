@@ -244,11 +244,19 @@ export async function getCLKRArticlesFromSupabase(lang = 'en') {
         console.log(`[DEBUG] supabase client available: ${!!supabaseClient}`);
         
         console.log(`[DEBUG] Attempting to fetch CLKR articles from Supabase...`);
-        const { data, error } = await supabaseClient
+        
+        // Add timeout to the query
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Supabase query timeout')), 10000); // 10 second timeout
+        });
+        
+        const queryPromise = supabaseClient
             .from('clkr_articles')
             .select('*')
             .eq('lang', lang)
             .order('last_edited', { ascending: false });
+        
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
         
         console.log(`[DEBUG] Supabase response - data:`, data);
         console.log(`[DEBUG] Supabase response - error:`, error);
