@@ -1,0 +1,48 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getAllContentData } from '../lib/contentData.js';
+import { getCLKRArticlesFromSupabase } from '../lib/syncNotionToSupabase.js';
+
+// Get raw CLKR data
+const rawCLKRData = await getCLKRArticlesFromSupabase('en');
+console.log('=== DEBUG CLKR PAGE ===');
+console.log('Raw CLKR data:', rawCLKRData);
+console.log('Raw CLKR data length:', rawCLKRData?.length);
+
+// Get processed data
+const menuData = await getAllContentData('en');
+console.log('Processed menuData:', menuData);
+console.log('clkrServices:', menuData?.clkrServices);
+console.log('clkrServices length:', menuData?.clkrServices?.length);
+console.log('clkrModules:', menuData?.clkrModules);
+console.log('clkrModules length:', menuData?.clkrModules?.length);
+---
+
+<Layout title="CLKR Debug Page" lang="en">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">CLKR Debug Page</h1>
+    
+    <div class="space-y-6">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Raw CLKR Data</h2>
+        <p><strong>Length:</strong> {rawCLKRData?.length || 0}</p>
+        <p><strong>First item:</strong></p>
+        <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">{JSON.stringify(rawCLKRData?.[0], null, 2)}</pre>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Processed CLKR Data</h2>
+        <p><strong>clkrServices length:</strong> {menuData?.clkrServices?.length || 0}</p>
+        <p><strong>clkrModules length:</strong> {menuData?.clkrModules?.length || 0}</p>
+        <p><strong>First clkrService:</strong></p>
+        <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">{JSON.stringify(menuData?.clkrServices?.[0], null, 2)}</pre>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Total Items</h2>
+        <p><strong>CLKR count:</strong> {menuData?.totalItems?.clkr || 0}</p>
+        <p><strong>Last updated:</strong> {menuData?.lastUpdated}</p>
+      </div>
+    </div>
+  </div>
+</Layout> 
