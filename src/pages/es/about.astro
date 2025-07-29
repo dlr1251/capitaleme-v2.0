@@ -4,7 +4,7 @@ import AboutPageHero from '../../components/about/AboutPageHero.astro';
 import AboutPageSection from '../../components/about/AboutPageSection.astro';
 import ValuesSection from '../../components/about/ValuesSection.tsx';
 import { getTeamMembers } from '../../utils/teamData.js';
-import { getAllContentData } from '../../lib/contentData.js';
+import { getAllContentData } from '../../server/lib/contentData.js';
 const menuData = await getAllContentData('es');
 
 

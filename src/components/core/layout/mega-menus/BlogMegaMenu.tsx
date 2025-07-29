@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { getAllContentData } from '../../../../lib/contentData.js';
 
 interface BlogMegaMenuProps {
   lang?: string;
@@ -32,32 +31,26 @@ const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ blogData, loading, lang = '
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Use blogData prop if available, otherwise fetch from contentData
+  // Use blogData prop if available
   useEffect(() => {
-    const fetchBlogPosts = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        if (blogData?.latestNews && blogData.latestNews.length > 0) {
-          // Use the blogData prop if available
-          setLatestBlogPosts(blogData.latestNews);
-        } else {
-          // Fallback to fetching from contentData
-          const contentData = await getAllContentData(lang);
-          const posts = contentData?.latestNews || [];
-          setLatestBlogPosts(posts);
-        }
-      } catch (err) {
-        console.error('Error fetching blog posts for mega menu:', err);
-        setError('Failed to load blog posts');
-      } finally {
-        setIsLoading(false);
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      if (blogData?.latestNews && blogData.latestNews.length > 0) {
+        // Use the blogData prop if available
+        setLatestBlogPosts(blogData.latestNews);
+      } else {
+        // No blog data available
+        setLatestBlogPosts([]);
       }
-    };
-
-    fetchBlogPosts();
-  }, [lang, blogData]);
+    } catch (err) {
+      console.error('Error processing blog posts for mega menu:', err);
+      setError('Failed to load blog posts');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [blogData]);
 
   // Get excerpt from text
   const getExcerpt = (text: string, wordCount: number) => {

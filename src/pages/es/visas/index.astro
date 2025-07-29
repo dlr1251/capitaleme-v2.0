@@ -1,7 +1,7 @@
 ---
 export const prerender = true; // SSG: esta página se pre-renderiza. Recomendado revalidar cada 30 minutos en el hosting.
 import Layout from "../../../layouts/Layout.astro";
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
 import VisasHero from '../../../components/visas/VisasHero.tsx';
 import ServiceProcess from '../../../components/visas/ServiceProcess.astro';
 import ConsultationSection from '../../../components/visas/ConsultationSection.tsx';

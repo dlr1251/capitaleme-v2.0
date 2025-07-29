@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import YouTubeChannelSection from '../../components/contact/YouTubeChannelSection.astro';
-import { getAllContentData } from '../../lib/contentData.js';
+import { getAllContentData } from '../../server/lib/contentData.js';
 import { UserIcon, EnvelopeIcon, DevicePhoneMobileIcon, BriefcaseIcon, ChatBubbleLeftRightIcon, PaperAirplaneIcon, InformationCircleIcon, MapPinIcon, ChatBubbleOvalLeftEllipsisIcon, CalendarIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 const lang = 'en';
 const menuData = await getAllContentData(lang);

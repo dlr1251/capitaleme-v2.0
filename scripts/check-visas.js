@@ -1,4 +1,4 @@
-import { getVisasFromSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { getVisasFromSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

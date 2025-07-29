@@ -1,46 +1,126 @@
-// import React from 'react'; // UNUSED - commenting out
-import CoverImage from './CoverImage.jsx';
+import React from 'react';
+import { CalendarIcon, ClockIcon, UserIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
-// Type definitions
-interface Properties {
-  Nombre?: { title?: { plain_text?: string }[] };
-  Description?: { rich_text?: { plain_text?: string }[] };
-  Lang?: { select?: { name?: string } };
-  Published?: { checkbox?: boolean };
-  Slug?: { rich_text?: { plain_text?: string }[] };
-}
-
-interface Post {
-  properties?: Properties;
-  last_edited_time?: string;
-  [key: string]: any;
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  excerpt?: string;
+  content?: string;
+  category?: string;
+  image?: string;
+  lang: string;
+  published?: boolean;
+  featured?: boolean;
+  author?: string;
+  pub_date?: string;
+  last_edited?: string;
+  reading_time?: number;
+  tags?: string[];
 }
 
 interface BlogCardProps {
-  post: Post;
-  className?: string;
+  post: BlogPost;
   lang?: 'en' | 'es';
+  variant?: 'default' | 'featured' | 'compact';
+  className?: string;
 }
 
-const BlogCard = ({ post, className = "", lang = 'en' }: BlogCardProps) => {
-  const {
-    properties,
-    // icon, // UNUSED - commenting out
-    last_edited_time,
-    // cover, // UNUSED - commenting out
-  } = post;
+// Category styling function
+const getCategoryStyling = (category: string) => {
+  const categoryLower = category?.toLowerCase() || '';
+  
+  if (categoryLower.includes('immigration') || categoryLower.includes('visa')) {
+    return {
+      gradient: 'from-blue-500 to-indigo-600',
+      icon: '🛂',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-700',
+      borderColor: 'border-blue-200'
+    };
+  } else if (categoryLower.includes('business') || categoryLower.includes('company')) {
+    return {
+      gradient: 'from-green-500 to-emerald-600',
+      icon: '💼',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-700',
+      borderColor: 'border-green-200'
+    };
+  } else if (categoryLower.includes('lifestyle') || categoryLower.includes('life')) {
+    return {
+      gradient: 'from-purple-500 to-pink-600',
+      icon: '🏠',
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-700',
+      borderColor: 'border-purple-200'
+    };
+  } else if (categoryLower.includes('legal') || categoryLower.includes('law')) {
+    return {
+      gradient: 'from-orange-500 to-red-600',
+      icon: '⚖️',
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-700',
+      borderColor: 'border-orange-200'
+    };
+  } else if (categoryLower.includes('tax') || categoryLower.includes('finance')) {
+    return {
+      gradient: 'from-teal-500 to-cyan-600',
+      icon: '💰',
+      bgColor: 'bg-teal-50',
+      textColor: 'text-teal-700',
+      borderColor: 'border-teal-200'
+    };
+  } else {
+    return {
+      gradient: 'from-slate-500 to-gray-600',
+      icon: '📄',
+      bgColor: 'bg-slate-50',
+      textColor: 'text-slate-700',
+      borderColor: 'border-slate-200'
+    };
+  }
+};
 
-  const title = properties?.Nombre?.title?.[0]?.plain_text || (lang === 'es' ? 'Sin título' : 'Untitled');
-  const description = properties?.Description?.rich_text?.[0]?.plain_text || '';
-  const postLang = properties?.Lang?.select?.name || 'en';
-  const published = properties?.Published?.checkbox || false;
+// Generate gradient based on title
+const generateGradient = (text: string): string => {
+  const gradients = [
+    'from-blue-500 to-indigo-600',
+    'from-green-500 to-emerald-600',
+    'from-purple-500 to-pink-600',
+    'from-orange-500 to-red-600',
+    'from-teal-500 to-cyan-600',
+    'from-slate-500 to-gray-600'
+  ];
+  
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  const index = Math.abs(hash) % gradients.length;
+  return gradients[index];
+};
 
-  // Generate slug from title
-  const slug = properties?.Slug?.rich_text?.[0]?.plain_text || '';
+// Format date function
+const formatDate = (dateString: string, lang: string = 'en'): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (error) {
+    return '';
+  }
+};
 
-  // Get relative time
-  const getRelativeTime = (dateString: string | undefined): string => {
-    if (!dateString) return '';
+// Get relative time
+const getRelativeTime = (dateString: string, lang: string = 'en'): string => {
+  try {
     const date = new Date(dateString);
     const now = new Date();
     const diffInMs = now.getTime() - date.getTime();
@@ -48,83 +128,243 @@ const BlogCard = ({ post, className = "", lang = 'en' }: BlogCardProps) => {
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
 
-    if (diffInDays > 0) {
-      return diffInDays === 1 
-        ? (lang === 'es' ? 'hace 1 día' : '1 day ago') 
-        : (lang === 'es' ? `hace ${diffInDays} días` : `${diffInDays} days ago`);
-    } else if (diffInHours > 0) {
-      return diffInHours === 1 
-        ? (lang === 'es' ? 'hace 1 hora' : '1 hour ago') 
-        : (lang === 'es' ? `hace ${diffInHours} horas` : `${diffInHours} hours ago`);
-    } else if (diffInMinutes > 0) {
-      return diffInMinutes === 1 
-        ? (lang === 'es' ? 'hace 1 minuto' : '1 minute ago') 
-        : (lang === 'es' ? `hace ${diffInMinutes} minutos` : `${diffInMinutes} minutes ago`);
+    if (lang === 'es') {
+      if (diffInDays > 0) {
+        return diffInDays === 1 ? 'hace 1 día' : `hace ${diffInDays} días`;
+      } else if (diffInHours > 0) {
+        return diffInHours === 1 ? 'hace 1 hora' : `hace ${diffInHours} horas`;
+      } else if (diffInMinutes > 0) {
+        return diffInMinutes === 1 ? 'hace 1 minuto' : `hace ${diffInMinutes} minutos`;
+      } else {
+        return 'ahora mismo';
+      }
     } else {
-      return lang === 'es' ? 'Ahora mismo' : 'Just now';
+      if (diffInDays > 0) {
+        return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+      } else if (diffInHours > 0) {
+        return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+      } else if (diffInMinutes > 0) {
+        return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+      } else {
+        return 'Just now';
+      }
+    }
+  } catch (error) {
+    return '';
+  }
+};
+
+const BlogCard: React.FC<BlogCardProps> = ({ 
+  post, 
+  lang = 'en', 
+  variant = 'default',
+  className = ''
+}) => {
+  const categoryStyling = getCategoryStyling(post.category || '');
+  const gradientClass = post.image ? generateGradient(post.title) : categoryStyling.gradient;
+  const relativeTime = getRelativeTime(post.pub_date || post.last_edited || '', lang);
+  const readingTime = post.reading_time || 5;
+  const author = post.author || 'Capital M Law';
+
+  const textContent = {
+    en: {
+      readMore: 'Read more',
+      minRead: 'min read',
+      by: 'by'
+    },
+    es: {
+      readMore: 'Leer más',
+      minRead: 'min de lectura',
+      by: 'por'
     }
   };
 
-  return (
-    <article className={`group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 blog-card ${className}`}>
-      {/* Cover Image */}
-      <CoverImage post={post} />
+  const content = textContent[lang as keyof typeof textContent] || textContent.en;
 
+  if (variant === 'compact') {
+    return (
+      <article className={`group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 ${className}`}>
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-gray-500">{relativeTime}</span>
+            {post.category && (
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${categoryStyling.bgColor} ${categoryStyling.textColor}`}>
+                {post.category}
+              </span>
+            )}
+          </div>
+          
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+            {post.title}
+          </h3>
+          
+          <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+            {post.description || post.excerpt}
+          </p>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-xs text-gray-500">
+              <UserIcon className="w-3 h-3 mr-1" />
+              <span>{content.by} {author}</span>
+            </div>
+            <div className="flex items-center text-xs text-gray-500">
+              <ClockIcon className="w-3 h-3 mr-1" />
+              <span>{readingTime} {content.minRead}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  if (variant === 'featured') {
+    return (
+      <article className={`group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 ${className}`}>
+        {/* Cover Image */}
+        <div className="relative h-80 overflow-hidden">
+          {post.image ? (
+            <img 
+              src={post.image} 
+              alt={post.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const placeholder = target.nextElementSibling as HTMLElement;
+                if (placeholder) placeholder.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          
+          {/* Placeholder */}
+          <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+            <div className="text-center text-white">
+              <div className="text-6xl mb-4">{categoryStyling.icon}</div>
+              <div className="text-lg font-medium opacity-90">{post.title}</div>
+              {post.category && (
+                <div className="text-sm opacity-75 mt-2">{post.category}</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Category overlay */}
+          <div className="absolute top-4 right-4 text-2xl bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
+            {categoryStyling.icon}
+          </div>
+        </div>
+        
+        {/* Content */}
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm text-gray-500">{relativeTime}</span>
+            {post.category && (
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${categoryStyling.bgColor} ${categoryStyling.textColor}`}>
+                {post.category}
+              </span>
+            )}
+          </div>
+          
+          <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+            {post.title}
+          </h3>
+          
+          <p className="text-gray-600 text-lg leading-relaxed mb-6 line-clamp-3">
+            {post.description || post.excerpt}
+          </p>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-sm text-gray-500">
+              <UserIcon className="w-4 h-4 mr-2" />
+              <span>{content.by} {author}</span>
+              <span className="mx-2">•</span>
+              <ClockIcon className="w-4 h-4 mr-1" />
+              <span>{readingTime} {content.minRead}</span>
+            </div>
+            
+            <a 
+              href={`/${lang}/blog/${post.slug}`}
+              className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              {content.readMore}
+              <ArrowRightIcon className="w-4 h-4 ml-1" />
+            </a>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  // Default variant
+  return (
+    <article className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 ${className}`}>
+      {/* Cover Image */}
+      <div className="relative h-48 overflow-hidden">
+        {post.image ? (
+          <img 
+            src={post.image} 
+            alt={post.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const placeholder = target.nextElementSibling as HTMLElement;
+              if (placeholder) placeholder.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        
+        {/* Placeholder */}
+        <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+          <div className="text-center text-white">
+            <div className="text-4xl mb-2">{categoryStyling.icon}</div>
+            <div className="text-sm font-medium opacity-90">{post.title}</div>
+            {post.category && (
+              <div className="text-xs opacity-75 mt-1">{post.category}</div>
+            )}
+          </div>
+        </div>
+        
+        {/* Category overlay */}
+        <div className="absolute top-3 right-3 text-xl bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+          {categoryStyling.icon}
+        </div>
+      </div>
+      
       {/* Content */}
       <div className="p-6">
-        {/* Meta info */}
-        <div className="flex items-center justify-between mb-4">
-          {postLang && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-              {postLang}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs text-gray-500">{relativeTime}</span>
+          {post.category && (
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${categoryStyling.bgColor} ${categoryStyling.textColor}`}>
+              {post.category}
             </span>
           )}
-          <span className="text-xs text-gray-500 font-medium">
-            {getRelativeTime(last_edited_time)}
-          </span>
         </div>
-
-        {/* Title */}
-        <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-          <a href={`/${postLang}/blog/${slug}`} className="block">
-            {title}
-          </a>
+        
+        <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+          {post.title}
         </h3>
-
-        {/* Description */}
-        {description && (
-          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-            {description}
-          </p>
-        )}
-
-        {/* Read more link */}
+        
+        <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+          {post.description || post.excerpt}
+        </p>
+        
         <div className="flex items-center justify-between">
-          <a
-            href={`/${postLang}/blog/${slug}`}
-            className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
-          >
-            {lang === 'es' ? 'Leer más' : 'Read more'}
-            <svg
-              className="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </a>
+          <div className="flex items-center text-xs text-gray-500">
+            <UserIcon className="w-3 h-3 mr-1" />
+            <span>{content.by} {author}</span>
+            <span className="mx-2">•</span>
+            <ClockIcon className="w-3 h-3 mr-1" />
+            <span>{readingTime} {content.minRead}</span>
+          </div>
           
-          {!published && (
-            <span className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
-              {lang === 'es' ? 'Borrador' : 'Draft'}
-            </span>
-          )}
+          <a 
+            href={`/${lang}/blog/${post.slug}`}
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
+          >
+            {content.readMore}
+            <ArrowRightIcon className="w-3 h-3 ml-1" />
+          </a>
         </div>
       </div>
     </article>

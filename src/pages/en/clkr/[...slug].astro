@@ -2,7 +2,7 @@
 import CLKRLayout from '../../../layouts/CLKRLayout.astro';
 import CLKRConsultationForm from '../../../components/clkr/CLKRConsultationForm.tsx';
 import { calculateReadingTimeFromText } from '../../../utils/readingTime';
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
 
 export const prerender = true;
 
@@ -18,7 +18,7 @@ interface CLKRArticle {
 
 export async function getStaticPaths() {
   try {
-    const { getCLKRArticlesFromSupabase } = await import('../../../lib/syncNotionToSupabase.js');
+    const { getCLKRArticlesFromSupabase } = await import('../../../server/lib/syncNotionToSupabase.js');
     const articlesResult = await getCLKRArticlesFromSupabase('en');
     if (!Array.isArray(articlesResult)) return [];
     const validArticles = articlesResult.filter((article: CLKRArticle) =>

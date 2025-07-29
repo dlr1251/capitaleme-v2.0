@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { syncCLKRToSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { syncCLKRToSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 import 'dotenv/config';
 
 async function main() {

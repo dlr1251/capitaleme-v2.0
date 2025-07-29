@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import TermsConditions from '../../components/terms/en/TermsConditions.mdx';
-import { getAllContentData } from '../../lib/contentData.js';
+import { getAllContentData } from '../../server/lib/contentData.js';
 const menuData = await getAllContentData('en');
 ---
 <Layout title="Terms & Conditions" menuData={menuData} lang="en">

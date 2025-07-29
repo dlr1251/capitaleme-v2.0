@@ -1,6 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
+import { BookOpenIcon, ClockIcon, UserIcon, CalendarIcon, ArrowRightIcon, StarIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 const lang = 'es';
 const menuData = await getAllContentData(lang);
@@ -12,85 +13,213 @@ const allGuides = menuData?.allGuides || [];
 const publishedGuides = allGuides.filter((guide: any) => guide.isPublished !== false);
 
 // Get featured guides
-const featuredGuides = publishedGuides.filter((guide: any) => guide.isFeatured).slice(0, 4);
+const featuredGuides = publishedGuides.filter((guide: any) => guide.isFeatured).slice(0, 3);
 
 // Get categories
 const categories = [...new Set(publishedGuides.map((guide: any) => guide.category).filter(Boolean))].sort();
+
+// Calculate reading time (rough estimate: 200 words per minute)
+const calculateReadingTime = (text: string) => {
+  const words = text.split(' ').length;
+  const minutes = Math.ceil(words / 200);
+  return minutes;
+};
+
+// Format date function
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+
+// Get relative time
+const getRelativeTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  
+  if (diffInDays === 0) return 'Hoy';
+  if (diffInDays === 1) return 'Ayer';
+  if (diffInDays < 7) return `Hace ${diffInDays} días`;
+  if (diffInDays < 30) return `Hace ${Math.floor(diffInDays / 7)} semanas`;
+  if (diffInDays < 365) return `Hace ${Math.floor(diffInDays / 30)} meses`;
+  return `Hace ${Math.floor(diffInDays / 365)} años`;
+};
 ---
 
-<Layout title="Guías Legales" lang="es" menuData={menuData}>
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
-    <!-- Header Section -->
-    <header class="py-12 sm:py-20 border-b border-gray-100">
+<Layout title="Guías Legales - Capital M Law | Servicios Legales Colombianos" lang={lang} menuData={menuData}>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
+    <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center">
-        <h1 class="text-3xl sm:text-4xl font-light text-gray-900 mb-4">Guías legales</h1>
-        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-          Guías paso a paso y recursos esenciales para navegar los procesos legales en Colombia
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+          <BookOpenIcon className="w-8 h-8 text-blue-600" />
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
+          Guías Legales
+        </h1>
+        <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8">
+          Guías paso a paso y recursos esenciales para navegar los procesos legales en Colombia. 
+          Perspectivas expertas de nuestro equipo legal bilingüe.
         </p>
-        <div class="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
+        <div class="flex items-center justify-center space-x-6 text-sm text-slate-500">
           <span class="flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+            <ClockIcon className="w-4 h-4 mr-1" />
             {publishedGuides.length} guías disponibles
           </span>
           <span class="flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+            <SparklesIcon className="w-4 h-4 mr-1" />
+            Curadas por expertos
+          </span>
+          <span class="flex items-center">
+            <StarIcon className="w-4 h-4 mr-1" />
             Actualizadas regularmente
           </span>
         </div>
       </div>
-    </header>
+    </div>
+  </section>
 
-    <!-- Guides Grid -->
-    <section class="py-16">
-      {publishedGuides.length > 0 ? (
+  <!-- Featured Guides Section -->
+  {featuredGuides.length > 0 && (
+    <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-slate-900 mb-4">Guías Destacadas</h2>
+          <p class="text-lg text-slate-600">Nuestros recursos legales más populares y completos</p>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {publishedGuides.map((guide: any) => {
-            const title = guide.title;
-            const slug = guide.slug;
-            const description = guide.description || '';
+          {featuredGuides.map((guide: any, index: number) => {
+            const readingTime = calculateReadingTime(guide.description || '');
+            const isNew = new Date(guide.last_edited || guide.updated_at || '').getTime() > Date.now() - (7 * 24 * 60 * 60 * 1000);
             
             return (
-              <article class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group">
-                <div class="p-8">
+              <article class="group relative bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                {isNew && (
+                  <div class="absolute top-4 right-4 z-10">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Nuevo
+                    </span>
+                  </div>
+                )}
+                <div class="p-6">
                   <div class="flex items-center justify-between mb-4">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      Guía Legal
+                      {guide.category || 'Guía Legal'}
                     </span>
-                    <span class="text-xs text-gray-500">
-                      {new Date(guide.last_edited_time).toLocaleDateString('es-ES', { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
+                    <span class="text-xs text-slate-500 flex items-center">
+                      <ClockIcon className="w-3 h-3 mr-1" />
+                      {readingTime} min de lectura
                     </span>
                   </div>
                   
-                  <a class="block group-hover:text-blue-600 transition-colors duration-300" href={`/es/guides/${slug}`}>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
-                      {title}
+                  <a class="block group-hover:text-blue-600 transition-colors duration-300" href={`/es/guides/${guide.slug}`}>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
+                      {guide.title}
                     </h3>
                   </a>
                   
-                  <p class="text-gray-600 mb-4 line-clamp-3">
-                    {description}
+                  <p class="text-slate-600 mb-4 line-clamp-3 text-sm leading-relaxed">
+                    {guide.description}
                   </p>
                   
-                  <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div class="flex items-center text-sm text-gray-500">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                      </svg>
-                      Capitaleme
+                  <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div class="flex items-center text-sm text-slate-500">
+                      <UserIcon className="w-4 h-4 mr-1" />
+                      {guide.author || 'Capital M Law'}
                     </div>
-                    <a href={`/es/guides/${slug}`} class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm group-hover:underline transition-all duration-300">
+                    <div class="flex items-center text-xs text-slate-400">
+                      <CalendarIcon className="w-3 h-3 mr-1" />
+                      {getRelativeTime(guide.last_edited || guide.updated_at || '')}
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4">
+                    <a href={`/es/guides/${guide.slug}`} class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm group-hover:underline transition-all duration-300">
                       Leer guía
-                      <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                      </svg>
+                      <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+                    </a>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- All Guides Section -->
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Todas las Guías Legales</h2>
+        <p class="text-lg text-slate-600">Recursos completos para cada proceso legal</p>
+      </div>
+      
+      {publishedGuides.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {publishedGuides.map((guide: any) => {
+            const readingTime = calculateReadingTime(guide.description || '');
+            const isNew = new Date(guide.last_edited || guide.updated_at || '').getTime() > Date.now() - (7 * 24 * 60 * 60 * 1000);
+            const isUpdated = new Date(guide.last_edited || guide.updated_at || '').getTime() > Date.now() - (30 * 24 * 60 * 60 * 1000);
+            
+            return (
+              <article class="group relative bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                {isNew && (
+                  <div class="absolute top-4 right-4 z-10">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Nuevo
+                    </span>
+                  </div>
+                )}
+                {isUpdated && !isNew && (
+                  <div class="absolute top-4 right-4 z-10">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Actualizado
+                    </span>
+                  </div>
+                )}
+                <div class="p-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                      {guide.category || 'Guía Legal'}
+                    </span>
+                    <span class="text-xs text-slate-500 flex items-center">
+                      <ClockIcon className="w-3 h-3 mr-1" />
+                      {readingTime} min de lectura
+                    </span>
+                  </div>
+                  
+                  <a class="block group-hover:text-blue-600 transition-colors duration-300" href={`/es/guides/${guide.slug}`}>
+                    <h3 class="text-lg font-semibold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
+                      {guide.title}
+                    </h3>
+                  </a>
+                  
+                  <p class="text-slate-600 mb-4 line-clamp-3 text-sm leading-relaxed">
+                    {guide.description}
+                  </p>
+                  
+                  <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div class="flex items-center text-sm text-slate-500">
+                      <UserIcon className="w-4 h-4 mr-1" />
+                      {guide.author || 'Capital M Law'}
+                    </div>
+                    <div class="flex items-center text-xs text-slate-400">
+                      <CalendarIcon className="w-3 h-3 mr-1" />
+                      {getRelativeTime(guide.last_edited || guide.updated_at || '')}
+                    </div>
+                  </div>
+                  
+                  <div class="mt-4">
+                    <a href={`/es/guides/${guide.slug}`} class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm group-hover:underline transition-all duration-300">
+                      Leer guía
+                      <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
                     </a>
                   </div>
                 </div>
@@ -101,46 +230,40 @@ const categories = [...new Set(publishedGuides.map((guide: any) => guide.categor
       ) : (
         <div class="text-center py-16">
           <div class="max-w-md mx-auto">
-            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No hay guías disponibles</h3>
-            <p class="text-gray-500">Estamos trabajando en nuevas guías legales. Vuelve pronto para más contenido.</p>
+            <BookOpenIcon className="w-16 h-16 mx-auto text-slate-400 mb-4" />
+            <h3 class="text-lg font-medium text-slate-900 mb-2">No hay guías disponibles</h3>
+            <p class="text-slate-500">Estamos trabajando en nuevas guías legales. Vuelve pronto para más contenido.</p>
           </div>
         </div>
       )}
-    </section>
+    </div>
+  </section>
 
-    <!-- Call to Action -->
-    <section class="py-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl mb-16">
-      <div class="text-center max-w-3xl mx-auto px-6">
-        <h2 class="text-2xl font-semibold text-gray-900 mb-4">¿Necesitas ayuda legal personalizada?</h2>
-        <p class="text-lg text-gray-600 mb-8">
-          Nuestros abogados expertos están aquí para ayudarte con tus procesos legales en Colombia
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a 
-            href="https://calendly.com/capitaleme/consultation" 
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6m-6 0H8m0 0v4m0-4H6a2 2 0 00-2 2v8a2 2 0 002 2H8z"/>
-            </svg>
-            Reservar Consulta
-          </a>
-          <a 
-            href="/es/contact" 
-            class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-300"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            Contáctanos
-          </a>
-        </div>
+  <!-- Call to Action -->
+  <section class="py-16 bg-gradient-to-r from-blue-50 to-indigo-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-slate-900 mb-4">¿Necesitas ayuda legal personalizada?</h2>
+      <p class="text-lg text-slate-600 mb-8">
+        Nuestros abogados expertos están aquí para ayudarte con tus procesos legales en Colombia. 
+        Obtén orientación personalizada para tu situación específica.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="https://calendly.com/capital-m-law/programmed-initial-consultation" 
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium"
+        >
+          <CalendarIcon className="w-5 h-5 mr-2" />
+          Reservar Consulta
+        </a>
+        <a 
+          href="/es/contact" 
+          class="inline-flex items-center justify-center px-6 py-3 border border-slate-300 text-slate-700 bg-white rounded-lg hover:bg-slate-50 transition-colors duration-300 font-medium"
+        >
+          Contáctanos
+        </a>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </Layout> 

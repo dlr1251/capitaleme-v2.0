@@ -28,7 +28,7 @@ interface VisaSidebarFiltersProps {
 
 const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries, visaTypes }: VisaSidebarFiltersProps) => {
   const [filters, setFilters] = useState<{ country: string; visaType: string }>({
-    country: 'All',
+    country: '',
     visaType: 'All',
   });
   const [filteredVisas, setFilteredVisas] = useState<Visa[]>(visas);
@@ -38,7 +38,7 @@ const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries
     let filtered = [...visas];
 
     // Filter by country
-    if (filters.country && filters.country !== 'All') {
+    if (filters.country && filters.country !== '') {
       const countryInfo = countries.find((info: Country) => info.name === filters.country);
       if (countryInfo) {
         const categories: string[] = [];
@@ -103,7 +103,7 @@ const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries
   };
 
   const resetFilters = () => {
-    setFilters({ country: 'All', visaType: 'All' });
+    setFilters({ country: '', visaType: 'All' });
   };
 
   return (
@@ -127,7 +127,7 @@ const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries
             onChange={(e) => handleFilterChange('country', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
-            <option value="All">{lang === 'es' ? 'Selecciona oaís de origen' : 'Select country of origin'}</option>
+            <option value="">{lang === 'es' ? 'Selecciona país de origen' : 'Select country of origin'}</option>
             {countries
               .sort((a, b) => (a.nameEn || a.name).localeCompare(b.nameEn || b.name))
               .map((country: Country) => (

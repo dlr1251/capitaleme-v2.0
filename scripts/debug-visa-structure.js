@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { getVisasFromSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { getVisasFromSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 
 async function debugVisaStructure() {
   console.log('🔍 Debugging Visa Data Structure...');

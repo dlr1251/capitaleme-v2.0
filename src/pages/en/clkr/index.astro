@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import CLKRModuleExplorer from "../../../components/clkr/CLKRModuleExplorer.tsx";
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
 
 // Get CLKR data
 const menuData = await getAllContentData('en');
@@ -40,7 +40,7 @@ console.log('Final clkrModules length:', clkrModules.length);
         </p>
         
         <!-- Key Benefits -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-slate-600">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-white">
           <div class="text-center">
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
               <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@ console.log('Final clkrModules length:', clkrModules.length);
               </svg>
             </div>
             <h3 class="text-lg font-semibold mb-2">AI-Enhanced Research</h3>
-            <p class="text-muted-foreground text-sm">Deep analysis of Colombian legal frameworks, statutes, and jurisprudence</p>
+            <p class="text-white text-sm">Deep analysis of Colombian legal frameworks, statutes, and jurisprudence</p>
           </div>
           <div class="text-center">
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -57,7 +57,7 @@ console.log('Final clkrModules length:', clkrModules.length);
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-foreground mb-2">Attorney Validated</h3>
-            <p class="text-muted-foreground text-sm">All content reviewed and validated by experienced Colombian attorneys</p>
+            <p class="text-white text-sm">All content reviewed and validated by experienced Colombian attorneys</p>
           </div>
           <div class="text-center">
             <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -66,7 +66,7 @@ console.log('Final clkrModules length:', clkrModules.length);
               </svg>
             </div>
             <h3 class="text-lg font-semibold text-foreground mb-2">Cultural Context</h3>
-            <p class="text-muted-foreground text-sm">Understanding legal concepts through cultural and historical context</p>
+            <p class="text-white text-sm">Understanding legal concepts through cultural and historical context</p>
           </div>
         </div>
       </div>

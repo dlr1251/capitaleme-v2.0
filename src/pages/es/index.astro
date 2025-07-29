@@ -7,7 +7,7 @@ import HomeVisaAssistanceSection from '../../components/visas/HomeVisaAssistance
 import HomeRealEstateSection from '../../components/real-estate/es/HomeRealEstateSection.tsx';
 import HomePageCLKR from '../../components/clkr/HomePageCLKR.tsx';
 import BlogPageLatest from '../../components/blog/BlogPageLatest.astro';
-import { getAllContentData } from '../../lib/contentData.js';
+import { getAllContentData } from '../../server/lib/contentData.js';
 
 const lang = 'es';
 const menuData = await getAllContentData(lang);

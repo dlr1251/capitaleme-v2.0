@@ -1,7 +1,9 @@
 ---
 import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
-import { getAllContentData } from '../lib/contentData.js';
+import MobileTOC from '../components/core/navigation/MobileTOC.astro';
+import { getAllContentData } from '../server/lib/contentData.js';
+import { BookOpenIcon, ClockIcon, UserIcon, CalendarIcon, ArrowRightIcon, ShareIcon, DocumentArrowDownIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 
 export interface Props {
   title: string;
@@ -38,65 +40,65 @@ const optimizedMenuData = menuData || await getAllContentData(lang);
 const guidesData = optimizedMenuData?.allGuides || [];
 const hasHeadings = headings && headings.length > 0;
 
-const safeLang = lang === 'es' ? 'es' : 'en';
+// Get relative time
+const getRelativeTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  
+  if (diffInDays === 0) return lang === 'es' ? 'Hoy' : 'Today';
+  if (diffInDays === 1) return lang === 'es' ? 'Ayer' : 'Yesterday';
+  if (diffInDays < 7) return lang === 'es' ? `Hace ${diffInDays} días` : `${diffInDays} days ago`;
+  if (diffInDays < 30) return lang === 'es' ? `Hace ${Math.floor(diffInDays / 7)} semanas` : `${Math.floor(diffInDays / 7)} weeks ago`;
+  if (diffInDays < 365) return lang === 'es' ? `Hace ${Math.floor(diffInDays / 30)} meses` : `${Math.floor(diffInDays / 30)} months ago`;
+  return lang === 'es' ? `Hace ${Math.floor(diffInDays / 365)} años` : `${Math.floor(diffInDays / 365)} years ago`;
+};
 ---
 
 <Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData}>
   <div class="bg-white">
     <!-- Hero Section -->
-    <div class="relative bg-gradient-to-br from-blue-50 to-indigo-50 py-16">
+    <div class="relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-16">
+      <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
       <div class="max-w-4xl mx-auto px-6">
         <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+            <BookOpenIcon className="w-8 h-8 text-blue-600" />
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
             {title}
           </h1>
           {description && (
-            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p class="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               {description}
             </p>
           )}
           
           <!-- Meta Information -->
-          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 mb-8">
+          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 mb-8">
             {author && (
               <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
+                <UserIcon className="w-4 h-4" />
                 <span>{author}</span>
               </div>
             )}
             {publishedDate && (
               <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6m-6 0H8m0 0v4m0-4H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2H8z"/>
-                </svg>
+                <CalendarIcon className="w-4 h-4" />
                 <time datetime={publishedDate}>
-                  {new Date(publishedDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {getRelativeTime(publishedDate)}
                 </time>
               </div>
             )}
             <div class="flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
+              <ClockIcon className="w-4 h-4" />
               <span>{timeToRead} {lang === 'en' ? 'min read' : 'min de lectura'}</span>
             </div>
             {lastEdited && (
               <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                <CalendarIcon className="w-4 h-4" />
                 <span>
-                  {lang === 'es' ? 'Actualizado' : 'Updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
+                  {lang === 'es' ? 'Actualizado' : 'Updated'}: {getRelativeTime(lastEdited)}
                 </span>
               </div>
             )}
@@ -104,6 +106,38 @@ const safeLang = lang === 'es' ? 'es' : 'en';
         </div>
       </div>
     </div>
+
+    <!-- Sticky Breadcrumb/TOC Header -->
+    {hasHeadings && (
+      <div id="sticky-header" class="sticky top-[74px] z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 transition-all duration-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between py-3">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center space-x-2 text-sm text-slate-500">
+              <a href={`/${lang}`} class="hover:text-slate-700 transition-colors">
+                {lang === 'es' ? 'Inicio' : 'Home'}
+              </a>
+              <ArrowRightIcon className="w-4 h-4" />
+              <a href={`/${lang}/guides`} class="hover:text-slate-700 transition-colors">
+                {lang === 'es' ? 'Guías' : 'Guides'}
+              </a>
+              <ArrowRightIcon className="w-4 h-4" />
+              <span class="text-slate-900 font-medium truncate max-w-xs">{title}</span>
+            </nav>
+
+            <!-- TOC Toggle for Mobile -->
+            <div class="lg:hidden">
+              <button id="toc-toggle" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">
+                <span>{lang === 'es' ? 'Secciones' : 'Sections'}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
 
     <!-- Main Content Section -->
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -113,15 +147,15 @@ const safeLang = lang === 'es' ? 'es' : 'en';
           <div class="sticky top-32">
             <nav class="space-y-6">
               <!-- Header -->
-              <div class="pb-4 border-b border-gray-200">
-                <h2 class="text-lg font-bold text-gray-900 mb-2">📚 {lang === 'es' ? 'Guías Legales' : 'Legal Guides'}</h2>
-                <p class="text-sm text-gray-600">{lang === 'es' ? 'Recursos y guías paso a paso' : 'Step-by-step resources and guides'}</p>
+              <div class="pb-4 border-b border-slate-200">
+                <h2 class="text-lg font-bold text-slate-900 mb-2">📚 {lang === 'es' ? 'Guías Legales' : 'Legal Guides'}</h2>
+                <p class="text-sm text-slate-600">{lang === 'es' ? 'Recursos y guías paso a paso' : 'Step-by-step resources and guides'}</p>
               </div>
 
               <!-- Guides Navigation -->
               {guidesData.length > 0 && (
                 <div class="space-y-2">
-                  <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                  <h3 class="text-sm font-semibold text-slate-900 uppercase tracking-wide">
                     {lang === 'es' ? 'Guías Disponibles' : 'Available Guides'}
                   </h3>
                   <div class="space-y-1">
@@ -131,12 +165,12 @@ const safeLang = lang === 'es' ? 'es' : 'en';
                         class={`block px-3 py-2 text-sm rounded-md transition-all duration-200 ${
                           guide.slug === Astro.params.slug
                             ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent'
                         }`}
                       >
                         <div class="font-medium">{guide.title}</div>
                         {guide.description && (
-                          <div class="text-xs text-gray-500 mt-1 line-clamp-2">
+                          <div class="text-xs text-slate-500 mt-1 line-clamp-2">
                             {guide.description}
                           </div>
                         )}
@@ -147,24 +181,24 @@ const safeLang = lang === 'es' ? 'es' : 'en';
               )}
 
               <!-- Quick Links -->
-              <div class="pt-4 border-t border-gray-200">
-                <h3 class="text-sm font-semibold text-gray-900 mb-3">
+              <div class="pt-4 border-t border-slate-200">
+                <h3 class="text-sm font-semibold text-slate-900 mb-3">
                   {lang === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
                 </h3>
                 <div class="space-y-2">
-                  <a href={`/${lang}/guides`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <a href={`/${lang}/guides`} class="flex items-center px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
                     <span class="mr-2">🏠</span>
                     {lang === 'es' ? 'Inicio Guías' : 'Guides Home'}
                   </a>
-                  <a href={`/${lang}/contact`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <a href={`/${lang}/contact`} class="flex items-center px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
                     <span class="mr-2">📞</span>
                     {lang === 'es' ? 'Contáctanos' : 'Contact Us'}
                   </a>
-                  <a href={`/${lang}/visas`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <a href={`/${lang}/visas`} class="flex items-center px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
                     <span class="mr-2">🛂</span>
                     {lang === 'es' ? 'Visas' : 'Visas'}
                   </a>
-                  <a href={`/${lang}/real-estate`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                  <a href={`/${lang}/real-estate`} class="flex items-center px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md transition-colors">
                     <span class="mr-2">🏠</span>
                     {lang === 'es' ? 'Bienes Raíces' : 'Real Estate'}
                   </a>
@@ -176,25 +210,8 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 
         <!-- Main Content -->
         <article class="flex-1 min-w-0">
-          <!-- Breadcrumb -->
-          {showBreadcrumb && (
-            <nav class="mb-6" aria-label="Breadcrumb">
-              <ol class="flex items-center space-x-2 text-sm text-gray-500">
-                <li><a href={`/${lang}`} class="hover:text-gray-700">{lang === 'es' ? 'Inicio' : 'Home'}</a></li>
-                <li class="flex items-center">
-                  <span class="mx-2">/</span>
-                  <a href={`/${lang}/guides`} class="hover:text-gray-700">{lang === 'es' ? 'Guías' : 'Guides'}</a>
-                </li>
-                <li class="flex items-center">
-                  <span class="mx-2">/</span>
-                  <span class="text-gray-900">{title}</span>
-                </li>
-              </ol>
-            </nav>
-          )}
-
           <!-- Content -->
-          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
+          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20 prose-slate">
             <slot />
           </div>
         </article>
@@ -209,6 +226,48 @@ const safeLang = lang === 'es' ? 'es' : 'en';
         )}
       </div>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50">
+      <div class="flex items-center justify-around py-3 px-4">
+        <!-- Share Button -->
+        <button class="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors">
+          <ShareIcon className="w-5 h-5" />
+          <span>{lang === 'es' ? 'Compartir' : 'Share'}</span>
+        </button>
+
+        <!-- Export PDF -->
+        <button class="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors">
+          <DocumentArrowDownIcon className="w-5 h-5" />
+          <span>PDF</span>
+        </button>
+
+        <!-- TOC Toggle -->
+        {hasHeadings && (
+          <button id="mobile-toc-toggle" class="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <span>{lang === 'es' ? 'Secciones' : 'Sections'}</span>
+          </button>
+        )}
+
+        <!-- Book Consultation -->
+        <a href="https://calendly.com/capital-m-law/programmed-initial-consultation" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors">
+          <CalendarIcon className="w-5 h-5" />
+          <span>{lang === 'es' ? 'Consulta' : 'Book'}</span>
+        </a>
+
+        <!-- WhatsApp -->
+        <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1 text-xs text-green-600 hover:text-green-700 transition-colors">
+          <ChatBubbleLeftRightIcon className="w-5 h-5" />
+          <span>WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Mobile TOC Panel -->
+    {hasHeadings && <MobileTOC />}
   </div>
 </Layout>
 
@@ -230,4 +289,52 @@ const safeLang = lang === 'es' ? 'es' : 'en';
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-</style> 
+
+  /* Sticky header shadow */
+  #sticky-header {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  /* Mobile bottom nav padding */
+  @media (max-width: 1024px) {
+    body {
+      padding-bottom: 80px;
+    }
+  }
+</style>
+
+<script>
+  // Handle sticky header visibility
+  document.addEventListener('DOMContentLoaded', () => {
+    const stickyHeader = document.getElementById('sticky-header');
+    const tocToggle = document.getElementById('toc-toggle');
+    const mobileTocToggle = document.getElementById('mobile-toc-toggle');
+
+    if (stickyHeader) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            stickyHeader.classList.remove('shadow-lg');
+            stickyHeader.classList.add('shadow-sm');
+          } else {
+            stickyHeader.classList.remove('shadow-sm');
+            stickyHeader.classList.add('shadow-lg');
+          }
+        },
+        { threshold: 0.1 }
+      );
+
+      observer.observe(stickyHeader);
+    }
+
+    // Handle mobile TOC toggle
+    if (mobileTocToggle) {
+      mobileTocToggle.addEventListener('click', () => {
+        const mobileTocButton = document.getElementById('mobile-toc-button');
+        if (mobileTocButton) {
+          mobileTocButton.click();
+        }
+      });
+    }
+  });
+</script> 

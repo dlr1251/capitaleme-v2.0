@@ -1,4 +1,4 @@
-import { syncBlogToSupabase, syncGuidesToSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { syncBlogToSupabase, syncGuidesToSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 
 async function main() {
   try {

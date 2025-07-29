@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import VisasLayout from '../../../layouts/VisasLayout.astro';
-import { getVisasFromSupabase, getVisaBySlugFromSupabase } from '../../../lib/syncNotionToSupabase.js';
+import { getVisasFromSupabase, getVisaBySlugFromSupabase } from '../../../server/lib/syncNotionToSupabase.js';
 
 interface Visa {
   id: string;
@@ -40,7 +40,7 @@ const description = visa.description;
 const currentSlug = Astro.params.slug;
 
 // Get menu data for the sidebar
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
 const menuData = await getAllContentData('es');
 
 // Convert content to markdown if needed

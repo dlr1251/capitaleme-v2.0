@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { syncVisasToSupabase } from '../../lib/syncNotionToSupabase.js';
+import { syncVisasToSupabase } from '../../server/lib/syncNotionToSupabase.js';
 
 export const POST: APIRoute = async ({ request }) => {
   // Check authorization

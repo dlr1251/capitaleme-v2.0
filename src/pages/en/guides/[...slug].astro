@@ -1,5 +1,5 @@
 ---
-import { getGuidesFromSupabase } from '../../../lib/syncNotionToSupabase.js';
+import { getGuidesFromSupabase } from '../../../server/lib/syncNotionToSupabase.js';
 import GuidesLayout from '../../../layouts/GuidesLayout.astro';
 
 export const prerender = true;
@@ -13,6 +13,9 @@ interface Guide {
   published?: boolean;
   last_edited?: string;
   updated_at?: string;
+  author?: string;
+  readingTime?: number;
+  category?: string;
 }
 
 export async function getStaticPaths() {
@@ -23,18 +26,39 @@ export async function getStaticPaths() {
       return guide.title && guide.slug && guide.published !== false;
     })
     .map((guide: Guide) => {
+      // Calculate reading time (rough estimate: 200 words per minute)
+      const calculateReadingTime = (text: string) => {
+        const words = text.split(' ').length;
+        const minutes = Math.ceil(words / 200);
+        return minutes;
+      };
+
+      const readingTime = calculateReadingTime(guide.content || '');
+      
       return {
         params: { slug: guide.slug },
         props: { 
           guide,
           title: guide.title,
-          lastEdited: guide.last_edited || guide.updated_at
+          description: guide.description,
+          lastEdited: guide.last_edited || guide.updated_at,
+          author: guide.author || 'Capital M Law',
+          readingTime: readingTime,
+          category: guide.category || 'Legal Guide'
         }
       };
     });
 }
 
-const { guide, title, lastEdited } = Astro.props as { guide: Guide; title: string; lastEdited?: string };
+const { guide, title, description, lastEdited, author, readingTime, category } = Astro.props as { 
+  guide: Guide; 
+  title: string; 
+  description: string;
+  lastEdited?: string;
+  author: string;
+  readingTime: number;
+  category: string;
+};
 
 if (!guide) {
   throw new Error('Guide not found');
@@ -65,13 +89,17 @@ const headings = extractHeadings(content);
 
 <GuidesLayout 
   title={title} 
+  description={description}
   lastEdited={lastEdited}
   headings={headings}
   showBreadcrumb={true}
   lang="en"
+  author={author}
+  timeToRead={readingTime}
+  publishedDate={lastEdited}
 >
   <!-- Content -->
-  <div class="prose prose-lg max-w-none">
+  <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
     <div set:html={content} />
   </div>
 </GuidesLayout>

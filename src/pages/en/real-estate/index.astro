@@ -8,10 +8,9 @@ import Calculator from 'components/real-estate/Calculator.tsx';
 import CLKRRepository from 'components/real-estate/CLKRRepository.tsx';
 import GoogleReviews from 'components/ui/cards/GoogleReviews.tsx';
 import ConsultationSection from 'components/visas/ConsultationSection.tsx';
-import { getAllContentData } from 'lib/contentData.js';
 
 const lang = 'en';
-const menuData = await getAllContentData(lang);
+const menuData = {};
 ---
 <Layout title="Real Estate - Capital M Law" description="Colombian real estate legal services, guides, and property support." menuData={menuData} lang={lang}>
   <RealEstateHero />

@@ -1,4 +1,4 @@
-import { HomeModernIcon, BuildingStorefrontIcon, ArrowTrendingUpIcon, KeyIcon, UsersIcon } from '@heroicons/react/24/solid';
+import { HomeModernIcon, BuildingStorefrontIcon, ArrowTrendingUpIcon, KeyIcon, UsersIcon, StarIcon, MapPinIcon, CurrencyDollarIcon } from '@heroicons/react/24/solid';
 import PropertyCard from '../../ui/cards/PropertyCard.tsx';
 import { useEffect, useState } from 'react';
 
@@ -49,6 +49,8 @@ const HomeRealEstateSection = ({ featuredProperty, features = [], lang = 'en' }:
     bathrooms: 'Baños',
     area: 'Área',
     contactUs: 'Contáctanos',
+    featured: 'Destacada',
+    learnMore: 'Conoce más'
   } : {
     title: 'Real Estate Investment',
     subtitle: 'Your gateway to the Colombian real estate market',
@@ -65,6 +67,8 @@ const HomeRealEstateSection = ({ featuredProperty, features = [], lang = 'en' }:
     bathrooms: 'Bathrooms',
     area: 'Area',
     contactUs: 'Contact us',
+    featured: 'Featured',
+    learnMore: 'Learn more'
   };
 
   // Default features if none provided
@@ -138,63 +142,203 @@ const HomeRealEstateSection = ({ featuredProperty, features = [], lang = 'en' }:
                 </span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-                Real Estate
+                {content.title}
               </h2>
               <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8 leading-relaxed">
-                We assist you through your property search, negotiation, title search and legal due diligence with compliance with local regulations.
+                {content.description}
               </p>
               <div className="flex justify-center items-center">
                 <a 
                   href={lang === 'es' ? '/es/real-estate' : '/en/real-estate'} 
                   className="inline-block px-10 py-4 bg-white text-primary rounded-full font-bold text-lg shadow-2xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 transform"
                 >
-                  Learn more
+                  {content.learnMore}
                 </a>
               </div>
             </div>
           </div>
 
           {/* Right Column - Featured Property */}
-          {featuredProperty && (
-            <div>
-              {/* Image Carousel replaces PropertyCard image */}
-              <PropertyCard
-                image={gallery[currentImageIndex]}
-                title={featuredProperty.title}
-                location={featuredProperty.location}
-                price={featuredProperty.price}
-                area={featuredProperty.area || ''}
-                link={featuredProperty.href}
-                status={'available'}
-                gallery={gallery}
-              />
+          {featuredProperty ? (
+            <div className="relative">
+              {/* Featured Property Card */}
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                {/* Featured Badge */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="inline-flex items-center px-3 py-1 bg-secondary text-white text-sm font-semibold rounded-full">
+                    <StarIcon className="w-4 h-4 mr-1" />
+                    {content.featured}
+                  </span>
+                </div>
+                
+                {/* Image Gallery */}
+                <div className="relative h-64 bg-gray-200">
+                  {gallery.length > 0 ? (
+                    <>
+                      <img 
+                        src={gallery[currentImageIndex]} 
+                        alt={featuredProperty.title}
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Gallery Navigation */}
+                      {gallery.length > 1 && (
+                        <>
+                          <button 
+                            onClick={prevImage}
+                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all duration-200"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                          </button>
+                          <button 
+                            onClick={nextImage}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all duration-200"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                          </button>
+                          {/* Gallery Dots */}
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                            {gallery.map((_: any, index: number) => (
+                              <button
+                                key={index}
+                                onClick={() => goToImage(index)}
+                                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                                  index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                      <HomeModernIcon className="w-16 h-16 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Property Details */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    {featuredProperty.title}
+                  </h3>
+                  
+                  <div className="flex items-center text-gray-600 mb-4">
+                    <MapPinIcon className="w-4 h-4 mr-2" />
+                    <span className="text-sm">{featuredProperty.location}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    {featuredProperty.bedrooms && (
+                      <div className="flex items-center text-gray-600">
+                        <span className="text-sm">{content.bedrooms}: {featuredProperty.bedrooms}</span>
+                      </div>
+                    )}
+                    {featuredProperty.bathrooms && (
+                      <div className="flex items-center text-gray-600">
+                        <span className="text-sm">{content.bathrooms}: {featuredProperty.bathrooms}</span>
+                      </div>
+                    )}
+                    {featuredProperty.area && (
+                      <div className="flex items-center text-gray-600">
+                        <span className="text-sm">{content.area}: {featuredProperty.area}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {featuredProperty.price && (
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        <CurrencyDollarIcon className="w-5 h-5 text-secondary mr-1" />
+                        <span className="text-lg font-bold text-gray-900">{featuredProperty.price}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <a 
+                    href={featuredProperty.href || `/${lang}/real-estate/properties/${featuredProperty.slug}`}
+                    className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors font-medium text-center block"
+                  >
+                    {content.viewProperty}
+                  </a>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white/10 rounded-2xl p-8 border border-white/20 text-center">
+              <HomeModernIcon className="w-16 h-16 text-white/50 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">{content.featuredProperty}</h3>
+              <p className="text-white/80 mb-4">
+                {lang === 'es' 
+                  ? 'Propiedades destacadas disponibles próximamente' 
+                  : 'Featured properties coming soon'
+                }
+              </p>
+              <a 
+                href={lang === 'es' ? '/es/real-estate' : '/en/real-estate'} 
+                className="inline-block px-6 py-3 bg-white text-primary rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              >
+                {content.viewAll}
+              </a>
             </div>
           )}
         </div>
 
         {/* Services Section - 4 columns at the bottom */}
         <div className="mt-20">
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-10 text-center">Our Services</h3>
+          <h3 className="text-2xl md:text-3xl font-bold text-white mb-10 text-center">{content.features}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
               <KeyIcon className="w-8 h-8 text-white mb-3" />
-              <h4 className="text-lg font-semibold text-white mb-2">Buying Property</h4>
-              <p className="text-white/80 text-center">Guidance through thezx entire purchase process, from search to closing.</p>
+              <h4 className="text-lg font-semibold text-white mb-2">
+                {lang === 'es' ? 'Compra de Propiedades' : 'Buying Property'}
+              </h4>
+              <p className="text-white/80 text-center">
+                {lang === 'es' 
+                  ? 'Asesoría completa desde la búsqueda hasta el cierre de la compra' 
+                  : 'Guidance through the entire purchase process, from search to closing'
+                }
+              </p>
             </div>
             <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
               <ArrowTrendingUpIcon className="w-8 h-8 text-white mb-3" />
-              <h4 className="text-lg font-semibold text-white mb-2">Selling Property</h4>
-              <p className="text-white/80 text-center">Professional support to market and sell your property efficiently.</p>
+              <h4 className="text-lg font-semibold text-white mb-2">
+                {lang === 'es' ? 'Venta de Propiedades' : 'Selling Property'}
+              </h4>
+              <p className="text-white/80 text-center">
+                {lang === 'es' 
+                  ? 'Soporte profesional para comercializar y vender tu propiedad eficientemente' 
+                  : 'Professional support to market and sell your property efficiently'
+                }
+              </p>
             </div>
             <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
               <BuildingStorefrontIcon className="w-8 h-8 text-white mb-3" />
-              <h4 className="text-lg font-semibold text-white mb-2">Renting Property</h4>
-              <p className="text-white/80 text-center">Legal and practical assistance for property rentals and tenant management.</p>
+              <h4 className="text-lg font-semibold text-white mb-2">
+                {lang === 'es' ? 'Alquiler de Propiedades' : 'Renting Property'}
+              </h4>
+              <p className="text-white/80 text-center">
+                {lang === 'es' 
+                  ? 'Asistencia legal y práctica para alquileres y gestión de inquilinos' 
+                  : 'Legal and practical assistance for property rentals and tenant management'
+                }
+              </p>
             </div>
             <div className="flex flex-col items-center bg-white/10 rounded-xl p-6 border border-white/20">
               <UsersIcon className="w-8 h-8 text-white mb-3" />
-              <h4 className="text-lg font-semibold text-white mb-2">HOA Representation</h4>
-              <p className="text-white/80 text-center">Expert legal representation for Homeowners Associations (HOA).</p>
+              <h4 className="text-lg font-semibold text-white mb-2">
+                {lang === 'es' ? 'Representación HOA' : 'HOA Representation'}
+              </h4>
+              <p className="text-white/80 text-center">
+                {lang === 'es' 
+                  ? 'Representación legal experta para Asociaciones de Propietarios' 
+                  : 'Expert legal representation for Homeowners Associations (HOA)'
+                }
+              </p>
             </div>
           </div>
         </div>

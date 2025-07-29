@@ -1,23 +1,33 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
 import { getBlogPostsFromSupabase, getFeaturedBlogPosts, getBlogCategories, getRelativeTime, formatDate, getCategoryStyling, generateGradient } from '../../../lib/blogData.ts';
+import BlogHero from '../../../components/blog/BlogHero.tsx';
+import BlogCard from '../../../components/blog/BlogCard.tsx';
+import ModernBlogHero from '../../../components/blog/ModernBlogHero.tsx';
+import InteractiveBlogGrid from '../../../components/blog/InteractiveBlogGrid.tsx';
+import BlogNewsletter from '../../../components/blog/BlogNewsletter.tsx';
+import BlogStats from '../../../components/blog/BlogStats.tsx';
 
 const lang = 'en';
 const menuData = await getAllContentData('en');
 
 // Fetch blog data from Supabase
-let allPosts = [];
-let featuredPosts = [];
-let categories = [];
-let error = null;
+let allPosts: any[] = [];
+let featuredPosts: any[] = [];
+let categories: string[] = [];
+let error: string | null = null;
 
 try {
-  [allPosts, featuredPosts, categories] = await Promise.all([
+  const [postsData, featuredData, categoriesData] = await Promise.all([
     getBlogPostsFromSupabase(lang, { limit: 50 }),
     getFeaturedBlogPosts(lang, 3),
     getBlogCategories(lang)
   ]);
+  
+  allPosts = postsData || [];
+  featuredPosts = featuredData || [];
+  categories = (categoriesData || []).map((cat: any) => String(cat));
 } catch (err) {
   console.error('Error fetching blog data:', err);
   error = 'Failed to load blog posts';
@@ -29,23 +39,43 @@ allPosts.sort((a: any, b: any) => new Date(b.pub_date).getTime() - new Date(a.pu
 const textContent = {
   en: {
     heroTitle: 'Our Blog',
-    heroDescription: 'Insights, updates, and stories from our team. Discover the latest in immigration, business, and life in Colombia.',
+    heroSubtitle: 'Insights, updates, and stories from our team',
+    heroDescription: 'Discover the latest in immigration, business, and life in Colombia. Expert insights, practical advice, and real stories from our legal team.',
     featuredArticles: 'Featured Articles',
     featuredDescription: 'Our latest and most important stories',
     allArticles: 'All Articles',
     allArticlesDescription: 'Browse all our articles and insights',
     noArticles: 'No articles found.',
-    addCoverImages: 'Add Cover Images'
+    addCoverImages: 'Add Cover Images',
+    noPosts: 'No posts available',
+    loading: 'Loading posts...',
+    error: 'Error loading posts',
+    newsletterTitle: 'Stay Updated',
+    newsletterDescription: 'Get the latest legal insights and updates delivered to your inbox.',
+    newsletterPlaceholder: 'Enter your email',
+    newsletterButton: 'Subscribe',
+    statsTitle: 'Our Content',
+    statsDescription: 'Discover our comprehensive collection of legal insights and resources'
   },
   es: {
     heroTitle: 'Nuestro Blog',
-    heroDescription: 'Perspectivas, actualizaciones e historias de nuestro equipo. Descubre lo último en inmigración, negocios y vida en Colombia.',
+    heroSubtitle: 'Perspectivas, actualizaciones e historias de nuestro equipo',
+    heroDescription: 'Descubre lo último en inmigración, negocios y vida en Colombia. Perspectivas expertas, consejos prácticos e historias reales de nuestro equipo legal.',
     featuredArticles: 'Artículos Destacados',
     featuredDescription: 'Nuestras historias más recientes e importantes',
     allArticles: 'Todos los Artículos',
     allArticlesDescription: 'Explora todos nuestros artículos y perspectivas',
     noArticles: 'No se encontraron artículos.',
-    addCoverImages: 'Agregar Imágenes de Portada'
+    addCoverImages: 'Agregar Imágenes de Portada',
+    noPosts: 'No hay publicaciones disponibles',
+    loading: 'Cargando publicaciones...',
+    error: 'Error al cargar publicaciones',
+    newsletterTitle: 'Mantente Actualizado',
+    newsletterDescription: 'Recibe las últimas perspectivas legales y actualizaciones en tu bandeja de entrada.',
+    newsletterPlaceholder: 'Ingresa tu email',
+    newsletterButton: 'Suscribirse',
+    statsTitle: 'Nuestro Contenido',
+    statsDescription: 'Descubre nuestra colección integral de perspectivas legales y recursos'
   }
 };
 
@@ -53,32 +83,6 @@ const content = textContent[lang as keyof typeof textContent] || textContent.en;
 ---
 
 <Layout title="Blog - Capital M Law" menuData={menuData} lang={lang}>
-  <!-- Hero Section -->
-  <section class="relative bg-gradient-to-br from-slate-50 to-blue-50 py-20">
-    <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center">
-        <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-          {content.heroTitle}
-        </h1>
-        <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-          {content.heroDescription}
-        </p>
-        <div class="mt-8">
-          <a 
-            href="/add-notion-images" 
-            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            {content.addCoverImages}
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
   {error ? (
     <!-- Error Section -->
     <section class="py-16 bg-white">
@@ -95,180 +99,130 @@ const content = textContent[lang as keyof typeof textContent] || textContent.en;
     </section>
   ) : (
     <>
+      <!-- Modern Blog Hero Section -->
+      <ModernBlogHero 
+        posts={allPosts} 
+        categories={categories} 
+        lang={lang} 
+        client:load
+      />
+
+      <!-- Blog Stats Section -->
+      <BlogStats 
+        posts={allPosts}
+        categories={categories}
+        lang={lang}
+        client:load
+      />
+
       <!-- Featured Posts Section -->
       {featuredPosts.length > 0 && (
-        <section class="py-16 bg-white">
+        <section class="py-20 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-12">
-              <h2 class="text-3xl font-bold text-slate-900 mb-4">{content.featuredArticles}</h2>
-              <p class="text-slate-600">{content.featuredDescription}</p>
+            <div class="text-center mb-16">
+              <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                {content.featuredArticles}
+              </h2>
+              <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                {content.featuredDescription}
+              </p>
             </div>
             
-                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-               {featuredPosts.map((post: any) => {
-                const categoryDefaults = getCategoryStyling(post.category);
-                const gradientClass = post.image ? generateGradient(post.title) : categoryDefaults.gradient;
-                const relativeTime = getRelativeTime(post.pub_date);
-                
-                return (
-                  <article class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-slate-100">
-                    <!-- Cover Image -->
-                    <div class="relative h-64 overflow-hidden">
-                      {post.image ? (
-                        <img 
-                          src={post.image} 
-                          alt={post.title}
-                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                        />
-                      ) : null}
-                      
-                      <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
-                        <div class="text-center text-white">
-                          <div class="text-4xl mb-2">{categoryDefaults.icon}</div>
-                          <div class="text-sm font-medium opacity-90">{post.title}</div>
-                          {post.category && (
-                            <div class="text-xs opacity-75 mt-1">{post.category}</div>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Icon overlay */}
-                      <div class="absolute top-4 right-4 text-2xl bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
-                        {categoryDefaults.icon}
-                      </div>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="p-6">
-                      <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
-                        {post.category && (
-                          <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${categoryDefaults.bgColor} ${categoryDefaults.textColor}`}>
-                            {post.category}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <h3 class="text-xl font-semibold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                        <a href={`/${lang}/blog/${post.slug}`} class="block">
-                          {post.title}
-                        </a>
-                      </h3>
-                      
-                      {post.description && (
-                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                          {post.description}
-                        </p>
-                      )}
-                      
-                      <a
-                        href={`/${lang}/blog/${post.slug}`}
-                        class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
-                      >
-                        Read more
-                        <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </a>
-                    </div>
-                  </article>
-                );
-              })}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {featuredPosts.map((post: any, index: number) => (
+                <div class={`transform hover:scale-105 transition-all duration-500 delay-${index * 2}`}>
+                  <BlogCard 
+                    post={post} 
+                    lang={lang} 
+                    variant="featured"
+                    client:load
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </section>
       )}
 
-      <!-- All Posts Section -->
-      <section class="py-16 bg-slate-50">
+      <!-- Interactive Blog Grid Section -->
+      <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="mb-12">
-            <h2 class="text-3xl font-bold text-slate-900 mb-4">{content.allArticles}</h2>
-            <p class="text-slate-600">{content.allArticlesDescription}</p>
+          <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              {content.allArticles}
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+              {content.allArticlesDescription}
+            </p>
           </div>
           
-                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             {allPosts.map((post: any) => {
-              const categoryDefaults = getCategoryStyling(post.category);
-              const gradientClass = post.image ? generateGradient(post.title) : categoryDefaults.gradient;
-              const relativeTime = getRelativeTime(post.pub_date);
-              
-              return (
-                <article class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100">
-                  <!-- Cover Image -->
-                  <div class="relative h-48 overflow-hidden">
-                    {post.image ? (
-                      <img 
-                        src={post.image} 
-                        alt={post.title}
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                      />
-                    ) : null}
-                    
-                    <div class={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
-                      <div class="text-center text-white">
-                        <div class="text-3xl mb-2">{categoryDefaults.icon}</div>
-                        <div class="text-xs font-medium opacity-90">{post.title}</div>
-                        {post.category && (
-                          <div class="text-xs opacity-75 mt-1">{post.category}</div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Icon overlay */}
-                    <div class="absolute top-3 right-3 text-xl bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
-                      {categoryDefaults.icon}
-                    </div>
-                  </div>
-                  
-                  <!-- Content -->
-                  <div class="p-4">
-                    <div class="flex items-center justify-between mb-3">
-                      <span class="text-xs text-slate-500 font-medium">{relativeTime}</span>
-                      {post.category && (
-                        <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${categoryDefaults.bgColor} ${categoryDefaults.textColor}`}>
-                          {post.category}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <h3 class="text-lg font-semibold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                      <a href={`/${lang}/blog/${post.slug}`} class="block">
-                        {post.title}
-                      </a>
-                    </h3>
-                    
-                    {post.description && (
-                      <p class="text-slate-600 text-sm leading-relaxed mb-3 line-clamp-2">
-                        {post.description}
-                      </p>
-                    )}
-                    
-                    <a
-                      href={`/${lang}/blog/${post.slug}`}
-                      class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 group/link"
-                    >
-                      Read more
-                      <svg class="ml-1 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </a>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-          
-          {allPosts.length === 0 && (
-            <div class="text-center py-12">
-              <svg class="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <p class="text-slate-500 text-lg">{content.noArticles}</p>
+          {allPosts.length > 0 ? (
+            <InteractiveBlogGrid 
+              posts={allPosts}
+              lang={lang}
+              client:load
+            />
+          ) : (
+            <div class="text-center py-16">
+              <div class="text-gray-400 text-8xl mb-6 animate-bounce">📝</div>
+              <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                {content.noArticles}
+              </h3>
+              <p class="text-gray-600 text-lg">
+                {lang === 'en' 
+                  ? 'No articles available at the moment.'
+                  : 'No hay artículos disponibles en este momento.'
+                }
+              </p>
             </div>
           )}
+        </div>
+      </section>
+
+      <!-- Newsletter Section -->
+      <BlogNewsletter 
+        lang={lang}
+        client:load
+      />
+
+      <!-- Enhanced Call to Action Section -->
+      <section class="py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-20"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-8">
+            {lang === 'en' 
+              ? 'Need Legal Help?'
+              : '¿Necesitas ayuda legal?'
+            }
+          </h2>
+          <p class="text-xl text-blue-100 mb-12 leading-relaxed">
+            {lang === 'en' 
+              ? 'Our team of legal experts is here to help you with your immigration and business needs in Colombia. Get personalized advice and support.'
+              : 'Nuestro equipo de expertos legales está aquí para ayudarte con tus necesidades de inmigración y negocios en Colombia. Obtén asesoramiento personalizado y apoyo.'
+            }
+          </p>
+          <div class="flex flex-col sm:flex-row gap-6 justify-center">
+            <a 
+              href={`/${lang}/contact`}
+              class="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              {lang === 'en' ? 'Contact Us' : 'Contactar'}
+            </a>
+            <a 
+              href={`/${lang}/visas`}
+              class="inline-flex items-center px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {lang === 'en' ? 'View Visas' : 'Ver Visas'}
+            </a>
+          </div>
         </div>
       </section>
     </>
@@ -294,5 +248,69 @@ const content = textContent[lang as keyof typeof textContent] || textContent.en;
     background-image: linear-gradient(to right, rgb(241 245 249) 1px, transparent 1px),
                       linear-gradient(to bottom, rgb(241 245 249) 1px, transparent 1px);
     background-size: 24px 24px;
+  }
+
+  /* Custom animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 </style> 

@@ -6,7 +6,6 @@ import ResourcesMegaMenu from './mega-menus/ResourcesMegaMenu.tsx';
 import BlogMegaMenu from './mega-menus/BlogMegaMenu.tsx';
 import VisasMegaMenu from './mega-menus/VisasMegaMenu.tsx';
 import LanguageDropdown from '../../shared/LanguageDropdown.tsx';
-// Remove: import { useLanguage } from '../../../context/LanguageContext.tsx';
 
 type Lang = 'en' | 'es';
 
@@ -54,22 +53,36 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuData }) => {
+  // Add client-side detection
+  const [isClient, setIsClient] = useState<boolean>(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const megaMenuRef = useRef<HTMLDivElement | null>(null);
 
-  // Handle scroll effect
+  // Set client-side flag on mount
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Simple scroll effect - only run on client
+  useEffect(() => {
+    if (!isClient) return;
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
 
+    // Set initial scroll state
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isClient]);
 
-  // Handle click outside to close mega menu
+  // Handle click outside to close mega menu - only run on client
   useEffect(() => {
+    if (!isClient) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (megaMenuRef.current && !(megaMenuRef.current as any).contains(event.target)) {
         setActiveMegaMenu(null);
@@ -78,15 +91,15 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isClient]);
 
   const links = [
     { href: lang === 'en' ? '/en/about' : '/es/about', text: lang === 'en' ? 'About Us' : 'Nosotros' },
     { href: lang === 'en' ? '/en/visas' : '/es/visas', text: lang === 'en' ? 'Visas & Immigration' : 'Visas Colombianas', hasMegaMenu: false },
     { href: lang === 'en' ? '/en/guides' : '/es/guides', text: lang === 'en' ? 'Guides' : 'Guías', hasMegaMenu: false },
     { href: lang === 'en' ? '/en/clkr' : '/es/clkr', text: 'CLKR', hasMegaMenu: false },
-    { href: lang === 'en' ? '/en/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario', hasMegaMenu: true },
-    { href: lang === 'en' ? '/en/blog' : '/es/blog', text: lang === 'en' ? 'Blog' : 'Blog', hasMegaMenu: true },
+    // { href: lang === 'en' ? '/en/real-estate' : '/es/real-estate', text: lang === 'en' ? 'Real Estate' : 'Inmobiliario', hasMegaMenu: true },
+    { href: lang === 'en' ? '/en/blog' : '/es/blog', text: lang === 'en' ? 'Blog' : 'Blog', hasMegaMenu: false },
     { href: lang === 'en' ? '/en/contact' : '/es/contact', text: lang === 'en' ? 'Contact' : 'Contacto' },
   ];
 
@@ -136,6 +149,10 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
 
   // Helper function to check if we should show shadow (exclude CLKR pages)
   const shouldShowShadow = () => {
+    // During SSR or before client hydration, always show a default shadow
+    if (!isClient) {
+      return true;
+    }
     return isScrolled && !isOnCLKRRoute();
   };
 
@@ -144,16 +161,18 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
       setActiveMegaMenu(null);
       onMegaMenuToggle?.(false);
       // Dispatch custom event for sticky header
-      document.dispatchEvent(new CustomEvent('megaMenuToggle', { detail: { isOpen: false } }));
+      if (isClient) {
+        document.dispatchEvent(new CustomEvent('megaMenuToggle', { detail: { isOpen: false } }));
+      }
     } else {
       setActiveMegaMenu(menuType);
       onMegaMenuToggle?.(true);
       // Dispatch custom event for sticky header
-      document.dispatchEvent(new CustomEvent('megaMenuToggle', { detail: { isOpen: true } }));
+      if (isClient) {
+        document.dispatchEvent(new CustomEvent('megaMenuToggle', { detail: { isOpen: true } }));
+      }
     }
   };
-
-  // Remove handleLanguageChange and getUrlForLang helpers (use LanguageDropdown logic)
 
   return (
     <>
@@ -177,9 +196,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
                   {link.hasMegaMenu ? (
                     <button
                       onClick={() => handleMegaMenuClick(link.text)}
-                      onMouseEnter={() => setActiveMegaMenu(link.text)}
-                      onFocus={() => setActiveMegaMenu(link.text)}
-                      onBlur={() => setActiveMegaMenu(null)}
                       className={`group flex items-center py-4 px-8 text-gray-700 border-b border-gray-100 lg:border-0 lg:p-0 transition-all duration-300 relative overflow-hidden rounded-lg ${
                         isLinkActive(link.href) 
                           ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg' 
@@ -272,7 +288,7 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
         <div 
           ref={megaMenuRef}
           onMouseDown={e => e.stopPropagation()}
-          className="fixed top-26 left-0 w-full bg-white shadow-xl border-t border-gray-200 py-8 z-30 animate-in slide-in-from-top-2 duration-300 mega-menu-backdrop"
+          className="fixed top-16 left-0 w-full bg-white shadow-xl border-t border-gray-200 py-8 z-30 animate-in slide-in-from-top-2 duration-300 mega-menu-backdrop"
         >
           <div className="max-w-screen-xl mx-auto px-4">
             {/* Real Estate Mega Menu */}

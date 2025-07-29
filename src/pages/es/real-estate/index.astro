@@ -8,19 +8,9 @@ import Calculator from 'components/real-estate/Calculator.tsx';
 import CLKRRepository from 'components/real-estate/CLKRRepository.tsx';
 import GoogleReviews from 'components/ui/cards/GoogleReviews.tsx';
 import ConsultationSection from 'components/visas/ConsultationSection.tsx';
-import { getAllContentData } from 'lib/contentData.js';
 
 const lang = 'es';
-const menuData = await getAllContentData(lang);
-const guides = Array.isArray(menuData?.allGuides)
-  ? menuData.allGuides.map((g: any) => ({
-      id: g.id,
-      title: g.title,
-      slug: g.slug,
-      description: g.description,
-      lastEdited: g.lastEdited || g.lastEditedTime || g.last_edited_time || '',
-    }))
-  : [];
+const menuData = {};
 ---
 <Layout title="Bienes Raíces - Capital M Law" description="Servicios legales inmobiliarios en Colombia, guías y soporte de propiedades." menuData={menuData} lang={lang}>
   <RealEstateHero />

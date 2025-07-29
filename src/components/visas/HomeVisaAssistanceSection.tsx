@@ -7,7 +7,11 @@ import {
   UserGroupIcon,
   DocumentTextIcon,
   EyeIcon,
-  SparklesIcon
+  SparklesIcon,
+  XMarkIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  BriefcaseIcon
 } from '@heroicons/react/24/solid';
 
 // Visa and Guide types
@@ -22,6 +26,7 @@ interface Visa {
   beneficiaries?: boolean;
   workPermit?: boolean;
   duration?: string;
+  requirements?: string;
 }
 
 interface Guide {
@@ -53,29 +58,29 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
   const [selectedVisa, setSelectedVisa] = useState<Visa | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Helper: beneficiaries label
+  // Helper: beneficiaries label with complete string
   const getBeneficiariesLabel = (beneficiaries: boolean | undefined) => {
     if (lang === 'es') {
-      if (beneficiaries === true) return '✅ Cónyuge e hijos';
-      if (beneficiaries === false) return '❌ Sin beneficiarios';
-      return 'Sin beneficiarios';
+      if (beneficiaries === true) return '✅ Incluye cónyuge e hijos';
+      if (beneficiaries === false) return '❌ No incluye beneficiarios';
+      return 'Sin información de beneficiarios';
     } else {
-      if (beneficiaries === true) return '✅ Spouse & Children';
-      if (beneficiaries === false) return '❌ No beneficiaries';
-      return 'No beneficiaries';
+      if (beneficiaries === true) return '✅ Includes spouse & children';
+      if (beneficiaries === false) return '❌ No beneficiaries included';
+      return 'No beneficiary information';
     }
   };
   
-  // Helper: work permit label
+  // Helper: work permit label with complete string
   const getWorkPermitLabel = (workPermit: boolean | undefined) => {
     if (lang === 'es') {
-      if (workPermit === true) return '💼 Permiso de trabajo';
+      if (workPermit === true) return '💼 Permiso de trabajo incluido';
       if (workPermit === false) return '❌ Sin permiso de trabajo';
-      return 'Sin permiso de trabajo';
+      return 'Sin información de permiso de trabajo';
     } else {
-      if (workPermit === true) return '💼 Work permit';
+      if (workPermit === true) return '💼 Work permit included';
       if (workPermit === false) return '❌ No work permit';
-      return 'No work permit';
+      return 'No work permit information';
     }
   };
 
@@ -115,7 +120,13 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
     viewDetails: "Ver detalles",
     readGuide: "Leer guía",
     popular: "Popular",
-    guide: "Guía"
+    guide: "Guía",
+    modal: {
+      scope: "Alcance",
+      requirements: "Requisitos específicos",
+      duration: "Duración",
+      close: "Cerrar"
+    }
   } : {
     title: "Visa Assistance",
     subtitle: "Comprehensive Legal Services",
@@ -132,7 +143,13 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
     viewDetails: "View details",
     readGuide: "Read guide",
     popular: "Popular",
-    guide: "Guide"
+    guide: "Guide",
+    modal: {
+      scope: "Scope",
+      requirements: "Specific requirements",
+      duration: "Duration",
+      close: "Close"
+    }
   };
 
   // Top section features (4 cards)
@@ -221,24 +238,40 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">
                     {visa.title}
                   </h4>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-3">
                     {visa.description}
                   </p>
+                  
+                  {/* Scope Description */}
+                  {visa.alcance && (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-500 font-medium mb-1">{content.modal.scope}:</p>
+                      <p className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
+                        {visa.alcance}
+                      </p>
+                    </div>
+                  )}
+                  
                   <div className="flex flex-wrap gap-2 mb-4">
                     {visa.beneficiaries !== undefined && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
                         {getBeneficiariesLabel(visa.beneficiaries)}
                       </span>
                     )}
                     {visa.workPermit !== undefined && (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">
                         {getWorkPermitLabel(visa.workPermit)}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center text-primary hover:text-primary/80 font-medium text-sm transition-colors">
-                    {content.viewDetails}
-                    <EyeIcon className="w-4 h-4 ml-1" />
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500">
+                      {visa.duration || (lang === 'es' ? 'Duración variable' : 'Variable duration')}
+                    </span>
+                    <span className="text-primary hover:text-primary/80 font-medium text-sm transition-colors">
+                      {content.viewDetails}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -263,7 +296,10 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
                 {content.guides}
               </h3>
               <p className="text-gray-600">
-                {lang === 'es' ? 'Recursos útiles para tu proceso de visa' : 'Useful resources for your visa process'}
+                {lang === 'es' 
+                  ? 'Recursos legales especializados creados por nuestro equipo de abogados colombianos. Guías prácticas basadas en casos reales y experiencia directa con el sistema legal colombiano.' 
+                  : 'Specialized legal resources created by our team of Colombian attorneys. Practical guides based on real cases and direct experience with the Colombian legal system.'
+                }
               </p>
             </div>
             
@@ -280,7 +316,10 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
                     {guide.title}
                   </h4>
                   <p className="text-gray-600 text-sm mb-4">
-                    {guide.description}
+                    {guide.description || (lang === 'es' 
+                      ? 'Guía práctica con información legal actualizada y consejos basados en nuestra experiencia real con clientes internacionales' 
+                      : 'Practical guide with updated legal information and advice based on our real experience with international clients'
+                    )}
                   </p>
                   <a 
                     href={`/${lang}/guides/${guide.slug}`}
@@ -305,50 +344,80 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal for Visa Details */}
       {isModalOpen && selectedVisa && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleBackdropClick}>
-          <div className="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{selectedVisa.emojis?.[0] || '📋'}</span>
-                <h3 className="text-2xl font-bold text-gray-900">{selectedVisa.title}</h3>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={handleBackdropClick}
+        >
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{selectedVisa.emojis?.[0] || '📋'}</span>
+                  <h3 className="text-2xl font-bold text-gray-900">{selectedVisa.title}</h3>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
               </div>
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <p className="text-gray-600 mb-6">{selectedVisa.description}</p>
-            
-            <div className="flex flex-wrap gap-2 mb-6">
-              {selectedVisa.beneficiaries !== undefined && (
-                <span className="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                  {getBeneficiariesLabel(selectedVisa.beneficiaries)}
-                </span>
-              )}
-              {selectedVisa.workPermit !== undefined && (
-                <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                  {getWorkPermitLabel(selectedVisa.workPermit)}
-                </span>
-              )}
-            </div>
-            
-            <div className="flex gap-4">
-              <a 
-                href={`/${lang}/visas/${selectedVisa.slug}`}
-                className="flex-1 bg-primary text-white text-center py-3 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                {content.viewDetails}
-              </a>
-              <button 
-                onClick={closeModal}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                {lang === 'es' ? 'Cerrar' : 'Close'}
-              </button>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">{content.modal.scope}</h4>
+                  <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
+                    {selectedVisa.alcance || selectedVisa.description}
+                  </p>
+                </div>
+                
+                {selectedVisa.requirements && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">{content.modal.requirements}</h4>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="prose prose-sm max-w-none">
+                        <div dangerouslySetInnerHTML={{ __html: selectedVisa.requirements }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {selectedVisa.beneficiaries !== undefined && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold text-gray-900 mb-2">{lang === 'es' ? 'Beneficiarios' : 'Beneficiaries'}</h5>
+                      <p className="text-sm text-gray-700">{getBeneficiariesLabel(selectedVisa.beneficiaries)}</p>
+                    </div>
+                  )}
+                  
+                  {selectedVisa.workPermit !== undefined && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h5 className="font-semibold text-gray-900 mb-2">{lang === 'es' ? 'Permiso de Trabajo' : 'Work Permit'}</h5>
+                      <p className="text-sm text-gray-700">{getWorkPermitLabel(selectedVisa.workPermit)}</p>
+                    </div>
+                  )}
+                </div>
+                
+                {selectedVisa.duration && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">{content.modal.duration}</h4>
+                    <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
+                      {selectedVisa.duration}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={closeModal}
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  {content.modal.close}
+                </button>
+              </div>
             </div>
           </div>
         </div>

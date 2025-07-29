@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import YouTubeChannelSection from '../../components/contact/YouTubeChannelSection.astro';
 import ContactPageCard from '../../components/contact/ContactPageCard.astro';
 import { UserIcon, EnvelopeIcon, DevicePhoneMobileIcon, BriefcaseIcon, ChatBubbleLeftRightIcon, PaperAirplaneIcon, InformationCircleIcon, MapPinIcon, ChatBubbleOvalLeftEllipsisIcon, CalendarIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
-import { getAllContentData } from '../../lib/contentData.js';
+import { getAllContentData } from '../../server/lib/contentData.js';
 
 const menuData = await getAllContentData('es');
 ---

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { getCLKRArticlesFromSupabase, getVisasFromSupabase, getGuidesFromSupabase } from './syncNotionToSupabase.js';
+import { getCLKRArticlesFromSupabase, getVisasFromSupabase, getGuidesFromSupabase, getBlogPostsFromSupabase } from './syncNotionToSupabase.js';
 import fs from 'fs';
 import { Client } from '@notionhq/client';
 
@@ -7,6 +7,7 @@ import { Client } from '@notionhq/client';
 console.log('[DEBUG] getCLKRArticlesFromSupabase imported:', typeof getCLKRArticlesFromSupabase);
 console.log('[DEBUG] getVisasFromSupabase imported:', typeof getVisasFromSupabase);
 console.log('[DEBUG] getGuidesFromSupabase imported:', typeof getGuidesFromSupabase);
+console.log('[DEBUG] getBlogPostsFromSupabase imported:', typeof getBlogPostsFromSupabase);
 
 // Create Notion client function
 function createNotionClient() {
@@ -90,10 +91,19 @@ async function fetchAllDatabases(lang) {
       clkrData = [];
     }
     
-    // Only fetch blog from Notion (placeholders for now)
-    const [blogData] = await Promise.all([
-      []  // Placeholder for blog
-    ]);
+    // Fetch blog posts from Supabase
+    let blogData = [];
+    try {
+      console.log(`[RUNTIME DEBUG] Calling getBlogPostsFromSupabase for lang: ${lang}`);
+      blogData = await getBlogPostsFromSupabase(lang);
+      console.log(`[RUNTIME DEBUG] getBlogPostsFromSupabase returned ${blogData.length} posts`);
+      console.log(`[RUNTIME DEBUG] First blog post:`, blogData[0]);
+      console.log(`Fetched ${blogData.length} blog posts from Supabase for ${lang}`);
+    } catch (error) {
+      console.error('[RUNTIME DEBUG] Error fetching blog posts from Supabase:', error);
+      console.error('[RUNTIME DEBUG] Error stack:', error.stack);
+      blogData = [];
+    }
     
     console.log(`[RUNTIME DEBUG] fetchAllDatabases returning:`, {
       visasData: visasData.length,
@@ -201,6 +211,8 @@ function processGuidesData(guidesData, lang) {
 async function processCLKRData(clkrArticles, lang) {
   try {
     console.log(`[RUNTIME DEBUG] processCLKRData called with ${clkrArticles?.length || 0} articles`);
+    console.log(`[RUNTIME DEBUG] Articles type:`, typeof clkrArticles);
+    console.log(`[RUNTIME DEBUG] Articles is array:`, Array.isArray(clkrArticles));
     
     if (!clkrArticles || clkrArticles.length === 0) {
       console.log(`[RUNTIME DEBUG] No CLKR articles found, returning empty result`);
@@ -212,17 +224,39 @@ async function processCLKRData(clkrArticles, lang) {
     
     console.log(`[RUNTIME DEBUG] Processing CLKR articles:`, clkrArticles);
     
+    // Validate each article before processing
+    const validArticles = clkrArticles.filter(article => {
+      const isValid = article && 
+                     typeof article === 'object' && 
+                     article.id && 
+                     article.title && 
+                     article.slug;
+      
+      if (!isValid) {
+        console.log(`[RUNTIME DEBUG] Invalid article found:`, article);
+      }
+      
+      return isValid;
+    });
+    
+    console.log(`[RUNTIME DEBUG] Valid articles count: ${validArticles.length} out of ${clkrArticles.length}`);
+    
     // Transform articles into services format
-    const allCLKRServices = clkrArticles.map(article => ({
-      id: article.id,
-      title: article.title,
-      slug: article.slug,
-      description: article.description,
-      module: article.module,
-      url: `/${lang}/clkr/${article.slug}`,
-      lastEdited: article.last_edited,
-      readingTime: article.reading_time || 5
-    }));
+    const allCLKRServices = validArticles.map(article => {
+      const service = {
+        id: article.id,
+        title: article.title || '',
+        slug: article.slug || '',
+        description: article.description || '',
+        module: article.module || '',
+        url: `/${lang}/clkr/${article.slug || article.id}`,
+        lastEdited: article.last_edited || article.updated_at || '',
+        readingTime: article.reading_time || 5
+      };
+      
+      console.log(`[RUNTIME DEBUG] Processed service:`, service);
+      return service;
+    });
     
     console.log(`[RUNTIME DEBUG] Processed ${allCLKRServices.length} CLKR services`);
     console.log(`[RUNTIME DEBUG] First processed service:`, allCLKRServices[0]);
@@ -231,7 +265,16 @@ async function processCLKRData(clkrArticles, lang) {
     const modules = [...new Set(allCLKRServices.map(service => service.module).filter(Boolean))].sort();
     console.log(`[RUNTIME DEBUG] Found ${modules.length} unique modules:`, modules);
     
-    console.log(`[RUNTIME DEBUG] processCLKRData returning:`, { allCLKRServices, modules });
+    // Log services by module for debugging
+    modules.forEach(module => {
+      const moduleServices = allCLKRServices.filter(service => service.module === module);
+      console.log(`[RUNTIME DEBUG] Module "${module}": ${moduleServices.length} services`);
+    });
+    
+    console.log(`[RUNTIME DEBUG] processCLKRData returning:`, { 
+      allCLKRServices: allCLKRServices.length, 
+      modules: modules.length 
+    });
     
     return {
       allCLKRServices,
@@ -240,6 +283,7 @@ async function processCLKRData(clkrArticles, lang) {
   } catch (error) {
     console.error(`[RUNTIME DEBUG] processCLKRData error:`, error);
     console.error(`[RUNTIME DEBUG] Error stack:`, error.stack);
+    console.error(`[RUNTIME DEBUG] Error message:`, error.message);
     return {
       allCLKRServices: [],
       modules: []
@@ -248,36 +292,39 @@ async function processCLKRData(clkrArticles, lang) {
 }
 
 async function processBlogData(blogData, lang) {
-  const allBlogPosts = await Promise.all(
-    blogData
-      .filter(page => {
-        const pageLang = page.properties?.Lang?.select?.name;
-        const isPublished = page.properties?.Published?.checkbox === true;
-        const title = page.properties?.Nombre?.title?.[0]?.plain_text || '';
-        return ((pageLang === 'En' && lang === 'en') || (pageLang === 'Es' && lang === 'es')) && isPublished && title;
-      })
-      .map(async page => {
-        const properties = page.properties;
-        const title = properties.Nombre?.title?.[0]?.plain_text || '';
-        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        return {
-          id: page.id,
-          title,
-          slug,
-          description: properties.Description?.rich_text?.[0]?.plain_text || '',
-          excerpt: properties.Description?.rich_text?.[0]?.plain_text || '',
-          image: '',
-          date: properties.PubDate?.date?.start || page.last_edited_time,
-          pubDate: properties.PubDate?.date?.start || page.last_edited_time,
-          href: `/${lang}/blog/${slug}`,
-          isFeatured: properties.Featured?.checkbox || false,
-          lastEdited: page.last_edited_time,
-          author: {},
-          readingTime: 5
-        };
-      })
-  );
+  console.log(`[RUNTIME DEBUG] processBlogData called with ${blogData.length} posts for lang: ${lang}`);
+  
+  const allBlogPosts = blogData
+    .filter(post => {
+      const isPublished = post.published === true;
+      const title = post.title || '';
+      const postLang = post.lang || 'en';
+      return isPublished && title && postLang === lang;
+    })
+    .map(post => {
+      return {
+        id: post.id,
+        title: post.title || '',
+        slug: post.slug || '',
+        description: post.description || '',
+        excerpt: post.description || '',
+        image: post.image || '',
+        date: post.pub_date || post.last_edited || '',
+        pubDate: post.pub_date || post.last_edited || '',
+        href: `/${lang}/blog/${post.slug || post.id}`,
+        isFeatured: post.featured || false,
+        lastEdited: post.last_edited || '',
+        author: post.author || 'Unknown',
+        readingTime: post.reading_time || 5,
+        category: post.category || '',
+        content: post.content || ''
+      };
+    });
+    
   allBlogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  console.log(`[RUNTIME DEBUG] processBlogData processed ${allBlogPosts.length} posts`);
+  
   return {
     allBlogPosts,
     latestNews: allBlogPosts.slice(0, 5),
@@ -287,18 +334,40 @@ async function processBlogData(blogData, lang) {
 
 // --- Main: get all processed content data (with cache) ---
 async function getAllContentData(lang = 'en') {
+  console.log(`[RUNTIME DEBUG] getAllContentData called with lang: ${lang}`);
+  
   // Siempre obtener datos frescos para asegurar que los datos de CLKR se carguen
   // clearContentDataCache(); // Comentado para evitar problemas de caché
   
   try {
+    console.log(`[RUNTIME DEBUG] Fetching all databases...`);
     const { visasData, guidesData, clkrData, blogData } = await fetchAllDatabases(lang);
+    
+    console.log(`[RUNTIME DEBUG] Database fetch results:`, {
+      visas: visasData?.length || 0,
+      guides: guidesData?.length || 0,
+      clkr: clkrData?.length || 0,
+      blog: blogData?.length || 0
+    });
+    
+    console.log(`[RUNTIME DEBUG] Processing visas...`);
     const visasProcessed = processVisasData(visasData, lang);
+    
+    console.log(`[RUNTIME DEBUG] Processing guides...`);
     const guidesProcessed = processGuidesData(guidesData, lang);
+    
+    console.log(`[RUNTIME DEBUG] Processing CLKR...`);
     const clkrProcessed = await processCLKRData(clkrData, lang);
+    
+    console.log(`[RUNTIME DEBUG] Processing blog...`);
     const blogProcessed = await processBlogData(blogData, lang);
     
-    console.log(`[DEBUG] CLKR data processed:`, clkrProcessed);
-    console.log(`[DEBUG] CLKR services count:`, clkrProcessed.allCLKRServices?.length);
+    console.log(`[RUNTIME DEBUG] All data processed. Results:`, {
+      visas: visasProcessed.allVisas?.length || 0,
+      guides: guidesProcessed.allGuides?.length || 0,
+      clkr: clkrProcessed.allCLKRServices?.length || 0,
+      blog: blogProcessed.latestNews?.length || 0
+    });
     
     const contentData = {
       // Visas
@@ -331,6 +400,12 @@ async function getAllContentData(lang = 'en') {
       }
     };
     
+    console.log(`[RUNTIME DEBUG] Content data assembled:`, {
+      clkrServicesCount: contentData.clkrServices?.length || 0,
+      clkrModulesCount: contentData.clkrModules?.length || 0,
+      totalItems: contentData.totalItems
+    });
+    
     // Actualizar el caché con los datos frescos
     contentDataCache = {
       data: contentData,
@@ -338,11 +413,15 @@ async function getAllContentData(lang = 'en') {
       lang
     };
     
-    console.log(`[DEBUG] Final contentData.clkrServices length:`, contentData.clkrServices?.length);
+    console.log(`[RUNTIME DEBUG] Cache updated with timestamp: ${contentDataCache.timestamp}`);
+    console.log(`[RUNTIME DEBUG] Final contentData.clkrServices length:`, contentData.clkrServices?.length);
     
     return contentData;
   } catch (error) {
-    console.error('Error in getAllContentData:', error);
+    console.error('[RUNTIME DEBUG] Error in getAllContentData:', error);
+    console.error('[RUNTIME DEBUG] Error stack:', error.stack);
+    console.error('[RUNTIME DEBUG] Error message:', error.message);
+    
     // Return empty structure on error
     return {
       allVisas: [],

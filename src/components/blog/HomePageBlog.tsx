@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { getAllContentData } from '../../lib/contentData.js';
 
 // Type definitions
 interface BlogPost {
@@ -22,6 +21,7 @@ interface BlogPost {
 
 interface HomePageBlogProps {
   lang?: string;
+  posts?: BlogPost[];
 }
 
 // Utility functions
@@ -128,35 +128,24 @@ const generateGradient = (text: string): string => {
   return gradients[index];
 };
 
-const HomePageBlog: React.FC<HomePageBlogProps> = ({ lang = 'en' }) => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
+const HomePageBlog: React.FC<HomePageBlogProps> = ({ lang = 'en', posts = [] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Use posts prop if provided
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Fetch blog posts from contentData
-        const contentData = await getAllContentData(lang);
-        const latestPosts = contentData?.latestNews || [];
-        const featured = contentData?.featuredPosts || [];
-
-        setPosts(latestPosts);
-        setFeaturedPosts(featured);
-      } catch (err) {
-        console.error('Error fetching blog posts:', err);
-        setError('Failed to load blog posts');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, [lang]);
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Posts are passed as props, no need to fetch
+      setLoading(false);
+    } catch (err) {
+      console.error('Error processing blog posts:', err);
+      setError('Failed to load blog posts');
+      setLoading(false);
+    }
+  }, [posts]);
 
   if (loading) {
     return (
@@ -227,7 +216,7 @@ const HomePageBlog: React.FC<HomePageBlogProps> = ({ lang = 'en' }) => {
 
   const content = textContent[lang as keyof typeof textContent] || textContent.en;
 
-  const featuredPost = featuredPosts[0] || posts[0];
+  const featuredPost = posts[0];
   const recentPosts = posts.slice(1, 5);
 
   if (!featuredPost) {

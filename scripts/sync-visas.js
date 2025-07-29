@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import 'dotenv/config';
-import { syncVisasToSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { syncVisasToSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 
 async function main() {
   console.log('🔄 Starting visa sync from Notion to Supabase...');

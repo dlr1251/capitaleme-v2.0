@@ -1,13 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import HomePageHero from '../../components/shared/HomePageHero.astro';
+import HomePageHero from '../../components/home/en/HomePageHero.astro';
 import AboutPageSection from '../../components/about/AboutPageSection.astro';
 import HowWeWork from '../../components/home/en/HowWeWork.astro';
 import HomeVisaAssistanceSection from '../../components/visas/HomeVisaAssistanceSection.tsx';
 import HomeRealEstateSection from '../../components/real-estate/en/HomeRealEstateSection.tsx';
 import HomePageCLKR from '../../components/clkr/HomePageCLKR.tsx';
 import BlogPageLatest from '../../components/blog/BlogPageLatest.astro';
-import { getAllContentData } from '../../lib/contentData.js';
+import { getAllContentData } from '../../server/lib/contentData.js';
 
 const lang = 'en';
 const menuData = await getAllContentData(lang);
@@ -24,7 +24,7 @@ const featuredProperty = null; // No featuredProperty in new server data
         <HomePageHero currentLang="en"/>
         <AboutPageSection/>
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
-        <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load />
+        <!-- <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load /> -->
         <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />
     		<!-- <CalendlyInline /> -->
         <HowWeWork lang="en"/>

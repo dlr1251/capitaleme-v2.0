@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getAllContentData } from '../lib/contentData.js';
-import { getCLKRArticlesFromSupabase } from '../lib/syncNotionToSupabase.js';
+import { getAllContentData } from '../server/lib/contentData.js';
+import { getCLKRArticlesFromSupabase } from '../server/lib/syncNotionToSupabase.js';
 
 // Get raw CLKR data
 const rawCLKRData = await getCLKRArticlesFromSupabase('en');

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { getVisasFromSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { getVisasFromSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 
 // Load environment variables
 dotenv.config();
@@ -47,7 +47,7 @@ async function testVisas() {
     // Test specific visa by slug
     if (enVisas.length > 0) {
       console.log('\n--- Testing specific visa by slug ---');
-      const { getVisaBySlugFromSupabase } = await import('../src/lib/syncNotionToSupabase.js');
+      const { getVisaBySlugFromSupabase } = await import('../src/server/lib/syncNotionToSupabase.js');
       const specificVisa = await getVisaBySlugFromSupabase(enVisas[0].slug, 'en');
       console.log('Specific visa found:', specificVisa ? 'Yes' : 'No');
       if (specificVisa) {

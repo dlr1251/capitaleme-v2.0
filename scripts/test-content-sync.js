@@ -1,4 +1,4 @@
-import { testPageContent, listDatabasePages, syncBlogToSupabase, syncGuidesToSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { testPageContent, listDatabasePages, syncBlogToSupabase, syncGuidesToSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 
 // Load environment variables
 import dotenv from 'dotenv';

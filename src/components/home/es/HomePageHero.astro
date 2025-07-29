@@ -1,7 +1,7 @@
 ---
 import colorHorizontalLogo from '../../../assets/logo/color-horizontal.svg';
 import ConsultationSelector from '../../visas/ConsultationSelector.tsx';
-import { CheckCircleIcon, HomeModernIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, HomeModernIcon, DocumentTextIcon, CalendarIcon, PhoneIcon } from '@heroicons/react/24/solid';
 
 // Get the current locale from the URL
 const pathname = Astro.url.pathname;
@@ -10,15 +10,15 @@ const currentLang = pathname.startsWith('/es') ? 'es' : 'en';
 // Define services array based on language
 const services = currentLang === 'es' ? [
   "Visas e Inmigración",
-  "Transacciones Inmobiliarias",
-  "Protección Empresarial"
+  "Transacciones Inmobiliarias", 
+  "Asesoría Legal"
 ] : [
   "Visas & Immigration",
   "Real Estate Transactions",
-  "Business Protection"
+  "Legal Advice"
 ];
 
-// Define content based on language
+// Define content based on language with original copy
 const content = currentLang === 'es' ? {
   mainHeading: {
     line1: "Expertos legales",
@@ -27,81 +27,27 @@ const content = currentLang === 'es' ? {
     line4: "un clic de distancia"
   },
   subtitle: "Rápido, asequible, bilingüe",
-  newCopy: "Organizamos tus asuntos legales en Colombia",
   description: "Abogados colombianos bilingües con tendencia a la internacionalización. Trabajamos para ti incansablemente.",
-  consultationForm: {
-    title: "Hablemos de tu caso",
-    buttons: {
-      asap: "Hablemos ASAP - Urgente",
-      soon: "Hablemos esta semana",
-      noHurry: "Hablemos pronto (sin prisa)"
-    },
-    options: {
-      asap: {
-        title: "Consulta Urgente",
-        description: "Consulta del mismo día",
-        price: "$90",
-        calendly: "https://calendly.com/capital-m-law/rush-initial-consultation?back=1&month=2025-06"
-      },
-      soon: {
-        title: "Consulta Estándar",
-        description: "Próxima consulta disponible",
-        price: "$55",
-        calendly: "https://calendly.com/capital-m-law/standard-initial-consultation?back=1&month=2025-07"
-      },
-      noHurry: {
-        title: "Consulta Programada",
-        description: "Consulta programada",
-        price: "$45",
-        calendly: "https://calendly.com/capital-m-law/programmed-initial-consultation?back=1&month=2025-07"
-      }
-    }
-  },
+  calendlyUrl: "https://calendly.com/capital-m-law/programmed-initial-consultation",
   cta: {
     contact: "Contáctanos",
-    whatsapp: "WhatsApp"
+    whatsapp: "WhatsApp",
+    bookConsultation: "Reservar Consulta"
   }
 } : {
   mainHeading: {
-    line1: "Colombian legal",
-    line2: "experts",
-    line3: "Just",
-    line4: "one click away"
+    line1: "Colombian Legal",
+    line2: "Experts",
+    line3: "Just a",
+    line4: "click away"
   },
-  subtitle: "Fast, affordable, bilingual",
-  newCopy: "We organize your legal stuff in Colombia",
+  subtitle: "Fast, Affordable, Bilingual",
   description: "Local bilingual Colombian attorneys with an internationalization tendency. We work for you restlessly.",
-  consultationForm: {
-    title: "Let's talk about your case",
-    buttons: {
-      asap: "Let's talk ASAP - Urgent",
-      soon: "Let's talk this week",
-      noHurry: "Let's talk soon (not in a hurry)"
-    },
-    options: {
-      asap: {
-        title: "Rush Consultation",
-        description: "Same day consultation",
-        price: "$90",
-        calendly: "https://calendly.com/capital-m-law/rush-initial-consultation?back=1&month=2025-06"
-      },
-      soon: {
-        title: "Standard Consultation",
-        description: "Next available consultation",
-        price: "$55",
-        calendly: "https://calendly.com/capital-m-law/standard-initial-consultation?back=1&month=2025-07"
-      },
-      noHurry: {
-        title: "Programmed Consultation",
-        description: "Scheduled consultation",
-        price: "$45",
-        calendly: "https://calendly.com/capital-m-law/programmed-initial-consultation?back=1&month=2025-07"
-      }
-    }
-  },
+  calendlyUrl: "https://calendly.com/capital-m-law/programmed-initial-consultation",
   cta: {
     contact: "Contact Us",
-    whatsapp: "WhatsApp"
+    whatsapp: "WhatsApp",
+    bookConsultation: "Book Consultation"
   }
 };
 ---
@@ -207,22 +153,25 @@ const content = currentLang === 'es' ? {
           ))}
         </div>
         
-        <!-- Mobile Consultation Form -->
+        <!-- Mobile Contact Form -->
         <div class="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-lg">
           <div class="text-center space-y-4">
             <div>
-              <h3 class="text-lg sm:text-xl font-bold text-primary mb-2">{content.newCopy}</h3>
               <p class="text-gray-600 leading-relaxed text-sm">
                 {content.description}
               </p>
             </div>
-            <ConsultationSelector client:load />
+            
+            <!-- Calendly Button - Mobile -->
+            <a href={content.calendlyUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 text-sm font-medium transition-all duration-200 w-full">
+              <CalendarIcon className="w-4 h-4 mr-2" />
+              {content.cta.bookConsultation}
+            </a>
+            
             <!-- Mobile Contact Buttons -->
             <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
               <a href={currentLang === 'en' ? '/en/contact' : '/es/contact'} class="inline-flex items-center justify-center bg-primary text-white px-4 py-3 rounded-lg hover:bg-primary/90 text-sm font-medium transition-all duration-200">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
+                <PhoneIcon className="w-4 h-4 mr-2" />
                 {content.cta.contact}
               </a>
               <a href="https://wa.me/573001234567?text=Hola,%20necesito%20información%20sobre%20servicios%20legales" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-4 py-3 rounded-lg hover:bg-secondary/90 text-sm font-medium transition-all duration-200">
@@ -263,17 +212,17 @@ const content = currentLang === 'es' ? {
           <!-- Services Grid - Desktop Optimized -->
           <div class="grid grid-cols-1 xl:grid-cols-3 gap-3 xl:gap-4">
             {services.map((service, index) => (
-              <div class="group relative bg-gray-50 rounded-lg p-3 xl:p-4 border border-gray-200 hover:border-secondary transition-all duration-300 min-h-[70px] xl:min-h-[80px] flex items-center">
-                <div class="flex items-center space-x-3 w-full">
-                  <div class="w-8 h-8 xl:w-10 xl:h-10 rounded-md flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300 flex-shrink-0">
+              <div class="group relative bg-gray-50 rounded-xl p-4 xl:p-5 border border-gray-200 hover:border-secondary transition-all duration-300 hover:bg-secondary/5 min-h-[100px] xl:min-h-[110px] flex items-center">
+                <div class="flex items-center space-x-4 w-full">
+                  <div class="w-10 h-10 xl:w-12 xl:h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300 flex-shrink-0">
                     {index === 0 && (
-                      <CheckCircleIcon className="w-4 h-4 xl:w-5 xl:h-5 text-primary" />
+                      <CheckCircleIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary" />
                     )}
                     {index === 1 && (
-                      <HomeModernIcon className="w-4 h-4 xl:w-5 xl:h-5 text-primary" />
+                      <HomeModernIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary" />
                     )}
                     {index === 2 && (
-                      <DocumentTextIcon className="w-4 h-4 xl:w-5 xl:h-5 text-primary" />
+                      <DocumentTextIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary" />
                     )}
                   </div>
                   <span class="text-gray-900 font-medium text-sm xl:text-base leading-tight">{service}</span>
@@ -283,7 +232,7 @@ const content = currentLang === 'es' ? {
           </div>
         </div>
         
-        <!-- Right Column - Interactive Consultation Form -->
+        <!-- Right Column - Interactive Contact Form -->
         <div class="relative">
           <div class="relative">
             <!-- Main Card -->
@@ -301,20 +250,21 @@ const content = currentLang === 'es' ? {
                 </div>
                 
                 <div>
-                  <h3 class="text-xl xl:text-2xl font-bold text-primary mb-3">{content.newCopy}</h3>
                   <p class="text-gray-600 leading-relaxed text-sm xl:text-base">
                     {content.description}
                   </p>
                 </div>
                 
-                <ConsultationSelector client:load />
+                <!-- Calendly Button - Desktop -->
+                <a href={content.calendlyUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-8 py-4 xl:px-10 xl:py-5 rounded-lg hover:bg-secondary/90 text-base xl:text-lg font-medium transition-all duration-200 w-full">
+                  <CalendarIcon className="w-5 h-5 xl:w-6 xl:h-6 mr-3" />
+                  {content.cta.bookConsultation}
+                </a>
                 
                 <!-- Contact and WhatsApp Buttons -->
                 <div class="grid grid-cols-2 gap-3 xl:gap-4 pt-4 border-t border-gray-200">
                   <a href={currentLang === 'en' ? '/en/contact' : '/es/contact'} class="inline-flex items-center justify-center bg-primary text-white px-4 py-3 xl:px-6 xl:py-4 rounded-lg hover:bg-primary/90 text-sm xl:text-base font-medium transition-all duration-200">
-                    <svg class="w-4 h-4 xl:w-5 xl:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
+                    <PhoneIcon className="w-4 h-4 xl:w-5 xl:h-5 mr-2" />
                     {content.cta.contact}
                   </a>
                   <a href="https://wa.me/573001234567?text=Hola,%20necesito%20información%20sobre%20servicios%20legales" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-4 py-3 xl:px-6 xl:py-4 rounded-lg hover:bg-secondary/90 text-sm xl:text-base font-medium transition-all duration-200">

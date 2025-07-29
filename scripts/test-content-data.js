@@ -1,4 +1,4 @@
-import { getAllContentData } from '../src/lib/contentData.js';
+import { getAllContentData } from '../src/server/lib/contentData.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

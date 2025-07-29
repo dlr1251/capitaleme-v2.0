@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import CLKRModuleExplorer from '../../../components/clkr/CLKRModuleExplorer.tsx';
-import { getAllContentData } from '../../../lib/contentData.js';
+import { getAllContentData } from '../../../server/lib/contentData.js';
 const menuData = await getAllContentData('es');
 
 // Get CLKR articles from menu data

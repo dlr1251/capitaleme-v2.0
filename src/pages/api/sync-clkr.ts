@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { syncCLKRToSupabase } from '../../lib/syncNotionToSupabase.js';
+import { syncCLKRToSupabase } from '../../server/lib/syncNotionToSupabase.js';
 
 export const GET: APIRoute = async () => {
   return new Response(JSON.stringify({

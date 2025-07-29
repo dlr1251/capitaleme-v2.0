@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { getAllContentData } from '../src/lib/contentData.js';
+import { getAllContentData } from '../src/server/lib/contentData.js';
 
 async function debugHomepage() {
   console.log('🔍 Debugging Homepage Data...');

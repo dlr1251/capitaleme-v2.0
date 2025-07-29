@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from 'react';
-import { getAllContentData } from '../../lib/contentData.js';
 
 // Define types for blog posts
 interface BlogPost {
@@ -138,31 +137,24 @@ const BlogExplorer = ({ posts = [], className = "", lang = 'en' }: BlogExplorerP
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch posts from Supabase if none provided
+  // Use posts prop if provided
   useEffect(() => {
-    const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
       if (posts.length > 0) {
         setAllPosts(posts);
-        setLoading(false);
-        return;
+      } else {
+        setAllPosts([]);
       }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const contentData = await getAllContentData(lang);
-        const fetchedPosts = contentData?.latestNews || [];
-        setAllPosts(fetchedPosts);
-      } catch (err) {
-        console.error('Error fetching blog posts:', err);
-        setError('Failed to load blog posts');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, [posts, lang]);
+    } catch (err) {
+      console.error('Error processing blog posts:', err);
+      setError('Failed to load blog posts');
+    } finally {
+      setLoading(false);
+    }
+  }, [posts]);
 
   // Get unique categories from posts
   const categories = useMemo(() => {

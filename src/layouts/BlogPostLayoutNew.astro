@@ -1,7 +1,9 @@
 ---
 import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
-import { getAllContentData } from '../lib/contentData.js';
+import { getAllContentData } from '../server/lib/contentData.js';
+import { getBlogPostsFromSupabase } from '../lib/blogData.ts';
+
 export interface Props {
   title: string;
   description?: string;
@@ -39,8 +41,81 @@ const {
 // Get optimized menu data
 const menuData = await getAllContentData(lang);
 
+// Get blog posts for sidebar navigation
+let blogPosts = [];
+try {
+  blogPosts = await getBlogPostsFromSupabase(lang, { limit: 50 });
+  // Sort by publication date (newest first)
+  blogPosts.sort((a: any, b: any) => new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime());
+} catch (error) {
+  console.error('Error fetching blog posts for sidebar:', error);
+}
+
 const url = Astro.url;
 const hasHeadings = headings && headings.length > 0;
+
+// Get relative time function
+const getRelativeTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+
+  if (diffInDays > 0) {
+    return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+  } else if (diffInHours > 0) {
+    return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+  } else if (diffInMinutes > 0) {
+    return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+  } else {
+    return 'Just now';
+  }
+};
+
+// Get category styling
+const getCategoryStyling = (category: string) => {
+  const categoryLower = category?.toLowerCase() || '';
+  
+  if (categoryLower.includes('immigration') || categoryLower.includes('visa')) {
+    return {
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-700',
+      borderColor: 'border-blue-200'
+    };
+  } else if (categoryLower.includes('business') || categoryLower.includes('company')) {
+    return {
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-700',
+      borderColor: 'border-green-200'
+    };
+  } else if (categoryLower.includes('lifestyle') || categoryLower.includes('life')) {
+    return {
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-700',
+      borderColor: 'border-purple-200'
+    };
+  } else if (categoryLower.includes('legal') || categoryLower.includes('law')) {
+    return {
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-700',
+      borderColor: 'border-orange-200'
+    };
+  } else if (categoryLower.includes('taxes') || categoryLower.includes('finance')) {
+    return {
+      bgColor: 'bg-teal-50',
+      textColor: 'text-teal-700',
+      borderColor: 'border-teal-200'
+    };
+  } else {
+    return {
+      bgColor: 'bg-slate-50',
+      textColor: 'text-slate-700',
+      borderColor: 'border-slate-200'
+    };
+  }
+};
 
 import { ClientRouter } from "astro:transitions";
 
@@ -113,7 +188,7 @@ const customBreadcrumbs = [
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
       <div class="flex gap-8">
         <!-- Left Navigation Panel -->
-        <aside class="hidden lg:block w-64 shrink-0">
+        <aside class="hidden lg:block w-80 shrink-0">
           <div class="sticky top-32">
             <nav class="space-y-6">
               <!-- Header -->
@@ -122,12 +197,46 @@ const customBreadcrumbs = [
                 <p class="text-sm text-gray-600">{lang === 'es' ? 'Artículos y noticias' : 'Articles and news'}</p>
               </div>
 
+              <!-- Blog Posts Navigation -->
+              {blogPosts.length > 0 && (
+                <div class="space-y-2">
+                  <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                    {lang === 'es' ? 'Artículos Recientes' : 'Recent Articles'}
+                  </h3>
+                  <div class="space-y-1 max-h-96 overflow-y-auto">
+                    {blogPosts.slice(0, 15).map((post: any) => {
+                      const categoryStyling = getCategoryStyling(post.category);
+                      return (
+                        <a
+                          href={`/${lang}/blog/${post.slug}`}
+                          class={`block px-3 py-2 text-sm rounded-md transition-all duration-200 ${
+                            post.slug === Astro.params.slug
+                              ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                          }`}
+                        >
+                          <div class="font-medium line-clamp-2">{post.title}</div>
+                          {post.category && (
+                            <div class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${categoryStyling.bgColor} ${categoryStyling.textColor}`}>
+                              {post.category}
+                            </div>
+                          )}
+                          <div class="text-xs text-gray-500 mt-1">
+                            {getRelativeTime(post.pub_date)}
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <!-- Quick Links -->
-              <div class="space-y-2">
-                <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                  {lang === 'es' ? 'Navegación' : 'Navigation'}
+              <div class="pt-4 border-t border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                  {lang === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
                 </h3>
-                <div class="space-y-1">
+                <div class="space-y-2">
                   <a href={`/${lang}/blog`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
                     <span class="mr-2">🏠</span>
                     {lang === 'es' ? 'Inicio Blog' : 'Blog Home'}
@@ -140,9 +249,13 @@ const customBreadcrumbs = [
                     <span class="mr-2">🛂</span>
                     {lang === 'es' ? 'Visas' : 'Visas'}
                   </a>
-                  <a href={`/${lang}/real-estate`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
-                    <span class="mr-2">🏠</span>
-                    {lang === 'es' ? 'Bienes Raíces' : 'Real Estate'}
+                  <a href={`/${lang}/guides`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                    <span class="mr-2">📚</span>
+                    {lang === 'es' ? 'Guías' : 'Guides'}
+                  </a>
+                  <a href={`/${lang}/clkr`} class="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors">
+                    <span class="mr-2">⚖️</span>
+                    {lang === 'es' ? 'CLKR' : 'CLKR'}
                   </a>
                 </div>
               </div>

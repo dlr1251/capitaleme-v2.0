@@ -1,6 +1,6 @@
 // Menu data utilities for dynamic megamenus - OPTIMIZED VERSION
 import { getCollection } from 'astro:content';
-import { getVisasFromSupabase, getGuidesFromSupabase, getCLKRArticlesFromSupabase } from '../lib/syncNotionToSupabase.js';
+import { getVisasFromSupabase, getGuidesFromSupabase, getCLKRArticlesFromSupabase } from '../server/lib/syncNotionToSupabase.js';
 
 // Function to match author by email from authors collection
 async function matchAuthorByEmail(authorEmail) {

@@ -1,5 +1,5 @@
 import { supabase } from '../src/lib/supabase.js';
-import { syncVisasToSupabase } from '../src/lib/syncNotionToSupabase.js';
+import { syncVisasToSupabase } from '../src/server/lib/syncNotionToSupabase.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
