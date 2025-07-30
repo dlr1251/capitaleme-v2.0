@@ -21,7 +21,7 @@ const featuredProperty = null; // No featuredProperty in new server data
 <Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
 	<main class="">        
         <HomePageHero currentLang="es"/>
-        <AboutPageSection/>
+        <AboutPageSection lang="es"/>
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="es" client:load />
         <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="es" client:load />
         <HomePageCLKR lang="es" clkrServices={menuData?.clkrServices || []} client:load />

@@ -199,8 +199,8 @@ const FilterVisaWidget = ({ visas, lang = 'en' }: FilterVisaWidgetProps) => {
             >
               <option value="">{content.selectCountryPlaceholder}</option>
               {countries.map((countryOption) => (
-                <option key={countryOption.name} value={countryOption.name}>
-                  {countryOption.name}
+                <option key={countryOption.name} value={lang === 'en' ? countryOption.nameEn : countryOption.name}>
+                  {lang === 'en' ? countryOption.nameEn : countryOption.name}
                 </option>
               ))}
             </select>

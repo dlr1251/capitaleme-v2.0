@@ -20,6 +20,7 @@ interface Module {
     secondary: string;
     accent: string;
     hover: string;
+    border: string;
   };
   topics: Topic[];
 }
@@ -239,7 +240,7 @@ const CLKRModuleExplorer: React.FC<CLKRModuleExplorerProps> = ({ topics = [], mo
             {/* All Modules Button */}
             <button
               onClick={() => setSelectedModule(null)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 mr-2 mb-2 ${
                 selectedModule === null
                   ? 'bg-blue-500 text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -253,7 +254,7 @@ const CLKRModuleExplorer: React.FC<CLKRModuleExplorerProps> = ({ topics = [], mo
               <button
                 key={module.id}
                 onClick={() => setSelectedModule(module.name)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 mr-2 mb-2 ${
                   selectedModule === module.name
                     ? `${module.color.primary} text-white shadow-lg`
                     : module.hasResults

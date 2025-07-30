@@ -25,10 +25,31 @@ function Calculator({ initialValue, lang = 'en' }: CalculatorProps) {
     const fetchExchangeRate = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`https://v6.exchangerate-api.com/v6/4dea10d77ad14706f2c5afe0/latest/USD`);
-        const data = await response.json();
-        setExchangeRate(data.conversion_rates.COP);
+        // Try multiple exchange rate sources for better reliability
+        const sources = [
+          'https://api.exchangerate-api.com/v4/latest/USD',
+          'https://v6.exchangerate-api.com/v6/4dea10d77ad14706f2c5afe0/latest/USD'
+        ];
+        
+        let rate = 4000; // Default fallback rate
+        
+        for (const source of sources) {
+          try {
+            const response = await fetch(source);
+            if (response.ok) {
+              const data = await response.json();
+              rate = data.conversion_rates?.COP || data.rates?.COP || 4000;
+              break;
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch from ${source}:`, error);
+            continue;
+          }
+        }
+        
+        setExchangeRate(rate);
       } catch (error) {
+        console.error('All exchange rate sources failed, using fallback:', error);
         setExchangeRate(4000); // Fallback rate
       } finally {
         setIsLoading(false);
@@ -189,12 +210,12 @@ function Calculator({ initialValue, lang = 'en' }: CalculatorProps) {
                     <div className="text-3xl font-bold text-emerald-600">
                       {activeTab === 'COP' 
                         ? formatCurrency(propertyValue, 'COP')
-                        : formatCurrency(propertyValue / exchangeRate, 'USD')
+                        : formatCurrency(exchangeRate > 0 ? propertyValue / exchangeRate : 0, 'USD')
                       }
                     </div>
                     <div className="text-sm text-gray-500 mt-1">
                       {activeTab === 'COP' 
-                        ? formatCurrency(propertyValue / exchangeRate, 'USD')
+                        ? formatCurrency(exchangeRate > 0 ? propertyValue / exchangeRate : 0, 'USD')
                         : formatCurrency(propertyValue, 'COP')
                       }
                     </div>
@@ -242,12 +263,12 @@ function Calculator({ initialValue, lang = 'en' }: CalculatorProps) {
                             <div className="font-bold">
                               {activeTab === 'COP' 
                                 ? formatCurrency(fee.amount, 'COP')
-                                : formatCurrency(fee.amount / exchangeRate, 'USD')
+                                : formatCurrency(exchangeRate > 0 ? fee.amount / exchangeRate : 0, 'USD')
                               }
                             </div>
                             <div className="text-sm opacity-75">
                               {activeTab === 'COP' 
-                                ? formatCurrency(fee.amount / exchangeRate, 'USD')
+                                ? formatCurrency(exchangeRate > 0 ? fee.amount / exchangeRate : 0, 'USD')
                                 : formatCurrency(fee.amount, 'COP')
                               }
                             </div>

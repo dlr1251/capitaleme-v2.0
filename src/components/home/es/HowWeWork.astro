@@ -3,12 +3,12 @@
 // Props: lang ('en' | 'es')
 import { CalendarDaysIcon, UserIcon, DocumentTextIcon, CreditCardIcon, StarIcon, ShieldCheckIcon, BoltIcon, HeartIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 const { lang = 'es' }: { lang?: 'en' | 'es' } = Astro.props;
-import ContactForm from "../../ui/forms/ContactForm.astro";
+import ContactForm from "../../ui/forms/ContactForm.tsx";
 
 const content = {
   es: {
-    header: "Cómo Contratamos",
-    subheader: "Obtén orientación legal experta para tu viaje en Colombia. Reserva una consulta o envíanos un mensaje - estamos aquí para ayudarte a tener éxito.",
+    header: "Cómo Trabajamos",
+    subheader: "Proceso simple y transparente para obtener asesoría legal experta en Colombia",
     consultation: {
       title: "Consulta Inicial",
       subtitle: "Sesión personalizada de 45 minutos",

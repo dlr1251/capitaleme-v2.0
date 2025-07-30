@@ -1,6 +1,33 @@
 ---
 import { Image } from 'astro:assets';
 import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
+
+interface Props {
+  lang?: 'en' | 'es';
+}
+
+const { lang = 'en' } = Astro.props;
+
+// Define content based on language
+const content = lang === 'es' ? {
+  tagline: "Organizamos tus asuntos legales en Colombia. Servicios legales expertos para visas, bienes raíces y soluciones empresariales.",
+  quickLinks: "Enlaces Rápidos",
+  bookAppointment: "Reservar Cita",
+  privacyPolicy: "Política de Privacidad",
+  termsConditions: "Términos y Condiciones",
+  contactUs: "Contáctanos",
+  allRightsReserved: "Todos los Derechos Reservados.",
+  madeWithLove: "Hecho con ❤️ en Colombia"
+} : {
+  tagline: "We organize your legal stuff in Colombia. Expert legal services for visas, real estate, and business solutions.",
+  quickLinks: "Quick Links",
+  bookAppointment: "Book an Appointment",
+  privacyPolicy: "Privacy Policy",
+  termsConditions: "Terms & Conditions",
+  contactUs: "Contact Us",
+  allRightsReserved: "All Rights Reserved.",
+  madeWithLove: "Made with ❤️ in Colombia"
+};
 ---
 <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-primary">
   <div class="mx-auto w-full max-w-7xl px-4 py-16">
@@ -12,7 +39,7 @@ import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
           <Image src={whiteHorizontalLogo} alt="Capital M logo white" width={120} class='h-10'/>
         </div>
         <p class="text-gray-300 text-lg leading-relaxed mb-6 max-w-md">
-          We organize your legal stuff in Colombia. Expert legal services for visas, real estate, and business solutions.
+          {content.tagline}
         </p>
         <div class="flex space-x-4">
           <a href="https://www.youtube.com/@capitalemelaw" target="_blank" class="bg-white/10 hover:bg-white/20 text-white p-3 rounded-xl transition-all duration-200">
@@ -40,14 +67,14 @@ import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
 
       <!-- Quick Links -->
       <div>
-        <h3 class="text-white font-bold text-lg mb-6">Quick Links</h3>
+        <h3 class="text-white font-bold text-lg mb-6">{content.quickLinks}</h3>
         <ul class="space-y-4">
           <li>
             <a href="https://calendly.com/capitaleme/1h?back=1&month=2024-02" target="_blank" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
-              Book an Appointment
+              {content.bookAppointment}
             </a>
           </li>
           <li>
@@ -55,7 +82,7 @@ import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
               </svg>
-              Privacy Policy
+              {content.privacyPolicy}
             </a>
           </li>
           <li>
@@ -63,7 +90,7 @@ import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
-              Terms & Conditions
+              {content.termsConditions}
             </a>
           </li>
         </ul>
@@ -71,7 +98,7 @@ import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
 
       <!-- Contact Info -->
       <div>
-        <h3 class="text-white font-bold text-lg mb-6">Contact Us</h3>
+        <h3 class="text-white font-bold text-lg mb-6">{content.contactUs}</h3>
         <ul class="space-y-4">
           <li>
             <a href="https://maps.app.goo.gl/Kwn9q9ata7LUX9Hw7" target="_blank" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-start">
@@ -106,10 +133,10 @@ import whiteHorizontalLogo from '../../../assets/logo/white-horizontal.svg'
     <div class="border-t border-white/20 pt-8">
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="text-gray-400 text-sm mb-4 md:mb-0">
-          © {new Date().getFullYear()} <a href="/" class="text-white hover:text-gray-300 transition-colors duration-200 font-semibold">Capital M</a>. All Rights Reserved.
+          © {new Date().getFullYear()} <a href="/" class="text-white hover:text-gray-300 transition-colors duration-200 font-semibold">Capital M</a>. {content.allRightsReserved}
         </div>
         <div class="flex space-x-6 text-sm">
-          <span class="text-gray-400">Made with ❤️ in Colombia</span>
+          <span class="text-gray-400">{content.madeWithLove}</span>
         </div>
       </div>
     </div>

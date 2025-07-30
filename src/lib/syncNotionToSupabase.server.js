@@ -207,7 +207,7 @@ async function extractVisaData(visa, notion) {
     return {
         title: properties.Name?.title?.[0]?.plain_text || properties.Title?.title?.[0]?.plain_text || '',
         slug: properties.slug?.rich_text?.[0]?.plain_text || properties.Slug?.rich_text?.[0]?.plain_text || '',
-        description: properties.Words?.rich_text?.[0]?.plain_text || properties.Description?.rich_text?.[0]?.plain_text || '',
+        description: properties.Words?.rich_text?.map(t => t.plain_text).join('') || properties.Description?.rich_text?.map(t => t.plain_text).join('') || '',
         content: content,
         category: properties.Tipo?.select?.name || properties.VisaType?.select?.name || 'visa',
         country: properties.Countries?.select?.name || properties.Country?.select?.name || '',
@@ -219,7 +219,7 @@ async function extractVisaData(visa, notion) {
         processingTime: properties.ProcessingTime?.rich_text?.[0]?.plain_text || '',
         requirements: properties.Requirements?.rich_text?.[0]?.plain_text || '',
         emoji: properties.Emoji?.rich_text?.[0]?.plain_text || '📋',
-        alcance: properties.Alcance?.rich_text?.[0]?.plain_text || '',
+        alcance: properties.Alcance?.rich_text?.map(t => t.plain_text).join('') || '',
         duration: properties.Duration?.rich_text?.[0]?.plain_text || '',
         lang: properties.Lang?.select?.name === 'En' ? 'en' : 'es'
     };

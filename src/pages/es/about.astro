@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import AboutPageHero from '../../components/about/AboutPageHero.astro';
 import AboutPageSection from '../../components/about/AboutPageSection.astro';
 import ValuesSection from '../../components/about/ValuesSection.tsx';
+import BreadCrumb from '../../components/core/navigation/BreadCrumb.astro';
 import { getTeamMembers } from '../../utils/teamData.js';
 import { getAllContentData } from '../../server/lib/contentData.js';
 const menuData = await getAllContentData('es');
@@ -12,6 +13,7 @@ const menuData = await getAllContentData('es');
 const teamMembers = await getTeamMembers('es');
 ---
 <Layout title="Sobre nosotros - Capital M Law" menuData={menuData} lang="es">
+  <BreadCrumb pathname="/es/about" lang="es" />
   <AboutPageHero lang="es" />
   <AboutPageSection lang="es" />
   <ValuesSection lang="es" />

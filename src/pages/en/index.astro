@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import HomePageHero from '../../components/home/en/HomePageHero.astro';
+import HomePageHero from '../../components/shared/HomePageHero.astro';
 import AboutPageSection from '../../components/about/AboutPageSection.astro';
 import HowWeWork from '../../components/home/en/HowWeWork.astro';
 import HomeVisaAssistanceSection from '../../components/visas/HomeVisaAssistanceSection.tsx';
@@ -22,7 +22,7 @@ const featuredProperty = null; // No featuredProperty in new server data
 <Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
 	<main class="">        
         <HomePageHero currentLang="en"/>
-        <AboutPageSection/>
+        <AboutPageSection lang="en"/>
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
         <!-- <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load /> -->
         <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />

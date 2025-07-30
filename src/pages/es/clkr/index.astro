@@ -4,6 +4,9 @@ import CLKRModuleExplorer from '../../../components/clkr/CLKRModuleExplorer.tsx'
 import { getAllContentData } from '../../../server/lib/contentData.js';
 const menuData = await getAllContentData('es');
 
+// Simple icon function for Astro compatibility
+const BookOpenIcon = () => null;
+
 // Get CLKR articles from menu data
 const clkrServices = menuData?.clkrServices || [];
 
@@ -22,34 +25,56 @@ const totalArticles = clkrServices.length;
 const allModules = clkrServices.map((service: any) => service.module || 'General');
 const modules = [...new Set(allModules)];
 
+// Module name translation mapping
+const moduleTranslations = {
+  'Constitutional Law': 'Derecho Constitucional',
+  'Administrative Law': 'Derecho Administrativo',
+  'Civil Law': 'Derecho Civil',
+  'Commercial Law': 'Derecho Comercial',
+  'Labor Law': 'Derecho Laboral',
+  'Criminal Law': 'Derecho Penal',
+  'Immigration Law': 'Derecho Migratorio',
+  'Real Estate Law': 'Derecho Inmobiliario',
+  'Tax Law': 'Derecho Tributario',
+  'Family Law': 'Derecho de Familia',
+  'International Law': 'Derecho Internacional',
+  'General': 'General'
+};
+
+// Translate module names to Spanish
+const translatedModules = modules.map(module => moduleTranslations[module as keyof typeof moduleTranslations] || module);
+
 // Transform CLKR services into topics format for the component
 const topics = clkrServices.map((service: any) => {
   // Use ReadTime property from database, parse as number, fallback to 5 if not available
   const readTimeText = service.ReadTime?.rich_text?.[0]?.plain_text;
   const readTime = readTimeText ? parseInt(readTimeText, 10) : 5;
+  const originalModule = service.module || 'General';
+  const translatedModule = moduleTranslations[originalModule as keyof typeof moduleTranslations] || originalModule;
   return {
     id: service.id || service.slug,
     title: service.title,
     description: service.description,
     readingTime: isNaN(readTime) ? 5 : readTime,
-    module: service.module || 'General',
+    module: translatedModule,
     url: service.url || `/es/clkr/${service.slug}`
   };
 });
 
 // Create module objects with configurations
-const moduleObjects = modules.map((moduleName: any) => {
+const moduleObjects = translatedModules.map((moduleName: any) => {
   const moduleTopics = topics.filter((topic: any) => topic.module === moduleName);
   return {
     id: moduleName,
     name: moduleName,
     description: `Temas legales y procedimientos en ${moduleName}`,
-    icon: () => null, // We'll need to add proper icons later
+    icon: BookOpenIcon, // Use BookOpenIcon as default icon
     color: {
       primary: 'bg-blue-100',
       secondary: 'bg-blue-50',
       accent: 'text-blue-600',
-      hover: 'hover:bg-blue-200'
+      hover: 'hover:bg-blue-200',
+      border: 'border-blue-200'
     },
     topics: moduleTopics
   };

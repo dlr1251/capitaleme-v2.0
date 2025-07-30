@@ -353,8 +353,8 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
               >
                 <option value="">{lang === 'es' ? 'Selecciona país de origen' : 'Select country of origin'}</option>
                 {sortedCountries.map((countryInfo: Country) => (
-                  <option key={countryInfo.name} value={countryInfo.name}>
-                    {countryInfo.name}
+                  <option key={countryInfo.name} value={lang === 'en' ? countryInfo.nameEn : countryInfo.name}>
+                    {lang === 'en' ? countryInfo.nameEn : countryInfo.name}
                   </option>
                 ))}
               </select>

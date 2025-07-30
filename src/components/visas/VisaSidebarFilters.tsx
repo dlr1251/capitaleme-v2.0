@@ -129,9 +129,11 @@ const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries
           >
             <option value="">{lang === 'es' ? 'Selecciona país de origen' : 'Select country of origin'}</option>
             {countries
-              .sort((a, b) => (a.nameEn || a.name).localeCompare(b.nameEn || b.name))
+              .sort((a, b) => (lang === 'en' ? (a.nameEn || a.name).localeCompare(b.nameEn || b.name) : (a.name || a.nameEn).localeCompare(b.name || b.nameEn)))
               .map((country: Country) => (
-                <option key={country.name} value={country.name}>{country.name}</option>
+                <option key={country.name} value={lang === 'en' ? country.nameEn : country.name}>
+                  {lang === 'en' ? country.nameEn : country.name}
+                </option>
               ))}
           </select>
         </div>

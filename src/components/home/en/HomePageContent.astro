@@ -1,12 +1,27 @@
 ---
 import { getNotionDatabase } from '../../../utils/notion';
 
+interface Props {
+  lang?: 'en' | 'es';
+}
+
+const { lang = 'en' } = Astro.props;
+
 const databaseId = '20d0a3cd15e38169928fff5c6f2b219c';
 const notionContent = await getNotionDatabase(databaseId);
+
+// Define content based on language
+const content = lang === 'es' ? {
+  title: "Recursos Legales",
+  lastUpdated: "Última actualización"
+} : {
+  title: "Legal Resources",
+  lastUpdated: "Last updated"
+};
 ---
 
 <section class="container mx-auto px-4 py-12">
-    <h2 class="text-3xl font-bold mb-8 text-center">Legal Resources</h2>
+    <h2 class="text-3xl font-bold mb-8 text-center">{content.title}</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {notionContent.map((item: any) => (
             <a 
@@ -24,7 +39,7 @@ const notionContent = await getNotionDatabase(databaseId);
                             {item.properties.Name?.title[0]?.plain_text || 'Untitled'}
                         </h3>
                         <p class="text-sm text-gray-500">
-                            Last updated: {new Date(item.last_edited_time).toLocaleDateString()}
+                            {content.lastUpdated}: {new Date(item.last_edited_time).toLocaleDateString()}
                         </p>
                     </div>
                 </div>

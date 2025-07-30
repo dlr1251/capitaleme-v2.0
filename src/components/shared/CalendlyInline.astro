@@ -1,5 +1,5 @@
 ---
-import ContactForm from "../ui/forms/ContactForm.astro";
+import ContactForm from "../ui/forms/ContactForm.tsx";
 ---
 
 <section class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
@@ -128,7 +128,7 @@ import ContactForm from "../ui/forms/ContactForm.astro";
             <p class="text-white/90">Responderemos en 24 horas</p>
           </div>
           <div class="p-6">
-            <ContactForm />
+                            <ContactForm client:load />
           </div>
         </div>
 

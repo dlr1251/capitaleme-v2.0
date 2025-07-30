@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import AboutPageHero from '../../components/about/AboutPageHero.astro';
 import AboutPageSection from '../../components/about/AboutPageSection.astro';
 import ValuesSection from '../../components/about/ValuesSection.tsx';
+import BreadCrumb from '../../components/core/navigation/BreadCrumb.astro';
 import { getTeamMembers } from '../../utils/teamData.js';
 import { getAllContentData } from '../../server/lib/contentData.js';
 const lang = 'en';
@@ -28,6 +29,7 @@ const guides = Array.isArray(menuData?.allGuides)
 
 ---
 <Layout title="Capital M Law - About" menuData={menuData} lang={lang}>
+  <BreadCrumb pathname="/en/about" lang="en" />
   <AboutPageHero lang="en" />
   <AboutPageSection lang="en" />
   <ValuesSection lang="en" />

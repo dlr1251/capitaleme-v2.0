@@ -1,15 +1,68 @@
 ---
+interface Props {
+  lang?: 'en' | 'es';
+}
 
+const { lang = 'en' } = Astro.props;
+
+// Define content based on language
+const content = lang === 'es' ? {
+  title: "Comenzar",
+  description: "En Capital M, nos enfocamos en entregar nuestros servicios a través de proyectos claramente definidos. No nos dedicamos a servicios de asesoría continua, permitiéndonos concentrarnos completamente en proporcionar los mejores resultados para cada necesidad específica.",
+  services: "Nuestros servicios incluyen",
+  visaAssistance: "Asistencia de Visa",
+  purchaseAssistance: "Asistencia de Compra",
+  realEstate: "para transacciones inmobiliarias, asegurando apoyo legal experto adaptado a tus requisitos únicos.",
+  step1: {
+    title: "Paso 1",
+    heading: "Reservar una Cita",
+    description: "Nos tomamos el tiempo para escuchar tus necesidades y entender tus objetivos. Nuestra reunión inicial está diseñada para conocernos mutuamente y establecer una base sólida para nuestro trabajo conjunto.",
+    button: "Reservar ahora"
+  },
+  step2: {
+    title: "Paso 2",
+    heading: "Definir Solución Personalizada",
+    description: "Juntos, crearemos un plan personalizado que detalle los pasos y acciones necesarias para lograr tus objetivos. La transparencia y la colaboración están en el corazón de nuestro proceso."
+  },
+  step3: {
+    title: "Paso 3",
+    heading: "Ejecutar y Colaborar",
+    description: "Nos ponemos a trabajar, manteniéndote informado en cada paso del camino. Nuestro enfoque está en entregar resultados de manera eficiente y mantener líneas abiertas de comunicación para cualquier ajuste."
+  }
+} : {
+  title: "Get Started",
+  description: "At Capital M, we focus on delivering our services through clearly defined projects. We do not engage in ongoing advisory services, allowing us to concentrate fully on providing the best outcomes for each specific need.",
+  services: "Our services include",
+  visaAssistance: "Visa Assistance",
+  purchaseAssistance: "Purchase Assistance",
+  realEstate: "for real estate transactions, ensuring expert legal support tailored to your unique requirements.",
+  step1: {
+    title: "Step 1",
+    heading: "Book an Appointment",
+    description: "We take the time to listen to your needs and understand your goals. Our initial meeting is designed to get to know each other and establish a strong foundation for our work together.",
+    button: "Book now"
+  },
+  step2: {
+    title: "Step 2",
+    heading: "Define Tailored Solution",
+    description: "Together, we'll craft a customized plan that outlines the steps and actions needed to achieve your objectives. Transparency and collaboration are at the heart of our process."
+  },
+  step3: {
+    title: "Step 3",
+    heading: "Execute and Collaborate",
+    description: "We get to work, keeping you informed every step of the way. Our focus is on delivering results efficiently and maintaining open lines of communication for any adjustments."
+  }
+};
 ---
 <section class="bg-secondary py-16">
-  <h2 class="text-3xl font-bold text-white mb-8 text-center">Get Started</h2>
+  <h2 class="text-3xl font-bold text-white mb-8 text-center">{content.title}</h2>
   <div class="container mx-auto w-2/3 flex max-w-screen-xl">
       <div class="md:w-1/4 bg-gray-50 p-6 rounded-lg shadow-lg mr-4 border-secondary">
         <p class="text-slate-500 text-left text-lg font-thin">
-          At Capital M, we focus on delivering our services through clearly defined projects. We do not engage in ongoing advisory services, allowing us to concentrate fully on providing the best outcomes for each specific need.
+          {content.description}
         </p>
         <p class="text-slate-500 text-left text-lg font-thin">
-          Our services include <span class="text-secondary font-bold">Visa Assistance</span> and <span class="text-secondary font-bold">Purchase Assistance</span> for real estate transactions, ensuring expert legal support tailored to your unique requirements.
+          {content.services} <span class="text-secondary font-bold">{content.visaAssistance}</span> and <span class="text-secondary font-bold">{content.purchaseAssistance}</span> {content.realEstate}
         </p>
       </div>    
       <div class="md:w-3/4">
@@ -17,22 +70,22 @@
         <ol class="relative border-s border-gray-200">                  
         <li class="mb-10 ms-4">
             <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>
-            <time class="mb-1 text-sm font-bold leading-none text-primary ">Step 1</time>
-            <h3 class="text-lg font-semibold text-primary">Book an Appointment</h3>
-            <p class="mb-4 text-base text-lg text-zinc-200">We take the time to listen to your needs and understand your goals. Our initial meeting is designed to get to know each other and establish a strong foundation for our work together.</p>
-            <a href="https://calendly.com/danielluque/45-min-meeting" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-primary hover:text-white focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700">Book now <svg class="w-3 h-3 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/></svg></a>
+            <time class="mb-1 text-sm font-bold leading-none text-primary ">{content.step1.title}</time>
+            <h3 class="text-lg font-semibold text-primary">{content.step1.heading}</h3>
+            <p class="mb-4 text-base text-lg text-zinc-200">{content.step1.description}</p>
+            <a href="https://calendly.com/danielluque/45-min-meeting" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-primary hover:text-white focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-100 focus:text-blue-700">{content.step1.button} <svg class="w-3 h-3 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/></svg></a>
         </li>
         <li class="mb-10 ms-4">
             <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>
-            <time class="mb-1 text-sm font-bold leading-none text-primary ">Step 2</time>
-            <h3 class="text-lg font-semibold text-primary">Define Tailored Solution</h3>
-            <p class="text-lg text-zinc-200">Together, we’ll craft a customized plan that outlines the steps and actions needed to achieve your objectives. Transparency and collaboration are at the heart of our process.</p>
+            <time class="mb-1 text-sm font-bold leading-none text-primary ">{content.step2.title}</time>
+            <h3 class="text-lg font-semibold text-primary">{content.step2.heading}</h3>
+            <p class="text-lg text-zinc-200">{content.step2.description}</p>
         </li>
         <li class="ms-4">
             <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>
-            <time class="mb-1 text-sm font-bold leading-none text-primary ">Step 3</time>
-            <h3 class="text-lg font-semibold text-primary">Execute and Collaborate</h3>
-            <p class="text-lg text-zinc-200">We get to work, keeping you informed every step of the way. Our focus is on delivering results efficiently and maintaining open lines of communication for any adjustments.</p>
+            <time class="mb-1 text-sm font-bold leading-none text-primary ">{content.step3.title}</time>
+            <h3 class="text-lg font-semibold text-primary">{content.step3.heading}</h3>
+            <p class="text-lg text-zinc-200">{content.step3.description}</p>
         </li>
         </ol>
       </div>

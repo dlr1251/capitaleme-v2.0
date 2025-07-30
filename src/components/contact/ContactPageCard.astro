@@ -1,5 +1,5 @@
 ---
-import ContactForm from '../ui/forms/ContactForm.astro';
+import ContactForm from '../ui/forms/ContactForm.tsx';
 
 interface Props {
   lang?: 'en' | 'es';
@@ -58,7 +58,7 @@ const content = lang === 'es' ? {
                 
             </div>
             <div class="bg-slate-100 w-full md:w-2/3">
-                <ContactForm/>
+                <ContactForm lang={lang} client:load />
                 
             </div>
             

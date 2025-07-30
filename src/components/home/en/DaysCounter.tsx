@@ -7,7 +7,11 @@ interface Trip {
   extension: boolean;
 }
 
-function TripsManager() {
+interface TripsManagerProps {
+  lang?: 'en' | 'es';
+}
+
+function TripsManager({ lang = 'en' }: TripsManagerProps) {
   const [trips, setTrips] = useState<Trip[]>([{ arrivalDate: '', departureDate: '', days: 0, extension: false }]);
 
   // Calculate days for trips with dates
@@ -53,10 +57,45 @@ function TripsManager() {
   // Remaining days under the 180-day tourism permit
   const remainingDays = 180 - totalDaysThisYear;
 
+  // Content based on language
+  const content = lang === 'es' ? {
+    trips: 'Viajes',
+    arrivalDate: 'Fecha de Llegada',
+    departureDate: 'Fecha de Salida',
+    days: 'Días',
+    action: 'Acción',
+    extension: 'Extensión',
+    trip: 'Viaje',
+    remove: 'Eliminar',
+    totalDays: 'Total de Días',
+    addTrip: 'Agregar Viaje',
+    addExtension: 'Agregar Extensión',
+    extensionOption1: 'Puede que necesites salir y reingresar al país para un nuevo permiso.',
+    extensionOption2: 'Puedes extender tu estadía sin salir, sujeto a la aprobación de inmigración.',
+    remainingDays: 'Días restantes',
+    lastLegalDay: 'Último día legal de estadía'
+  } : {
+    trips: 'Trips',
+    arrivalDate: 'Arrival Date',
+    departureDate: 'Departure Date',
+    days: 'Days',
+    action: 'Action',
+    extension: 'Extension',
+    trip: 'Trip',
+    remove: 'Remove',
+    totalDays: 'Total Days',
+    addTrip: 'Add Trip',
+    addExtension: 'Add Extension',
+    extensionOption1: 'You may need to leave and re-enter the country for a new permit.',
+    extensionOption2: 'You can extend your stay without leaving, subject to immigration approval.',
+    remainingDays: 'Remaining days',
+    lastLegalDay: 'Last legal day of stay'
+  };
+
   // Check if the user can extend their stay or needs to re-enter
-  let extensionOption = "You may need to leave and re-enter the country for a new permit.";
+  let extensionOption = content.extensionOption1;
   if (remainingDays > 0 && remainingDays <= 90) {
-    extensionOption = "You can extend your stay without leaving, subject to immigration approval.";
+    extensionOption = content.extensionOption2;
   }
 
   // Last legal day of stay calculation
@@ -70,15 +109,15 @@ function TripsManager() {
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, auto)', gap: '10px', alignItems: 'center' }}>
-        <div>Trips</div>
-        <div>Arrival Date</div>
-        <div>Departure Date</div>
-        <div>Days</div>
-        <div>Action</div>
+        <div>{content.trips}</div>
+        <div>{content.arrivalDate}</div>
+        <div>{content.departureDate}</div>
+        <div>{content.days}</div>
+        <div>{content.action}</div>
 
         {tripsWithCalculatedDays.map((trip: Trip, index: number) => (
           <React.Fragment key={index}>
-            <div>{trip.extension ? "Extension" : `Trip ${index + 1}`}</div>
+            <div>{trip.extension ? content.extension : `${content.trip} ${index + 1}`}</div>
             <input
               type="date"
               value={trip.arrivalDate}
@@ -90,22 +129,24 @@ function TripsManager() {
               onChange={e => handleDateChange(index, 'departureDate', e.target.value)}
             />
             <div>{trip.days}</div>
-            <button className="bg-red-300 p-1 text-sm" onClick={() => removeTrip(index)}>Remove</button>
+            <button className="bg-red-300 p-1 text-sm" onClick={() => removeTrip(index)}>{content.remove}</button>
           </React.Fragment>
         ))}
-        <div>Total Days</div><div></div><div></div><div>{totalDaysThisYear}</div><div></div>
+        <div>{content.totalDays}</div><div></div><div></div><div>{totalDaysThisYear}</div><div></div>
       </div>
-      <button className="bg-slate-100 p-2 rounded " onClick={addTrip}>Add Trip</button>
-      <button className="bg-slate-100 p-2 rounded " onClick={addExtension} style={{ marginLeft: '10px' }}>Add Extension</button>
+      <button className="bg-slate-100 p-2 rounded " onClick={addTrip}>{content.addTrip}</button>
+      <button className="bg-slate-100 p-2 rounded " onClick={addExtension} style={{ marginLeft: '10px' }}>{content.addExtension}</button>
 
       <div style={{ marginTop: '20px' }}>
-        <p>Number of days spent in the current year: {totalDaysThisYear}</p>
-        <p>Number of days left under your tourism permit: {remainingDays}</p>
+        <p>{lang === 'es' ? 'Número de días gastados en el año actual' : 'Number of days spent in the current year'}: {totalDaysThisYear}</p>
+        <p>{lang === 'es' ? 'Número de días restantes bajo tu permiso de turismo' : 'Number of days left under your tourism permit'}: {remainingDays}</p>
         <p>{extensionOption}</p>
-        <p>Last legal day of stay: {lastLegalDay.toDateString()}</p>
+        <p>{content.lastLegalDay}: {lastLegalDay.toDateString()}</p>
       </div>
     </div>
   );
 }
 
-export default TripsManager;
+export default function DaysCounter({ lang = 'en' }: { lang?: 'en' | 'es' }) {
+  return <TripsManager lang={lang} />;
+}
