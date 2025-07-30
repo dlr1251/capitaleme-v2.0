@@ -1,0 +1,187 @@
+---
+const { lang = 'en' } = Astro.props;
+
+const content = lang === 'es' ? {
+  title: "Hablemos de tu caso",
+  subtitle: "Cuéntanos sobre tu situación y te responderemos en menos de 24 horas",
+  fields: {
+    name: {
+      label: "Nombre completo",
+      placeholder: "Tu nombre completo"
+    },
+    email: {
+      label: "Correo electrónico", 
+      placeholder: "tu@email.com"
+    },
+    phone: {
+      label: "Teléfono (opcional)",
+      placeholder: "+57 300 123 4567"
+    },
+    service: {
+      label: "Servicio de interés",
+      placeholder: "Selecciona un servicio"
+    },
+    message: {
+      label: "Tu mensaje",
+      placeholder: "Cuéntanos sobre tu situación legal..."
+    }
+  },
+  submit: "Enviar mensaje",
+  privacy: "Al enviar este formulario, aceptas nuestra política de privacidad"
+} : {
+  title: "Let's talk about your case",
+  subtitle: "Tell us about your situation and we'll get back to you within 24 hours",
+  fields: {
+    name: {
+      label: "Full Name",
+      placeholder: "Your full name"
+    },
+    email: {
+      label: "Email Address",
+      placeholder: "your@email.com"
+    },
+    phone: {
+      label: "Phone (optional)",
+      placeholder: "+1 234 567 8900"
+    },
+    service: {
+      label: "Service of interest",
+      placeholder: "Select a service"
+    },
+    message: {
+      label: "Your Message",
+      placeholder: "Tell us about your legal situation..."
+    }
+  },
+  submit: "Send Message",
+  privacy: "By submitting this form, you agree to our privacy policy"
+};
+
+const services = lang === 'es' ? [
+  "Visas e Inmigración",
+  "Transacciones Inmobiliarias",
+  "Asesoría Legal",
+  "Protección Empresarial",
+  "Otro"
+] : [
+  "Visas & Immigration",
+  "Real Estate Transactions", 
+  "Legal Advice",
+  "Business Protection",
+  "Other"
+];
+---
+
+<div class="w-full max-w-4xl mx-auto">
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-primary/5 to-secondary/5 px-6 py-8 border-b border-gray-100">
+      <div class="text-center">
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">{content.title}</h3>
+        <p class="text-gray-600">{content.subtitle}</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form action="#" method="post" class="p-6 lg:p-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column -->
+        <div class="space-y-6">
+          <!-- Name Field -->
+          <div class="space-y-2">
+            <label for="name" class="block text-sm font-medium text-gray-700">
+              {content.fields.name.label} *
+            </label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              required 
+              placeholder={content.fields.name.placeholder}
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Email Field -->
+          <div class="space-y-2">
+            <label for="email" class="block text-sm font-medium text-gray-700">
+              {content.fields.email.label} *
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              required 
+              placeholder={content.fields.email.placeholder}
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Phone Field -->
+          <div class="space-y-2">
+            <label for="phone" class="block text-sm font-medium text-gray-700">
+              {content.fields.phone.label}
+            </label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              placeholder={content.fields.phone.placeholder}
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Service Field -->
+          <div class="space-y-2">
+            <label for="service" class="block text-sm font-medium text-gray-700">
+              {content.fields.service.label}
+            </label>
+            <select 
+              id="service" 
+              name="service"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 bg-white"
+            >
+              <option value="" disabled selected>{content.fields.service.placeholder}</option>
+              {services.map(service => (
+                <option value={service}>{service}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-6">
+          <!-- Message Field -->
+          <div class="space-y-2">
+            <label for="message" class="block text-sm font-medium text-gray-700">
+              {content.fields.message.label} *
+            </label>
+            <textarea 
+              id="message" 
+              name="message" 
+              rows="8"
+              required 
+              placeholder={content.fields.message.placeholder}
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 placeholder-gray-400 resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <button 
+              type="submit" 
+              class="w-full bg-gradient-to-r from-primary to-primary/90 text-white py-4 px-6 rounded-lg font-medium hover:from-primary/90 hover:to-primary transition-all duration-200 transform hover:scale-[1.02] focus:ring-4 focus:ring-primary/20"
+            >
+              {content.submit}
+            </button>
+          </div>
+
+          <!-- Privacy Notice -->
+          <p class="text-xs text-gray-500 text-center">
+            {content.privacy}
+          </p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div> 

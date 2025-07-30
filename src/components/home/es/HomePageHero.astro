@@ -1,0 +1,284 @@
+---
+import colorHorizontalLogo from '../../../assets/logo/color-horizontal.svg';
+import ConsultationSelector from '../../visas/ConsultationSelector.tsx';
+import { CheckCircleIcon, HomeModernIcon, DocumentTextIcon, CalendarIcon, PhoneIcon } from '@heroicons/react/24/solid';
+
+// Get the current locale from the URL
+const pathname = Astro.url.pathname;
+const currentLang = pathname.startsWith('/es') ? 'es' : 'en';
+
+// Define services array based on language
+const services = currentLang === 'es' ? [
+  "Visas e Inmigración",
+  "Transacciones Inmobiliarias", 
+  "Asesoría Legal"
+] : [
+  "Visas & Immigration",
+  "Real Estate Transactions",
+  "Legal Advice"
+];
+
+// Define content based on language with original copy
+const content = currentLang === 'es' ? {
+  mainHeading: {
+    line1: "Expertos legales",
+    line2: "colombianos",
+    line3: "Solo a",
+    line4: "un clic de distancia"
+  },
+  subtitle: "Rápido, asequible, bilingüe",
+  description: "Abogados colombianos bilingües con tendencia a la internacionalización. Trabajamos para ti incansablemente.",
+  calendlyUrl: "https://calendly.com/capital-m-law/programmed-initial-consultation",
+  cta: {
+    contact: "Contáctanos",
+    whatsapp: "WhatsApp",
+    bookConsultation: "Reservar Consulta"
+  }
+} : {
+  mainHeading: {
+    line1: "Colombian Legal",
+    line2: "Experts",
+    line3: "Just a",
+    line4: "click away"
+  },
+  subtitle: "Fast, Affordable, Bilingual",
+  description: "Local bilingual Colombian attorneys with an internationalization tendency. We work for you restlessly.",
+  calendlyUrl: "https://calendly.com/capital-m-law/programmed-initial-consultation",
+  cta: {
+    contact: "Contact Us",
+    whatsapp: "WhatsApp",
+    bookConsultation: "Book Consultation"
+  }
+};
+---
+
+<!-- Ultra-Responsive Hero Section -->
+<style>
+  @keyframes servicePulse {
+    0%, 100% {
+      border-color: rgb(229 231 235); /* gray-200 */
+      background-color: rgb(249 250 251); /* gray-50 */
+    }
+    50% {
+      border-color: rgb(0 170 129); /* secondary color */
+      background-color: rgb(0 170 129 / 0.05); /* secondary with 5% opacity */
+    }
+  }
+  
+  @keyframes iconGradient {
+    0%, 100% {
+      background: linear-gradient(135deg, rgb(59 130 246 / 0.1), rgb(59 130 246 / 0.1)); /* primary/10 */
+    }
+    25% {
+      background: linear-gradient(135deg, rgb(59 130 246 / 0.2), rgb(0 170 129 / 0.15)); /* primary/20 to secondary/15 */
+    }
+    50% {
+      background: linear-gradient(135deg, rgb(0 170 129 / 0.2), rgb(59 130 246 / 0.15)); /* secondary/20 to primary/15 */
+    }
+    75% {
+      background: linear-gradient(135deg, rgb(59 130 246 / 0.15), rgb(0 170 129 / 0.2)); /* primary/15 to secondary/20 */
+    }
+  }
+  
+  .service-pulse {
+    animation: servicePulse 3s ease-in-out infinite;
+  }
+  
+  .service-pulse:nth-child(1) { animation-delay: 0s; }
+  .service-pulse:nth-child(2) { animation-delay: 1s; }
+  .service-pulse:nth-child(3) { animation-delay: 2s; }
+  
+  .icon-gradient {
+    animation: iconGradient 4s ease-in-out infinite;
+  }
+  
+  .icon-gradient:nth-child(1) { animation-delay: 0s; }
+  .icon-gradient:nth-child(2) { animation-delay: 1.33s; }
+  .icon-gradient:nth-child(3) { animation-delay: 2.66s; }
+</style>
+
+<section class="relative min-h-screen bg-white overflow-hidden">
+  <!-- Main Content Container -->
+  <div class="relative z-10 min-h-screen flex items-center">
+    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+      
+      <!-- Mobile Layout (Stacked) -->
+      <div class="lg:hidden space-y-8 py-8">
+        
+        <!-- Logo - Mobile -->
+        <div class="flex justify-center">
+          <img 
+            src={colorHorizontalLogo.src} 
+            alt="Capital M Logo" 
+            class="h-10 sm:h-12 w-auto"
+          />
+        </div>
+        
+        <!-- Main Heading - Mobile Optimized -->
+        <div class="text-center space-y-2">
+          <h1 class="text-2xl sm:text-3xl font-bold text-primary leading-tight">
+            {content.mainHeading.line1}
+            <span class="block text-secondary">{content.mainHeading.line2}</span>
+            <span class="block text-primary">
+              {content.mainHeading.line3}
+              <span class="text-secondary underline decoration-2 decoration-secondary underline-offset-4">{content.mainHeading.line4}</span>
+            </span>
+          </h1>
+          
+          <!-- Subtitle - Mobile -->
+          <p class="text-lg sm:text-xl font-semibold text-secondary">
+            {content.subtitle}
+          </p>
+        </div>
+        
+        <!-- Services Grid - Mobile Optimized -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          {services.map((service, index) => (
+            <div class="group relative bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-200 hover:border-secondary transition-all duration-300 hover:bg-secondary/5 min-h-[80px] sm:min-h-[90px] flex items-center">
+              <div class="flex items-center space-x-3 w-full">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300 flex-shrink-0">
+                  {index === 0 && (
+                    <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  )}
+                  {index === 1 && (
+                    <HomeModernIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  )}
+                  {index === 2 && (
+                    <DocumentTextIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  )}
+                </div>
+                <span class="text-gray-900 font-medium text-xs sm:text-sm leading-tight">{service}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <!-- Mobile Contact Form -->
+        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-lg">
+          <div class="text-center space-y-4">
+            <div>
+              <p class="text-gray-600 leading-relaxed text-sm">
+                {content.description}
+              </p>
+            </div>
+            
+            <!-- Calendly Button - Mobile -->
+            <a href={content.calendlyUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 text-sm font-medium transition-all duration-200 w-full">
+              <CalendarIcon className="w-4 h-4 mr-2" />
+              {content.cta.bookConsultation}
+            </a>
+            
+            <!-- Mobile Contact Buttons -->
+            <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
+              <a href={currentLang === 'en' ? '/en/contact' : '/es/contact'} class="inline-flex items-center justify-center bg-primary text-white px-4 py-3 rounded-lg hover:bg-primary/90 text-sm font-medium transition-all duration-200">
+                <PhoneIcon className="w-4 h-4 mr-2" />
+                {content.cta.contact}
+              </a>
+              <a href="https://wa.me/573001234567?text=Hola,%20necesito%20información%20sobre%20servicios%20legales" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-4 py-3 rounded-lg hover:bg-secondary/90 text-sm font-medium transition-all duration-200">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                </svg>
+                {content.cta.whatsapp}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Desktop Layout (Two Columns) -->
+      <div class="hidden lg:grid lg:grid-cols-2 gap-12 xl:gap-12 items-center">
+        
+        <!-- Left Column - Main Content -->
+        <div class="space-y-8 xl:space-y-6">
+          <!-- Main Heading - Desktop Optimized -->
+          <div class="space-y-4">
+            <h1 class="text-4xl xl:text-5xl 2xl:text-5xl font-bold text-primary leading-tight">
+              {content.mainHeading.line1}
+              <span class="text-secondary">{content.mainHeading.line2}</span>
+              <span class="block text-primary">
+                {content.mainHeading.line3}
+                <span class="text-secondary underline decoration-2 decoration-secondary underline-offset-4">{content.mainHeading.line4}</span>
+              </span>
+            </h1>
+          </div>
+          
+          <!-- Subtitle - Desktop -->
+          <div class="space-y-4">
+            <p class="text-2xl xl:text-3xl font-semibold text-secondary">
+              {content.subtitle}
+            </p>
+          </div>
+          
+          <!-- Services Grid - Desktop Optimized -->
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-3 xl:gap-4">
+            {services.map((service, index) => (
+              <div class="group relative bg-gray-50 rounded-xl p-4 xl:p-5 border border-gray-200 hover:border-secondary transition-all duration-300 hover:bg-secondary/5 min-h-[100px] xl:min-h-[110px] flex items-center">
+                <div class="flex items-center space-x-4 w-full">
+                  <div class="w-10 h-10 xl:w-12 xl:h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300 flex-shrink-0">
+                    {index === 0 && (
+                      <CheckCircleIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary" />
+                    )}
+                    {index === 1 && (
+                      <HomeModernIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary" />
+                    )}
+                    {index === 2 && (
+                      <DocumentTextIcon className="w-5 h-5 xl:w-6 xl:h-6 text-primary" />
+                    )}
+                  </div>
+                  <span class="text-gray-900 font-medium text-sm xl:text-base leading-tight">{service}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <!-- Right Column - Interactive Contact Form -->
+        <div class="relative">
+          <div class="relative">
+            <!-- Main Card -->
+            <div class="bg-white rounded-2xl p-8 xl:p-10 border border-gray-200 shadow-lg">
+              <div class="text-center space-y-6 xl:space-y-8">
+                <!-- Logo Area -->
+                <div class="flex items-center justify-center mx-auto">
+                  <div class="transition-all duration-600 group-hover:scale-110">
+                    <img 
+                      src={colorHorizontalLogo.src} 
+                      alt="Capital M Logo" 
+                      class="h-14 xl:h-16 w-auto"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <p class="text-gray-600 leading-relaxed text-sm xl:text-base">
+                    {content.description}
+                  </p>
+                </div>
+                
+                <!-- Calendly Button - Desktop -->
+                <a href={content.calendlyUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-8 py-4 xl:px-10 xl:py-5 rounded-lg hover:bg-secondary/90 text-base xl:text-lg font-medium transition-all duration-200 w-full">
+                  <CalendarIcon className="w-5 h-5 xl:w-6 xl:h-6 mr-3" />
+                  {content.cta.bookConsultation}
+                </a>
+                
+                <!-- Contact and WhatsApp Buttons -->
+                <div class="grid grid-cols-2 gap-3 xl:gap-4 pt-4 border-t border-gray-200">
+                  <a href={currentLang === 'en' ? '/en/contact' : '/es/contact'} class="inline-flex items-center justify-center bg-primary text-white px-4 py-3 xl:px-6 xl:py-4 rounded-lg hover:bg-primary/90 text-sm xl:text-base font-medium transition-all duration-200">
+                    <PhoneIcon className="w-4 h-4 xl:w-5 xl:h-5 mr-2" />
+                    {content.cta.contact}
+                  </a>
+                  <a href="https://wa.me/573001234567?text=Hola,%20necesito%20información%20sobre%20servicios%20legales" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-secondary text-white px-4 py-3 xl:px-6 xl:py-4 rounded-lg hover:bg-secondary/90 text-sm xl:text-base font-medium transition-all duration-200">
+                    <svg class="w-4 h-4 xl:w-5 xl:h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                    </svg>
+                    {content.cta.whatsapp}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 
