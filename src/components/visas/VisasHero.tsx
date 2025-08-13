@@ -188,7 +188,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularVisas.slice(0, 6).map((visa) => (
-                <div key={visa.id} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <div key={visa.id} className="bg-white rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-2xl">{visa.emoji || '📋'}</span>
                     <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
@@ -198,7 +198,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {visa.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                     {visa.description}
                   </p>
                   <a 
@@ -237,7 +237,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {guides.slice(0, 3).map((guide) => (
-                <div key={guide.id} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                <div key={guide.id} className="bg-white rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center justify-between mb-4">
                     <DocumentTextIcon className="w-6 h-6 text-primary" />
                     <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">
@@ -247,7 +247,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {guide.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                     {guide.description}
                   </p>
                   <a 

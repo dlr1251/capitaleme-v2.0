@@ -51,7 +51,8 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
   console.log('HomeVisaAssistanceSection received:', { 
     totalVisas: visas.length, 
     popularVisas: visas.filter(v => v.isPopular).length,
-    sampleVisa: visas[0]
+    sampleVisa: visas[0],
+    allVisasData: visas.map(v => ({ id: v.id, title: v.title, isPopular: v.isPopular }))
   });
   
   // Modal state
@@ -198,7 +199,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {topFeatures.map((feature, index) => (
-            <div key={index} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div key={index} className="bg-white rounded-lg p-6 border border-gray-200">
               <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center mb-4">
                 <div className="text-primary">
                   {feature.icon}
@@ -207,7 +208,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 {feature.description}
               </p>
             </div>
@@ -215,30 +216,30 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
         </div>
 
         {/* Popular Visas Section */}
-        {popularVisas.length > 0 && (
+        {(popularVisas.length > 0 || visas.length > 0) && (
           <div className="mb-16">
             <div className="text-center mb-8">
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                {content.popularTitle}
+                {popularVisas.length > 0 ? content.popularTitle : (lang === 'es' ? '🌟 Categorías de Visa Disponibles' : '🌟 Available Visa Categories')}
               </h3>
               <p className="text-gray-600">
-                {content.popularSubtitle}
+                {popularVisas.length > 0 ? content.popularSubtitle : (lang === 'es' ? 'Explora nuestras opciones de visa más relevantes' : 'Explore our most relevant visa options')}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {popularVisas.slice(0, 6).map((visa) => (
-                <div key={visa.id} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer" onClick={() => openModal(visa)}>
+              {(popularVisas.length > 0 ? popularVisas : visas.slice(0, 6)).map((visa) => (
+                <div key={visa.id} className="bg-white rounded-lg p-6 border border-gray-200 cursor-pointer" onClick={() => openModal(visa)}>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-2xl">{visa.emojis?.[0] || '📋'}</span>
                     <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                      {content.popular}
+                      {visa.isPopular ? content.popular : (lang === 'es' ? 'Disponible' : 'Available')}
                     </span>
                   </div>
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">
                     {visa.title}
                   </h4>
-                  <p className="text-gray-600 text-sm mb-3">
+                  <p className="text-gray-600 text-sm mb-3 leading-relaxed">
                     {visa.description}
                   </p>
                   
@@ -305,7 +306,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {guides.slice(0, 3).map((guide) => (
-                <div key={guide.id} className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                <div key={guide.id} className="bg-white rounded-lg p-6 border border-gray-200">
                   <div className="flex items-center justify-between mb-4">
                     <DocumentTextIcon className="w-6 h-6 text-primary" />
                     <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">
@@ -315,7 +316,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">
                     {guide.title}
                   </h4>
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                     {guide.description || (lang === 'es' 
                       ? 'Guía práctica con información legal actualizada y consejos basados en nuestra experiencia real con clientes internacionales' 
                       : 'Practical guide with updated legal information and advice based on our real experience with international clients'

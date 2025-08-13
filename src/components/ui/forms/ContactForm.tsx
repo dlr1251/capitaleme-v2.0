@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 
 interface ContactFormProps {
   lang?: 'en' | 'es';
+  compact?: boolean;
 }
 
-export default function ContactForm({ lang = 'en' }: ContactFormProps) {
+export default function ContactForm({ lang = 'en', compact = false }: ContactFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -194,7 +195,7 @@ export default function ContactForm({ lang = 'en' }: ContactFormProps) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className={`grid gap-6 ${compact ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
             {/* Left Column */}
             <div className="space-y-6">
               {/* Name Field */}
@@ -257,7 +258,7 @@ export default function ContactForm({ lang = 'en' }: ContactFormProps) {
             </div>
 
             {/* Right Column */}
-            <div className="space-y-6">
+            <div className={`space-y-6 ${compact ? 'mt-6' : ''}`}>
               {/* Service Field */}
               <div className="space-y-2">
                 <label htmlFor="service" className="block text-sm font-medium text-gray-700">
