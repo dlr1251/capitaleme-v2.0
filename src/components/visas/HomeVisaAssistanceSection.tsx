@@ -53,8 +53,25 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
     totalVisas: visas.length, 
     popularVisas: visas.filter(v => v.isPopular).length,
     sampleVisa: visas[0],
-    allVisasData: visas.map(v => ({ id: v.id, title: v.title, isPopular: v.isPopular }))
+    allVisasData: visas.map(v => ({ 
+      id: v.id, 
+      title: v.title, 
+      isPopular: v.isPopular,
+      beneficiaries: v.beneficiaries,
+      workPermit: v.workPermit
+    }))
   });
+
+  // Debug: Log specific visa data for beneficiaries and workPermit
+  if (visas.length > 0) {
+    console.log('Sample visa beneficiaries/workPermit data:', visas.slice(0, 3).map(v => ({
+      title: v.title,
+      beneficiaries: v.beneficiaries,
+      workPermit: v.workPermit,
+      beneficiariesType: typeof v.beneficiaries,
+      workPermitType: typeof v.workPermit
+    })));
+  }
   
   // Modal state
   const [selectedVisa, setSelectedVisa] = useState<Visa | null>(null);

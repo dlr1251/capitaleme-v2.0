@@ -8,6 +8,7 @@ import HomeRealEstateSection from '../../components/real-estate/es/HomeRealEstat
 import HomePageCLKR from '../../components/clkr/HomePageCLKR.tsx';
 import BlogPageLatest from '../../components/blog/BlogPageLatest.astro';
 import { getAllContentData } from '../../server/lib/contentData.js';
+import { clearMenuDataCache } from '../../utils/menuDataOptimized.js';
 
 const lang = 'es';
 const menuData = await getAllContentData(lang);
@@ -22,6 +23,19 @@ const featuredProperty = null; // No featuredProperty in new server data
 	<main class="">        
         <HomePageHero currentLang="es"/>
         <AboutPageSection lang="es"/>
+        
+        <!-- Debug button - temporary -->
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4 max-w-7xl mx-auto">
+          <strong>Debug:</strong> 
+          <button 
+            onclick="clearMenuDataCache()" 
+            class="ml-2 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Limpiar Cache y Actualizar
+          </button>
+          <span class="ml-2 text-sm">Revisa la consola para detalles de datos de visa</span>
+        </div>
+        
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="es" client:load />
         <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="es" client:load />
         <HomePageCLKR lang="es" clkrServices={menuData?.clkrServices || []} client:load />
@@ -30,3 +44,11 @@ const featuredProperty = null; // No featuredProperty in new server data
 		    <BlogPageLatest/>
 	</main>
 </Layout>
+
+<script>
+  function clearMenuDataCache() {
+    // This will be handled by the component
+    console.log('Cache clear requested - check component logs');
+    location.reload();
+  }
+</script>

@@ -503,7 +503,14 @@ export async function getAllMenuData(lang = 'en') {
 // Function to clear cache (useful for development or when data needs to be refreshed)
 export function clearMenuDataCache() {
   clearCache();
-  
+  console.log('Menu data cache cleared');
+}
+
+// Function to force refresh data by clearing cache and returning fresh data
+export async function forceRefreshMenuData(lang = 'en') {
+  clearCache();
+  console.log('Forcing menu data refresh for language:', lang);
+  return await getAllMenuData(lang);
 }
 
 // Legacy functions for backward compatibility

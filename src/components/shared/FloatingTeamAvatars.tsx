@@ -8,20 +8,22 @@ interface FloatingTeamAvatarsProps {
 
 // Helper to order team members as requested
 const getOrderedMembers = (teamMembers: TeamMemberData[]) => {
-  // You may need to adjust these names/ids to match your data
+  // Order based on the new author file structure
   const order = [
-    // Row 1
-    'mafeduarte', 'danielluque',
-    // Row 2
-    'mateo', 'sara', 'harold',
-    // Row 3
-    'ferrett',
+    // Row 1: Mafe, Daniel
+    '2_mafeduarte', '1_danielluque',
+    // Row 2: Mateo, Sara, Harold
+    '4_mateomartinez', '3_sara', '5_harold',
+    // Row 3: Ferrett (if exists)
+    '6_ferrett',
   ];
-  // Try to match by id or fallback to name includes
+  
+  // Try to match by exact id first, then by name includes
   return order.map(key =>
     teamMembers.find(m =>
-      (m.id && m.id.toLowerCase().includes(key)) ||
-      (m.name && m.name.toLowerCase().includes(key))
+      (m.id && m.id === key) ||
+      (m.id && m.id.toLowerCase().includes(key.replace('_', ''))) ||
+      (m.name && m.name.toLowerCase().includes(key.replace('_', '')))
     )
   ).filter(Boolean) as TeamMemberData[];
 };
