@@ -27,8 +27,8 @@ interface FilterVisaWidgetProps {
 const FilterVisaWidget = ({ visas, lang = 'en' }: FilterVisaWidgetProps) => {
   
   const [country, setCountry] = useState<string>('');
-  const [beneficiaries, setBeneficiaries] = useState<boolean>(false); 
-  const [workPermit, setWorkPermit] = useState<boolean>(false); 
+  const [beneficiaries, setBeneficiaries] = useState<string>(''); 
+  const [workPermit, setWorkPermit] = useState<string>(''); 
   const [accrueResidency, setAccrueResidency] = useState<boolean>(false);
   const [list, setList] = useState<Visa[]>([]);
   const [originalList, setOriginalList] = useState<Visa[]>([]); 
@@ -164,8 +164,8 @@ const FilterVisaWidget = ({ visas, lang = 'en' }: FilterVisaWidgetProps) => {
 
   const resetFilters = () => {
     setCountry('');
-    setBeneficiaries(false);
-    setWorkPermit(false);
+    setBeneficiaries('');
+    setWorkPermit('');
     setAccrueResidency(false);
     setList(originalList);
     setCurrentPage(1);
@@ -211,8 +211,8 @@ const FilterVisaWidget = ({ visas, lang = 'en' }: FilterVisaWidgetProps) => {
             <input
               type="checkbox"
               id="beneficiaries"
-              checked={beneficiaries}
-              onChange={(e) => setBeneficiaries(e.target.checked)}
+              checked={beneficiaries === 'yes'}
+              onChange={(e) => setBeneficiaries(e.target.checked ? 'yes' : '')}
               className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
             />
             <label htmlFor="beneficiaries" className="ml-2 text-sm text-gray-700">
@@ -225,8 +225,8 @@ const FilterVisaWidget = ({ visas, lang = 'en' }: FilterVisaWidgetProps) => {
             <input
               type="checkbox"
               id="workPermit"
-              checked={workPermit}
-              onChange={(e) => setWorkPermit(e.target.checked)}
+              checked={workPermit === 'yes'}
+              onChange={(e) => setWorkPermit(e.target.checked ? 'yes' : '')}
               className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
             />
             <label htmlFor="workPermit" className="ml-2 text-sm text-gray-700">

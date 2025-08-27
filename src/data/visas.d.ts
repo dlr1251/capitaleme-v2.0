@@ -4,8 +4,8 @@ export interface Visa {
   slug: string;
   description: string;
   countries: string[];
-  beneficiaries?: boolean;
-  workPermit?: boolean;
+  beneficiaries?: string;
+  workPermit?: string;
   type: 'Visitor' | 'Migrant' | 'Resident';
   isPopular?: boolean;
   emoji?: string;
