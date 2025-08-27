@@ -35,57 +35,16 @@ const getRelativeTime = (dateString: string): string => {
 };
 
 const getCategoryStyling = (category: string) => {
-  const categoryLower = category?.toLowerCase() || '';
+  const styles = {
+    'Immigration': { icon: '🛂', gradient: 'from-blue-500 to-indigo-600' },
+    'Visa': { icon: '📋', gradient: 'from-green-500 to-emerald-600' },
+    'Lifestyle': { icon: '🌟', gradient: 'from-purple-500 to-pink-600' },
+    'Legal': { icon: '⚖️', gradient: 'from-orange-500 to-red-600' },
+    'Business': { icon: '💼', gradient: 'from-teal-500 to-cyan-600' },
+    'Real Estate': { icon: '🏠', gradient: 'from-slate-500 to-gray-600' }
+  };
   
-  if (categoryLower.includes('immigration') || categoryLower.includes('visa')) {
-    return {
-      gradient: 'from-blue-500 to-indigo-600',
-      icon: '🛂',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700',
-      borderColor: 'border-blue-200'
-    };
-  } else if (categoryLower.includes('business') || categoryLower.includes('company')) {
-    return {
-      gradient: 'from-green-500 to-emerald-600',
-      icon: '💼',
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-700',
-      borderColor: 'border-green-200'
-    };
-  } else if (categoryLower.includes('lifestyle') || categoryLower.includes('life')) {
-    return {
-      gradient: 'from-purple-500 to-pink-600',
-      icon: '🏠',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-700',
-      borderColor: 'border-purple-200'
-    };
-  } else if (categoryLower.includes('legal') || categoryLower.includes('law')) {
-    return {
-      gradient: 'from-orange-500 to-red-600',
-      icon: '⚖️',
-      bgColor: 'bg-orange-50',
-      textColor: 'text-orange-700',
-      borderColor: 'border-orange-200'
-    };
-  } else if (categoryLower.includes('tax') || categoryLower.includes('finance')) {
-    return {
-      gradient: 'from-teal-500 to-cyan-600',
-      icon: '💰',
-      bgColor: 'bg-teal-50',
-      textColor: 'text-teal-700',
-      borderColor: 'border-teal-200'
-    };
-  } else {
-    return {
-      gradient: 'from-slate-500 to-gray-600',
-      icon: '📄',
-      bgColor: 'bg-slate-50',
-      textColor: 'text-slate-700',
-      borderColor: 'border-slate-200'
-    };
-  }
+  return styles[category as keyof typeof styles] || styles['Legal'];
 };
 
 const generateGradient = (text: string): string => {
@@ -108,6 +67,65 @@ const generateGradient = (text: string): string => {
   const index = Math.abs(hash) % gradients.length;
   return gradients[index];
 };
+
+// Markdown to HTML conversion function
+function markdownToHtml(markdown: string): string {
+  if (!markdown) return '';
+  return markdown
+    // Headings with ID generation
+    .replace(/^### (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h3 id="${id}">${text}</h3>`;
+    })
+    .replace(/^## (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h2 id="${id}">${text}</h2>`;
+    })
+    .replace(/^# (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h1 id="${id}">${text}</h1>`;
+    })
+    // Bold and italic
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Code blocks
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Images
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // Lists
+    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    // Paragraphs (simplified)
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
+    // Clean up
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
+    .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
+    .replace(/<ul><ul>/g, '<ul>')
+    .replace(/<\/ul><\/ul>/g, '</ul>');
+}
+
+// Extract headings for table of contents
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
+  const lines = content.split('\n');
+  
+  lines.forEach((line, index) => {
+    const match = line.match(/^(#{1,6})\s+(.+)$/);
+    if (match) {
+      const depth = match[1].length;
+      const text = match[2];
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      headings.push({ id, text, depth });
+    }
+  });
+  
+  return headings;
+}
 
 // For server mode, we don't use getStaticPaths
 // Instead, we fetch the post data in the component
@@ -151,32 +169,39 @@ const typedPost = post as {
   tags?: string[];
 };
 
+// Convert markdown content to HTML
+const htmlContent = markdownToHtml(typedPost.content);
+
+// Extract headings for table of contents
+const headings = extractHeadings(typedPost.content);
+
 const textContent = {
   en: {
     backToBlog: 'Back to Blog',
     publishedOn: 'Published on',
     updatedOn: 'Updated on',
     readingTime: 'min read',
-    by: 'by',
     shareThisPost: 'Share this post',
     relatedPosts: 'Related Posts',
-    noRelatedPosts: 'No related posts found.',
-    error: 'Post not found'
-  },
-  es: {
-    backToBlog: 'Volver al Blog',
-    publishedOn: 'Publicado el',
-    updatedOn: 'Actualizado el',
-    readingTime: 'min de lectura',
-    by: 'por',
-    shareThisPost: 'Compartir esta publicación',
-    relatedPosts: 'Publicaciones Relacionadas',
-    noRelatedPosts: 'No se encontraron publicaciones relacionadas.',
-    error: 'Publicación no encontrada'
+    backToTop: 'Back to Top',
+    category: 'Category',
+    tags: 'Tags',
+    author: 'Author'
   }
 };
 
-const content = textContent[lang as keyof typeof textContent] || textContent.en;
+const content = textContent[lang as keyof typeof textContent];
+
+// Calculate reading time
+const readingTime = typedPost.reading_time || Math.ceil(typedPost.content.length / 500);
+
+// Get category styling
+const categoryStyling = getCategoryStyling(typedPost.category);
+const gradientClass = categoryStyling.gradient;
+
+// Format dates
+const publishedDate = formatDate(typedPost.pub_date);
+const updatedDate = formatDate(typedPost.last_edited);
 
 // Get related posts
 let relatedPosts = [];
@@ -188,16 +213,6 @@ try {
 } catch (error) {
   console.error('Error fetching related posts:', error);
 }
-
-const categoryStyling = getCategoryStyling(typedPost.category);
-const gradientClass = typedPost.image ? generateGradient(typedPost.title) : categoryStyling.gradient;
-
-// Calculate reading time if not provided
-const readingTime = typedPost.reading_time || Math.ceil((typedPost.content || '').split(' ').length / 200);
-
-// Format dates
-const publishedDate = formatDate(typedPost.pub_date);
-const updatedDate = formatDate(typedPost.last_edited);
 ---
 
 <BlogPostLayoutNew
@@ -209,6 +224,7 @@ const updatedDate = formatDate(typedPost.last_edited);
   lastEdited={typedPost.last_edited}
   author={typedPost.author}
   publishedDate={typedPost.pub_date}
+  headings={headings}
   structuredData={{
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -232,7 +248,7 @@ const updatedDate = formatDate(typedPost.last_edited);
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-4 gap-12">
         <!-- Main Content -->
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-4">
           <!-- Featured Image -->
           {typedPost.image && (
             <div class="relative mb-8 rounded-2xl overflow-hidden">
@@ -253,8 +269,8 @@ const updatedDate = formatDate(typedPost.last_edited);
           
           <!-- Article Body -->
           <article class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
-            {typedPost.content ? (
-              <div class="markdown-content" set:html={typedPost.content}></div>
+            {htmlContent ? (
+              <div class="markdown-content" set:html={htmlContent}></div>
             ) : (
               <div class="text-center py-12">
                 <div class="text-gray-400 text-6xl mb-4">📝</div>
@@ -271,35 +287,6 @@ const updatedDate = formatDate(typedPost.last_edited);
                 <p>{content.updatedOn} {updatedDate}</p>
               </div>
               
-              <SocialSharing 
-                title={typedPost.title}
-                description={typedPost.description}
-                url={Astro.url.href}
-              />
-            </div>
-          </div>
-        </div>
-        
-        <!-- Sidebar -->
-        <div class="lg:col-span-1">
-          <div class="sticky top-8 space-y-8">
-            <!-- Author Info -->
-            <div class="bg-slate-50 rounded-xl p-6">
-              <h3 class="text-lg font-semibold text-slate-900 mb-4">About the Author</h3>
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
-                  {typedPost.author.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p class="font-medium text-slate-900">{typedPost.author}</p>
-                  <p class="text-sm text-slate-600">Legal Expert</p>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Share Section -->
-            <div class="bg-slate-50 rounded-xl p-6">
-              <h3 class="text-lg font-semibold text-slate-900 mb-4">{content.shareThisPost}</h3>
               <SocialSharing 
                 title={typedPost.title}
                 description={typedPost.description}
@@ -354,7 +341,7 @@ const updatedDate = formatDate(typedPost.last_edited);
                   <div class="flex items-center justify-between mb-3">
                     <span class="text-xs text-slate-500 font-medium">{getRelativeTime(relatedPost.pub_date)}</span>
                     {relatedPost.category && (
-                      <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${relatedCategoryStyling.bgColor} ${relatedCategoryStyling.textColor}`}>
+                      <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700`}>
                         {relatedPost.category}
                       </span>
                     )}

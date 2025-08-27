@@ -11,7 +11,8 @@ import {
   XMarkIcon,
   CheckCircleIcon,
   XCircleIcon,
-  BriefcaseIcon
+  BriefcaseIcon,
+  ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/solid';
 
 // Visa and Guide types
@@ -181,109 +182,133 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
   const popularVisas = visas.filter(v => v.isPopular);
 
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-gradient-to-br from-slate-50 to-gray-100 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}></div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Content */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <ShieldCheckIcon className="w-4 h-4" />
+            {lang === 'en' ? 'Professional Visa Services' : 'Servicios Profesionales de Visa'}
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             {content.title}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               {content.subtitle}
             </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
             {content.description}
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {topFeatures.map((feature, index) => (
-            <div key={index} className="bg-white rounded-lg p-6 border border-gray-200">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center mb-4">
-                <div className="text-primary">
-                  {feature.icon}
+        <div className="mb-24">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              {lang === 'en' ? 'Why Choose Our Visa Services?' : '¿Por qué Elegir Nuestros Servicios de Visa?'}
+            </h3>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {lang === 'en' ? 'Comprehensive support for your immigration journey' : 'Apoyo integral para tu viaje de inmigración'}
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {topFeatures.map((feature, index) => (
+              <div key={index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 text-center group">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-primary">
+                    {feature.icon}
+                  </div>
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Popular Visas Section */}
         {(popularVisas.length > 0 || visas.length > 0) && (
-          <div className="mb-16">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          <div className="mb-24">
+            <div className="text-center mb-16">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 {popularVisas.length > 0 ? content.popularTitle : (lang === 'es' ? '🌟 Categorías de Visa Disponibles' : '🌟 Available Visa Categories')}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {popularVisas.length > 0 ? content.popularSubtitle : (lang === 'es' ? 'Explora nuestras opciones de visa más relevantes' : 'Explore our most relevant visa options')}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {(popularVisas.length > 0 ? popularVisas : visas.slice(0, 6)).map((visa) => (
-                <div key={visa.id} className="bg-white rounded-lg p-6 border border-gray-200 cursor-pointer" onClick={() => openModal(visa)}>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl">{visa.emojis?.[0] || '📋'}</span>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                <div key={visa.id} className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => openModal(visa)}>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-3xl">{visa.emojis?.[0] || '📋'}</span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                       {visa.isPopular ? content.popular : (lang === 'es' ? 'Disponible' : 'Available')}
                     </span>
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                  
+                  <h4 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
                     {visa.title}
                   </h4>
-                  <p className="text-gray-600 text-sm mb-3 leading-relaxed">
+                  
+                  <p className="text-gray-600 mb-6 leading-relaxed">
                     {visa.description}
                   </p>
                   
                   {/* Scope Description */}
                   {visa.alcance && (
-                    <div className="mb-3">
-                      <p className="text-xs text-gray-500 font-medium mb-1">{content.modal.scope}:</p>
-                      <p className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
+                    <div className="mb-6">
+                      <p className="text-sm text-gray-500 font-medium mb-2">{content.modal.scope}:</p>
+                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">
                         {visa.alcance}
                       </p>
                     </div>
                   )}
                   
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {visa.beneficiaries !== undefined && (
-                      <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
                         {getBeneficiariesLabel(visa.beneficiaries)}
                       </span>
                     )}
                     {visa.workPermit !== undefined && (
-                      <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                         {getWorkPermitLabel(visa.workPermit)}
                       </span>
                     )}
                   </div>
                   
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <span className="text-sm text-gray-500 font-medium">
                       {visa.duration || (lang === 'es' ? 'Duración variable' : 'Variable duration')}
                     </span>
-                    <span className="text-primary hover:text-primary/80 font-medium text-sm transition-colors">
-                      {content.viewDetails}
-                    </span>
+                    <div className="flex items-center gap-2 text-primary group-hover:text-secondary transition-colors">
+                      <span className="font-medium text-sm">{content.viewDetails}</span>
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="text-center mt-8">
+            <div className="text-center mt-12">
               <a 
                 href={`/${lang}/visas`}
-                className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold text-lg group"
               >
                 {content.discoverAll}
+                <ArrowTopRightOnSquareIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
           </div>
@@ -291,52 +316,48 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
 
         {/* Guides Section */}
         {guides.length > 0 && (
-          <div>
-            <div className="text-center mb-8">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          <div className="mb-24">
+            <div className="text-center mb-16">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 {content.guides}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {lang === 'es' 
-                  ? 'Recursos legales especializados creados por nuestro equipo de abogados colombianos. Guías prácticas basadas en casos reales y experiencia directa con el sistema legal colombiano.' 
-                  : 'Specialized legal resources created by our team of Colombian attorneys. Practical guides based on real cases and direct experience with the Colombian legal system.'
+                  ? 'Recursos útiles para entender mejor el proceso de visa'
+                  : 'Helpful resources to better understand the visa process'
                 }
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {guides.slice(0, 3).map((guide) => (
-                <div key={guide.id} className="bg-white rounded-lg p-6 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <DocumentTextIcon className="w-6 h-6 text-primary" />
-                    <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">
-                      {content.guide}
-                    </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {guides.slice(0, 4).map((guide) => (
+                <div key={guide.id} className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 group">
+                  <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                    <DocumentTextIcon className="w-6 h-6 text-secondary" />
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-secondary transition-colors">
                     {guide.title}
                   </h4>
                   <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                    {guide.description || (lang === 'es' 
-                      ? 'Guía práctica con información legal actualizada y consejos basados en nuestra experiencia real con clientes internacionales' 
-                      : 'Practical guide with updated legal information and advice based on our real experience with international clients'
-                    )}
+                    {guide.excerpt || guide.description}
                   </p>
-                  <a 
-                    href={`/${lang}/guides/${guide.slug}`}
-                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium text-sm transition-colors"
-                  >
-                    {content.readGuide}
-                    <EyeIcon className="w-4 h-4 ml-1" />
-                  </a>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500">
+                      {guide.category || (lang === 'es' ? 'Guía' : 'Guide')}
+                    </span>
+                    <div className="flex items-center gap-2 text-secondary group-hover:text-secondary/80 transition-colors">
+                      <span className="text-sm font-medium">{content.readGuide}</span>
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
             
-            <div className="text-center mt-8">
+            <div className="text-center mt-12">
               <a 
                 href={`/${lang}/guides`}
-                className="inline-flex items-center px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors font-medium"
+                className="inline-flex items-center px-6 py-3 border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
               >
                 {content.viewAllGuides}
               </a>
@@ -345,79 +366,66 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
         )}
       </div>
 
-      {/* Modal for Visa Details */}
+      {/* Visa Details Modal */}
       {isModalOpen && selectedVisa && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleBackdropClick}
         >
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{selectedVisa.emojis?.[0] || '📋'}</span>
                   <h3 className="text-2xl font-bold text-gray-900">{selectedVisa.title}</h3>
                 </div>
                 <button
                   onClick={closeModal}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
                 >
-                  <XMarkIcon className="w-6 h-6" />
+                  <XMarkIcon className="w-5 h-5 text-gray-600" />
                 </button>
               </div>
               
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">{content.modal.scope}</h4>
-                  <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
-                    {selectedVisa.alcance || selectedVisa.description}
-                  </p>
+              <p className="text-gray-600 mb-6">{selectedVisa.description}</p>
+              
+              {selectedVisa.alcance && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">{content.modal.scope}:</h4>
+                  <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{selectedVisa.alcance}</p>
                 </div>
-                
-                {selectedVisa.requirements && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">{content.modal.requirements}</h4>
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <div className="prose prose-sm max-w-none">
-                        <div dangerouslySetInnerHTML={{ __html: selectedVisa.requirements }} />
-                      </div>
-                    </div>
-                  </div>
+              )}
+              
+              {selectedVisa.requirements && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">{content.modal.requirements}:</h4>
+                  <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{selectedVisa.requirements}</p>
+                </div>
+              )}
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                {selectedVisa.beneficiaries !== undefined && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                    {getBeneficiariesLabel(selectedVisa.beneficiaries)}
+                  </span>
                 )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {selectedVisa.beneficiaries !== undefined && (
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-gray-900 mb-2">{lang === 'es' ? 'Beneficiarios' : 'Beneficiaries'}</h5>
-                      <p className="text-sm text-gray-700">{getBeneficiariesLabel(selectedVisa.beneficiaries)}</p>
-                    </div>
-                  )}
-                  
-                  {selectedVisa.workPermit !== undefined && (
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h5 className="font-semibold text-gray-900 mb-2">{lang === 'es' ? 'Permiso de Trabajo' : 'Work Permit'}</h5>
-                      <p className="text-sm text-gray-700">{getWorkPermitLabel(selectedVisa.workPermit)}</p>
-                    </div>
-                  )}
-                </div>
-                
-                {selectedVisa.duration && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">{content.modal.duration}</h4>
-                    <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
-                      {selectedVisa.duration}
-                    </p>
-                  </div>
+                {selectedVisa.workPermit !== undefined && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                    {getWorkPermitLabel(selectedVisa.workPermit)}
+                  </span>
                 )}
               </div>
               
-              <div className="mt-8 flex justify-end">
-                <button
-                  onClick={closeModal}
-                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">
+                  {selectedVisa.duration || (lang === 'es' ? 'Duración variable' : 'Variable duration')}
+                </span>
+                <a 
+                  href={`/${lang}/visas/${selectedVisa.slug}`}
+                  className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
                 >
-                  {content.modal.close}
-                </button>
+                  {lang === 'es' ? 'Ver detalles completos' : 'View full details'}
+                </a>
               </div>
             </div>
           </div>

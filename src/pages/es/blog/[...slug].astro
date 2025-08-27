@@ -35,57 +35,16 @@ const getRelativeTime = (dateString: string): string => {
 };
 
 const getCategoryStyling = (category: string) => {
-  const categoryLower = category?.toLowerCase() || '';
+  const styles = {
+    'Inmigración': { icon: '🛂', gradient: 'from-blue-500 to-indigo-600' },
+    'Visa': { icon: '📋', gradient: 'from-green-500 to-emerald-600' },
+    'Estilo de Vida': { icon: '🌟', gradient: 'from-purple-500 to-pink-600' },
+    'Legal': { icon: '⚖️', gradient: 'from-orange-500 to-red-600' },
+    'Negocios': { icon: '💼', gradient: 'from-teal-500 to-cyan-600' },
+    'Bienes Raíces': { icon: '🏠', gradient: 'from-slate-500 to-gray-600' }
+  };
   
-  if (categoryLower.includes('inmigración') || categoryLower.includes('visa')) {
-    return {
-      gradient: 'from-blue-500 to-indigo-600',
-      icon: '🛂',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700',
-      borderColor: 'border-blue-200'
-    };
-  } else if (categoryLower.includes('negocio') || categoryLower.includes('empresa')) {
-    return {
-      gradient: 'from-green-500 to-emerald-600',
-      icon: '💼',
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-700',
-      borderColor: 'border-green-200'
-    };
-  } else if (categoryLower.includes('estilo de vida') || categoryLower.includes('vida')) {
-    return {
-      gradient: 'from-purple-500 to-pink-600',
-      icon: '🏠',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-700',
-      borderColor: 'border-purple-200'
-    };
-  } else if (categoryLower.includes('legal') || categoryLower.includes('ley')) {
-    return {
-      gradient: 'from-orange-500 to-red-600',
-      icon: '⚖️',
-      bgColor: 'bg-orange-50',
-      textColor: 'text-orange-700',
-      borderColor: 'border-orange-200'
-    };
-  } else if (categoryLower.includes('impuestos') || categoryLower.includes('finanzas')) {
-    return {
-      gradient: 'from-teal-500 to-cyan-600',
-      icon: '💰',
-      bgColor: 'bg-teal-50',
-      textColor: 'text-teal-700',
-      borderColor: 'border-teal-200'
-    };
-  } else {
-    return {
-      gradient: 'from-slate-500 to-gray-600',
-      icon: '📄',
-      bgColor: 'bg-slate-50',
-      textColor: 'text-slate-700',
-      borderColor: 'border-slate-200'
-    };
-  }
+  return styles[category as keyof typeof styles] || styles['Legal'];
 };
 
 const generateGradient = (text: string): string => {
@@ -108,6 +67,65 @@ const generateGradient = (text: string): string => {
   const index = Math.abs(hash) % gradients.length;
   return gradients[index];
 };
+
+// Markdown to HTML conversion function
+function markdownToHtml(markdown: string): string {
+  if (!markdown) return '';
+  return markdown
+    // Headings with ID generation
+    .replace(/^### (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h3 id="${id}">${text}</h3>`;
+    })
+    .replace(/^## (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h2 id="${id}">${text}</h2>`;
+    })
+    .replace(/^# (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h1 id="${id}">${text}</h1>`;
+    })
+    // Bold and italic
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Code blocks
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // Images
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // Lists
+    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    // Paragraphs (simplified)
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
+    // Clean up
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
+    .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
+    .replace(/<ul><ul>/g, '<ul>')
+    .replace(/<\/ul><\/ul>/g, '</ul>');
+}
+
+// Extract headings for table of contents
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
+  const lines = content.split('\n');
+  
+  lines.forEach((line, index) => {
+    const match = line.match(/^(#{1,6})\s+(.+)$/);
+    if (match) {
+      const depth = match[1].length;
+      const text = match[2];
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      headings.push({ id, text, depth });
+    }
+  });
+  
+  return headings;
+}
 
 // For server mode, we don't use getStaticPaths
 // Instead, we fetch the post data in the component
@@ -151,32 +169,39 @@ const typedPost = post as {
   tags?: string[];
 };
 
+// Convert markdown content to HTML
+const htmlContent = markdownToHtml(typedPost.content);
+
+// Extract headings for table of contents
+const headings = extractHeadings(typedPost.content);
+
 const textContent = {
-  en: {
-    backToBlog: 'Back to Blog',
-    publishedOn: 'Published on',
-    updatedOn: 'Updated on',
-    readingTime: 'min read',
-    by: 'by',
-    shareThisPost: 'Share this post',
-    relatedPosts: 'Related Posts',
-    noRelatedPosts: 'No related posts found.',
-    error: 'Post not found'
-  },
   es: {
     backToBlog: 'Volver al Blog',
     publishedOn: 'Publicado el',
     updatedOn: 'Actualizado el',
     readingTime: 'min de lectura',
-    by: 'por',
     shareThisPost: 'Compartir esta publicación',
     relatedPosts: 'Publicaciones Relacionadas',
-    noRelatedPosts: 'No se encontraron publicaciones relacionadas.',
-    error: 'Publicación no encontrada'
+    backToTop: 'Volver Arriba',
+    category: 'Categoría',
+    tags: 'Etiquetas',
+    author: 'Autor'
   }
 };
 
-const content = textContent[lang as keyof typeof textContent] || textContent.es;
+const content = textContent[lang as keyof typeof textContent];
+
+// Calculate reading time
+const readingTime = typedPost.reading_time || Math.ceil(typedPost.content.length / 500);
+
+// Get category styling
+const categoryStyling = getCategoryStyling(typedPost.category);
+const gradientClass = categoryStyling.gradient;
+
+// Format dates
+const publishedDate = formatDate(typedPost.pub_date);
+const updatedDate = formatDate(typedPost.last_edited);
 
 // Get related posts
 let relatedPosts = [];
@@ -188,16 +213,6 @@ try {
 } catch (error) {
   console.error('Error fetching related posts:', error);
 }
-
-const categoryStyling = getCategoryStyling(typedPost.category);
-const gradientClass = typedPost.image ? generateGradient(typedPost.title) : categoryStyling.gradient;
-
-// Calculate reading time if not provided
-const readingTime = typedPost.reading_time || Math.ceil((typedPost.content || '').split(' ').length / 200);
-
-// Format dates
-const publishedDate = formatDate(typedPost.pub_date);
-const updatedDate = formatDate(typedPost.last_edited);
 ---
 
 <BlogPostLayoutNew
@@ -209,6 +224,7 @@ const updatedDate = formatDate(typedPost.last_edited);
   lastEdited={typedPost.last_edited}
   author={typedPost.author}
   publishedDate={typedPost.pub_date}
+  headings={headings}
   structuredData={{
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -235,51 +251,47 @@ const updatedDate = formatDate(typedPost.last_edited);
   }}
 >
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Breadcrumb -->
-    <nav class="mb-8">
-      <ol class="flex items-center space-x-2 text-sm text-gray-500">
-        <li><a href="/es" class="hover:text-blue-600 transition-colors">Inicio</a></li>
-        <li><span class="mx-2">/</span></li>
-        <li><a href="/es/blog" class="hover:text-blue-600 transition-colors">{content.backToBlog}</a></li>
-        <li><span class="mx-2">/</span></li>
-        <li class="text-gray-900 font-medium">{typedPost.title}</li>
-      </ol>
-    </nav>
-
-    <!-- Article Header -->
+    <!-- Header -->
     <header class="mb-12">
+      <!-- Back to Blog -->
       <div class="mb-6">
-        <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${categoryStyling.bgColor} ${categoryStyling.textColor} ${categoryStyling.borderColor} border`}>
-          {categoryStyling.icon} {typedPost.category}
-        </span>
+        <a href="/es/blog" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          {content.backToBlog}
+        </a>
       </div>
-      
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-        {typedPost.title}
-      </h1>
-      
-      <p class="text-xl text-gray-600 mb-8 leading-relaxed">
-        {typedPost.description}
-      </p>
-      
+
+      <!-- Title and Description -->
+      <div class="mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          {typedPost.title}
+        </h1>
+        <p class="text-xl text-gray-600 leading-relaxed">
+          {typedPost.description}
+        </p>
+      </div>
+
+      <!-- Meta Information -->
       <div class="flex flex-wrap items-center gap-6 text-sm text-gray-500">
         <div class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
           </svg>
-          <span>{content.by} {typedPost.author}</span>
+          <span>{content.author}: {typedPost.author}</span>
         </div>
         
         <div class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-1.5c0-.621.504-1.125 1.125-1.125h9.75c.621 0 1.125.504 1.125 1.125v1.5" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25" />
           </svg>
           <span>{content.publishedOn} {publishedDate}</span>
         </div>
         
         <div class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>{readingTime} {content.readingTime}</span>
         </div>
@@ -287,7 +299,7 @@ const updatedDate = formatDate(typedPost.last_edited);
         {typedPost.last_edited !== typedPost.pub_date && (
           <div class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
             <span>{content.updatedOn} {updatedDate}</span>
           </div>
@@ -297,7 +309,15 @@ const updatedDate = formatDate(typedPost.last_edited);
 
     <!-- Article Content -->
     <article class="prose prose-lg max-w-none mb-12">
-      <div set:html={typedPost.content}></div>
+      {htmlContent ? (
+        <div set:html={htmlContent}></div>
+      ) : (
+        <div class="text-center py-12">
+          <div class="text-gray-400 text-6xl mb-4">📝</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Contenido No Disponible</h3>
+          <p class="text-gray-600">El contenido de esta publicación no está disponible en este momento.</p>
+        </div>
+      )}
     </article>
 
     <!-- Social Sharing -->
@@ -320,7 +340,7 @@ const updatedDate = formatDate(typedPost.last_edited);
           {relatedPosts.map((relatedPost: any) => (
             <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div class="p-6">
-                <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getCategoryStyling(relatedPost.category).bgColor} ${getCategoryStyling(relatedPost.category).textColor}`}>
+                <span class={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700`}>
                   {getCategoryStyling(relatedPost.category).icon} {relatedPost.category}
                 </span>
                 <h3 class="text-lg font-semibold text-gray-900 mt-3 mb-2 line-clamp-2">

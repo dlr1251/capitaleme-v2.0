@@ -213,7 +213,7 @@ const InteractiveBlogGrid: React.FC<InteractiveBlogGridProps> = ({
                   <BlogCard 
                     post={post} 
                     lang={lang} 
-                    variant="default"
+                    variant="featured"
                     className="hover-lift"
                   />
                 </div>

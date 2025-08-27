@@ -1,4 +1,9 @@
 // Dynamic import for supabase to handle ES module compatibility
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
 let supabase;
 let supabaseInitialized = false;
 
@@ -282,6 +287,7 @@ export async function getCLKRArticlesFromSupabase(lang = 'en') {
             .from('clkr_articles')
             .select('*')
             .eq('lang', lang)
+            .gt('reading_time', 2) // Only articles with reading time > 1 minute
             .order('last_edited', { ascending: false });
         
         const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
@@ -294,8 +300,25 @@ export async function getCLKRArticlesFromSupabase(lang = 'en') {
             return [];
         }
         
-        console.log(`[DEBUG] Returning ${data?.length || 0} CLKR articles`);
-        return data || [];
+        // Additional filter to ensure reading_time > 1 (in case of null values or edge cases)
+        const filteredData = (data || []).filter(article => 
+            article.reading_time && article.reading_time > 1
+        );
+        
+        // Log detailed filtering information
+        if (data && data.length > 0) {
+            const filteredOut = data.filter(article => !article.reading_time || article.reading_time <= 1);
+            if (filteredOut.length > 0) {
+                console.log(`[DEBUG] Filtered out ${filteredOut.length} articles with reading time <= 1 minute:`);
+                filteredOut.forEach(article => {
+                    console.log(`[DEBUG] - "${article.title}" (reading_time: ${article.reading_time || 'null'})`);
+                });
+            }
+        }
+        
+        console.log(`[DEBUG] Filtered ${filteredData.length} articles with reading time > 1 minute out of ${data?.length || 0} total articles`);
+        console.log(`[DEBUG] Returning ${filteredData.length} CLKR articles`);
+        return filteredData;
     }
     catch (error) {
         console.error(`[ERROR] Exception in getCLKRArticlesFromSupabase:`, error);
@@ -1190,4 +1213,364 @@ async function extractCLKRData(article, notion) {
     
     console.log(`✅ CLKR article data extracted successfully. Content length: ${content.length} characters, reading time: ${readingTime} minutes`);
     return data;
+} 
+
+// --- SUPER OPTIMIZED GUIDES SYNC ---
+export async function syncGuidesToSupabaseSuperOptimized() {
+  console.log('\n=== Starting SUPER OPTIMIZED Guides Sync ===');
+  
+  const guidesDatabaseId = process.env.NOTION_GUIDES_DATABASE_ID;
+  if (!guidesDatabaseId) {
+    throw new Error('NOTION_GUIDES_DATABASE_ID is not set');
+  }
+  
+  try {
+    console.log('🚀 Fetching guides from Notion with aggressive optimization...');
+    
+    // Get last sync timestamp for incremental sync
+    const { data: lastSyncData } = await supabase
+      .from('guides')
+      .select('updated_at')
+      .order('updated_at', { ascending: false })
+      .limit(1);
+    
+    const lastSyncTime = lastSyncData?.[0]?.updated_at || '1970-01-01T00:00:00Z';
+    console.log(`📅 Last sync: ${new Date(lastSyncTime).toLocaleString()}`);
+    
+    // Fetch guides with filter for recent changes
+    const guides = await fetchAllFromNotionOptimized(createNotionClient(), guidesDatabaseId, lastSyncTime);
+    console.log(`Found ${guides.length} guides to process`);
+    
+    if (guides.length === 0) {
+      console.log('✅ No guides need updating - all up to date!');
+      return { syncedCount: 0, updatedCount: 0, errorCount: 0, totalProcessed: 0, skipped: 0 };
+    }
+    
+    let syncedCount = 0;
+    let updatedCount = 0;
+    let errorCount = 0;
+    let skippedCount = 0;
+    
+    // Aggressive parallel processing - process all guides simultaneously
+    const batchSize = 10; // Increased batch size for better throughput
+    const batches = [];
+    
+    for (let i = 0; i < guides.length; i += batchSize) {
+      batches.push(guides.slice(i, i + batchSize));
+    }
+    
+    console.log(`⚡ Processing ${guides.length} guides in ${batches.length} batches of ${batchSize} (AGGRESSIVE PARALLEL)`);
+    
+    // Process all batches in parallel for maximum speed
+    const batchPromises = batches.map(async (batch, batchIndex) => {
+      console.log(`🚀 Starting batch ${batchIndex + 1}/${batches.length} (${batch.length} guides)`);
+      
+      // Process batch in parallel
+      const guidePromises = batch.map(async (guide) => {
+        try {
+          // Quick check if guide needs updating
+          const { data: existing } = await supabase
+            .from('guides')
+            .select('id, last_edited, updated_at')
+            .eq('notion_id', guide.id)
+            .single();
+          
+          if (existing) {
+            const lastEdited = new Date(guide.last_edited_time);
+            const lastUpdated = new Date(existing.updated_at);
+            
+            // Skip if guide hasn't changed (within 1 minute tolerance)
+            if (Math.abs(lastEdited.getTime() - lastUpdated.getTime()) < 60000) {
+              return { type: 'skipped', guideId: guide.id, reason: 'no changes' };
+            }
+          }
+          
+          // Extract data with minimal processing
+          const data = await extractGuideDataSuperOptimized(guide, createNotionClient());
+          
+          // Upsert operation (insert or update) for atomic operation
+          const { error } = await supabase
+            .from('guides')
+            .upsert({ ...data, notion_id: guide.id }, { 
+              onConflict: 'notion_id',
+              ignoreDuplicates: false 
+            });
+            
+          if (error) {
+            console.error(`Error upserting guide ${guide.id}:`, error);
+            return { type: 'error', guideId: guide.id };
+          } else {
+            return existing ? { type: 'updated', guideId: guide.id } : { type: 'synced', guideId: guide.id };
+          }
+          
+        } catch (error) {
+          console.error(`Error processing guide ${guide.id}:`, error);
+          return { type: 'error', guideId: guide.id };
+        }
+      });
+      
+      // Wait for batch to complete
+      const batchResults = await Promise.all(guidePromises);
+      
+      // Count results
+      let batchSynced = 0, batchUpdated = 0, batchErrors = 0, batchSkipped = 0;
+      batchResults.forEach(result => {
+        switch (result.type) {
+          case 'synced': batchSynced++; break;
+          case 'updated': batchUpdated++; break;
+          case 'error': batchErrors++; break;
+          case 'skipped': batchSkipped++; break;
+        }
+      });
+      
+      console.log(`✅ Batch ${batchIndex + 1} completed: ${batchSynced} synced, ${batchUpdated} updated, ${batchErrors} errors, ${batchSkipped} skipped`);
+      
+      return { batchSynced, batchUpdated, batchErrors, batchSkipped };
+    });
+    
+    // Wait for all batches to complete
+    const allBatchResults = await Promise.all(batchPromises);
+    
+    // Aggregate results
+    allBatchResults.forEach(result => {
+      syncedCount += result.batchSynced;
+      updatedCount += result.batchUpdated;
+      errorCount += result.batchErrors;
+      skippedCount += result.batchSkipped;
+    });
+    
+    console.log(`\n=== SUPER OPTIMIZED Guides Sync Completed ===`);
+    console.log(`🚀 Synced: ${syncedCount}, Updated: ${updatedCount}, Errors: ${errorCount}, Skipped: ${skippedCount}`);
+    
+    return { 
+      syncedCount, 
+      updatedCount, 
+      errorCount, 
+      skippedCount,
+      totalProcessed: syncedCount + updatedCount + errorCount + skippedCount 
+    };
+    
+  } catch (error) {
+    console.error('Super optimized guides sync failed:', error);
+    throw error;
+  }
+}
+
+async function fetchAllFromNotionOptimized(notion, databaseId, lastSyncTime) {
+  try {
+    const response = await notion.databases.query({
+      database_id: databaseId,
+      filter: {
+        timestamp: 'last_edited_time',
+        last_edited_time: {
+          after: lastSyncTime
+        }
+      },
+      sorts: [
+        {
+          property: 'last_edited_time',
+          direction: 'descending'
+        }
+      ],
+      page_size: 100 // Maximum page size for fewer API calls
+    });
+    
+    return response.results;
+  } catch (error) {
+    console.error('Error fetching guides from Notion:', error);
+    // Fallback to fetching all guides if filter fails
+    return fetchAllFromNotion(notion, databaseId);
+  }
+}
+
+async function extractGuideDataSuperOptimized(guide, notion) {
+  const p = guide.properties;
+  
+  // Ultra-fast property extraction with minimal operations
+  const title = p.Name?.title?.[0]?.plain_text || 
+               p.Title?.title?.[0]?.plain_text || 
+               p.Nombre?.title?.[0]?.plain_text || 
+               'Untitled';
+  
+  // Optimized slug generation
+  const slug = title.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  
+  // Batch property extraction
+  const [description, lang, category, author, published, featured] = [
+    p.Description?.rich_text?.[0]?.plain_text || p.Summary?.rich_text?.[0]?.plain_text || p.Excerpt?.rich_text?.[0]?.plain_text || '',
+    (p.Lang?.select?.name || p.Language?.select?.name || 'en').toLowerCase(),
+    p.Category?.select?.name || p.Type?.select?.name || p.Tags?.multi_select?.[0]?.name || '',
+    p.Author?.rich_text?.[0]?.plain_text || p.Writer?.rich_text?.[0]?.plain_text || p.Creator?.rich_text?.[0]?.plain_text || '',
+    p.Published?.checkbox || p.Public?.checkbox || false,
+    p.Featured?.checkbox || p.Highlight?.checkbox || false
+  ];
+  
+  // Fetch content with maximum optimization
+  const content = await fetchPageContentMarkdownSuperOptimized(notion, guide.id);
+  
+  return {
+    title,
+    slug,
+    description,
+    content,
+    category,
+    lang,
+    published,
+    featured,
+    author,
+    last_edited: guide.last_edited_time,
+    updated_at: new Date().toISOString()
+  };
+}
+
+async function fetchPageContentMarkdownSuperOptimized(notion, pageId) {
+  try {
+    // Fetch all blocks in one optimized call
+    const blocks = await fetchAllBlocksSuperOptimized(notion, pageId);
+    return notionBlocksToMarkdownSuperOptimized(blocks);
+  } catch (error) {
+    console.error(`Error fetching content for page ${pageId}:`, error);
+    return '';
+  }
+}
+
+async function fetchAllBlocksSuperOptimized(notion, blockId, depth = 0) {
+  const allBlocks = [];
+  let hasMore = true;
+  let startCursor = undefined;
+  
+  // Limit depth to prevent excessive recursion
+  if (depth > 2) return allBlocks;
+  
+  while (hasMore) {
+    try {
+      const response = await notion.blocks.children.list({
+        block_id: blockId,
+        start_cursor: startCursor,
+        page_size: 100 // Maximum page size
+      });
+      
+      allBlocks.push(...response.results);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor;
+      
+      // Process children in parallel for maximum speed
+      const blocksWithChildren = response.results.filter(block => block.has_children);
+      if (blocksWithChildren.length > 0) {
+        const childPromises = blocksWithChildren.map(async (block) => {
+          try {
+            const children = await fetchAllBlocksSuperOptimized(notion, block.id, depth + 1);
+            block.children = children;
+          } catch (error) {
+            block.children = [];
+          }
+        });
+        
+        await Promise.all(childPromises);
+      }
+      
+    } catch (error) {
+      console.error(`Error fetching blocks for ${blockId}:`, error);
+      hasMore = false;
+    }
+  }
+  
+  return allBlocks;
+}
+
+function notionBlocksToMarkdownSuperOptimized(blocks) {
+  if (!blocks || blocks.length === 0) return '';
+  
+  // Pre-allocate string capacity for better performance
+  let markdown = '';
+  const estimatedLength = blocks.length * 50; // Rough estimate
+  markdown = markdown.padStart(estimatedLength);
+  
+  // Use more efficient string building
+  const parts = [];
+  
+  for (const block of blocks) {
+    try {
+      switch (block.type) {
+        case 'paragraph':
+          if (block.paragraph.rich_text.length > 0) {
+            const text = block.paragraph.rich_text.map(rt => rt.plain_text).join('');
+            parts.push(text, '\n\n');
+          } else {
+            parts.push('\n');
+          }
+          break;
+          
+        case 'heading_1':
+          const h1Text = block.heading_1.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`# ${h1Text}\n\n`);
+          break;
+          
+        case 'heading_2':
+          const h2Text = block.heading_2.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`## ${h2Text}\n\n`);
+          break;
+          
+        case 'heading_3':
+          const h3Text = block.heading_3.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`### ${h3Text}\n\n`);
+          break;
+          
+        case 'bulleted_list_item':
+          const bulletText = block.bulleted_list_item.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`* ${bulletText}\n`);
+          break;
+          
+        case 'numbered_list_item':
+          const numberedText = block.numbered_list_item.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`1. ${numberedText}\n`);
+          break;
+          
+        case 'code':
+          const codeText = block.code.rich_text.map(rt => rt.plain_text).join('');
+          const language = block.code.language || '';
+          parts.push(`\`\`\`${language}\n${codeText}\n\`\`\`\n\n`);
+          break;
+          
+        case 'quote':
+          const quoteText = block.quote.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`> ${quoteText}\n\n`);
+          break;
+          
+        case 'divider':
+          parts.push('---\n\n');
+          break;
+          
+        case 'toggle':
+          const toggleText = block.toggle.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`<details><summary>${toggleText}</summary>\n\n`);
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children));
+          }
+          parts.push('</details>\n\n');
+          break;
+          
+        case 'column_list':
+        case 'column':
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children));
+          }
+          break;
+          
+        default:
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children));
+          }
+          break;
+      }
+    } catch (error) {
+      continue; // Skip problematic blocks silently for speed
+    }
+  }
+  
+  return parts.join('');
 } 

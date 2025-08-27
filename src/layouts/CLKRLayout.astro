@@ -92,7 +92,7 @@ console.log(headings);
         /> -->
 
         <!-- Header -->
-        <header class="mb-8">
+        <header class="mb-8 px-4">
           <h1 class="text-3xl sm:text-4xl font-light text-gray-900 mb-4">{title}</h1>
           {description && (
             <p class="text-lg text-gray-600 max-w-3xl mb-4">
@@ -124,12 +124,12 @@ console.log(headings);
         </header>
 
         <!-- Content -->
-        <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20">
+        <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20 px-4">
           <slot />
         </div>
 
         <!-- Inquiry and Feedback Forms Section -->
-        <div class="mt-16 border-t border-gray-200 pt-12">
+        <div class="mt-16 border-t border-gray-200 pt-12 px-4 hidden">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Inquiry Form -->
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8">

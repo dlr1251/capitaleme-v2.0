@@ -24,9 +24,26 @@ const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(
 
 <Layout title="Visa Information - Capital M Law | Colombian Legal Services" lang={lang} menuData={menuData}>
   
+  <!-- Hero Section -->
   <VisasHero client:load popularVisas={popularVisas} guides={featuredGuides} lang="en" />
-  <ServiceProcess lang="en" />
-  <VisasSectionFilterSearch  visas={allVisas} lang="en" intro={true} client:visible/>   
-  <BlogPageLatest/>
-  <!-- <ColombiaStayCalculator client:load /> -->
+  
+  <!-- Service Process Section -->
+  <div class="py-20">
+    <ServiceProcess lang="en" />
+  </div>
+  
+  <!-- Visa Filter & Search Section -->
+  <div class="py-20 bg-gray-50">
+    <VisasSectionFilterSearch  visas={allVisas} lang="en" intro={true} client:visible/>   
+  </div>
+  
+  <!-- Colombia Stay Calculator Section -->
+  <div class="py-20">
+    <ColombiaStayCalculator client:load /> 
+  </div>
+  
+  <!-- Latest Blog Posts Section -->
+  <div class="py-20 bg-gray-50">
+    <BlogPageLatest/>
+  </div>
 </Layout> 

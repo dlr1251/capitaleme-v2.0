@@ -108,13 +108,6 @@ const ColombiaStayCalculator: React.FC = () => {
     setTrips([...trips, newTrip]);
   };
 
-  // Update trip
-  const updateTrip = (id: string, field: keyof Trip, value: any) => {
-    setTrips(trips.map(trip => 
-      trip.id === id ? { ...trip, [field]: value } : trip
-    ));
-  };
-
   // Remove trip
   const removeTrip = (id: string) => {
     if (trips.length > 1) {
@@ -122,6 +115,14 @@ const ColombiaStayCalculator: React.FC = () => {
     }
   };
 
+  // Update trip
+  const updateTrip = (id: string, field: keyof Trip, value: any) => {
+    setTrips(trips.map(trip => 
+      trip.id === id ? { ...trip, [field]: value } : trip
+    ));
+  };
+
+  // Calculate analysis
   const calculateAnalysis = () => {
     const validTrips = trips.filter(trip => trip.entry && trip.exit);
     const ongoingTrips = trips.filter(trip => trip.entry && !trip.exit);
@@ -377,248 +378,251 @@ const ColombiaStayCalculator: React.FC = () => {
   }, [trips]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+    <div className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             Colombia Tourism Permit Calculator
           </h2>
-          <p className="text-gray-600 max-w-4xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Based on general rules from Migración Colombia. This calculator helps track your 180-day annual quota 
             for tourism stays. Days under visas are counted separately and do not affect your tourism quota. 
             Current date: {formatDate(CURRENT_DATE)}. Extension ranges are potential; apply 5 business days before permit end.
           </p>
         </div>
 
-        {/* Trip Forms */}
-        <div className="space-y-6 mb-8">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold text-gray-900">Your Trips</h3>
-            <button
-              onClick={addTrip}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              Add Trip
-            </button>
-          </div>
-
-          {trips.map((trip, index) => (
-            <div key={trip.id} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="text-lg font-medium text-gray-900">Trip {index + 1}</h4>
-                {trips.length > 1 && (
-                  <button
-                    onClick={() => removeTrip(trip.id)}
-                    className="text-red-600 hover:text-red-800 font-medium"
-                  >
-                    Remove
-                  </button>
-                )}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+            {/* Trip Forms */}
+            <div className="space-y-6 mb-8">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-900">Your Trips</h3>
+                <button
+                  onClick={addTrip}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Add Trip
+                </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Entry Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={trip.entry ? trip.entry.toISOString().split('T')[0] : ''}
-                    onChange={(e) => updateTrip(trip.id, 'entry', e.target.value ? new Date(e.target.value) : null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+              {trips.map((trip, index) => (
+                <div key={trip.id} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-medium text-gray-900">Trip {index + 1}</h4>
+                    {trips.length > 1 && (
+                      <button
+                        onClick={() => removeTrip(trip.id)}
+                        className="text-red-600 hover:text-red-800 font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Exit Date (Optional)
-                  </label>
-                  <input
-                    type="date"
-                    value={trip.exit ? trip.exit.toISOString().split('T')[0] : ''}
-                    onChange={(e) => updateTrip(trip.id, 'exit', e.target.value ? new Date(e.target.value) : null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Leave empty if still in Colombia
-                  </p>
-                </div>
-
-                <div className="flex items-center">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={trip.underVisa}
-                      onChange={(e) => updateTrip(trip.id, 'underVisa', e.target.checked)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Under Visa</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Results Section */}
-        {showResults && analysis && (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900">Analysis Results</h3>
-            
-            {/* Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Column - Timeline */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Timeline</h3>
-                {timelineData && (
-                  <div className="bg-white rounded-lg p-6 border border-gray-200">
-                    {/* Month Labels */}
-                    <div className="flex justify-between mb-4 text-xs text-gray-500 font-medium">
-                      {timelineData.months.map((month, index) => (
-                        <div key={index} className="text-center">
-                          <div className="font-semibold">{format(month, 'MMM')}</div>
-                          <div>{format(month, 'yyyy')}</div>
-                        </div>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Entry Date *
+                      </label>
+                      <input
+                        type="date"
+                        value={trip.entry ? trip.entry.toISOString().split('T')[0] : ''}
+                        onChange={(e) => updateTrip(trip.id, 'entry', e.target.value ? new Date(e.target.value) : null)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        required
+                      />
                     </div>
-                    
-                    {/* Timeline Bar */}
-                    <div className="relative h-12 bg-gray-100 rounded-lg overflow-hidden mb-4">
-                      {timelineData.trips.map((trip) => {
-                        const totalDays = differenceInDays(timelineData.lastDate, timelineData.firstEntry);
-                        const startOffset = differenceInDays(trip.start, timelineData.firstEntry);
-                        const tripDays = differenceInDays(trip.end, trip.start) + 1;
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Exit Date (Optional)
+                      </label>
+                      <input
+                        type="date"
+                        value={trip.exit ? trip.exit.toISOString().split('T')[0] : ''}
+                        onChange={(e) => updateTrip(trip.id, 'exit', e.target.value ? new Date(e.target.value) : null)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave empty if still in Colombia
+                      </p>
+                    </div>
+
+                    <div className="flex items-center">
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={trip.underVisa}
+                          onChange={(e) => updateTrip(trip.id, 'underVisa', e.target.checked)}
+                          className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                        />
+                        <span className="ml-2 text-sm text-gray-700">Under Visa</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Results Section */}
+            {showResults && analysis && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900">Analysis Results</h3>
+                
+                {/* Two Column Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column - Timeline */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Timeline</h3>
+                    {timelineData && (
+                      <div className="bg-white rounded-lg p-6 border border-gray-200">
+                        {/* Month Labels */}
+                        <div className="flex justify-between mb-4 text-xs text-gray-500 font-medium">
+                          {timelineData.months.map((month, index) => (
+                            <div key={index} className="text-center">
+                              <div className="font-semibold">{format(month, 'MMM')}</div>
+                              <div>{format(month, 'yyyy')}</div>
+                            </div>
+                          ))}
+                        </div>
                         
-                        const left = (startOffset / totalDays) * 100;
-                        const width = (tripDays / totalDays) * 100;
+                        {/* Timeline Bar */}
+                        <div className="relative h-12 bg-gray-100 rounded-lg overflow-hidden mb-4">
+                          {timelineData.trips.map((trip) => {
+                            const totalDays = differenceInDays(timelineData.lastDate, timelineData.firstEntry);
+                            const startOffset = differenceInDays(trip.start, timelineData.firstEntry);
+                            const tripDays = differenceInDays(trip.end, trip.start) + 1;
+                            
+                            const left = (startOffset / totalDays) * 100;
+                            const width = (tripDays / totalDays) * 100;
+                            
+                            return (
+                              <div
+                                key={trip.id}
+                                className={`absolute h-full ${trip.color} rounded shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer`}
+                                style={{
+                                  left: `${left}%`,
+                                  width: `${width}%`
+                                }}
+                                title={`${trip.label}: ${format(trip.start, 'MMM dd, yyyy')} - ${trip.isOngoing ? 'Ongoing' : format(trip.end, 'MMM dd, yyyy')}`}
+                              />
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Trip Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {timelineData.trips.map((trip) => (
+                            <div
+                              key={trip.id}
+                              className={`p-3 rounded-lg border ${trip.underVisa ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200'}`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className={`text-xs font-medium px-2 py-1 rounded ${trip.underVisa ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'}`}>
+                                  {trip.underVisa ? 'Visa' : 'Tourism'}
+                                </span>
+                                {trip.isOngoing && (
+                                  <span className="text-xs text-purple-600 font-medium">🔄 Ongoing</span>
+                                )}
+                              </div>
+                              <div className="mt-2 text-sm text-gray-700">
+                                <div>{format(trip.start, 'MMM dd, yyyy')}</div>
+                                <div className="text-gray-500">
+                                  {trip.isOngoing ? 'Ongoing' : format(trip.end, 'MMM dd, yyyy')}
+                                </div>
+                                <div className="text-xs text-gray-600 mt-1">
+                                  {trip.days} days{trip.isOngoing ? ' (ongoing)' : ''}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column - Analysis */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Analysis</h3>
+                    <div className="space-y-3">
+                      {analysis.detailedAnalysis.map((item, index) => {
+                        let bgColor = 'bg-blue-50 border-blue-200';
+                        let textColor = 'text-blue-800';
+                        
+                        if (item.includes('⚠️ ILLEGAL STATUS')) {
+                          bgColor = 'bg-red-50 border-red-200';
+                          textColor = 'text-red-800';
+                        } else if (item.includes('Extension')) {
+                          bgColor = 'bg-yellow-50 border-yellow-200';
+                          textColor = 'text-yellow-800';
+                        } else if (item.includes('visa application')) {
+                          bgColor = 'bg-purple-50 border-purple-200';
+                          textColor = 'text-purple-800';
+                        } else if (item.includes('Ongoing')) {
+                          bgColor = 'bg-purple-50 border-purple-200';
+                          textColor = 'text-purple-800';
+                        } else if (item.includes('quota exhausted')) {
+                          bgColor = 'bg-orange-50 border-orange-200';
+                          textColor = 'text-orange-800';
+                        } else if (item.includes('Low quota')) {
+                          bgColor = 'bg-orange-50 border-orange-200';
+                          textColor = 'text-orange-800';
+                        }
                         
                         return (
-                          <div
-                            key={trip.id}
-                            className={`absolute h-full ${trip.color} rounded shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer`}
-                            style={{
-                              left: `${left}%`,
-                              width: `${width}%`
-                            }}
-                            title={`${trip.label}: ${format(trip.start, 'MMM dd, yyyy')} - ${trip.isOngoing ? 'Ongoing' : format(trip.end, 'MMM dd, yyyy')}`}
-                          />
+                          <div key={index} className={`p-4 ${bgColor} border rounded-lg`}>
+                            <p className={textColor}>
+                              <strong>{index + 1}.</strong> {item}
+                            </p>
+                          </div>
                         );
                       })}
                     </div>
-                    
-                    {/* Trip Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {timelineData.trips.map((trip) => (
-                        <div
-                          key={trip.id}
-                          className={`p-3 rounded-lg border ${trip.underVisa ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200'}`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className={`text-xs font-medium px-2 py-1 rounded ${trip.underVisa ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'}`}>
-                              {trip.underVisa ? 'Visa' : 'Tourism'}
-                            </span>
-                            {trip.isOngoing && (
-                              <span className="text-xs text-purple-600 font-medium">🔄 Ongoing</span>
-                            )}
-                          </div>
-                          <div className="mt-2 text-sm text-gray-700">
-                            <div>{format(trip.start, 'MMM dd, yyyy')}</div>
-                            <div className="text-gray-500">
-                              {trip.isOngoing ? 'Ongoing' : format(trip.end, 'MMM dd, yyyy')}
-                            </div>
-                            <div className="text-xs text-gray-600 mt-1">
-                              {trip.days} days{trip.isOngoing ? ' (ongoing)' : ''}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
                   </div>
-                )}
-              </div>
+                </div>
 
-              {/* Right Column - Analysis */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Analysis</h3>
-                <div className="space-y-3">
-                  {analysis.detailedAnalysis.map((item, index) => {
-                    let bgColor = 'bg-blue-50 border-blue-200';
-                    let textColor = 'text-blue-800';
-                    
-                    if (item.includes('⚠️ ILLEGAL STATUS')) {
-                      bgColor = 'bg-red-50 border-red-200';
-                      textColor = 'text-red-800';
-                    } else if (item.includes('Extension')) {
-                      bgColor = 'bg-yellow-50 border-yellow-200';
-                      textColor = 'text-yellow-800';
-                    } else if (item.includes('visa application')) {
-                      bgColor = 'bg-purple-50 border-purple-200';
-                      textColor = 'text-purple-800';
-                    } else if (item.includes('Ongoing')) {
-                      bgColor = 'bg-purple-50 border-purple-200';
-                      textColor = 'text-purple-800';
-                    } else if (item.includes('quota exhausted')) {
-                      bgColor = 'bg-orange-50 border-orange-200';
-                      textColor = 'text-orange-800';
-                    } else if (item.includes('Low quota')) {
-                      bgColor = 'bg-orange-50 border-orange-200';
-                      textColor = 'text-orange-800';
-                    }
-                    
-                    return (
-                      <div key={index} className={`p-4 ${bgColor} border rounded-lg`}>
-                        <p className={textColor}>
-                          <strong>{index + 1}.</strong> {item}
-                        </p>
-                      </div>
-                    );
-                  })}
+                {/* Yearly Usage Table */}
+                <div className="mt-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Yearly Usage Summary</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tourism Days</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visa Days</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Quota</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {Array.from(analysis.yearlyUsage.entries()).map(([year, usage]) => (
+                          <tr key={year}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{year}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{usage.tourism}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{usage.visa}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{usage.remainingQuota}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                usage.remainingQuota === 0 
+                                  ? 'bg-red-100 text-red-800' 
+                                  : usage.remainingQuota < 30 
+                                    ? 'bg-yellow-100 text-yellow-800' 
+                                    : 'bg-green-100 text-green-800'
+                              }`}>
+                                {usage.remainingQuota === 0 ? 'Exhausted' : usage.remainingQuota < 30 ? 'Low' : 'Available'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Yearly Usage Table */}
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Yearly Usage Summary</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tourism Days</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visa Days</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Quota</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {Array.from(analysis.yearlyUsage.entries()).map(([year, usage]) => (
-                      <tr key={year}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{year}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{usage.tourism}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{usage.visa}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{usage.remainingQuota}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            usage.remainingQuota === 0 
-                              ? 'bg-red-100 text-red-800' 
-                              : usage.remainingQuota < 30 
-                                ? 'bg-yellow-100 text-yellow-800' 
-                                : 'bg-green-100 text-green-800'
-                          }`}>
-                            {usage.remainingQuota === 0 ? 'Exhausted' : usage.remainingQuota < 30 ? 'Low' : 'Available'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

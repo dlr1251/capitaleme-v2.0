@@ -100,7 +100,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
     showLess: 'Show less',
     contactWhatsApp: 'Contact via WhatsApp',
     noBeneficiaries: 'No beneficiaries',
-    withBeneficiaries: '✅ Spouse and children',
+    withBeneficiaries: '✅ Spouse & Children',
     withoutBeneficiaries: '❌ No beneficiaries',
     noWorkPermit: 'No work permit',
     openWorkPermit: '💼 Open work permit',
@@ -110,365 +110,337 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
     canHelp: 'Can you help me with more information?'
   };
 
-  // Sorting: V types first, then M, then R, then alphabetically
-  function sortVisas(visas: Visa[]) {
-    return [...visas].sort((a, b) => {
-      const getTypeOrder = (title: string) => {
-        if (title.startsWith('V')) return 0;
-        if (title.startsWith('M')) return 1;
-        if (title.startsWith('R')) return 2;
-        return 3;
-      };
-      const typeOrderA = getTypeOrder(a.title);
-      const typeOrderB = getTypeOrder(b.title);
-      if (typeOrderA !== typeOrderB) return typeOrderA - typeOrderB;
-      return a.title.localeCompare(b.title);
+  // Funciones auxiliares para chips
+  const getBeneficiariesLabel = (beneficiaries: string | boolean | undefined, lang: string) => {
+    if (typeof beneficiaries === 'string') {
+      const val = beneficiaries.trim().toLowerCase();
+      if (lang === 'es') {
+        if (val === 'yes' || val === 'sí' || val === 'si') return content.withBeneficiaries;
+        if (val === 'no') return content.withoutBeneficiaries;
+        return beneficiaries;
+      } else {
+        if (val === 'yes') return content.withBeneficiaries;
+        if (val === 'no') return content.withoutBeneficiaries;
+        return beneficiaries;
+      }
+    }
+    if (typeof beneficiaries === 'boolean') {
+      if (lang === 'es') {
+        return beneficiaries ? content.withBeneficiaries : content.withoutBeneficiaries;
+      } else {
+        return beneficiaries ? content.withBeneficiaries : content.withoutBeneficiaries;
+      }
+    }
+    return '';
+  };
+
+  const getWorkPermitLabel = (workPermit: string | boolean | undefined, lang: string) => {
+    if (typeof workPermit === 'string') {
+      const val = workPermit.trim().toLowerCase();
+      if (lang === 'es') {
+        if (val === 'yes' || val === 'sí' || val === 'si') return content.openWorkPermit;
+        if (val === 'no') return content.withoutWorkPermit;
+        return workPermit;
+      } else {
+        if (val === 'yes') return content.openWorkPermit;
+        if (val === 'no') return content.withoutWorkPermit;
+        return workPermit;
+      }
+    }
+    if (typeof workPermit === 'boolean') {
+      if (lang === 'es') {
+        return workPermit ? content.openWorkPermit : content.withoutWorkPermit;
+      } else {
+        return workPermit ? content.openWorkPermit : content.withoutWorkPermit;
+      }
+    }
+    return '';
+  };
+
+  // Handle WhatsApp contact
+  const handleWhatsAppContact = (visaTitle: string) => {
+    const message = `${content.whatsappMessage} "${visaTitle}". ${content.canHelp}`;
+    const whatsappUrl = `https://wa.me/573001234567?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  // Handle show more/less
+  const handleShowMore = () => {
+    setShowAll(!showAll);
+  };
+
+  // Get unique countries and visa types
+  const uniqueCountries = useMemo(() => {
+    const countrySet = new Set<string>();
+    visas.forEach(visa => {
+      if (visa.country) countrySet.add(visa.country);
+      if (visa.countries && Array.isArray(visa.countries)) {
+        visa.countries.forEach(c => countrySet.add(c));
+      }
     });
-  }
+    return Array.from(countrySet).sort();
+  }, [visas]);
 
-  // Filter visas based on selected criteria and search
+  const uniqueVisaTypes = useMemo(() => {
+    const typeSet = new Set<string>();
+    visas.forEach(visa => {
+      if (visa.category) typeSet.add(visa.category);
+    });
+    return Array.from(typeSet).sort();
+  }, [visas]);
+
+  // Apply filters
   useEffect(() => {
-    let filtered = [...visas];
-
-    // Improved Filter by country (VisaSidebarFilters logic)
-    if (country) {
-      // Find the country object
-      const countryInfo = countries.find((info: Country) => info.name === country || info.nameEn === country);
-      if (countryInfo) {
-        const categories: string[] = [];
-        if (countryInfo.excempted === "Yes") categories.push("Exempted");
-        if (countryInfo.excempted === "No") categories.push("Not exempted");
-        if (countryInfo.excempted === "Schengen visa") categories.push("Schengen visa");
-        if (countryInfo.treaties && countryInfo.treaties !== "null") {
-          categories.push(...countryInfo.treaties.split(", "));
-        }
-
-        filtered = filtered.filter(visa => {
-          const visaCountries = visa.countries || [];
-          // If visa has no country restrictions (empty array), treat as ["Not exempted"]
-          const effectiveVisaCountries = visaCountries.length === 0 ? ["Not exempted"] : visaCountries;
-
-          // If visa has "All countries", it applies to everyone
-          if (effectiveVisaCountries.includes("All countries") || effectiveVisaCountries.includes("All")) {
-            return true;
-          }
-
-          const isExemptedCountry = categories.includes("Exempted");
-          const isNotExemptedCountry = categories.includes("Not exempted");
-          const isCAN = categories.includes("CAN");
-          const isMercosur = categories.includes("Mercosur");
-          const isWorkingHolidays = categories.includes("Working holidays");
-
-          const hasExemptedVisa = effectiveVisaCountries.includes("Exempted") || effectiveVisaCountries.includes("Excempted");
-          const hasNotExemptedVisa = effectiveVisaCountries.includes("Not exempted") || effectiveVisaCountries.includes("Not excempted");
-          const hasCANVisa = effectiveVisaCountries.includes("CAN");
-          const hasMercosurVisa = effectiveVisaCountries.includes("Mercosur");
-          const hasWorkingHolidayVisa = effectiveVisaCountries.includes("Working holidays");
-
-          return (
-            // For exempted countries: show exempted visas, or treaty visas if they have the treaty
-            (isExemptedCountry && hasExemptedVisa && !hasNotExemptedVisa) ||
-            (isExemptedCountry && isCAN && hasCANVisa && !hasNotExemptedVisa) ||
-            (isExemptedCountry && isMercosur && hasMercosurVisa && !hasNotExemptedVisa) ||
-            (isExemptedCountry && isWorkingHolidays && hasWorkingHolidayVisa && !hasNotExemptedVisa) ||
-            // For non-exempted countries: show non-exempted visas, or treaty visas if they have the treaty
-            (isNotExemptedCountry && hasNotExemptedVisa && !hasExemptedVisa) ||
-            (isNotExemptedCountry && isCAN && hasCANVisa && !hasExemptedVisa) ||
-            (isNotExemptedCountry && isMercosur && hasMercosurVisa && !hasExemptedVisa) ||
-            (isNotExemptedCountry && isWorkingHolidays && hasWorkingHolidayVisa && !hasExemptedVisa) ||
-            // For CAN countries: show CAN visas, or exempted/non-exempted based on their status
-            (isCAN && hasCANVisa) ||
-            (isCAN && isExemptedCountry && hasExemptedVisa) ||
-            (isCAN && isNotExemptedCountry && hasNotExemptedVisa) ||
-            // For Mercosur countries: show Mercosur visas, or exempted/non-exempted based on their status
-            (isMercosur && hasMercosurVisa) ||
-            (isMercosur && isExemptedCountry && hasExemptedVisa) ||
-            (isMercosur && isNotExemptedCountry && hasNotExemptedVisa) ||
-            // For Working Holidays countries: show Working Holiday visas, or exempted/non-exempted based on their status
-            (isWorkingHolidays && hasWorkingHolidayVisa) ||
-            (isWorkingHolidays && isExemptedCountry && hasExemptedVisa) ||
-            (isWorkingHolidays && isNotExemptedCountry && hasNotExemptedVisa)
-          );
-        });
-      }
-    }
-
-    // Filter by visa type
-    if (visaType) {
-      filtered = filtered.filter(visa => {
-        const visaTypeCode = visa.title.split(' ')[0];
-        return visaTypeCode.toLowerCase().includes(visaType.charAt(0).toLowerCase());
-      });
-    }
-
-    // Filter by beneficiaries
-    if (beneficiaries) {
-      filtered = filtered.filter(visa => {
-        if (beneficiaries === 'yes') {
-          return visa.beneficiaries === 'yes';
-        } else if (beneficiaries === 'no') {
-          return visa.beneficiaries === 'no';
-        }
-        return true;
-      });
-    }
-    // Filter by work permit
-    if (workPermit) {
-      if (workPermit === 'yes') {
-        filtered = filtered.filter(visa => visa.workPermit === 'yes');
-      } else if (workPermit === 'no') {
-        filtered = filtered.filter(visa => visa.workPermit === 'no');
-      }
-    }
+    let results = visas;
 
     // Apply search filter
     if (searchQuery.trim()) {
       const searchResults = fuse.search(searchQuery);
-      const searchResultIds = new Set(searchResults.map(result => result.item.id));
-      filtered = filtered.filter(visa => searchResultIds.has(visa.id));
+      results = searchResults.map(result => result.item);
     }
 
-    // Sort the filtered results
-    const sortedFiltered = sortVisas(filtered);
-    setFilteredVisas(sortedFiltered);
-  }, [country, visaType, beneficiaries, workPermit, searchQuery, visas, lang]);
+    // Apply country filter
+    if (country) {
+      results = results.filter(visa => 
+        visa.country === country || 
+        (visa.countries && visa.countries.includes(country))
+      );
+    }
 
+    // Apply visa type filter
+    if (visaType) {
+      results = results.filter(visa => visa.category === visaType);
+    }
+
+    // Apply beneficiaries filter
+    if (beneficiaries) {
+      if (beneficiaries === 'yes') {
+        results = results.filter(visa => 
+          typeof visa.beneficiaries === 'string' 
+            ? visa.beneficiaries.toLowerCase().includes('yes') 
+            : visa.beneficiaries === true
+        );
+      } else if (beneficiaries === 'no') {
+        results = results.filter(visa => 
+          typeof visa.beneficiaries === 'string' 
+            ? visa.beneficiaries.toLowerCase().includes('no') 
+            : visa.beneficiaries === false
+        );
+      }
+    }
+
+    // Apply work permit filter
+    if (workPermit) {
+      if (workPermit === 'yes') {
+        results = results.filter(visa => 
+          typeof visa.workPermit === 'string' 
+            ? visa.workPermit.toLowerCase().includes('yes') 
+            : visa.workPermit === true
+        );
+      } else if (workPermit === 'no') {
+        results = results.filter(visa => 
+          typeof visa.workPermit === 'string' 
+            ? visa.workPermit.toLowerCase().includes('no') 
+            : visa.workPermit === false
+        );
+      }
+    }
+
+    setFilteredVisas(results);
+  }, [visas, searchQuery, country, visaType, beneficiaries, workPermit, fuse]);
+
+  // Clear all filters
   const clearFilters = () => {
     setCountry('');
     setVisaType('');
-    // Cambiar el estado de booleano a string para beneficiaries y workPermit
     setBeneficiaries('');
     setWorkPermit('');
     setSearchQuery('');
   };
 
-  const getBeneficiariesLabel = (beneficiaries: any) => {
-    if (lang === 'es') {
-      if (beneficiaries === 'yes' || beneficiaries === true) return '✅ Incluye cónyuge e hijos';
-      if (beneficiaries === 'no' || beneficiaries === false) return '❌ No incluye beneficiarios';
-      return 'Sin información de beneficiarios';
-    } else {
-      if (beneficiaries === 'yes' || beneficiaries === true) return '✅ Includes spouse & children';
-      if (beneficiaries === 'no' || beneficiaries === false) return '❌ No beneficiaries included';
-      return 'No beneficiary information';
+  // Get displayed visas (popular + regular with pagination)
+  const displayedVisas = useMemo(() => {
+    if (showAll) {
+      return [...popularVisas, ...regularVisas];
     }
-  };
+    return [...popularVisas, ...regularVisas.slice(0, 6)];
+  }, [popularVisas, regularVisas, showAll]);
 
-  const getWorkPermitLabel = (workPermit: any) => {
-    if (lang === 'es') {
-      if (workPermit === 'yes' || workPermit === true || workPermit === 'Open work permit' || workPermit === 'Work permit') return '💼 Permiso de trabajo';
-      if (workPermit === 'no' || workPermit === false || workPermit === 'No work permit') return '❌ Sin permiso de trabajo';
-      return 'Sin información de permiso de trabajo';
-    } else {
-      if (workPermit === 'yes' || workPermit === true || workPermit === 'Open work permit' || workPermit === 'Work permit') return '💼 Work permit';
-      if (workPermit === 'no' || workPermit === false || workPermit === 'No work permit') return '❌ No work permit';
-      return 'No work permit information';
-    }
-  };
-
-  const handleShowMore = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setShowAll(!showAll);
-      setIsAnimating(false);
-    }, 150);
-  };
-
-  const handleWhatsAppContact = (visaTitle: string) => {
-    const message = `${content.whatsappMessage} ${visaTitle}. ${content.canHelp}`;
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/573146022411?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-  };
-
-  // Show more/less logic
-  const displayedVisas = showAll ? filteredVisas : filteredVisas.slice(0, 9);
-  const hasMoreVisas = filteredVisas.length > 9;
-
-  // Memoized, deterministic, non-mutating sorted countries array
-  const sortedCountries = useMemo(() => {
-    return [...countries].sort((a, b) =>
-      (a.name || '').localeCompare(b.name || '', lang === 'es' ? 'es' : 'en')
-    );
-  }, [lang]);
+  const hasMoreVisas = regularVisas.length > 6;
 
   return (
-    <section className="py-8 bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-        {/* Header */}
+        {/* Intro Section */}
         {intro && (
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight mb-6">
-              {content.title}
-              <span className="block text-secondary">{content.subtitle}</span>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+              {content.title}{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                {content.subtitle}
+              </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {content.description}
             </p>
-            {/* Callout explicativo */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <Card>
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl mt-1">🌍</span>
-                  <div className="text-left text-primary-800 text-base">
-                    {lang === 'es' ? (
-                      <>
-                        <b>¿Por qué es importante seleccionar tu país?</b><br />
-                        El país de origen determina a qué visas puedes aplicar y si tienes exenciones o tratados especiales. Usa los filtros para encontrar la visa ideal según tu nacionalidad y necesidades. Puedes combinar los filtros para resultados más precisos.
-                      </>
-                    ) : (
-                      <>
-                        <b>Why is selecting your country important?</b><br />
-                        Your country of origin determines which visas you can apply for and if you have exemptions or special treaties. Use the filters to find the best visa for your nationality and needs. You can combine filters for more precise results.
-                      </>
-                    )}
+          </div>
+        )}
+
+        {/* Popular Visas Section */}
+        {popularVisas.length > 0 && (
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                {content.popularTitle}
+              </h3>
+              <p className="text-gray-600">
+                {content.popularSubtitle}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {popularVisas.slice(0, 6).map((visa) => (
+                <div key={visa.id} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-2xl">{visa.emoji || '📋'}</span>
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                      {lang === 'es' ? 'Popular' : 'Popular'}
+                    </span>
                   </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {visa.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                    {visa.description}
+                  </p>
+                  <a 
+                    href={`/${lang}/visas/${visa.slug}`}
+                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium text-sm transition-colors"
+                  >
+                    {lang === 'es' ? 'Ver detalles' : 'View details'}
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  </a>
                 </div>
-              </Card>
+              ))}
             </div>
           </div>
         )}
 
         {/* Filters Section */}
-        <div className="mb-4">
-          <h3 className="text-2xl font-bold text-primary mb-6 text-center">
-            {content.filterTitle}
-          </h3>
-          {/* Fila minimalista de filtros */}
-          <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-3 w-full justify-center">
-            {/* Country Filter */}
-            <div className="flex-1 min-w-[160px] relative" id="country-filter">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                {content.countryLabel}
-              </label>
-              <select
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white"
-                onFocus={() => setActiveTooltip('country')}
-                onBlur={() => setActiveTooltip(null)}
-                onMouseEnter={() => setActiveTooltip('country')}
-                onMouseLeave={() => setActiveTooltip(null)}
-              >
-                <option value="">{lang === 'es' ? 'Selecciona país de origen' : 'Select country of origin'}</option>
-                {sortedCountries.map((countryInfo: Country) => (
-                  <option key={countryInfo.name} value={lang === 'en' ? countryInfo.nameEn : countryInfo.name}>
-                    {lang === 'en' ? countryInfo.nameEn : countryInfo.name}
-                  </option>
-                ))}
-              </select>
-              {activeTooltip === 'country' && (
-                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-700 z-50 w-64 max-w-[calc(100vw-2rem)]">
-                  {lang === 'es'
-                    ? 'El país de origen determina a qué visas puedes aplicar y si tienes exenciones o tratados especiales.'
-                    : 'The country you select determines which visas are available to you. Some visas are only available to citizens of certain countries.'}
-                </div>
-              )}
-            </div>
-            {/* Visa Type Filter */}
-            <div className="flex-1 min-w-[120px]" id="visa-type-filter">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                {content.visaTypeLabel}
-              </label>
-              <select
-                value={visaType}
-                onChange={(e) => setVisaType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white"
-              >
-                <option value="">{lang === 'es' ? 'Todos los tipos' : 'All types'}</option>
-                <option value="V">V - {lang === 'es' ? 'Visitante' : 'Visitor'}</option>
-                <option value="M">M - {lang === 'es' ? 'Migrante' : 'Migrant'}</option>
-                <option value="R">R - {lang === 'es' ? 'Residente' : 'Resident'}</option>                
-              </select>
-            </div>
-            {/* Beneficiaries Filter */}
-            <div className="flex-1 min-w-[120px] flex flex-col justify-end relative" id="beneficiaries-filter">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                {content.beneficiariesLabel}
-              </label>
-              <select
-                value={beneficiaries}
-                onChange={e => setBeneficiaries(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white"
-                onFocus={() => setActiveTooltip('beneficiaries')}
-                onBlur={() => setActiveTooltip(null)}
-                onMouseEnter={() => setActiveTooltip('beneficiaries')}
-                onMouseLeave={() => setActiveTooltip(null)}
-              >
-                <option value="">{lang === 'es' ? 'Seleccionar' : 'Select'}</option>
-                <option value="yes">{lang === 'es' ? 'Sí' : 'Yes'}</option>
-                <option value="no">{lang === 'es' ? 'No' : 'No'}</option>
-              </select>
-              {activeTooltip === 'beneficiaries' && (
-                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-700 z-50 w-64 max-w-[calc(100vw-2rem)]">
-                  {lang === 'es'
-                    ? 'Este filtro muestra visas que permiten incluir a tu cónyuge e hijos en la solicitud.'
-                    : 'This filter shows visas that allow you to include your spouse and children in the application.'}
-                </div>
-              )}
-            </div>
-            {/* Work Permit Filter */}
-            <div className="flex-1 min-w-[120px] flex flex-col justify-end relative" id="workpermit-filter">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                {content.workPermitLabel}
-              </label>
-              <select
-                value={workPermit}
-                onChange={e => setWorkPermit(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white"
-                onFocus={() => setActiveTooltip('workpermit')}
-                onBlur={() => setActiveTooltip(null)}
-                onMouseEnter={() => setActiveTooltip('workpermit')}
-                onMouseLeave={() => setActiveTooltip(null)}
-              >
-                <option value="">{lang === 'es' ? 'Seleccionar' : 'Select'}</option>
-                <option value="yes">{lang === 'es' ? 'Sí' : 'Yes'}</option>
-                <option value="no">{lang === 'es' ? 'No' : 'No'}</option>
-              </select>
-              {activeTooltip === 'workpermit' && (
-                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-700 z-50 w-64 max-w-[calc(100vw-2rem)]">
-                  {lang === 'es'
-                    ? 'Este filtro muestra visas que permiten trabajar en Colombia bajo contrato laboral.'
-                    : 'This filter shows visas that allow you to be employed by Colombian companies under a labor law contract.'}
-                </div>
-              )}
-            </div>
-            {/* Clear Filters Button */}
-            <div className="flex items-center justify-end min-w-[100px]">
-              <Button
-                variant="subtle"
-                size="sm"
-                onClick={clearFilters}
-                className="ml-2"
-              >
-                {content.clearFilters}
-              </Button>
-            </div>          
+        <div className="mb-8">
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {content.filterTitle}
+            </h3>
           </div>
-        </div>
-        {/* Search Bar debajo de los filtros */}
-        <div className="mb-10 flex justify-center relative" id="search-bar">
-          <div className="w-full max-w-xl">
-            <Input
-              type="search"
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              placeholder={lang === 'es' ? 'Buscar visas...' : 'Search visas...'}
-              inputSize="md"
-              className="font-medium"
-              autoComplete="off"
-              spellCheck={false}
-              onFocus={() => setActiveTooltip('search')}
-              onBlur={() => setActiveTooltip(null)}
-              onMouseEnter={() => setActiveTooltip('search')}
-              onMouseLeave={() => setActiveTooltip(null)}
-            />
-            {activeTooltip === 'search' && (
-              <div className="absolute left-1/2 top-full ml-[-32px] mt-1 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-700 z-50 w-64 max-w-[calc(100vw-2rem)]">
-                {lang === 'es'
-                  ? 'Usa esta barra para filtrar visas por nombre, descripción o categoría. Puedes combinar con los filtros.'
-                  : 'Use this bar to filter visas by name, description, or category. Combine with filters for best results.'}
+          
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              {/* Country Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {content.countryLabel}
+                </label>
+                <select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">{lang === 'es' ? 'Todos los países' : 'All countries'}</option>
+                  {uniqueCountries.map(countryName => (
+                    <option key={countryName} value={countryName}>{countryName}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Visa Type Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {content.visaTypeLabel}
+                </label>
+                <select
+                  value={visaType}
+                  onChange={(e) => setVisaType(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">{lang === 'es' ? 'Todos los tipos' : 'All types'}</option>
+                  {uniqueVisaTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Beneficiaries Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {content.beneficiariesLabel}
+                </label>
+                <select
+                  value={beneficiaries}
+                  onChange={(e) => setBeneficiaries(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">{lang === 'es' ? 'Cualquiera' : 'Any'}</option>
+                  <option value="yes">{lang === 'es' ? 'Con beneficiarios' : 'With beneficiaries'}</option>
+                  <option value="no">{lang === 'es' ? 'Sin beneficiarios' : 'Without beneficiaries'}</option>
+                </select>
+              </div>
+
+              {/* Work Permit Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {content.workPermitLabel}
+                </label>
+                <select
+                  value={workPermit}
+                  onChange={(e) => setWorkPermit(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">{lang === 'es' ? 'Cualquiera' : 'Any'}</option>
+                  <option value="yes">{lang === 'es' ? 'Con permiso de trabajo' : 'With work permit'}</option>
+                  <option value="no">{lang === 'es' ? 'Sin permiso de trabajo' : 'Without work permit'}</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={lang === 'es' ? 'Buscar visas...' : 'Search visas...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+              <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+
+            {/* Clear Filters Button */}
+            {(country || visaType || beneficiaries || workPermit || searchQuery) && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  {content.clearFilters}
+                </button>
+              </div>
+            )}
+
+            {/* Search Help Tooltip */}
+            {searchQuery && (
+              <div className="mt-3 text-center">
+                <div className="inline-flex items-center gap-2 text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded-lg">
+                  <QuestionMarkCircleIcon className="w-4 h-4" />
+                  {lang === 'es' 
+                    ? 'Use this bar to filter visas by name, description, or category. Combine with filters for best results.'
+                    : 'Use this bar to filter visas by name, description, or category. Combine with filters for best results.'}
+                </div>
               </div>
             )}
           </div>
@@ -488,7 +460,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
               <a
                 key={visa.id}
                 href={`/${lang}/visas/${visa.slug}`}
-                className="group bg-white rounded-2xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer block focus:outline-none focus:ring-2 focus:ring-primary p-3 h-full min-h-[260px] flex flex-col relative"
+                className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer block focus:outline-none focus:ring-2 focus:ring-primary p-3 h-full min-h-[260px] flex flex-col relative"
                 tabIndex={0}
               >
                 {/* Subtle index at top left (out of total results) */}
@@ -536,7 +508,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
                       onMouseLeave={() => setShowWhatsAppPopup(null)}
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.815 0 0020.885 3.488"/>
                       </svg>
                     </button>
                     {showWhatsAppPopup === visa.id && (
@@ -555,7 +527,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
             <div className="text-center mt-8">
                 <button
                 onClick={handleShowMore}
-                className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-secondary transition-colors font-medium"
+                className="px-8 py-3 bg-primary text-white rounded-xl hover:bg-secondary transition-colors font-medium"
               >
                 {showAll ? content.showLess : content.showMore}
                 </button>
@@ -563,7 +535,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
           )}
         </div>
       </div>
-    </section>    
+    </div>    
   );
 };
 

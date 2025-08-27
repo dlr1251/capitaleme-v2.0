@@ -27,6 +27,23 @@ interface BlogCardProps {
   className?: string;
 }
 
+// Resolve best image field from various possible shapes
+function resolvePostImage(post: any): string | undefined {
+  const candidates = [
+    post?.image,
+    post?.cover_image,
+    post?.cover,
+    post?.image_url,
+    post?.imageUrl,
+    post?.coverImage,
+    post?.coverUrl,
+    post?.thumbnail,
+    post?.banner
+  ];
+  const src = candidates.find((v) => typeof v === 'string' && v.trim().length > 0);
+  return src || undefined;
+}
+
 // Category styling function
 const getCategoryStyling = (category: string) => {
   const categoryLower = category?.toLowerCase() || '';
@@ -161,7 +178,8 @@ const BlogCard: React.FC<BlogCardProps> = ({
   className = ''
 }) => {
   const categoryStyling = getCategoryStyling(post.category || '');
-  const gradientClass = post.image ? generateGradient(post.title) : categoryStyling.gradient;
+  const resolvedImage = resolvePostImage(post);
+  const gradientClass = resolvedImage ? generateGradient(post.title) : categoryStyling.gradient;
   const relativeTime = getRelativeTime(post.pub_date || post.last_edited || '', lang);
   const readingTime = post.reading_time || 5;
   const author = post.author || 'Capital M Law';
@@ -194,7 +212,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
             )}
           </div>
           
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-lg font-semibold text-primary mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
             {post.title}
           </h3>
           
@@ -222,9 +240,9 @@ const BlogCard: React.FC<BlogCardProps> = ({
       <article className={`group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 ${className}`}>
         {/* Cover Image */}
         <div className="relative h-80 overflow-hidden">
-          {post.image ? (
+          {resolvedImage ? (
             <img 
-              src={post.image} 
+              src={resolvedImage} 
               alt={post.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               onError={(e) => {
@@ -237,7 +255,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
           ) : null}
           
           {/* Placeholder */}
-          <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+          <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${resolvedImage ? 'hidden' : ''}`}>
             <div className="text-center text-white">
               <div className="text-6xl mb-4">{categoryStyling.icon}</div>
               <div className="text-lg font-medium opacity-90">{post.title}</div>
@@ -299,9 +317,9 @@ const BlogCard: React.FC<BlogCardProps> = ({
     <article className={`group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 ${className}`}>
       {/* Cover Image */}
       <div className="relative h-48 overflow-hidden">
-        {post.image ? (
+        {resolvedImage ? (
           <img 
-            src={post.image} 
+            src={resolvedImage} 
             alt={post.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => {
@@ -314,7 +332,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
         ) : null}
         
         {/* Placeholder */}
-        <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${post.image ? 'hidden' : ''}`}>
+        <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center ${resolvedImage ? 'hidden' : ''}`}>
           <div className="text-center text-white">
             <div className="text-4xl mb-2">{categoryStyling.icon}</div>
             <div className="text-sm font-medium opacity-90">{post.title}</div>

@@ -1,312 +1,466 @@
 import * as React from 'react';
-import { BookOpenIcon, UsersIcon, BriefcaseIcon, HomeIcon, CheckCircleIcon, InformationCircleIcon, StarIcon, DocumentTextIcon, ScaleIcon, LightBulbIcon, SparklesIcon, AcademicCapIcon, GlobeAltIcon, ClockIcon } from '@heroicons/react/24/solid';
+import { useState, useMemo, useCallback } from 'react';
+import { 
+  BookOpenIcon, 
+  MagnifyingGlassIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  ScaleIcon,
+  LightBulbIcon,
+  SparklesIcon,
+  AcademicCapIcon,
+  GlobeAltIcon,
+  ArrowTopRightOnSquareIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  CheckBadgeIcon
+} from '@heroicons/react/24/outline';
 
 interface HomePageCLKRProps {
   lang?: 'en' | 'es';
   clkrServices?: any[];
 }
 
-// Error boundary component
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode; lang?: 'en' | 'es' },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
+// Beautiful, readable colors for each legal module
+const moduleColors = {
+  'Constitutional Law': { 
+    primary: 'bg-blue-500', 
+    secondary: 'bg-blue-50', 
+    accent: 'text-blue-700',
+    border: 'border-blue-200',
+    hover: 'hover:bg-blue-50'
+  },
+  'Administrative Law': { 
+    primary: 'bg-emerald-500', 
+    secondary: 'bg-emerald-50', 
+    accent: 'text-emerald-700',
+    border: 'border-emerald-200',
+    hover: 'hover:bg-emerald-50'
+  },
+  'Civil Law': { 
+    primary: 'bg-purple-500', 
+    secondary: 'bg-purple-50', 
+    accent: 'text-purple-700',
+    border: 'border-purple-200',
+    hover: 'hover:bg-purple-50'
+  },
+  'Criminal Law': { 
+    primary: 'bg-red-500', 
+    secondary: 'bg-red-50', 
+    accent: 'text-red-700',
+    border: 'border-red-200',
+    hover: 'hover:bg-red-50'
+  },
+  'Family Law': { 
+    primary: 'bg-pink-500', 
+    secondary: 'bg-pink-50', 
+    accent: 'text-pink-700',
+    border: 'border-pink-200',
+    hover: 'hover:bg-pink-50'
+  },
+  'Labour Law': { 
+    primary: 'bg-orange-500', 
+    secondary: 'bg-orange-50', 
+    accent: 'text-orange-700',
+    border: 'border-orange-200',
+    hover: 'hover:bg-orange-50'
+  },
+  'Business Law': { 
+    primary: 'bg-indigo-500', 
+    secondary: 'bg-indigo-50', 
+    accent: 'text-indigo-700',
+    border: 'border-indigo-200',
+    hover: 'hover:bg-indigo-50'
+  },
+  'Tax Law': { 
+    primary: 'bg-amber-500', 
+    secondary: 'bg-amber-50', 
+    accent: 'text-amber-700',
+    border: 'border-amber-200',
+    hover: 'hover:bg-amber-50'
+  },
+  'Financial Law': { 
+    primary: 'bg-teal-500', 
+    secondary: 'bg-teal-50', 
+    accent: 'text-teal-700',
+    border: 'border-teal-200',
+    hover: 'hover:bg-teal-50'
+  },
+  'Real Estate & Urbanism': { 
+    primary: 'bg-lime-500', 
+    secondary: 'bg-lime-50', 
+    accent: 'text-lime-700',
+    border: 'border-lime-200',
+    hover: 'hover:bg-lime-50'
+  },
+  'Consumer Law': { 
+    primary: 'bg-cyan-500', 
+    secondary: 'bg-cyan-50', 
+    accent: 'text-cyan-700',
+    border: 'border-cyan-200',
+    hover: 'hover:bg-cyan-50'
+  },
+  'Intellectual Property Law': { 
+    primary: 'bg-violet-500', 
+    secondary: 'bg-violet-50', 
+    accent: 'text-violet-700',
+    border: 'border-violet-200',
+    hover: 'hover:bg-violet-50'
+  },
+  'International Public Law': { 
+    primary: 'bg-sky-500', 
+    secondary: 'bg-sky-50', 
+    accent: 'text-sky-700',
+    border: 'border-sky-200',
+    hover: 'hover:bg-sky-50'
+  },
+  'Exchange Law': { 
+    primary: 'bg-rose-500', 
+    secondary: 'bg-rose-50', 
+    accent: 'text-rose-700',
+    border: 'border-rose-200',
+    hover: 'hover:bg-rose-50'
+  },
+  'Police Law': { 
+    primary: 'bg-slate-500', 
+    secondary: 'bg-slate-50', 
+    accent: 'text-slate-700',
+    border: 'border-slate-200',
+    hover: 'hover:bg-slate-50'
+  },
+  'Private International Law': { 
+    primary: 'bg-fuchsia-500', 
+    secondary: 'bg-fuchsia-50', 
+    accent: 'text-fuchsia-700',
+    border: 'border-fuchsia-200',
+    hover: 'hover:bg-fuchsia-50'
+  },
+  'General Legal Theory': { 
+    primary: 'bg-gray-500', 
+    secondary: 'bg-gray-50', 
+    accent: 'text-gray-700',
+    border: 'border-gray-200',
+    hover: 'hover:bg-gray-50'
   }
-
-  static getDerivedStateFromError(error: any) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: any, errorInfo: any) {
-    console.error('CLKR Error Boundary caught an error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="text-center py-8">
-          <p className="text-red-500">
-            {this.props.lang === 'es' ? 'Error al cargar el repositorio legal' : 'Error loading legal repository'}
-          </p>
-          <p className="text-gray-600">
-            {this.props.lang === 'es' ? 'Por favor, intenta refrescar la página' : 'Please try refreshing the page'}
-          </p>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
+};
 
 const HomePageCLKR: React.FC<HomePageCLKRProps> = ({ lang = 'en', clkrServices = [] }) => {
-  // Get featured articles (first 3 popular ones)
-  const featuredArticles = clkrServices?.slice(0, 3) || [];
-  
-  const content = lang === 'es' ? {
-    title: "Repositorio Legal Colombiano",
-    subtitle: "Tu acceso directo a la legislación y jurisprudencia colombiana",
-    description: "Más de 200 artículos legales especializados, organizados en 17 módulos temáticos. Desde derecho constitucional hasta derecho laboral, nuestro repositorio ofrece análisis profundos y actualizados del sistema legal colombiano.",
-    features: [
-      {
-        icon: BookOpenIcon,
-        title: "Legislación Actualizada",
-        description: "Leyes, decretos y reglamentos vigentes con análisis experto"
-      },
-      {
-        icon: UsersIcon,
-        title: "Jurisprudencia Especializada",
-        description: "Sentencias y precedentes judiciales comentados"
-      },
-      {
-        icon: BriefcaseIcon,
-        title: "Doctrina Legal",
-        description: "Análisis y comentarios de expertos legales"
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedModule, setSelectedModule] = useState<string>('');
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+
+  // Calculate global stats
+  const globalStats = useMemo(() => {
+    const totalArticles = clkrServices.length;
+    const totalReadingTime = clkrServices.reduce((sum, service) => sum + (service.readingTime || 0), 0);
+    const uniqueModules = new Set(clkrServices.map(service => service.module)).size;
+    
+    return { totalArticles, totalReadingTime, uniqueModules };
+  }, [clkrServices]);
+
+  // Filter articles based on search and module selection
+  const filteredArticles = useMemo(() => {
+    return clkrServices.filter(service => {
+      const matchesSearch = searchQuery === '' || 
+        service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.module.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesModule = selectedModule === '' || service.module === selectedModule;
+      
+      return matchesSearch && matchesModule;
+    });
+  }, [clkrServices, searchQuery, selectedModule]);
+
+  // Group articles by module
+  const articlesByModule = useMemo(() => {
+    const grouped = filteredArticles.reduce((acc, article) => {
+      const module = article.module || 'General';
+      if (!acc[module]) {
+        acc[module] = [];
       }
-    ],
-    featuredArticles: "Artículos Destacados",
-    exploreButton: "Explorar Repositorio",
-    learnMore: "Conoce más",
-    stats: {
-      articles: "200+ Artículos",
-      modules: "17 Módulos",
-      updated: "Actualizado Diariamente"
-    },
-    funFacts: [
-      {
-        icon: SparklesIcon,
-        title: "Más de 200 artículos especializados",
-        description: "Cada artículo escrito por abogados colombianos con experiencia práctica"
-      },
-      {
-        icon: AcademicCapIcon,
-        title: "17 módulos temáticos completos",
-        description: "Desde derecho constitucional hasta derecho laboral y comercial"
-      },
-      {
-        icon: ClockIcon,
-        title: "Actualización diaria de contenido",
-        description: "Mantente al día con los cambios legales más recientes"
-      },
-      {
-        icon: GlobeAltIcon,
-        title: "Análisis de expertos legales",
-        description: "Información verificada por nuestro equipo de abogados especializados"
+      acc[module].push(article);
+      return acc;
+    }, {} as Record<string, typeof clkrServices>);
+    
+    return grouped;
+  }, [filteredArticles]);
+
+  // Get module color
+  const getModuleColor = useCallback((moduleName: string) => {
+    return moduleColors[moduleName as keyof typeof moduleColors] || moduleColors['General Legal Theory'];
+  }, []);
+
+  // Handle module selection
+  const handleModuleSelect = useCallback((moduleName: string) => {
+    if (selectedModule === moduleName) {
+      setSelectedModule('');
+      // Clear expanded modules when deselecting
+      setExpandedModules(new Set());
+    } else {
+      setSelectedModule(moduleName);
+      // Auto-expand the selected module
+      setExpandedModules(new Set([moduleName]));
+    }
+  }, [selectedModule]);
+
+  // Toggle module expansion
+  const toggleModule = useCallback((moduleName: string) => {
+    setExpandedModules(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(moduleName)) {
+        newSet.delete(moduleName);
+      } else {
+        newSet.add(moduleName);
       }
-    ]
-  } : {
-    title: "Colombian Legal Repository",
-    subtitle: "Your direct access to Colombian legislation and jurisprudence",
-    description: "Over 200 specialized legal articles organized in 17 thematic modules. From constitutional law to labor law, our repository offers deep and updated analysis of the Colombian legal system.",
-    features: [
-      {
-        icon: BookOpenIcon,
-        title: "Updated Legislation",
-        description: "Current laws, decrees and regulations with expert analysis"
-      },
-      {
-        icon: UsersIcon,
-        title: "Specialized Jurisprudence",
-        description: "Commented rulings and judicial precedents"
-      },
-      {
-        icon: BriefcaseIcon,
-        title: "Legal Doctrine",
-        description: "Expert legal analysis and commentary"
-      }
-    ],
-    featuredArticles: "Featured Articles",
-    exploreButton: "Explore Repository",
-    learnMore: "Learn More",
-    stats: {
-      articles: "200+ Articles",
-      modules: "17 Modules", 
-      updated: "Updated Daily"
-    },
-    funFacts: [
-      {
-        icon: SparklesIcon,
-        title: "Over 200 specialized articles",
-        description: "Each article written by Colombian attorneys with practical experience"
-      },
-      {
-        icon: AcademicCapIcon,
-        title: "17 complete thematic modules",
-        description: "From constitutional law to labor and commercial law"
-      },
-      {
-        icon: ClockIcon,
-        title: "Daily content updates",
-        description: "Stay current with the most recent legal changes"
-      },
-      {
-        icon: GlobeAltIcon,
-        title: "Expert legal analysis",
-        description: "Information verified by our team of specialized attorneys"
-      }
-    ]
-  };
+      return newSet;
+    });
+  }, []);
+
+  // Get unique modules for sidebar
+  const uniqueModules = useMemo(() => {
+    const modules = new Set(clkrServices.map(service => service.module));
+    return Array.from(modules).sort();
+  }, [clkrServices]);
+
+  // Auto-expand selected module
+  React.useEffect(() => {
+    if (selectedModule) {
+      setExpandedModules(new Set([selectedModule]));
+    }
+  }, [selectedModule]);
 
   return (
-    <ErrorBoundary lang={lang}>
-      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              {content.title}
-            </h2>
-            <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto">
-              {content.subtitle}
-            </p>
-            <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
-              {content.description}
-            </p>
+    <section className="py-16 bg-gradient-to-br from-slate-50 to-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <SparklesIcon className="w-4 h-4" />
+            {lang === 'en' ? 'AI-Generated & Attorney-Reviewed' : 'Generado por IA y Revisado por Abogados'}
           </div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            {lang === 'en' ? 'Colombian Legal Repository' : 'Repositorio Legal Colombiano'}
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            {lang === 'en' 
+              ? 'Comprehensive legal knowledge base with AI-generated content reviewed by experienced attorneys'
+              : 'Base de conocimiento legal integral con contenido generado por IA revisado por abogados experimentados'
+            }
+          </p>
+        </div>
 
-          {/* Fun Facts Section - Modern Design */}
-          <div className="mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                {lang === 'es' ? '¿Por qué elegir nuestro repositorio?' : 'Why choose our repository?'}
-              </h2>
-              <p className="text-gray-600">
-                {lang === 'es' 
-                  ? 'Descubre lo que hace único nuestro repositorio legal' 
-                  : 'Discover what makes our legal repository unique'
-                }
-              </p>
+        {/* Global Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
+              <DocumentTextIcon className="w-6 h-6 text-primary" />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {content.funFacts.map((fact, index) => (
-                <div key={index} className="group relative bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-blue-300/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                  {/* Decorative gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  {/* Content */}
-                  <div className="relative z-10">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <fact.icon className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                      {fact.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {fact.description}
-                    </p>
-                  </div>
-                  
-                  {/* Hover effect line */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-b-xl transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                </div>
-              ))}
-            </div>
+            <div className="text-2xl font-bold text-gray-900">{globalStats.totalArticles}</div>
+            <div className="text-sm text-gray-600">Total Articles</div>
           </div>
-
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-200/50 text-center hover:shadow-md transition-shadow duration-300">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <DocumentTextIcon className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{content.stats.articles}</h3>
-              <p className="text-gray-600 text-sm">{lang === 'es' ? 'Artículos especializados' : 'Specialized articles'}</p>
+          <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-secondary/10 rounded-lg mb-4">
+              <ScaleIcon className="w-6 h-6 text-secondary" />
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-200/50 text-center hover:shadow-md transition-shadow duration-300">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <ScaleIcon className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{content.stats.modules}</h3>
-              <p className="text-gray-600 text-sm">{lang === 'es' ? 'Módulos temáticos' : 'Thematic modules'}</p>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-200/50 text-center hover:shadow-md transition-shadow duration-300">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <LightBulbIcon className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{content.stats.updated}</h3>
-              <p className="text-gray-600 text-sm">{lang === 'es' ? 'Contenido actualizado' : 'Updated content'}</p>
-            </div>
+            <div className="text-2xl font-bold text-gray-900">{globalStats.uniqueModules}</div>
+            <div className="text-sm text-gray-600">Legal Modules</div>
           </div>
+          <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
+              <ClockIcon className="w-6 h-6 text-primary" />
+            </div>
+            <div className="text-2xl font-bold text-gray-900">{globalStats.totalReadingTime}h</div>
+            <div className="text-sm text-gray-600">Total Reading Time</div>
+          </div>
+        </div>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {content.features.map((feature, index) => (
-              <div key={index} className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-200/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {feature.title}
+        {/* Main Explorer */}
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-primary to-secondary p-6">
+            <div className="flex items-center gap-3">
+              <BookOpenIcon className="w-8 h-8 text-white" />
+              <div>
+                <h3 className="text-2xl font-bold text-white">
+                  {lang === 'en' ? 'Explore Repository' : 'Explorar Repositorio'}
                 </h3>
-                <p className="text-gray-600">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Featured Articles Section */}
-          {featuredArticles.length > 0 && (
-            <div className="mb-12">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  {content.featuredArticles}
-                </h2>
-                <p className="text-gray-600">
-                  {lang === 'es' 
-                    ? 'Artículos más populares y relevantes de nuestro repositorio' 
-                    : 'Most popular and relevant articles from our repository'
+                <p className="text-white">
+                  {lang === 'en' 
+                    ? 'Search, filter, and explore legal articles by module'
+                    : 'Busca, filtra y explora artículos legales por módulo'
                   }
                 </p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {featuredArticles.map((article, index) => (
-                  <div key={article.id || index} className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-200/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl">📋</span>
-                      <span className="text-xs bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 px-2 py-1 rounded-full flex items-center">
-                        <StarIcon className="w-3 h-3 mr-1" />
-                        {lang === 'es' ? 'Destacado' : 'Featured'}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {article.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">
-                        {article.module || 'Legal'}
-                      </span>
-                      <a 
-                        href={article.url || `/${lang}/clkr/${article.slug}`}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-                      >
-                        {lang === 'es' ? 'Leer más' : 'Read more'}
-                      </a>
-                    </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col lg:flex-row">
+            {/* Left Sidebar */}
+            <div className="w-full lg:w-80 border-r border-gray-200 bg-gray-50">
+              <div className="p-6">
+                {/* Search */}
+                <div className="mb-6">
+                  <div className="relative">
+                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder={lang === 'en' ? 'Search articles...' : 'Buscar artículos...'}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
                   </div>
-                ))}
+                </div>
+
+                {/* Module Filter */}
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-3">
+                    {lang === 'en' ? 'Legal Modules' : 'Módulos Legales'}
+                  </h4>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => handleModuleSelect('')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                        selectedModule === '' 
+                          ? 'bg-primary text-white' 
+                          : 'text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {lang === 'en' ? 'All Modules' : 'Todos los Módulos'}
+                    </button>
+                    {uniqueModules.map(moduleName => {
+                      const moduleColor = getModuleColor(moduleName);
+                      const isSelected = selectedModule === moduleName;
+                      return (
+                        <button
+                          key={moduleName}
+                          onClick={() => handleModuleSelect(moduleName)}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+                            isSelected 
+                              ? `${moduleColor.primary} text-white` 
+                              : 'text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <div className={`w-3 h-3 rounded-full ${moduleColor.primary}`} />
+                          {moduleName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Results Count */}
+                <div className="text-sm text-gray-600">
+                  {lang === 'en' ? 'Showing' : 'Mostrando'} {filteredArticles.length} {lang === 'en' ? 'articles' : 'artículos'}
+                  {selectedModule && (
+                    <span> {lang === 'en' ? 'in' : 'en'} <span className="font-medium">{selectedModule}</span></span>
+                  )}
+                </div>
               </div>
             </div>
-          )}
 
-          <div className="text-center">
-            <a
-              href={`/${lang}/clkr`}
-              className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              {content.exploreButton}
-            </a>
+            {/* Right Content Area */}
+            <div className="flex-1 p-6">
+              {filteredArticles.length === 0 ? (
+                <div className="text-center py-12">
+                  <DocumentTextIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {lang === 'en' ? 'No articles found' : 'No se encontraron artículos'}
+                  </h3>
+                  <p className="text-gray-600">
+                    {lang === 'en' 
+                      ? 'Try adjusting your search or module filter'
+                      : 'Intenta ajustar tu búsqueda o filtro de módulo'
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Articles by Module */}
+                  {Object.keys(articlesByModule).length > 0 ? (
+                    <div className="space-y-6">
+                      {Object.entries(articlesByModule).map(([moduleName, articles]) => {
+                        const moduleColor = getModuleColor(moduleName);
+                        const isExpanded = expandedModules.has(moduleName);
+                        const isSelected = selectedModule === moduleName;
+                        const typedArticles = articles as typeof clkrServices;
+                        
+                        return (
+                          <div key={moduleName} className={`border ${moduleColor.border} rounded-xl overflow-hidden`}>
+                            {/* Module Header */}
+                            <button
+                              onClick={() => toggleModule(moduleName)}
+                              className={`w-full p-4 text-left ${moduleColor.hover} transition-all duration-200 flex items-center justify-between`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-3 h-3 rounded-full ${moduleColor.primary}`} />
+                                <h4 className="font-semibold text-gray-900">{moduleName}</h4>
+                                <span className="text-sm text-gray-500">({typedArticles.length})</span>
+                              </div>
+                              {isExpanded ? (
+                                <ChevronUpIcon className="w-5 h-5 text-gray-400" />
+                              ) : (
+                                <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+                              )}
+                            </button>
+                            
+                            {/* Module Content */}
+                            {isExpanded && (
+                              <div className="border-t border-gray-100 bg-white">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                                  {typedArticles.map((article: any) => (
+                                    <a
+                                      key={article.id}
+                                      href={`/${lang}/clkr/${article.slug}`}
+                                      className="group p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-md block"
+                                    >
+                                      <div className="flex items-start gap-3">
+                                        <div className={`w-2 h-2 rounded-full mt-2 ${moduleColor.primary}`} />
+                                        <div className="flex-1 min-w-0">
+                                          <h5 className="font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+                                            {article.title}
+                                          </h5>
+                                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                            {article.description}
+                                          </p>
+                                          <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                                            <span className="flex items-center gap-1">
+                                              <ClockIcon className="w-3 h-3" />
+                                              {article.readingTime || 0} min
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                              <DocumentTextIcon className="w-3 h-3" />
+                                              {article.module}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                                      </div>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">
+                        {lang === 'en' ? 'No articles match your current filters' : 'Ningún artículo coincide con tus filtros actuales'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </ErrorBoundary>
+    </section>
   );
 };
 

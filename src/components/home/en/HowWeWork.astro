@@ -1,227 +1,398 @@
 ---
-// Bilingual HowWeWork section, minimalistic, modern, using only brand colors and Heroicons
+// Bilingual HowWeWork section explaining both service models clearly
 // Props: lang ('en' | 'es')
-import { CalendarDaysIcon, UserIcon, DocumentTextIcon, CreditCardIcon, StarIcon, ShieldCheckIcon, BoltIcon, HeartIcon, CheckCircleIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-const { lang = 'es' }: { lang?: 'en' | 'es' } = Astro.props;
-import ContactForm from "../../ui/forms/ContactForm.tsx";
+import { 
+  CalendarDaysIcon, 
+  UserIcon, 
+  DocumentTextIcon, 
+  CreditCardIcon, 
+  StarIcon, 
+  ShieldCheckIcon, 
+  BoltIcon, 
+  HeartIcon, 
+  CheckCircleIcon, 
+  ArrowRightIcon,
+  ClockIcon,
+  ChatBubbleLeftRightIcon,
+  ComputerDesktopIcon,
+  ReceiptPercentIcon,
+  GlobeAltIcon,
+  ChartBarIcon
+} from '@heroicons/react/24/solid';
+
+const { lang = 'en' }: { lang?: 'en' | 'es' } = Astro.props;
 
 const content = {
-  es: {
-    header: "Cómo Trabajamos",
-    subheader: "Proceso simple y transparente para obtener asesoría legal experta en Colombia",
-    consultation: {
-      title: "Consulta Inicial",
-      subtitle: "Sesión personalizada de 45 minutos",
-      price: "Tarifa de Consulta",
-      usd: "$45 USD",
-      cop: "175,000 COP",
-      payment_methods: "Métodos de Pago",
-      methods: [
-        { label: "Bancolombia: 61400002492" },
-        { label: "Stripe (Tarjetas)" },
-        { label: "Revolut: @daniel8hsk" },
-      ],
-      stripe: "Pagar con Stripe",
-      stripe_url: "https://buy.stripe.com/7sI29Cg361Ja3sI149",
-      includes: "Lo que Incluye:",
-      features: [
-        "Evaluación legal personalizada",
-        "Cotización detallada y cronograma",
-        "Consulta bilingüe",
-        "Soporte de seguimiento"
-      ]
-    },
-    calendly: {
-      title: "Programa tu Consulta",
-      subtitle: "Elige un horario que te funcione"
-    },
-    contact: {
-      title: "Envíanos un Mensaje",
-      subtitle: "Responderemos en 24 horas"
-    },
-    trust: {
-      title: "¿Por qué Elegir Capital M Law?",
-      items: [
-        { icon: "shield", title: "Equipo Experto", desc: "Abogados bilingües con años de experiencia" },
-        { icon: "bolt", title: "Servicio Rápido", desc: "Tiempos de respuesta rápidos y procesos eficientes" },
-        { icon: "dollar", title: "Precios Transparentes", desc: "Costos claros y directos sin cargos ocultos" },
-        { icon: "star", title: "Resultados Comprobados", desc: "Cientos de casos exitosos completados" }
-      ]
-    },
-    contact_info: {
-      title: "Ponte en Contacto",
-      items: [
-        { icon: "envelope", value: "info@capitaleme.com" },
-        { icon: "phone", value: "+57 314 602 2411" },
-        { icon: "map", value: "Medellín, Colombia" }
-      ]
-    },
-    cta: {
-      title: "¿Listo para Comenzar tu Viaje Legal en Colombia?",
-      subtitle: "Únete a cientos de clientes satisfechos que han confiado en Capital M Law para sus necesidades legales en Colombia.",
-      calendly: "Reservar Consulta",
-      whatsapp: "WhatsApp"
-    }
-  },
   en: {
     header: "How We Work",
-    subheader: "Simple and transparent process to get expert legal advice in Colombia",
+    subheader: "Two transparent service models designed for your legal needs in Colombia",
+    
+    // Service Models Section
+    serviceModels: {
+      title: "Our Service Models",
+      subtitle: "Choose the approach that best fits your legal needs",
+      
+      perService: {
+        title: "Per Service Model",
+        subtitle: "Perfect for specific legal needs",
+        description: "Ideal for clients who need assistance with specific legal matters like visa applications, business registration, or real estate transactions.",
+        steps: [
+          { icon: "calendar", title: "Initial Consultation", desc: "45-minute personalized session to understand your needs", price: "$45 USD" },
+          { icon: "document", title: "Detailed Quotation", desc: "Comprehensive proposal with timeline and costs" },
+          { icon: "credit-card", title: "Secure Payment", desc: "Multiple payment options for your convenience" },
+          { icon: "star", title: "Professional Execution", desc: "Expert legal work with regular updates" }
+        ],
+        features: [
+          "Fixed pricing for transparency",
+          "Clear deliverables and timeline",
+          "No hidden costs or surprises",
+          "Direct communication throughout"
+        ]
+      },
+      
+      retainer: {
+        title: "Retainer Model",
+        subtitle: "For ongoing legal support",
+        description: "Best for clients who need ongoing legal assistance, regular consultations, or have multiple legal matters requiring attention.",
+        features: [
+          "Monthly retainer payment",
+          "Hourly billing with transparent reporting",
+          "Fluent bilingual communication",
+          "Technology-driven efficiency",
+          "Regular progress updates",
+          "Priority access to our team"
+        ],
+        benefits: [
+          "Predictable monthly costs",
+          "Efficient time management",
+          "Comprehensive legal support",
+          "Long-term relationship building"
+        ]
+      }
+    },
+    
+    // Why Choose Us
+    trust: {
+      title: "Why Choose Capital M Law?",
+      items: [
+        { icon: "shield", title: "Expert Team", desc: "Bilingual lawyers with years of experience in Colombian law" },
+        { icon: "bolt", title: "Efficient Process", desc: "Technology-driven approach for faster, better results" },
+        { icon: "dollar", title: "Transparent Pricing", desc: "Clear costs with no hidden fees or surprises" },
+        { icon: "globe", title: "Bilingual Service", desc: "Fluent communication in English and Spanish" },
+        { icon: "computer", title: "Tech-Forward", desc: "Leveraging technology for efficient legal practice" },
+        { icon: "chart", title: "Proven Results", desc: "Hundreds of successful cases completed" }
+      ]
+    },
+    
+    // Consultation Details
     consultation: {
       title: "Initial Consultation",
-      subtitle: "45-minute personalized session",
-      price: "Consultation Fee",
-      usd: "$45 USD",
-      cop: "175,000 COP",
-      payment_methods: "Payment Methods",
-      methods: [
-        { label: "Bancolombia: 61400002492" },
-        { label: "Stripe (Cards)" },
-        { label: "Revolut: @daniel8hsk" },
-      ],
-      stripe: "Pay with Stripe",
-      stripe_url: "https://buy.stripe.com/7sI29Cg361Ja3sI149",
+      subtitle: "Your first step to legal success in Colombia",
+      price: "$45 USD / 175,000 COP",
+      duration: "45 minutes",
       includes: "What's Included:",
       features: [
         "Personalized legal assessment",
         "Detailed quote and timeline",
         "Bilingual consultation",
-        "Follow-up support"
+        "Follow-up support",
+        "Clear next steps"
+      ],
+      paymentMethods: "Payment Methods:",
+      methods: [
+        "Bancolombia: 61400002492",
+        "Stripe (Credit/Debit Cards)",
+        "Revolut: @daniel8hsk"
       ]
     },
-    calendly: {
-      title: "Book Your Consultation",
-      subtitle: "Choose a time that works for you"
-    },
-    contact: {
-      title: "Send Us a Message",
-      subtitle: "We will reply within 24 hours"
-    },
-    trust: {
-      title: "Why Choose Capital M Law?",
-      items: [
-        { icon: "shield", title: "Expert Team", desc: "Bilingual lawyers with years of experience" },
-        { icon: "bolt", title: "Fast Service", desc: "Quick response times and efficient processes" },
-        { icon: "dollar", title: "Transparent Pricing", desc: "Clear, direct costs with no hidden fees" },
-        { icon: "star", title: "Proven Results", desc: "Hundreds of successful cases completed" }
-      ]
-    },
-    contact_info: {
-      title: "Get in Touch",
-      items: [
-        { icon: "envelope", value: "info@capitaleme.com" },
-        { icon: "phone", value: "+57 314 602 2411" },
-        { icon: "map", value: "Medellín, Colombia" }
-      ]
-    },
+    
+    // CTA
     cta: {
       title: "Ready to Start Your Legal Journey in Colombia?",
-      subtitle: "Join hundreds of satisfied clients who have trusted Capital M Law for their legal needs in Colombia.",
-      calendly: "Book Consultation",
-      whatsapp: "WhatsApp"
+      subtitle: "Join hundreds of satisfied clients who have trusted Capital M Law for their legal needs.",
+      consultation: "Book Consultation",
+      whatsapp: "WhatsApp Chat"
+    }
+  },
+  
+  es: {
+    header: "Cómo Trabajamos",
+    subheader: "Dos modelos de servicio transparentes diseñados para tus necesidades legales en Colombia",
+    
+    serviceModels: {
+      title: "Nuestros Modelos de Servicio",
+      subtitle: "Elige el enfoque que mejor se adapte a tus necesidades legales",
+      
+      perService: {
+        title: "Modelo por Servicio",
+        subtitle: "Perfecto para necesidades legales específicas",
+        description: "Ideal para clientes que necesitan asistencia con asuntos legales específicos como solicitudes de visa, registro de empresas o transacciones inmobiliarias.",
+        steps: [
+          { icon: "calendar", title: "Consulta Inicial", desc: "Sesión personalizada de 45 minutos para entender tus necesidades", price: "$45 USD" },
+          { icon: "document", title: "Cotización Detallada", desc: "Propuesta integral con cronograma y costos" },
+          { icon: "credit-card", title: "Pago Seguro", desc: "Múltiples opciones de pago para tu conveniencia" },
+          { icon: "star", title: "Ejecución Profesional", desc: "Trabajo legal experto con actualizaciones regulares" }
+        ],
+        features: [
+          "Precios fijos para transparencia",
+          "Entregables y cronograma claros",
+          "Sin costos ocultos o sorpresas",
+          "Comunicación directa durante todo el proceso"
+        ]
+      },
+      
+      retainer: {
+        title: "Modelo de Retainer",
+        subtitle: "Para apoyo legal continuo",
+        description: "Mejor para clientes que necesitan asistencia legal continua, consultas regulares o tienen múltiples asuntos legales que requieren atención.",
+        features: [
+          "Pago mensual de retainer",
+          "Facturación por hora con reportes transparentes",
+          "Comunicación bilingüe fluida",
+          "Eficiencia impulsada por la tecnología",
+          "Actualizaciones regulares de progreso",
+          "Acceso prioritario a nuestro equipo"
+        ],
+        benefits: [
+          "Costos mensuales predecibles",
+          "Gestión eficiente del tiempo",
+          "Apoyo legal integral",
+          "Construcción de relaciones a largo plazo"
+        ]
+      }
+    },
+    
+    trust: {
+      title: "¿Por qué Elegir Capital M Law?",
+      items: [
+        { icon: "shield", title: "Equipo Experto", desc: "Abogados bilingües con años de experiencia en derecho colombiano" },
+        { icon: "bolt", title: "Proceso Eficiente", desc: "Enfoque impulsado por la tecnología para resultados más rápidos y mejores" },
+        { icon: "dollar", title: "Precios Transparentes", desc: "Costos claros sin cargos ocultos o sorpresas" },
+        { icon: "globe", title: "Servicio Bilingüe", desc: "Comunicación fluida en inglés y español" },
+        { icon: "computer", title: "Tecnología Avanzada", desc: "Aprovechando la tecnología para una práctica legal eficiente" },
+        { icon: "chart", title: "Resultados Comprobados", desc: "Cientos de casos exitosos completados" }
+      ]
+    },
+    
+    consultation: {
+      title: "Consulta Inicial",
+      subtitle: "Tu primer paso hacia el éxito legal en Colombia",
+      price: "$45 USD / 175,000 COP",
+      duration: "45 minutos",
+      includes: "Lo que Incluye:",
+      features: [
+        "Evaluación legal personalizada",
+        "Cotización detallada y cronograma",
+        "Consulta bilingüe",
+        "Soporte de seguimiento",
+        "Próximos pasos claros"
+      ],
+      paymentMethods: "Métodos de Pago:",
+      methods: [
+        "Bancolombia: 61400002492",
+        "Stripe (Tarjetas de Crédito/Débito)",
+        "Revolut: @daniel8hsk"
+      ]
+    },
+    
+    cta: {
+      title: "¿Listo para Comenzar tu Viaje Legal en Colombia?",
+      subtitle: "Únete a cientos de clientes satisfechos que han confiado en Capital M Law para sus necesidades legales.",
+      consultation: "Reservar Consulta",
+      whatsapp: "Chat de WhatsApp"
     }
   }
 };
+
 const t = content[lang] as typeof content['en'];
 
+const getIcon = (iconName: string) => {
+  const icons = {
+    calendar: CalendarDaysIcon,
+    document: DocumentTextIcon,
+    "credit-card": CreditCardIcon,
+    star: StarIcon,
+    shield: ShieldCheckIcon,
+    bolt: BoltIcon,
+    globe: GlobeAltIcon,
+    computer: ComputerDesktopIcon,
+    chart: ChartBarIcon
+  };
+  return icons[iconName as keyof typeof icons] || CalendarDaysIcon;
+};
 ---
 
-<section class="py-24 bg-white relative overflow-hidden">
+<section class="py-24 bg-gradient-to-br from-slate-50 to-gray-100 relative overflow-hidden">
   <!-- Background Pattern -->
-  <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-white"></div>
-  <div class="absolute top-0 left-0 w-full h-full opacity-5" style={{
+  <div class="absolute inset-0 opacity-5" style={{
     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
   }}></div>
   
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
     <div class="text-center mb-20">
+      <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+        <ShieldCheckIcon className="w-4 h-4" />
+        {lang === 'en' ? 'Professional Legal Services' : 'Servicios Legales Profesionales'}
+      </div>
       <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t.header}</h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">{t.subheader}</p>
+      <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">{t.subheader}</p>
     </div>
 
-    <!-- Step-by-Step Process -->
-    <div class="mb-20">
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-        {[
-          { icon: <CalendarDaysIcon className="w-8 h-8 text-primary" />, label: lang === 'es' ? 'Contacto' : 'Contact', desc: lang === 'es' ? 'Consulta inicial' : 'Initial consultation' },
-          { icon: <UserIcon className="w-8 h-8 text-primary" />, label: lang === 'es' ? 'Evaluación' : 'Assessment', desc: lang === 'es' ? 'Análisis del caso' : 'Case analysis' },
-          { icon: <DocumentTextIcon className="w-8 h-8 text-primary" />, label: lang === 'es' ? 'Cotización' : 'Quote', desc: lang === 'es' ? 'Propuesta detallada' : 'Detailed proposal' },
-          { icon: <CreditCardIcon className="w-8 h-8 text-primary" />, label: lang === 'es' ? 'Pago' : 'Payment', desc: lang === 'es' ? 'Proceso seguro' : 'Secure process' },
-          { icon: <StarIcon className="w-8 h-8 text-primary" />, label: lang === 'es' ? 'Ejecución' : 'Execution', desc: lang === 'es' ? 'Trabajo profesional' : 'Professional work' }
-        ].map((step, idx) => (
-          <div class="relative">
-            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 text-center">
-              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                {step.icon}
-              </div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-2">{step.label}</h3>
-              <p class="text-sm text-gray-600">{step.desc}</p>
-            </div>
-            {idx < 4 && (
-              <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                <ArrowRightIcon className="w-6 h-6 text-gray-300" />
-              </div>
-            )}
-          </div>
-        ))}
+    <!-- Service Models Section -->
+    <div class="mb-24">
+      <div class="text-center mb-16">
+        <h3 class="text-3xl font-bold text-gray-900 mb-4">{t.serviceModels.title}</h3>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">{t.serviceModels.subtitle}</p>
       </div>
-    </div>
-
-    <!-- Why Choose Capital M Law -->
-    <div class="mb-20">
-      <h3 class="text-3xl font-bold text-gray-900 text-center mb-12">{t.trust.title}</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {t.trust.items.map((item: { icon: string; title: string; desc: string }) => (
-          <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              {item.icon === 'shield' && <ShieldCheckIcon className="w-8 h-8 text-secondary" />}
-              {item.icon === 'bolt' && <BoltIcon className="w-8 h-8 text-secondary" />}
-              {item.icon === 'dollar' && <CreditCardIcon className="w-8 h-8 text-secondary" />}
-              {item.icon === 'star' && <StarIcon className="w-8 h-8 text-secondary" />}
-              {item.icon === 'heart' && <HeartIcon className="w-8 h-8 text-secondary" />}
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Per Service Model -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <DocumentTextIcon className="w-8 h-8 text-primary" />
             </div>
-            <h4 class="text-xl font-semibold text-gray-900 mb-3">{item.title}</h4>
-            <p class="text-gray-600 leading-relaxed">{item.desc}</p>
+            <h4 class="text-2xl font-bold text-gray-900 mb-2">{t.serviceModels.perService.title}</h4>
+            <p class="text-lg text-primary font-semibold mb-3">{t.serviceModels.perService.subtitle}</p>
+            <p class="text-gray-600">{t.serviceModels.perService.description}</p>
           </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Consultation Features -->
-    <div class="mb-20">
-      <div class="max-w-4xl mx-auto">
-        <h3 class="text-3xl font-bold text-gray-900 text-center mb-12">
-          {lang === 'es' ? 'Características de la Consulta' : 'Consultation Features'}
-        </h3>
-        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {t.consultation.features.map((feature: string) => (
-              <div class="flex items-start gap-4">
-                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <CheckCircleIcon className="w-4 h-4 text-green-600" />
+          
+          <!-- Steps -->
+          <div class="space-y-6 mb-8">
+            {t.serviceModels.perService.steps.map((step, idx) => {
+              const IconComponent = getIcon(step.icon);
+              return (
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold text-sm">{idx + 1}</span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <h5 class="font-semibold text-gray-900">{step.title}</h5>
+                      {step.price && <span class="text-sm font-medium text-primary">{step.price}</span>}
+                    </div>
+                    <p class="text-gray-600 text-sm">{step.desc}</p>
+                  </div>
                 </div>
-                <span class="text-gray-700 leading-relaxed">{feature}</span>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+          
+          <!-- Features -->
+          <div class="border-t border-gray-200 pt-6">
+            <h6 class="font-semibold text-gray-900 mb-3">{lang === 'en' ? 'Key Benefits:' : 'Beneficios Clave:'}</h6>
+            <div class="space-y-2">
+              {t.serviceModels.perService.features.map((feature) => (
+                <div class="flex items-center gap-2">
+                  <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                  <span class="text-sm text-gray-600">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Retainer Model -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ClockIcon className="w-8 h-8 text-secondary" />
+            </div>
+            <h4 class="text-2xl font-bold text-gray-900 mb-2">{t.serviceModels.retainer.title}</h4>
+            <p class="text-lg text-secondary font-semibold mb-3">{t.serviceModels.retainer.subtitle}</p>
+            <p class="text-gray-600">{t.serviceModels.retainer.description}</p>
+          </div>
+          
+          <!-- Features -->
+          <div class="space-y-4 mb-8">
+            <h6 class="font-semibold text-gray-900">{lang === 'en' ? 'What You Get:' : 'Lo que Obtienes:'}</h6>
+            <div class="space-y-2">
+              {t.serviceModels.retainer.features.map((feature) => (
+                <div class="flex items-center gap-2">
+                  <CheckCircleIcon className="w-4 h-4 text-secondary" />
+                  <span class="text-sm text-gray-600">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <!-- Benefits -->
+          <div class="border-t border-gray-200 pt-6">
+            <h6 class="font-semibold text-gray-900 mb-3">{lang === 'en' ? 'Why Choose Retainer:' : 'Por qué Elegir Retainer:'}</h6>
+            <div class="space-y-2">
+              {t.serviceModels.retainer.benefits.map((benefit) => (
+                <div class="flex items-center gap-2">
+                  <StarIcon className="w-4 h-4 text-amber-500" />
+                  <span class="text-sm text-gray-600">{benefit}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Payment Methods -->
-    <div class="mb-20">
-      <div class="max-w-4xl mx-auto">
-        <h3 class="text-3xl font-bold text-gray-900 text-center mb-12">
-          {lang === 'es' ? 'Métodos de Pago Disponibles' : 'Available Payment Methods'}
-        </h3>
-        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {t.consultation.methods.map((method: { label: string }) => (
-              <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <CreditCardIcon className="w-6 h-6 text-primary" />
-                <span class="text-gray-700 font-medium">{method.label}</span>
+    <!-- Why Choose Us -->
+    <div class="mb-24">
+      <h3 class="text-3xl font-bold text-gray-900 text-center mb-16">{t.trust.title}</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {t.trust.items.map((item) => {
+          const IconComponent = getIcon(item.icon);
+          return (
+            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 text-center">
+              <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <IconComponent className="w-7 h-7 text-primary" />
               </div>
-            ))}
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">{item.title}</h4>
+              <p class="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Initial Consultation -->
+    <div class="mb-24">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+          <div class="text-center mb-8">
+            <h3 class="text-3xl font-bold text-gray-900 mb-4">{t.consultation.title}</h3>
+            <p class="text-xl text-gray-600 mb-6">{t.consultation.subtitle}</p>
+            <div class="inline-flex items-center gap-4 bg-primary/10 text-primary px-6 py-3 rounded-full">
+              <ClockIcon className="w-5 h-5" />
+              <span class="font-semibold">{t.consultation.duration}</span>
+              <span class="text-lg font-bold">•</span>
+              <span class="font-semibold">{t.consultation.price}</span>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- What's Included -->
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">{t.consultation.includes}</h4>
+              <div class="space-y-3">
+                {t.consultation.features.map((feature) => (
+                  <div class="flex items-center gap-3">
+                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                    <span class="text-gray-700">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <!-- Payment Methods -->
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-4">{t.consultation.paymentMethods}</h4>
+              <div class="space-y-3">
+                {t.consultation.methods.map((method) => (
+                  <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <CreditCardIcon className="w-5 h-5 text-primary" />
+                    <span class="text-gray-700 font-medium">{method}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -239,7 +410,7 @@ const t = content[lang] as typeof content['en'];
             rel="noopener noreferrer"
             class="inline-flex items-center justify-center px-8 py-4 bg-white text-primary rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200"
           >
-            {t.cta.calendly}
+            {t.cta.consultation}
           </a>
           <a 
             href="https://wa.me/573146022411"
