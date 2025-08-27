@@ -65,8 +65,8 @@ const OurTeam = ({ members = [], lang = 'en' }: OurTeamProps) => {
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               {lang === 'en' 
-                ? 'Our experienced legal professionals are focused on the bilingual Colombian law practice.'
-                : 'Nuestros profesionales legales experimentados están dedicados a ayudarte con cualquier consulta legal.'
+                ? 'Our experienced legal professionals are focused on the bilingual Colombian Law practice.'
+                : 'Nuestros profesionales están dedicados a ayudarte con cualquier consulta legal.'
               }
             </p>
           </div>

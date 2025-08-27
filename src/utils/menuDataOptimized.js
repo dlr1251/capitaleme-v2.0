@@ -3,20 +3,20 @@ import { getCollection } from 'astro:content';
 import { getVisasFromSupabase, getGuidesFromSupabase, getCLKRArticlesFromSupabase } from '../server/lib/syncNotionToSupabase.js';
 
 // Function to match author by email from authors collection
-async function matchAuthorByEmail(authorEmail) {
+async function matchAuthorByEmail(authorEmail, lang = 'en') {
   try {
     const authors = await getCollection('authors');
     const emailPrefix = authorEmail.split('@')[0]; // Get the part before @
     
     const matchedAuthor = authors.find(author => {
       const authorEmailPrefix = author.data.email?.split('@')[0];
-      return authorEmailPrefix === emailPrefix;
+      return authorEmailPrefix === emailPrefix && author.data.lang === lang;
     });
 
     if (matchedAuthor) {
       return {
         name: matchedAuthor.data.name,
-        avatar: `/images/team/${matchedAuthor.data.image}`,
+        avatar: matchedAuthor.data.image,
         role: matchedAuthor.data.role
       };
     }
@@ -225,7 +225,7 @@ async function processBlogData(blogData, lang) {
         const authorEmail = properties.Author?.rich_text?.[0]?.plain_text || null;
         
         // Match author by email
-        const authorInfo = authorEmail ? await matchAuthorByEmail(authorEmail) : {
+        const authorInfo = authorEmail ? await matchAuthorByEmail(authorEmail, lang) : {
           name: 'Capital M Law',
           avatar: '/images/team/danielluque.jpg',
           role: 'Legal Expert'

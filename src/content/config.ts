@@ -91,6 +91,7 @@ const authorsCollection = defineCollection({
     email: z.string(),
     image: z.string(),
     bio: z.string(),
+    lang: z.string(),
     socialLinks: z.object({
       facebook: z.string().optional(),
       twitter: z.string().optional(),
