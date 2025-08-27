@@ -24,8 +24,8 @@ interface Visa {
   isPopular: boolean;
   emojis: string[];
   alcance?: string;
-  beneficiaries?: string;
-  workPermit?: string;
+  beneficiaries?: string | boolean;
+  workPermit?: string | boolean;
   duration?: string;
   requirements?: string;
 }
@@ -78,59 +78,89 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Helper: beneficiaries label with complete string
-  const getBeneficiariesLabel = (beneficiaries: string | undefined) => {
-    if (!beneficiaries || beneficiaries.trim() === '') {
-      return lang === 'es' ? 'Sin información de beneficiarios' : 'No beneficiary information';
+  const getBeneficiariesLabel = (beneficiaries: string | boolean | undefined) => {
+    // Handle boolean values (legacy data)
+    if (typeof beneficiaries === 'boolean') {
+      if (lang === 'es') {
+        return beneficiaries ? '✅ Incluye cónyuge e hijos' : '❌ No incluye beneficiarios';
+      } else {
+        return beneficiaries ? '✅ Includes spouse & children' : '❌ No beneficiaries included';
+      }
     }
     
-    // If the field already contains descriptive text, use it directly
-    if (beneficiaries.toLowerCase().includes('incluye') || 
-        beneficiaries.toLowerCase().includes('includes') ||
-        beneficiaries.toLowerCase().includes('cónyuge') ||
-        beneficiaries.toLowerCase().includes('spouse') ||
-        beneficiaries.toLowerCase().includes('hijos') ||
-        beneficiaries.toLowerCase().includes('children')) {
+    // Handle string values (new data)
+    if (typeof beneficiaries === 'string') {
+      if (!beneficiaries || beneficiaries.trim() === '') {
+        return lang === 'es' ? 'Sin información de beneficiarios' : 'No beneficiary information';
+      }
+      
+      // If the field already contains descriptive text, use it directly
+      if (beneficiaries.toLowerCase().includes('incluye') || 
+          beneficiaries.toLowerCase().includes('includes') ||
+          beneficiaries.toLowerCase().includes('cónyuge') ||
+          beneficiaries.toLowerCase().includes('spouse') ||
+          beneficiaries.toLowerCase().includes('hijos') ||
+          beneficiaries.toLowerCase().includes('children')) {
+        return `✅ ${beneficiaries}`;
+      }
+      
+      // Handle common boolean-like values
+      if (beneficiaries.toLowerCase() === 'yes' || beneficiaries.toLowerCase() === 'si') {
+        return lang === 'es' ? '✅ Incluye cónyuge e hijos' : '✅ Includes spouse & children';
+      }
+      if (beneficiaries.toLowerCase() === 'no') {
+        return lang === 'es' ? '❌ No incluye beneficiarios' : '❌ No beneficiaries included';
+      }
+      
+      // Return the original text with a checkmark if it seems positive
       return `✅ ${beneficiaries}`;
     }
     
-    // Handle common boolean-like values
-    if (beneficiaries.toLowerCase() === 'yes' || beneficiaries.toLowerCase() === 'si') {
-      return lang === 'es' ? '✅ Incluye cónyuge e hijos' : '✅ Includes spouse & children';
-    }
-    if (beneficiaries.toLowerCase() === 'no') {
-      return lang === 'es' ? '❌ No incluye beneficiarios' : '❌ No beneficiaries included';
-    }
-    
-    // Return the original text with a checkmark if it seems positive
-    return `✅ ${beneficiaries}`;
+    // Handle undefined/null
+    return lang === 'es' ? 'Sin información de beneficiarios' : 'No beneficiary information';
   };
   
   // Helper: work permit label with complete string
-  const getWorkPermitLabel = (workPermit: string | undefined) => {
-    if (!workPermit || workPermit.trim() === '') {
-      return lang === 'es' ? 'Sin información de permiso de trabajo' : 'No work permit information';
+  const getWorkPermitLabel = (workPermit: string | boolean | undefined) => {
+    // Handle boolean values (legacy data)
+    if (typeof workPermit === 'boolean') {
+      if (lang === 'es') {
+        return workPermit ? '💼 Permiso de trabajo incluido' : '❌ Sin permiso de trabajo';
+      } else {
+        return workPermit ? '💼 Work permit included' : '❌ No work permit';
+      }
     }
     
-    // If the field already contains descriptive text, use it directly
-    if (workPermit.toLowerCase().includes('permiso') || 
-        workPermit.toLowerCase().includes('permit') ||
-        workPermit.toLowerCase().includes('trabajo') ||
-        workPermit.toLowerCase().includes('work') ||
-        workPermit.toLowerCase().includes('incluido') ||
-        workPermit.toLowerCase().includes('included')) {
+    // Handle string values (new data)
+    if (typeof workPermit === 'string') {
+      if (!workPermit || workPermit.trim() === '') {
+        return lang === 'es' ? 'Sin información de permiso de trabajo' : 'No work permit information';
+      }
+      
+      // If the field already contains descriptive text, use it directly
+      if (workPermit.toLowerCase().includes('permiso') || 
+          workPermit.toLowerCase().includes('permit') ||
+          workPermit.toLowerCase().includes('trabajo') ||
+          workPermit.toLowerCase().includes('work') ||
+          workPermit.toLowerCase().includes('incluido') ||
+          workPermit.toLowerCase().includes('included')) {
+        return `💼 ${workPermit}`;
+      }
+      
+      // Handle common boolean-like values
+      if (workPermit.toLowerCase() === 'yes' || workPermit.toLowerCase() === 'si') {
+        return lang === 'es' ? '💼 Permiso de trabajo incluido' : '💼 Work permit included';
+      }
+      if (workPermit.toLowerCase() === 'no') {
+        return lang === 'es' ? '❌ Sin permiso de trabajo' : '❌ No work permit';
+      }
+      
+      // Return the original text with a work icon if it seems positive
       return `💼 ${workPermit}`;
     }
     
-    // Handle common boolean-like values
-    if (workPermit.toLowerCase() === 'yes' || workPermit.toLowerCase() === 'si') {
-      return lang === 'es' ? '💼 Permiso de trabajo incluido' : '💼 Work permit included';
-    }
-    if (workPermit.toLowerCase() === 'no') {
-      return lang === 'es' ? '❌ Sin permiso de trabajo' : '❌ No work permit';
-    }
-    
-    // Return the original text with a work icon if it seems positive
-    return `💼 ${workPermit}`;
+    // Handle undefined/null
+    return lang === 'es' ? 'Sin información de permiso de trabajo' : 'No work permit information';
   };
 
   // Modal open/close handlers
@@ -324,12 +354,12 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
                   )}
                   
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {visa.beneficiaries && visa.beneficiaries.trim() !== '' && (
+                    {visa.beneficiaries !== undefined && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
                         {getBeneficiariesLabel(visa.beneficiaries)}
                       </span>
                     )}
-                    {visa.workPermit && visa.workPermit.trim() !== '' && (
+                    {visa.workPermit !== undefined && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                         {getWorkPermitLabel(visa.workPermit)}
                       </span>
@@ -451,12 +481,12 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
               )}
               
               <div className="flex flex-wrap gap-2 mb-4">
-                {selectedVisa.beneficiaries && selectedVisa.beneficiaries.trim() !== '' && (
+                {selectedVisa.beneficiaries !== undefined && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
                     {getBeneficiariesLabel(selectedVisa.beneficiaries)}
                   </span>
                 )}
-                {selectedVisa.workPermit && selectedVisa.workPermit.trim() !== '' && (
+                {selectedVisa.workPermit !== undefined && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-blue-200">
                     {getWorkPermitLabel(selectedVisa.workPermit)}
                   </span>
