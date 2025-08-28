@@ -48,8 +48,16 @@ const featuredProperty = null; // No featuredProperty in new server data
 
 <script>
   function clearMenuDataCache() {
-    // This will be handled by the component
-    console.log('Cache clear requested - check component logs');
-    location.reload();
+    // Clear browser cache and reload
+    console.log('Cache clear requested - reloading page');
+    
+    // Clear any localStorage/sessionStorage if needed
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+    
+    // Force reload
+    window.location.reload();
   }
 </script>

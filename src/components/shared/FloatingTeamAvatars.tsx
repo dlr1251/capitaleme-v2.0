@@ -6,6 +6,27 @@ interface FloatingTeamAvatarsProps {
   lang?: 'en' | 'es';
 }
 
+// AvatarCard component for reusability
+const AvatarCard = ({ member, onClick, wide = false }: { member: TeamMemberData, onClick: (m: TeamMemberData) => void, wide?: boolean }) => (
+  <div
+    className="group cursor-pointer flex flex-col items-center"
+    onClick={() => onClick(member)}
+  >
+    <div className={`${wide ? 'w-52 h-40 md:w-[18rem] md:h-48' : 'w-40 h-40 md:w-48 md:h-48'} rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500`}>
+      <img
+        src={member.image}
+        alt={member.name}
+        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        loading="lazy"
+      />
+    </div>
+    <div className="mt-4 text-center">
+      <div className="text-lg font-semibold text-secondary">{member.name}</div>
+      <div className="text-sm text-primary/70">{member.role}</div>
+    </div>
+  </div>
+);
+
 // Helper to order team members as requested
 const getOrderedMembers = (teamMembers: TeamMemberData[]) => {
   // Order based on the new author file structure
@@ -191,26 +212,5 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
     </>
   );
 };
-
-// AvatarCard component for reusability
-const AvatarCard = ({ member, onClick, wide = false }: { member: TeamMemberData, onClick: (m: TeamMemberData) => void, wide?: boolean }) => (
-  <div
-    className="group cursor-pointer flex flex-col items-center"
-    onClick={() => onClick(member)}
-  >
-    <div className={`${wide ? 'w-52 h-40 md:w-[18rem] md:h-48' : 'w-40 h-40 md:w-48 md:h-48'} rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500`}>
-      <img
-        src={member.image}
-        alt={member.name}
-        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        loading="lazy"
-      />
-    </div>
-    <div className="mt-4 text-center">
-      <div className="text-lg font-semibold text-secondary">{member.name}</div>
-      <div className="text-sm text-primary/70">{member.role}</div>
-    </div>
-  </div>
-);
 
 export default FloatingTeamAvatars; 
