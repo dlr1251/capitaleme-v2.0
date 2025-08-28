@@ -488,10 +488,10 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
                 <div className="flex items-end justify-between mt-2 pt-2 w-full">
                   <div className="flex flex-col gap-1 items-start">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${typeof visa.beneficiaries === 'string' && visa.beneficiaries.toLowerCase().includes('yes') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'}`}>
-                      {getBeneficiariesLabel(visa.beneficiaries)}
+                      {getBeneficiariesLabel(visa.beneficiaries, lang)}
                     </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${visa.workPermit && visa.workPermit !== 'No work permit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'}`}>
-                      {getWorkPermitLabel(visa.workPermit)}
+                      {getWorkPermitLabel(visa.workPermit, lang)}
                     </span>
                   </div>
                   <div className="relative flex items-end group/whatsapp">
