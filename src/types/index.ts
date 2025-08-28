@@ -93,10 +93,13 @@ export interface TeamMemberData {
   role: string;
   bio: string;
   image: string;
-  linkedin?: string;
-  email?: string | null;
-  order?: number;
-  phone?: string;
+  email: string;
+  socialLinks?: {
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+  lang: string;
 }
 
 // Property types for real estate
