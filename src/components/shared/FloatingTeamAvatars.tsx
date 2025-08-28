@@ -6,26 +6,7 @@ interface FloatingTeamAvatarsProps {
   lang?: 'en' | 'es';
 }
 
-// AvatarCard component for reusability
-const AvatarCard = ({ member, onClick, wide = false }: { member: TeamMemberData, onClick: (m: TeamMemberData) => void, wide?: boolean }) => (
-  <div
-    className="group cursor-pointer flex flex-col items-center"
-    onClick={() => onClick(member)}
-  >
-    <div className={`${wide ? 'w-52 h-40 md:w-[18rem] md:h-48' : 'w-40 h-40 md:w-48 md:h-48'} rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500`}>
-      <img
-        src={member.image}
-        alt={member.name}
-        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        loading="lazy"
-      />
-    </div>
-    <div className="mt-4 text-center">
-      <div className="text-lg font-semibold text-secondary">{member.name}</div>
-      <div className="text-sm text-primary/70">{member.role}</div>
-    </div>
-  </div>
-);
+
 
 // Helper to order team members as requested
 const getOrderedMembers = (teamMembers: TeamMemberData[]) => {
@@ -88,10 +69,36 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
           <div className="col-span-1 flex justify-center items-center">
             <div className="flex gap-8">
               {ordered[0] && (
-                <AvatarCard member={ordered[0]} onClick={openModal} wide />
+                <div className="group cursor-pointer flex flex-col items-center" onClick={() => openModal(ordered[0])}>
+                  <div className="w-52 h-40 md:w-[18rem] md:h-48 rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500">
+                    <img
+                      src={ordered[0].image}
+                      alt={ordered[0].name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="mt-4 text-center">
+                    <div className="text-lg font-semibold text-secondary">{ordered[0].name}</div>
+                    <div className="text-sm text-primary/70">{ordered[0].role}</div>
+                  </div>
+                </div>
               )}
               {ordered[1] && (
-                <AvatarCard member={ordered[1]} onClick={openModal} wide />
+                <div className="group cursor-pointer flex flex-col items-center" onClick={() => openModal(ordered[1])}>
+                  <div className="w-52 h-40 md:w-[18rem] md:h-48 rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500">
+                    <img
+                      src={ordered[1].image}
+                      alt={ordered[1].name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="mt-4 text-center">
+                    <div className="text-lg font-semibold text-secondary">{ordered[1].name}</div>
+                    <div className="text-sm text-primary/70">{ordered[1].role}</div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -100,17 +107,56 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
           {/* Row 2: Mateo, Sara, Harold */}
           <div className="col-span-1 flex justify-center items-center">
             {ordered[2] && (
-              <AvatarCard member={ordered[2]} onClick={openModal} />
+              <div className="group cursor-pointer flex flex-col items-center" onClick={() => openModal(ordered[2])}>
+                <div className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500">
+                  <img
+                    src={ordered[2].image}
+                    alt={ordered[2].name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-lg font-semibold text-secondary">{ordered[2].name}</div>
+                  <div className="text-sm text-primary/70">{ordered[2].role}</div>
+                </div>
+              </div>
             )}
           </div>
           <div className="col-span-1 flex justify-center items-center">
             {ordered[3] && (
-              <AvatarCard member={ordered[3]} onClick={openModal} />
+              <div className="group cursor-pointer flex flex-col items-center" onClick={() => openModal(ordered[3])}>
+                <div className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500">
+                  <img
+                    src={ordered[3].image}
+                    alt={ordered[3].name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-lg font-semibold text-secondary">{ordered[3].name}</div>
+                  <div className="text-sm text-primary/70">{ordered[3].role}</div>
+                </div>
+              </div>
             )}
           </div>
           <div className="col-span-1 flex justify-center items-center">
             {ordered[4] && (
-              <AvatarCard member={ordered[4]} onClick={openModal} />
+              <div className="group cursor-pointer flex flex-col items-center" onClick={() => openModal(ordered[4])}>
+                <div className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500">
+                  <img
+                    src={ordered[4].image}
+                    alt={ordered[4].name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-lg font-semibold text-secondary">{ordered[4].name}</div>
+                  <div className="text-sm text-primary/70">{ordered[4].role}</div>
+                </div>
+              </div>
             )}
           </div>
 
@@ -118,7 +164,20 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
           <div className="col-span-1" />
           <div className="col-span-1 flex justify-center items-center">
             {ordered[5] && (
-              <AvatarCard member={ordered[5]} onClick={openModal} />
+              <div className="group cursor-pointer flex flex-col items-center" onClick={() => openModal(ordered[5])}>
+                <div className="w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden border-4 border-white shadow-2xl hover:shadow-3xl transition-all duration-500">
+                  <img
+                    src={ordered[5].image}
+                    alt={ordered[5].name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-lg font-semibold text-secondary">{ordered[5].name}</div>
+                  <div className="text-sm text-primary/70">{ordered[5].role}</div>
+                </div>
+              </div>
             )}
           </div>
           <div className="col-span-1" />
