@@ -25,26 +25,11 @@ const featuredProperty = null; // No featuredProperty in new server data
         <HomePageHero currentLang="en"/>
         <AboutPageSection lang="en"/>                       
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
+        <HowWeWork lang="en"/>
         <!-- <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load /> -->
         <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />
     		<!-- <CalendlyInline /> -->
-        <HowWeWork lang="en"/>
 		    <BlogPageLatest/>
 	</main>
 </Layout>
 
-<script>
-  function clearMenuDataCache() {
-    // Clear browser cache and reload
-    console.log('Cache clear requested - reloading page');
-    
-    // Clear any localStorage/sessionStorage if needed
-    if (typeof window !== 'undefined') {
-      localStorage.clear();
-      sessionStorage.clear();
-    }
-    
-    // Force reload
-    window.location.reload();
-  }
-</script>

@@ -12,7 +12,10 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   BriefcaseIcon,
-  ArrowTopRightOnSquareIcon
+  ArrowTopRightOnSquareIcon,
+  BoltIcon,
+  GlobeAltIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/solid';
 
 // Visa and Guide types
@@ -22,10 +25,10 @@ interface Visa {
   slug: string;
   description: string;
   isPopular: boolean;
-  emojis: string[];
+  emoji: string;
   alcance?: string;
-  beneficiaries?: string | boolean;
-  workPermit?: string | boolean;
+  beneficiaries?: string;
+  workPermit?: string;
   duration?: string;
   requirements?: string;
 }
@@ -48,119 +51,25 @@ interface HomeVisaAssistanceSectionProps {
 }
 
 const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: HomeVisaAssistanceSectionProps) => {
-  // Debug: Log the data being received
-  console.log('HomeVisaAssistanceSection received:', { 
-    totalVisas: visas.length, 
-    popularVisas: visas.filter(v => v.isPopular).length,
-    sampleVisa: visas[0],
-    allVisasData: visas.map(v => ({ 
-      id: v.id, 
-      title: v.title, 
-      isPopular: v.isPopular,
-      beneficiaries: v.beneficiaries,
-      workPermit: v.workPermit
-    }))
-  });
-
-  // Debug: Log specific visa data for beneficiaries and workPermit
-  if (visas.length > 0) {
-    console.log('Sample visa beneficiaries/workPermit data:', visas.slice(0, 3).map(v => ({
-      title: v.title,
-      beneficiaries: v.beneficiaries,
-      workPermit: v.workPermit,
-      beneficiariesType: typeof v.beneficiaries,
-      workPermitType: typeof v.workPermit
-    })));
-  }
   
   // Modal state
   const [selectedVisa, setSelectedVisa] = useState<Visa | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Helper: beneficiaries label with complete string
-  const getBeneficiariesLabel = (beneficiaries: string | boolean | undefined) => {
-    // Handle boolean values (legacy data)
-    if (typeof beneficiaries === 'boolean') {
-      if (lang === 'es') {
-        return beneficiaries ? '✅ Incluye cónyuge e hijos' : '❌ No incluye beneficiarios';
-      } else {
-        return beneficiaries ? '✅ Includes spouse & children' : '❌ No beneficiaries included';
-      }
+  // Helper: beneficiaries label - simplified to show raw data
+  const getBeneficiariesLabel = (beneficiaries: string | undefined) => {
+    if (!beneficiaries || beneficiaries === '') {
+      return lang === 'es' ? 'Sin información' : 'No information';
     }
-    
-    // Handle string values (new data)
-    if (typeof beneficiaries === 'string') {
-      if (!beneficiaries || beneficiaries.trim() === '') {
-        return lang === 'es' ? 'Sin información de beneficiarios' : 'No beneficiary information';
-      }
-      
-      // If the field already contains descriptive text, use it directly
-      if (beneficiaries.toLowerCase().includes('incluye') || 
-          beneficiaries.toLowerCase().includes('includes') ||
-          beneficiaries.toLowerCase().includes('cónyuge') ||
-          beneficiaries.toLowerCase().includes('spouse') ||
-          beneficiaries.toLowerCase().includes('hijos') ||
-          beneficiaries.toLowerCase().includes('children')) {
-        return `✅ ${beneficiaries}`;
-      }
-      
-      // Handle common boolean-like values
-      if (beneficiaries.toLowerCase() === 'yes' || beneficiaries.toLowerCase() === 'si') {
-        return lang === 'es' ? '✅ Incluye cónyuge e hijos' : '✅ Includes spouse & children';
-      }
-      if (beneficiaries.toLowerCase() === 'no') {
-        return lang === 'es' ? '❌ No incluye beneficiarios' : '❌ No beneficiaries included';
-      }
-      
-      // Return the original text with a checkmark if it seems positive
-      return `✅ ${beneficiaries}`;
-    }
-    
-    // Handle undefined/null
-    return lang === 'es' ? 'Sin información de beneficiarios' : 'No beneficiary information';
+    return beneficiaries;
   };
   
-  // Helper: work permit label with complete string
-  const getWorkPermitLabel = (workPermit: string | boolean | undefined) => {
-    // Handle boolean values (legacy data)
-    if (typeof workPermit === 'boolean') {
-      if (lang === 'es') {
-        return workPermit ? '💼 Permiso de trabajo incluido' : '❌ Sin permiso de trabajo';
-      } else {
-        return workPermit ? '💼 Work permit included' : '❌ No work permit';
-      }
+  // Helper: work permit label - simplified to show raw data
+  const getWorkPermitLabel = (workPermit: string | undefined) => {
+    if (!workPermit || workPermit === '') {
+      return lang === 'es' ? 'Sin información' : 'No information';
     }
-    
-    // Handle string values (new data)
-    if (typeof workPermit === 'string') {
-      if (!workPermit || workPermit.trim() === '') {
-        return lang === 'es' ? 'Sin información de permiso de trabajo' : 'No work permit information';
-      }
-      
-      // If the field already contains descriptive text, use it directly
-      if (workPermit.toLowerCase().includes('permiso') || 
-          workPermit.toLowerCase().includes('permit') ||
-          workPermit.toLowerCase().includes('trabajo') ||
-          workPermit.toLowerCase().includes('work') ||
-          workPermit.toLowerCase().includes('incluido') ||
-          workPermit.toLowerCase().includes('included')) {
-        return `💼 ${workPermit}`;
-      }
-      
-      // Handle common boolean-like values
-      if (workPermit.toLowerCase() === 'yes' || workPermit.toLowerCase() === 'si') {
-        return lang === 'es' ? '💼 Permiso de trabajo incluido' : '💼 Work permit included';
-      }
-      if (workPermit.toLowerCase() === 'no') {
-        return lang === 'es' ? '❌ Sin permiso de trabajo' : '❌ No work permit';
-      }
-      
-      // Return the original text with a work icon if it seems positive
-      return `💼 ${workPermit}`;
-    }
-    
-    // Handle undefined/null
-    return lang === 'es' ? 'Sin información de permiso de trabajo' : 'No work permit information';
+    return workPermit;
   };
 
   // Modal open/close handlers
@@ -194,7 +103,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
     legalExpertise: "Experiencia Legal",
     documentPreparation: "Preparación de Documentos",
     familyApplications: "Solicitudes Familiares",
-    popularTitle: "🌟 Categorías de visa populares",
+    popularTitle: "Categorías de visa populares",
     popularSubtitle: "Nuestros servicios de visa más solicitados",
     viewDetails: "Ver detalles",
     readGuide: "Leer guía",
@@ -205,19 +114,21 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
       requirements: "Requisitos específicos",
       duration: "Duración",
       close: "Cerrar"
-    }
+    },
+    beneficiaries: "Beneficiarios",
+    workPermit: "Permiso de trabajo"
   } : {
-    title: "Visa Assistance",
-    subtitle: "Comprehensive Legal Services",
-    description: "As attorneys we not only focus on your paperwork. We procure to understand your needs and legal risks when moving abroad to ensure your best strategy with the highest success rate possible.",
+    title: "Visa assistance",
+    subtitle: "and legal support",
+    description: "As attorneys we procure to understand your needs and legal risks when moving and operating abroad to ensure your best strategy.",
     explorePopular: "Explore some popular visas",
     discoverAll: "Discover all visa categories",
     guides: "Guides & Resources",
     viewAllGuides: "View all guides",
-    legalExpertise: "Legal Expertise",
-    documentPreparation: "Document Preparation",
-    familyApplications: "Family Applications",
-    popularTitle: "🌟 Popular Visa Categories",
+    legalExpertise: "Legal expertise",
+    documentPreparation: "Document preparation",
+    familyApplications: "Family applications",
+    popularTitle: "Popular visa categories",
     popularSubtitle: "Our most requested visa services",
     viewDetails: "View details",
     readGuide: "Read guide",
@@ -228,30 +139,42 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
       requirements: "Specific requirements",
       duration: "Duration",
       close: "Close"
-    }
+    },
+    beneficiaries: "Beneficiaries",
+    workPermit: "Work permit"
   };
 
-  // Top section features (4 cards)
-  const topFeatures = [
+  // Combined features section (merging visa features and why choose us)
+  const combinedFeatures = [
     {
       icon: <CurrencyDollarIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "Precios Transparentes" : "Transparent Pricing",
+      title: lang === 'es' ? "Precios transparentes" : "Transparent pricing",
       description: lang === 'es' ? "Costos claros sin tarifas ocultas" : "Clear costs with no hidden fees"
     },
     {
       icon: <ShieldCheckIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "Asesoría Experta" : "Expert Guidance",
-      description: lang === 'es' ? "Asistencia legal profesional durante todo el proceso" : "Professional legal assistance throughout the process"
+      title: lang === 'es' ? "Equipo experto" : "Expert team",
+      description: lang === 'es' ? "Abogados bilingües con años de experiencia en derecho colombiano" : "Bilingual lawyers with years of experience in Colombian law"
     },
     {
-      icon: <ClockIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "Procesamiento Rápido" : "Fast Processing",
-      description: lang === 'es' ? "Manejo eficiente para minimizar tiempos de espera" : "Efficient handling to minimize waiting times"
+      icon: <BoltIcon className="w-6 h-6" />,
+      title: lang === 'es' ? "Proceso eficiente" : "Efficient process",
+      description: lang === 'es' ? "Enfoque impulsado por tecnología para resultados más rápidos y mejores" : "Technology-driven approach for faster, better results"
+    },
+    {
+      icon: <GlobeAltIcon className="w-6 h-6" />,
+      title: lang === 'es' ? "Servicio bilingüe" : "Bilingual service",
+      description: lang === 'es' ? "Comunicación fluida en inglés y español" : "Fluent communication in English and Spanish"
     },
     {
       icon: <ComputerDesktopIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "100% Virtual y Personalizado" : "100% Virtual & Personalized",
-      description: lang === 'es' ? "Proceso completo en línea adaptado a tus necesidades" : "Complete online process tailored to your needs"
+      title: lang === 'es' ? "Tecnología avanzada" : "Tech-Forward",
+      description: lang === 'es' ? "Aprovechando la tecnología para una práctica legal eficiente" : "Leveraging technology for efficient legal practice"
+    },
+    {
+      icon: <ChartBarIcon className="w-6 h-6" />,
+      title: lang === 'es' ? "Resultados probados" : "Proven results",
+      description: lang === 'es' ? "Cientos de casos exitosos completados" : "Hundreds of successful cases completed"
     }
   ];
 
@@ -267,42 +190,42 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Content */}
-        <div className="text-center mb-20">
+        <div className="text-left mb-20">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
             <ShieldCheckIcon className="w-4 h-4" />
-            {lang === 'en' ? 'Professional Visa Services' : 'Servicios Profesionales de Visa'}
+            {lang === 'en' ? 'Professional visa services' : 'Servicios profesionales de visa'}
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6">
             {content.title}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               {content.subtitle}
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-600 leading-relaxed">
             {content.description}
           </p>
         </div>
 
-        {/* Features Grid */}
+        {/* Why Choose Us - Combined Features */}
         <div className="mb-24">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              {lang === 'en' ? 'Why Choose Our Visa Services?' : '¿Por qué Elegir Nuestros Servicios de Visa?'}
+          <div className="text-left mb-16">
+            <h3 className="text-3xl font-bold text-primary mb-4">
+              {lang === 'en' ? 'Why choose Capital M Law?' : '¿Por qué elegir Capital M Law?'}
             </h3>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {lang === 'en' ? 'Comprehensive support for your immigration journey' : 'Apoyo integral para tu viaje de inmigración'}
+            <p className="text-xl text-gray-600 ">
+              {lang === 'en' ? 'Comprehensive legal support with proven expertise and transparent processes' : 'Apoyo legal integral con experiencia probada y procesos transparentes'}
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {topFeatures.map((feature, index) => (
-              <div key={index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 text-center group">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {combinedFeatures.map((feature, index) => (
+              <div key={index} className="bg-white rounded-sm p-8 shadow-sm border border-gray-200 text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <div className="text-primary">
                     {feature.icon}
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <h3 className="text-xl font-semibold text-primary mb-4">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
@@ -316,70 +239,53 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
         {/* Popular Visas Section */}
         {(popularVisas.length > 0 || visas.length > 0) && (
           <div className="mb-24">
-            <div className="text-center mb-16">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                {popularVisas.length > 0 ? content.popularTitle : (lang === 'es' ? '🌟 Categorías de Visa Disponibles' : '🌟 Available Visa Categories')}
+            <div className="text-left mb-16">
+              <h3 className="text-3xl font-bold text-secondary mb-4">
+                {popularVisas.length > 0 ? content.popularTitle : (lang === 'es' ? 'Visas populares' : 'Popular visas')}
               </h3>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600">
                 {popularVisas.length > 0 ? content.popularSubtitle : (lang === 'es' ? 'Explora nuestras opciones de visa más relevantes' : 'Explore our most relevant visa options')}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {(popularVisas.length > 0 ? popularVisas : visas.slice(0, 6)).map((visa) => (
-                <div key={visa.id} className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => openModal(visa)}>
+                <div key={visa.id} className="bg-white rounded p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => openModal(visa)}>
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-3xl">{visa.emojis?.[0] || '📋'}</span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      {visa.isPopular ? content.popular : (lang === 'es' ? 'Disponible' : 'Available')}
-                    </span>
+                    <h4 className="text-xl font-bold text-primary  group-hover:text-primary transition-colors">
+                      {visa.title}
+                    </h4>                  
                   </div>
-                  
-                  <h4 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                    {visa.title}
-                  </h4>
-                  
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    {visa.description}
-                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {visa.beneficiaries && visa.beneficiaries.trim() !== '' && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                         {`${content.beneficiaries}: ${getBeneficiariesLabel(visa.beneficiaries)}`}
+                      </span>
+                    )}
+                    {visa.workPermit && visa.workPermit.trim() !== '' && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                        {`${content.workPermit}: ${getWorkPermitLabel(visa.workPermit)}`}
+                      </span>
+                    )}
+                  </div>  
                   
                   {/* Scope Description */}
                   {visa.alcance && (
                     <div className="mb-6">
-                      <p className="text-sm text-gray-500 font-medium mb-2">{content.modal.scope}:</p>
-                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                      {/* <p className="text-sm text-gray-500 font-medium mb-2">{content.modal.scope}:</p> */}
+                      <p className="text-sm text-gray-700">
                         {visa.alcance}
                       </p>
                     </div>
                   )}
                   
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {visa.beneficiaries !== undefined && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                        {getBeneficiariesLabel(visa.beneficiaries)}
-                      </span>
-                    )}
-                    {visa.workPermit !== undefined && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                        {getWorkPermitLabel(visa.workPermit)}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <span className="text-sm text-gray-500 font-medium">
-                      {visa.duration || (lang === 'es' ? 'Duración variable' : 'Variable duration')}
-                    </span>
-                    <div className="flex items-center gap-2 text-primary group-hover:text-secondary transition-colors">
-                      <span className="font-medium text-sm">{content.viewDetails}</span>
-                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                    </div>
-                  </div>
+                                 
                 </div>
               ))}
             </div>
             
-            <div className="text-center mt-12">
+            <div className="text-left mt-12">
               <a 
                 href={`/${lang}/visas`}
                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold text-lg group"
@@ -394,11 +300,11 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
         {/* Guides Section */}
         {guides.length > 0 && (
           <div className="mb-24">
-            <div className="text-center mb-16">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+            <div className="text-left mb-16">
+              <h3 className="text-3xl font-bold text-primary mb-4">
                 {content.guides}
               </h3>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600">
                 {lang === 'es' 
                   ? 'Recursos útiles para entender mejor el proceso de visa'
                   : 'Helpful resources to better understand the visa process'
@@ -408,30 +314,23 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {guides.slice(0, 4).map((guide) => (
-                <div key={guide.id} className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 group">
-                  <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                <a href={`/${lang}/guides/${guide.slug}`} key={guide.id} className="bg-white rounded-sm p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 group">
+                  <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
                     <DocumentTextIcon className="w-6 h-6 text-secondary" />
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-secondary transition-colors">
+                  <h4 className="text-lg font-semibold text-primary mb-3 group-hover:text-secondary transition-colors">
                     {guide.title}
                   </h4>
                   <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                     {guide.excerpt || guide.description}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      {guide.category || (lang === 'es' ? 'Guía' : 'Guide')}
-                    </span>
-                    <div className="flex items-center gap-2 text-secondary group-hover:text-secondary/80 transition-colors">
-                      <span className="text-sm font-medium">{content.readGuide}</span>
-                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                    </div>
+                  <div className="flex items-center justify-between">                
                   </div>
-                </div>
+                </a>
               ))}
             </div>
             
-            <div className="text-center mt-12">
+            <div className="text-left mt-12">
               <a 
                 href={`/${lang}/guides`}
                 className="inline-flex items-center px-6 py-3 border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
@@ -449,11 +348,13 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleBackdropClick}
         >
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-sm max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedVisa.emojis?.[0] || '📋'}</span>
+                  <span className="text-3xl">
+                    {selectedVisa.emoji}
+                  </span>
                   <h3 className="text-2xl font-bold text-gray-900">{selectedVisa.title}</h3>
                 </div>
                 <button
@@ -481,16 +382,16 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
               )}
               
               <div className="flex flex-wrap gap-2 mb-4">
-                {selectedVisa.beneficiaries !== undefined && (
+                {selectedVisa.beneficiaries && selectedVisa.beneficiaries.trim() !== '' && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
                     {getBeneficiariesLabel(selectedVisa.beneficiaries)}
                   </span>
                 )}
-                {selectedVisa.workPermit !== undefined && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-blue-200">
-                    {getWorkPermitLabel(selectedVisa.workPermit)}
-                  </span>
-                )}
+                                    {selectedVisa.workPermit && selectedVisa.workPermit.trim() !== '' && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-blue-200">
+                        {`${content.workPermit}: ${getWorkPermitLabel(selectedVisa.workPermit)}`}
+                      </span>
+                    )}
               </div>
               
               <div className="flex items-center justify-between">

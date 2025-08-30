@@ -4,8 +4,8 @@ export type Visa = {
   slug: string;
   description: string;
   countries: string[]; // Array of country codes
-  beneficiaries?: boolean;
-  workPermit?: boolean;
+  beneficiaries?: string;
+  workPermit?: string;
   type: 'Visitor' | 'Migrant' | 'Resident';
   isPopular?: boolean;
   emoji?: string;
@@ -21,8 +21,8 @@ export const visas: Visa[] = [
     slug: 'turista',
     description: 'Permite visitar Colombia por turismo.',
     countries: ['US', 'ES', 'FR', 'CO'],
-    beneficiaries: false,
-    workPermit: false,
+    beneficiaries: 'No',
+    workPermit: 'No',
     type: 'Visitor',
     isPopular: true,
     emoji: '🛂',
@@ -35,8 +35,8 @@ export const visas: Visa[] = [
     slug: 'migrante',
     description: 'Para quienes desean residir en Colombia.',
     countries: ['US', 'CO'],
-    beneficiaries: true,
-    workPermit: true,
+    beneficiaries: 'Yes',
+    workPermit: 'Yes',
     type: 'Migrant',
     isPopular: false,
     emoji: '🏠',

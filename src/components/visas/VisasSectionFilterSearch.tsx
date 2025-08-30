@@ -111,50 +111,34 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
   };
 
   // Funciones auxiliares para chips
-  const getBeneficiariesLabel = (beneficiaries: string | boolean | undefined, lang: string) => {
-    if (typeof beneficiaries === 'string') {
-      const val = beneficiaries.trim().toLowerCase();
-      if (lang === 'es') {
-        if (val === 'yes' || val === 'sí' || val === 'si') return content.withBeneficiaries;
-        if (val === 'no') return content.withoutBeneficiaries;
-        return beneficiaries;
-      } else {
-        if (val === 'yes') return content.withBeneficiaries;
-        if (val === 'no') return content.withoutBeneficiaries;
-        return beneficiaries;
-      }
+  const getBeneficiariesLabel = (beneficiaries: string | undefined, lang: string) => {
+    if (!beneficiaries) return '';
+    
+    const val = beneficiaries.trim().toLowerCase();
+    if (lang === 'es') {
+      if (val === 'yes' || val === 'sí' || val === 'si') return content.withBeneficiaries;
+      if (val === 'no') return content.withoutBeneficiaries;
+      return beneficiaries;
+    } else {
+      if (val === 'yes') return content.withBeneficiaries;
+      if (val === 'no') return content.withoutBeneficiaries;
+      return beneficiaries;
     }
-    if (typeof beneficiaries === 'boolean') {
-      if (lang === 'es') {
-        return beneficiaries ? content.withBeneficiaries : content.withoutBeneficiaries;
-      } else {
-        return beneficiaries ? content.withBeneficiaries : content.withoutBeneficiaries;
-      }
-    }
-    return '';
   };
 
-  const getWorkPermitLabel = (workPermit: string | boolean | undefined, lang: string) => {
-    if (typeof workPermit === 'string') {
-      const val = workPermit.trim().toLowerCase();
-      if (lang === 'es') {
-        if (val === 'yes' || val === 'sí' || val === 'si') return content.openWorkPermit;
-        if (val === 'no') return content.withoutWorkPermit;
-        return workPermit;
-      } else {
-        if (val === 'yes') return content.openWorkPermit;
-        if (val === 'no') return content.withoutWorkPermit;
-        return workPermit;
-      }
+  const getWorkPermitLabel = (workPermit: string | undefined, lang: string) => {
+    if (!workPermit) return '';
+    
+    const val = workPermit.trim().toLowerCase();
+    if (lang === 'es') {
+      if (val === 'yes' || val === 'sí' || val === 'si') return content.openWorkPermit;
+      if (val === 'no') return content.withoutWorkPermit;
+      return workPermit;
+    } else {
+      if (val === 'yes') return content.openWorkPermit;
+      if (val === 'no') return content.withoutWorkPermit;
+      return workPermit;
     }
-    if (typeof workPermit === 'boolean') {
-      if (lang === 'es') {
-        return workPermit ? content.openWorkPermit : content.withoutWorkPermit;
-      } else {
-        return workPermit ? content.openWorkPermit : content.withoutWorkPermit;
-      }
-    }
-    return '';
   };
 
   // Handle WhatsApp contact

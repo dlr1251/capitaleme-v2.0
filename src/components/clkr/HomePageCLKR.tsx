@@ -234,15 +234,15 @@ const HomePageCLKR: React.FC<HomePageCLKRProps> = ({ lang = 'en', clkrServices =
     <section className="py-16 bg-gradient-to-br from-slate-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
+        <div className="text-left mb-12">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <SparklesIcon className="w-4 h-4" />
             {lang === 'en' ? 'AI-Generated & Attorney-Reviewed' : 'Generado por IA y Revisado por Abogados'}
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-primary mb-4">
             {lang === 'en' ? 'Colombian Legal Repository' : 'Repositorio Legal Colombiano'}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600">
             {lang === 'en' 
               ? 'Comprehensive legal knowledge base with AI-generated content reviewed by experienced attorneys'
               : 'Base de conocimiento legal integral con contenido generado por IA revisado por abogados experimentados'
@@ -252,25 +252,25 @@ const HomePageCLKR: React.FC<HomePageCLKRProps> = ({ lang = 'en', clkrServices =
 
         {/* Global Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
+          <div className="bg-white rounded-sm p-6 text-center border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-4">
               <DocumentTextIcon className="w-6 h-6 text-primary" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{globalStats.totalArticles}</div>
+            <div className="text-2xl font-bold text-primary">{globalStats.totalArticles}</div>
             <div className="text-sm text-gray-600">Total Articles</div>
           </div>
-          <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-secondary/10 rounded-lg mb-4">
+          <div className="bg-white rounded-sm p-6 text-center border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-secondary/10 rounded-full mb-4">
               <ScaleIcon className="w-6 h-6 text-secondary" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{globalStats.uniqueModules}</div>
+            <div className="text-2xl font-bold text-primary">{globalStats.uniqueModules}</div>
             <div className="text-sm text-gray-600">Legal Modules</div>
           </div>
-          <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
+          <div className="bg-white rounded-sm p-6 text-center border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-4">
               <ClockIcon className="w-6 h-6 text-primary" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{globalStats.totalReadingTime}h</div>
+            <div className="text-2xl font-bold text-primary">{globalStats.totalReadingTime}h</div>
             <div className="text-sm text-gray-600">Total Reading Time</div>
           </div>
         </div>

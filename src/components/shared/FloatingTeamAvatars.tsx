@@ -42,7 +42,7 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
   return (
     <div className="w-full">
       {/* Floating Avatars Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {teamMembers.map((member, index) => (
           <div
             key={member.id || index}
@@ -52,28 +52,25 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
             {/* Avatar Container */}
             <div className="relative">
               {/* Avatar Image */}
-              <div className="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-2xl transition-all duration-300">
+              <div className="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-lg transition-all duration-300">
                 <img
                   src={member.image}
                   alt={member.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
+                            
               
-              {/* Hover Glow Effect */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              {/* Name Tooltip */}
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-                <div className="bg-white px-3 py-1 rounded-lg shadow-lg text-sm font-medium text-gray-800 whitespace-nowrap">
+              {/* Name - Always Visible */}
+              <div className="mt-3 text-center">
+                <p className="text-sm md:text-base font-semibold text-primary">
                   {member.name}
-                </div>
-                <div className="w-2 h-2 bg-white transform rotate-45 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1"></div>
+                </p>
               </div>
             </div>
             
             {/* Role (visible on larger screens) */}
-            <div className="mt-3 text-center">
+            <div className="mt-2 text-center">
               <p className="text-xs md:text-sm text-gray-600 font-medium">
                 {member.role}
               </p>
@@ -104,7 +101,7 @@ const FloatingTeamAvatars = ({ teamMembers = [], lang = 'en' }: FloatingTeamAvat
               <div className="p-6">
                 <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 mb-6">
                   {/* Member Image */}
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-primary/20">
+                  <div className="w-24 h-24 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-primary/20">
                     <img
                       src={selectedMember.image}
                       alt={selectedMember.name}

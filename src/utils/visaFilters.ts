@@ -19,12 +19,20 @@ export function filterVisasByType(visas: Visa[], type: Visa['type']): Visa[] {
  * Filter visas by whether they allow beneficiaries.
  */
 export function filterVisasByBeneficiaries(visas: Visa[], hasBeneficiaries: boolean): Visa[] {
-  return visas.filter(visa => visa.beneficiaries === hasBeneficiaries);
+  return visas.filter(visa => {
+    if (!visa.beneficiaries) return !hasBeneficiaries;
+    const val = visa.beneficiaries.toLowerCase();
+    return hasBeneficiaries ? (val === 'yes' || val === 'sí' || val === 'si') : (val === 'no');
+  });
 }
 
 /**
  * Filter visas by whether they allow a work permit.
  */
 export function filterVisasByWorkPermit(visas: Visa[], hasWorkPermit: boolean): Visa[] {
-  return visas.filter(visa => visa.workPermit === hasWorkPermit);
+  return visas.filter(visa => {
+    if (!visa.workPermit) return !hasWorkPermit;
+    const val = visa.workPermit.toLowerCase();
+    return hasWorkPermit ? (val === 'yes' || val === 'sí' || val === 'si' || val.includes('work permit')) : (val === 'no');
+  });
 } 

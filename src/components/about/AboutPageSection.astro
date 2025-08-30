@@ -27,19 +27,19 @@ const sections = lang === 'es' ? [
   }
 ] : [
   {
-    title: "Who We Are",
+    title: "Who we are",
     content: `
       We are a service-oriented Colombian boutique law firm based in Medellín, Colombia. Led by Daniel Luque and María Fernanda Duarte, we are a team with experience in Colombian Law and provide services to individuals and groups who are relocating to our country.
     `
   },
   {
-    title: "What We Do",
+    title: "What we do",
     content: `
       We provide legal advice in Immigration Processes, Property Purchases, Business Formation, Trademark Registration, Family Law and more.
     `
   },
   {
-    title: "How We Work",
+    title: "How we work",
     content: `
       We adapt our workflow to each client's needs. We study each case in detail, according to Colombian Law, to define the least risky, most profitable and secure path to achieve our client's objectives—a path that always begins with an <a href="/en/contact" class="underline hover:text-primary">initial consultation</a>.
     `
@@ -49,14 +49,14 @@ const sections = lang === 'es' ? [
 // Define content based on language
 const content = lang === 'es' ? {
   title: "Sobre nosotros",
-  teamTitle: "Conoce Nuestro Equipo",
+  teamTitle: "Conoce nuestro equipo",
   teamDesc: "Nuestros profesionales legales experimentados están aquí para guiarte a través de cada paso de tu viaje en Colombia.",
-  teamAccent: "Equipo Legal Experto"
+  teamAccent: "Equipo de expertos"
 } : {
-  title: "About Us",
-  teamTitle: "Meet Our Team",
+  title: "About us",
+  teamTitle: "Meet our team",
   teamDesc: "Our experienced legal professionals are here to guide you through every step of your journey in Colombia.",
-  teamAccent: "Expert Legal Team"
+  teamAccent: "Expert team"
 };
 
 import GoogleReviews from '../ui/cards/GoogleReviews.jsx';
@@ -95,14 +95,14 @@ const teamMembers = await getTeamMembers(lang);
         {sections.map((section, index) => (
           <div class="group relative">
             <!-- Content card -->
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-primary/10 hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
+            <div class="bg-white/80 backdrop-blur-sm rounded-lg p-8 shadow-md border border-primary/10 hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
               <!-- Title with gradient -->
               <h3 class="text-xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 {section.title}
               </h3>
               
               <!-- Content -->
-              <div class="prose font-light leading-relaxed text-primary/80">
+              <div class="prose prose-lg font-light leading-relaxed text-primary/80">
                 <div set:html={section.content} />
               </div>
               

@@ -132,12 +132,6 @@ function processVisasData(visasData, lang) {
       return visa.lang === lang;
     })
     .map(visa => {
-      // Convert string values to booleans for the component
-      const beneficiariesBool = visa.beneficiaries === 'Yes' || visa.beneficiaries === true;
-      const workPermitBool = visa.work_permit === 'Yes' || visa.work_permit === true || 
-                             visa.work_permit === 'Open work permit' || 
-                             visa.work_permit === 'Work permit';
-      
       return {
         id: visa.id,
         title: visa.title || '',
@@ -147,8 +141,8 @@ function processVisasData(visasData, lang) {
         country: visa.country || '',
         countries: visa.countries || [],
         isPopular: visa.is_popular || false,
-        beneficiaries: beneficiariesBool,
-        workPermit: workPermitBool,
+        beneficiaries: visa.beneficiaries || '',
+        workPermit: visa.work_permit || '',
         processingTime: visa.processing_time || '',
         requirements: visa.requirements || '',
         url: `/${lang}/visas/${visa.slug || visa.id}`,
