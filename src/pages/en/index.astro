@@ -4,20 +4,16 @@ import HomePageHero from '../../components/home/HomePageHero.astro';
 import AboutPageSection from '../../components/about/AboutPageSection.astro';
 import HowWeWork from '../../components/home/en/HowWeWork.astro';
 import HomeVisaAssistanceSection from '../../components/visas/HomeVisaAssistanceSection.tsx';
-import HomeRealEstateSection from '../../components/real-estate/en/HomeRealEstateSection.tsx';
 import HomePageCLKR from '../../components/clkr/HomePageCLKR.tsx';
 import BlogPageLatest from '../../components/blog/BlogPageLatest.astro';
 import { getAllContentData } from '../../server/lib/contentData.js';
-import FloatingTeamAvatars from '../../components/shared/FloatingTeamAvatars.tsx';
+
 
 const lang = 'en';
 const menuData = await getAllContentData(lang);
 
 const allVisas = menuData?.allVisas || [];
 const guides = menuData?.allGuides || [];
-const popularVisas = allVisas.filter((v: any) => v.isPopular);
-const featuredProperty = null; // No featuredProperty in new server data
-
 
 ---
 <Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
@@ -25,10 +21,8 @@ const featuredProperty = null; // No featuredProperty in new server data
         <HomePageHero currentLang="en"/>
         <AboutPageSection lang="en"/>                       
         <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
-        <HowWeWork lang="en"/>
-        <!-- <HomeRealEstateSection featuredProperty={featuredProperty} features={[]} lang="en" client:load /> -->
+        <HowWeWork lang="en"/>        
         <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />
-    		<!-- <CalendlyInline /> -->
 		    <BlogPageLatest/>
 	</main>
 </Layout>

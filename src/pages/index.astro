@@ -1,15 +1,28 @@
 ---
 export const prerender = true;
----
+import Layout from '../layouts/Layout.astro';
+import HomePageHero from '../components/home/HomePageHero.astro';
+import AboutPageSection from '../components/about/AboutPageSection.astro';
+import HowWeWork from '../components/home/en/HowWeWork.astro';
+import HomeVisaAssistanceSection from '../components/visas/HomeVisaAssistanceSection.tsx';
+import HomePageCLKR from '../components/clkr/HomePageCLKR.tsx';
+import BlogPageLatest from '../components/blog/BlogPageLatest.astro';
+import { getAllContentData } from '../server/lib/contentData.js';
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0;url=/en" />
-    <title>Redirecting...</title>
-  </head>
-  <body>
-    <p>Redirecting to <a href="/en">English version</a>...</p>
-  </body>
-</html>
+
+const lang = 'en';
+const menuData = await getAllContentData(lang);
+const allVisas = menuData?.allVisas || [];
+const guides = menuData?.allGuides || [];
+
+---
+<Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
+	<main class="">        
+        <HomePageHero currentLang="en"/>
+        <AboutPageSection lang="en"/>                       
+        <HomeVisaAssistanceSection visas={allVisas} guides={guides} lang="en" client:load />
+        <HowWeWork lang="en"/>        
+        <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />
+		    <BlogPageLatest/>
+	</main>
+</Layout>
