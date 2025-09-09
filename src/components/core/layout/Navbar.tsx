@@ -117,7 +117,7 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
     if (linkHref.includes('/visas') && (pathname.includes('/visas') || pathname.includes('/visas2'))) return true;
     
     // For Real Estate, check if we're on real-estate routes
-    if (linkHref.includes('/real-estate') && pathname.includes('/real-estate')) return true;
+    // if (linkHref.includes('/real-estate') && pathname.includes('/real-estate')) return true;
     
     // For Blog, check if we're on blog routes
     if (linkHref.includes('/blog') && pathname.includes('/blog')) return true;
