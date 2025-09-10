@@ -4,7 +4,7 @@ import TableOfContents from '../components/core/navigation/TableOfContents.astro
 import CLKRSidebar from '../components/clkr/CLKRSidebar.tsx';
 import CLKRStickyHeader from '../components/clkr/CLKRStickyHeader.tsx';
 import CLKRMobileNavigation from '../components/clkr/CLKRMobileNavigation.tsx';
-import NavbarMobile from '../components/core/layout/NavbarMobile.tsx';
+import CLKRBottomNavigation from '../components/clkr/CLKRBottomNavigation.tsx';
 
 // Define Heading type for type assertion
 interface Heading {
@@ -66,12 +66,15 @@ console.log(headings);
     articlesByModule={articlesByModule}
   />
 
-  <!-- Enhanced Mobile Navigation - Bottom Navigation Bar -->
-  <NavbarMobile 
-    client:load
-    lang={lang}
-    pathname={pathname}
-  />
+  <!-- CLKR Bottom Navigation - Only for individual articles (not index) -->
+  {Astro.params.slug && (
+    <CLKRBottomNavigation 
+      client:load
+      lang={lang as 'en' | 'es'}
+      pathname={pathname || ''}
+      title={title}
+    />
+  )}
 
   <div class="w-full px-4 sm:px-6 lg:px-8 mt-[74px] lg:mt-[74px] pb-20 lg:pb-0">
     <div class="flex gap-8 max-w-screen-2xl mx-auto">
