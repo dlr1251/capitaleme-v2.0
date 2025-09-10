@@ -4,6 +4,7 @@ import TableOfContents from '../components/core/navigation/TableOfContents.astro
 import CLKRSidebar from '../components/clkr/CLKRSidebar.tsx';
 import CLKRStickyHeader from '../components/clkr/CLKRStickyHeader.tsx';
 import CLKRMobileNavigation from '../components/clkr/CLKRMobileNavigation.tsx';
+import NavbarMobile from '../components/core/layout/NavbarMobile.tsx';
 
 // Define Heading type for type assertion
 interface Heading {
@@ -63,6 +64,13 @@ console.log(headings);
     currentSlug={Astro.params.slug}
     lang={lang}
     articlesByModule={articlesByModule}
+  />
+
+  <!-- Enhanced Mobile Navigation - Bottom Navigation Bar -->
+  <NavbarMobile 
+    client:load
+    lang={lang}
+    pathname={pathname}
   />
 
   <div class="w-full px-4 sm:px-6 lg:px-8 mt-[74px] lg:mt-[74px] pb-20 lg:pb-0">
