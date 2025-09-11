@@ -81,9 +81,7 @@ const CLKRMobileNavigation = ({
       
       // Handle case where closestHeading could be null
       setCurrentSection(
-        closestHeading
-          ? closestHeading.text
-          : (typedHeadings[0]?.text || '')
+        closestHeading?.text || typedHeadings[0]?.text || ''
       );
     };
     
