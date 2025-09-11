@@ -3,6 +3,7 @@ import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
 import { getAllContentData } from '../server/lib/contentData.js';
 import { getBlogPostsFromSupabase } from '../lib/blogData.ts';
+import BlogMobileNavigation from '../components/blog/BlogMobileNavigation.tsx';
 
 export interface Props {
   title: string;
@@ -127,6 +128,14 @@ const customBreadcrumbs = [
 ---
 
 <Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+  <!-- Blog Mobile Navigation -->
+  <BlogMobileNavigation 
+    client:load
+    lang={lang as 'en' | 'es'}
+    pathname={pathname}
+    title={title}
+  />
+  
   <div class="bg-white">
     <!-- Hero Section -->
     <div class="relative bg-gradient-to-br from-gray-50 to-gray-100 py-16">
@@ -357,5 +366,12 @@ const customBreadcrumbs = [
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Mobile bottom nav padding for blog pages */
+  @media (max-width: 1024px) {
+    body {
+      padding-bottom: 80px;
+    }
   }
 </style> 

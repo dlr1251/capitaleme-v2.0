@@ -3,6 +3,7 @@ import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
 import VisaSidebarFilters from '../components/visas/VisaSidebarFilters.tsx';
 import SocialSharing from '../components/core/common/SocialSharing.tsx';
+import VisasMobileNavigation from '../components/visas/VisasMobileNavigation.tsx';
 
 export interface Props {
 	title: string;
@@ -45,6 +46,14 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 ---
 
 <Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+	<!-- Visas Mobile Navigation -->
+	<VisasMobileNavigation 
+		client:load
+		lang={lang as 'en' | 'es'}
+		pathname={pathname}
+		title={title}
+	/>
+	
 	<div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">
 		<div class="flex gap-8">
 			<!-- Left Navigation Panel with Filters -->
@@ -179,6 +188,13 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 	/* Ensure headings have proper scroll margin for navbar offset */
 	:global(h2, h3, h4, h5, h6) {
 		scroll-margin-top: 120px;
+	}
+
+	/* Mobile bottom nav padding for visas pages */
+	@media (max-width: 1024px) {
+		body {
+			padding-bottom: 80px;
+		}
 	}
 </style>
 

@@ -273,15 +273,13 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
             <LanguageDropdown lang={lang || 'en'} pathname={pathname || '/'} />
           </div>
 
-          {/* Mobile menu/hamburger y menú mobile - Hide on CLKR pages */}
-          {!pathname?.includes('/clkr/') && (
-            <div className="lg:hidden order-3">
-              <NavbarMobile
-                lang={lang || 'en'}
-                pathname={pathname || '/'}
-              />
-            </div>
-          )}
+          {/* Mobile menu/hamburger - Always show */}
+          <div className="lg:hidden order-3">
+            <NavbarMobile
+              lang={lang || 'en'}
+              pathname={pathname || '/'}
+            />
+          </div>
         </div>
       </nav>
 

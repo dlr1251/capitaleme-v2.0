@@ -7,22 +7,8 @@ import HomePageCLKR from "components/clkr/HomePageCLKR";
 // Get CLKR data
 const menuData = await getAllContentData('en');
 
-// Debug logging
-console.log('=== CLKR PAGE DEBUG ===');
-console.log('menuData:', JSON.stringify(menuData, null, 2));
-console.log('clkrServices:', menuData?.clkrServices);
-console.log('clkrServices length:', menuData?.clkrServices?.length);
-console.log('clkrModules:', menuData?.clkrModules);
-console.log('clkrModules length:', menuData?.clkrModules?.length);
-console.log('totalItems:', menuData?.totalItems);
-
 const clkrServices = menuData?.clkrServices || [];
 const clkrModules = menuData?.clkrModules || [];
-
-console.log('Final clkrServices:', clkrServices);
-console.log('Final clkrServices length:', clkrServices.length);
-console.log('Final clkrModules:', clkrModules);
-console.log('Final clkrModules length:', clkrModules.length);
 ---
 
 <Layout title="CLKR - Colombian Legal Knowledge Repository" lang="en" menuData={menuData}>

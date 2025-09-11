@@ -1,6 +1,6 @@
 ---
 export const prerender = true;
-import Layout from '../layouts/Layout.astro';
+import HomeLayout from '../layouts/HomeLayout.astro';
 import HomePageHero from '../components/home/HomePageHero.astro';
 import AboutPageSection from '../components/about/AboutPageSection.astro';
 import HowWeWork from '../components/home/en/HowWeWork.astro';
@@ -16,7 +16,7 @@ const allVisas = menuData?.allVisas || [];
 const guides = menuData?.allGuides || [];
 
 ---
-<Layout title="Capital M Law - Home" lang={lang} menuData={menuData}>
+<HomeLayout title="Capital M Law - Home" lang={lang} menuData={menuData}>
 	<main class="">        
         <HomePageHero currentLang="en"/>
         <AboutPageSection lang="en"/>                       
@@ -25,4 +25,4 @@ const guides = menuData?.allGuides || [];
         <HomePageCLKR lang="en" clkrServices={menuData?.clkrServices || []} client:load />
 		    <BlogPageLatest/>
 	</main>
-</Layout>
+</HomeLayout>
