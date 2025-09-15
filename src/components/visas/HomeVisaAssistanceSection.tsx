@@ -93,17 +93,17 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
 
   // Content based on language
   const content = lang === 'es' ? {
-    title: "Asistencia de Visa",
-    subtitle: "Servicios Legales Integrales",
+    title: "Asistencia en visas colombianas",
+    subtitle: "Servicios legales integrales",
     description: "Como abogados no solo nos enfocamos en tu papeleo. Nos procuramos entender tus necesidades y riesgos legales al mudarte al extranjero para asegurar tu mejor estrategia con la mayor tasa de éxito posible.",
     explorePopular: "Explora algunas visas populares",
     discoverAll: "Descubrir todas las categorías de visa",
-    guides: "Guías y Recursos",
+    guides: "Guías y recursos",
     viewAllGuides: "Ver todas las guías",
-    legalExpertise: "Experiencia Legal",
-    documentPreparation: "Preparación de Documentos",
-    familyApplications: "Solicitudes Familiares",
-    popularTitle: "Categorías de visa populares",
+    legalExpertise: "Experiencia legal",
+    documentPreparation: "Preparación de documentos",
+    familyApplications: "Solicitudes familiares",
+    popularTitle: "Categorías de visas populares en Colombia",
     popularSubtitle: "Nuestros servicios de visa más solicitados",
     viewDetails: "Ver detalles",
     readGuide: "Leer guía",
@@ -128,7 +128,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
     legalExpertise: "Legal expertise",
     documentPreparation: "Document preparation",
     familyApplications: "Family applications",
-    popularTitle: "Popular visa categories",
+    popularTitle: "Popular visa categories in Colombia",
     popularSubtitle: "Our most requested visa services",
     viewDetails: "View details",
     readGuide: "Read guide",
@@ -153,23 +153,13 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
     },
     {
       icon: <ShieldCheckIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "Equipo experto" : "Expert team",
-      description: lang === 'es' ? "Abogados bilingües con años de experiencia en derecho colombiano" : "Bilingual lawyers with years of experience in Colombian law"
+      title: lang === 'es' ? "Equipo experto y bilingüe" : "Expert bilingual team",
+      description: lang === 'es' ? "Profesionales bilingües con años de experiencia" : "Bilingual professionals with years of experience"
     },
     {
       icon: <BoltIcon className="w-6 h-6" />,
       title: lang === 'es' ? "Proceso eficiente" : "Efficient process",
       description: lang === 'es' ? "Enfoque impulsado por tecnología para resultados más rápidos y mejores" : "Technology-driven approach for faster, better results"
-    },
-    {
-      icon: <GlobeAltIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "Servicio bilingüe" : "Bilingual service",
-      description: lang === 'es' ? "Comunicación fluida en inglés y español" : "Fluent communication in English and Spanish"
-    },
-    {
-      icon: <ComputerDesktopIcon className="w-6 h-6" />,
-      title: lang === 'es' ? "Tecnología avanzada" : "Tech-Forward",
-      description: lang === 'es' ? "Aprovechando la tecnología para una práctica legal eficiente" : "Leveraging technology for efficient legal practice"
     },
     {
       icon: <ChartBarIcon className="w-6 h-6" />,
@@ -208,16 +198,8 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
 
         {/* Why Choose Us - Combined Features */}
         <div className="mb-24">
-          <div className="text-left mb-16">
-            <h3 className="text-3xl font-bold text-primary mb-4">
-              {lang === 'en' ? 'Why choose Capital M Law?' : '¿Por qué elegir Capital M Law?'}
-            </h3>
-            <p className="text-xl text-gray-600 ">
-              {lang === 'en' ? 'Comprehensive legal support with proven expertise and transparent processes' : 'Apoyo legal integral con experiencia probada y procesos transparentes'}
-            </p>
-          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {combinedFeatures.map((feature, index) => (
               <div key={index} className="bg-white rounded-sm p-8 shadow-sm border border-gray-200 text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -241,19 +223,16 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
           <div className="mb-24">
             <div className="text-left mb-16">
               <h3 className="text-3xl font-bold text-secondary mb-4">
-                {popularVisas.length > 0 ? content.popularTitle : (lang === 'es' ? 'Visas populares' : 'Popular visas')}
+                {popularVisas.length > 0 ? content.popularTitle : (lang === 'es' ? 'Visas populares en Colombia' : 'Popular visas in Colombia')}
               </h3>
-              <p className="text-xl text-gray-600">
-                {popularVisas.length > 0 ? content.popularSubtitle : (lang === 'es' ? 'Explora nuestras opciones de visa más relevantes' : 'Explore our most relevant visa options')}
-              </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {(popularVisas.length > 0 ? popularVisas : visas.slice(0, 6)).map((visa) => (
-                <div key={visa.id} className="bg-white rounded p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => openModal(visa)}>
+                <div key={visa.id} className="bg-white rounded p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => openModal(visa)}>
                   <div className="flex items-center justify-between mb-6">
                     <h4 className="text-xl font-bold text-primary  group-hover:text-primary transition-colors">
-                      {visa.title}
+                      {lang === 'es' ? `Visa ${visa.title}` : `${visa.title} Visa`}
                     </h4>                  
                   </div>
 

@@ -42,19 +42,19 @@ const content = article.content;
 const readingTime = article.reading_time || calculateReadingTimeFromText(content);
 
 // Extract headings from content for table of contents
-function extractHeadings(content: string): { id: string; text: string; level: number }[] {
-  const headings: { id: string; text: string; level: number }[] = [];
+function extractHeadings(content: string): { id: string; text: string; depth: number }[] {
+  const headings: { id: string; text: string; depth: number }[] = [];
   const lines = content.split('\n');
   
   lines.forEach((line) => {
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
-      const level = headingMatch[1].length;
+      const depth = headingMatch[1].length;
       const text = headingMatch[2].trim();
       const id = text.toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
-      headings.push({ id, text, level });
+      headings.push({ id, text, depth });
     }
   });
   
@@ -65,11 +65,22 @@ const headings = extractHeadings(content);
 
 // Convert markdown content to HTML
 function markdownToHtml(markdown: string): string {
+  if (!markdown) return '';
+  
   return markdown
-    // Headings
-    .replace(/^### (.*$)/gim, '<h3 id="$1">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 id="$1">$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1 id="$1">$1</h1>')
+    // Headings with ID generation
+    .replace(/^### (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h3 id="${id}">${text}</h3>`;
+    })
+    .replace(/^## (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h2 id="${id}">${text}</h2>`;
+    })
+    .replace(/^# (.*$)/gim, (_, text) => {
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return `<h1 id="${id}">${text}</h1>`;
+    })
     // Bold
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     // Italic
@@ -261,112 +272,3 @@ const menuData = await getAllContentData('es');
     color: inherit;
   }
 </style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const tocLinks = document.querySelectorAll('.toc-link');
-    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    
-    let currentActiveLink: HTMLElement | null = null;
-
-    // Function to update active link
-    const updateActiveLink = (link: HTMLElement) => {
-      if (currentActiveLink) {
-        currentActiveLink.classList.remove('active');
-      }
-      link.classList.add('active');
-      currentActiveLink = link;
-    };
-
-    // Smooth scroll with offset
-    tocLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = link.getAttribute('href')?.substring(1);
-        const targetElement = document.getElementById(targetId || '');
-        
-        if (targetElement) {
-          const headerOffset = 140;
-          const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-          // Use requestAnimationFrame for smoother scrolling
-          requestAnimationFrame(() => {
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          });
-
-          // Update active link after scrolling
-          setTimeout(() => updateActiveLink(link as HTMLElement), 100);
-        }
-      });
-    });
-
-    // Intersection Observer for scroll spy
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -80% 0px',
-      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          const tocLink = document.querySelector(`.toc-link[href="#${id}"]`) as HTMLElement;
-          if (tocLink) {
-            updateActiveLink(tocLink);
-          }
-        }
-      });
-    }, observerOptions);
-
-    // Observe all headings
-    headings.forEach(heading => {
-      if (heading.id) {
-        observer.observe(heading);
-      }
-    });
-
-    // Handle initial hash in URL
-    const hash = window.location.hash;
-    if (hash) {
-      const targetId = hash.substring(1);
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        setTimeout(() => {
-          const headerOffset = 140;
-          const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }, 100);
-      }
-    }
-
-    // Update active link on initial load
-    if (hash) {
-      const initialLink = document.querySelector(`.toc-link[href="${hash}"]`) as HTMLElement;
-      if (initialLink) {
-        updateActiveLink(initialLink);
-      }
-    } else if (tocLinks.length > 0) {
-      updateActiveLink(tocLinks[0] as HTMLElement);
-    }
-
-    // Add mobile menu toggle functionality
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    if (mobileMenuButton && mobileMenu) {
-      mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-      });
-    }
-  });
-</script> 

@@ -10,19 +10,19 @@ const sections = lang === 'es' ? [
   {
     title: "Quiénes somos",
     content: `
-      Somos una firma de abogados boutique colombiana orientada al servicio, con sede en Medellín, Colombia. Dirigidos por Daniel Luque y María Fernanda Duarte, somos un equipo con experiencia en Derecho Colombiano y brindamos servicios a individuos y grupos que se están reubicando en nuestro país.
+      Somos una firma de abogados boutique colombiana orientada al servicio, con sede en Medellín, Colombia. Dirigidos por Daniel Luque y María Fernanda Duarte, somos un equipo con experiencia en Derecho colombiano y brindamos servicios a individuos y grupos que se están reubicando en nuestro país.
     `
   },
   {
     title: "Qué hacemos",
     content: `
-      Brindamos asesoría legal en Procesos de Inmigración, Compra de Propiedades, Constitución de Empresas, Registro de Marcas, Derecho de Familia y más.
+      Brindamos asesoría legal en procesos de inmigración, compra de propiedades, constitución de empresas, registro de marcas, derecho de familia y más.
     `
   },
   {
     title: "Cómo trabajamos",
     content: `
-      Adaptamos nuestro flujo de trabajo a las necesidades de cada cliente. Estudiamos cada caso en detalle, según la Ley Colombiana, para definir el camino menos riesgoso, más rentable y seguro para lograr los objetivos de nuestro cliente—un camino que siempre comienza con una <a href="/es/contact" class="underline hover:text-primary">consulta inicial</a>.
+      Adaptamos nuestro flujo de trabajo a las necesidades de cada cliente. Estudiamos cada caso en detalle, según las normas aplicables, para definir el mejor camino para nuestro cliente. Un camino que siempre comienza con una <a href="/es/contact" class="underline hover:text-primary">consulta inicial</a>.
     `
   }
 ] : [
@@ -35,13 +35,13 @@ const sections = lang === 'es' ? [
   {
     title: "What we do",
     content: `
-      We provide legal advice in Immigration Processes, Property Purchases, Business Formation, Trademark Registration, Family Law and more.
+      We provide legal advice in immigration processes, property purchases, business formation, trademark registration, family law and more.
     `
   },
   {
     title: "How we work",
     content: `
-      We adapt our workflow to each client's needs. We study each case in detail, according to Colombian Law, to define the least risky, most profitable and secure path to achieve our client's objectives—a path that always begins with an <a href="/en/contact" class="underline hover:text-primary">initial consultation</a>.
+      We adapt our workflow to each client's needs. We study each case in detail, according to the applicable laws, to define the best path for our client. A path that always begins with an <a href="/en/contact" class="underline hover:text-primary">initial consultation</a>.
     `
   }
 ];
@@ -95,7 +95,7 @@ const teamMembers = await getTeamMembers(lang);
         {sections.map((section, index) => (
           <div class="group relative">
             <!-- Content card -->
-            <div class="bg-white/80 backdrop-blur-sm rounded-lg p-8 shadow-md border border-primary/10 hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
+            <div class="bg-white/80 backdrop-blur-sm rounded p-8 shadow-md border border-primary/10 hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
               <!-- Title with gradient -->
               <h3 class="text-xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 {section.title}
