@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getAllMenuData } from '../../utils/menuDataOptimized.js';
+const lang = 'es';
+const menuData = await getAllMenuData(lang);
+---
+<Layout title="Política de Tratamiento de Datos Personales" menuData={menuData} lang={lang}>
+  <section class="max-w-3xl mx-auto px-4 py-12 prose prose-neutral">
+    <h1>Política de Tratamiento de Datos Personales</h1>
+    <p><strong>Última actualización:</strong> {new Date().toLocaleDateString('es-CO')}</p>
+
+    <p>Esta Política describe cómo **Capital M Intellectual Property S.A.S.** ("Capital M", "nosotros"), como <strong>Responsable</strong>, trata datos personales en Colombia conforme a la **Ley 1581 de 2012**, el **Decreto 1377 de 2013** y las directrices de la **Superintendencia de Industria y Comercio (SIC)**.</p>
+
+    <h2>1. Identificación del Responsable</h2>
+    <ul>
+      <li><strong>Empresa:</strong> Capital M Intellectual Property S.A.S.</li>
+      <li><strong>Ubicación:</strong> Medellín, Colombia</li>
+      <li><strong>Contacto:</strong> <a href="mailto:info@capitaleme.com">info@capitaleme.com</a> | WhatsApp: +57 314 602 2411</li>
+    </ul>
+
+    <h2>2. Alcance</h2>
+    <p>Aplica a datos recogidos a través del sitio, formularios, comunicaciones, contratación y ejecución de servicios, facturación y demás fuentes lícitas.</p>
+
+    <h2>3. Finalidades</h2>
+    <ul>
+      <li>Atender solicitudes y gestión precontractual.</li>
+      <li>Contratación y ejecución de servicios profesionales legales.</li>
+      <li>Facturación, contabilidad, tributos y obligaciones legales.</li>
+      <li>Seguridad, prevención de fraude y mejora del servicio.</li>
+      <li>Comunicaciones relacionadas con el servicio.</li>
+    </ul>
+
+    <h2>4. Categorías de Datos</h2>
+    <ul>
+      <li>Identificación y contacto (nombre, correo, teléfono, identificación cuando aplique).</li>
+      <li>Información y archivos relacionados con tu caso.</li>
+      <li>Datos técnicos/de uso (cookies/analítica). Ver Política de Privacidad.</li>
+      <li>Datos sensibles (solo cuando sea estrictamente necesario y con consentimiento expreso).</li>
+    </ul>
+
+    <h2>5. Bases Jurídicas</h2>
+    <p>Autorización del titular, ejecución de contrato y cumplimiento de deberes legales bajo la normativa colombiana.</p>
+
+    <h2>6. Derechos del Titular (ARCO) y Procedimientos</h2>
+    <p>El titular puede ejercer los derechos de <strong>Acceso</strong>, <strong>Rectificación</strong>, <strong>Actualización</strong>, <strong>Supresión</strong> y <strong>Revocatoria</strong> de la autorización.</p>
+    <ul>
+      <li><strong>Canal:</strong> <a href="mailto:info@capitaleme.com">info@capitaleme.com</a></li>
+      <li><strong>Consultas:</strong> Respuesta en máximo 10 días hábiles (prorrogables según ley).</li>
+      <li><strong>Reclamos:</strong> Respuesta en máximo 15 días hábiles (prorrogables según ley) tras acuse de recibo y, si aplica, requerimiento de información adicional dentro de 5 días hábiles.</li>
+    </ul>
+
+    <h2>7. Encargados y Transferencias</h2>
+    <p>Podemos usar proveedores (hosting, comunicaciones, almacenamiento) sujetos a acuerdos de confidencialidad y tratamiento. Las transferencias internacionales observarán garantías adecuadas.</p>
+
+    <h2>8. Conservación</h2>
+    <p>Conservamos datos el tiempo necesario para las finalidades o exigido por ley y deberes profesionales. Cumplidas las finalidades, se suprimirán o anonimizarán salvo deber legal o contractual de conservación.</p>
+
+    <h2>9. Medidas de Seguridad</h2>
+    <p>Implementamos medidas técnicas, administrativas y organizacionales para proteger los datos contra tratamiento no autorizado o ilícito, pérdida, alteración o divulgación.</p>
+
+    <h2>10. Menores de Edad</h2>
+    <p>Los servicios se dirigen a mayores de edad. No tratamos intencionalmente datos de menores sin la autorización y base legal correspondiente.</p>
+
+    <h2>11. Actualizaciones</h2>
+    <p>Podremos actualizar esta Política. La versión vigente y su fecha de entrada en vigor se publicarán en esta página.</p>
+
+    <h2>12. Contacto</h2>
+    <p>Para ejercer derechos o realizar consultas sobre esta Política, escribe a: <a href="mailto:info@capitaleme.com">info@capitaleme.com</a>.</p>
+  </section>
+</Layout>
+

@@ -1,0 +1,70 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getAllContentData } from '../../server/lib/contentData.js';
+const menuData = await getAllContentData('en');
+---
+<Layout title="Data Processing Policy" menuData={menuData} lang="en">
+  <section class="max-w-3xl mx-auto px-4 py-12 prose prose-neutral">
+    <h1>Data Processing Policy</h1>
+    <p><strong>Last updated:</strong> {new Date().toLocaleDateString('en-US')}</p>
+
+    <p>This Policy sets out how Capital M Intellectual Property S.A.S. ("Capital M", "we"), as <strong>Data Controller</strong>, processes personal data in Colombia, in accordance with Law 1581 of 2012, Decree 1377 of 2013, and guidance from the Superintendence of Industry and Commerce (SIC).</p>
+
+    <h2>1. Identification of the Data Controller</h2>
+    <ul>
+      <li><strong>Company:</strong> Capital M Intellectual Property S.A.S.</li>
+      <li><strong>Location:</strong> Medellín, Colombia</li>
+      <li><strong>Contact:</strong> <a href="mailto:info@capitaleme.com">info@capitaleme.com</a> | WhatsApp: +57 314 602 2411</li>
+    </ul>
+
+    <h2>2. Scope</h2>
+    <p>This Policy applies to personal data collected through our website, forms, communications, contracting and service execution, billing, and any other lawful sources.</p>
+
+    <h2>3. Purposes of Processing</h2>
+    <ul>
+      <li>Respond to inquiries and pre-contractual management.</li>
+      <li>Contracting and execution of professional legal services.</li>
+      <li>Billing, accounting, tax, and compliance obligations.</li>
+      <li>Security, fraud prevention, and service-quality improvement.</li>
+      <li>Service-related communications and notifications.</li>
+    </ul>
+
+    <h2>4. Categories of Data</h2>
+    <ul>
+      <li>Identification and contact: name, email, phone, ID (when applicable).</li>
+      <li>Case-related information and files provided by you.</li>
+      <li>Technical and usage data (cookies/analytics). See our Privacy Policy.</li>
+      <li>Sensitive data (only when strictly necessary for the service and with explicit consent).</li>
+    </ul>
+
+    <h2>5. Lawful Bases</h2>
+    <p>Authorization by the data subject, performance of a contract, and compliance with legal duties under Colombian law.</p>
+
+    <h2>6. Rights of the Data Subject (ARCO)</h2>
+    <p>You may exercise the rights of <strong>Access</strong>, <strong>Rectification</strong>, <strong>Update</strong>, <strong>Deletion</strong> and <strong>Revocation</strong> of authorization.</p>
+    <ul>
+      <li><strong>Channel:</strong> <a href="mailto:info@capitaleme.com">info@capitaleme.com</a></li>
+      <li><strong>Queries:</strong> We answer within 10 business days (extendable per law).</li>
+      <li><strong>Claims:</strong> We answer within 15 business days (extendable per law) after acknowledging receipt and, if needed, requesting additional information within 5 business days.</li>
+    </ul>
+
+    <h2>7. Processors and Transfers</h2>
+    <p>We may use service providers (hosting, communications, storage) under confidentiality and data processing agreements. International transfers will observe adequate safeguards.</p>
+
+    <h2>8. Data Retention</h2>
+    <p>We retain personal data for the time necessary to fulfill the purposes or as required by law and professional duties. Once the purposes are met, data will be deleted or anonymized, unless there is a legal or contractual duty to retain it.</p>
+
+    <h2>9. Security Measures</h2>
+    <p>We implement technical, administrative, and organizational measures to protect personal data against unauthorized or unlawful processing, loss, alteration, or disclosure.</p>
+
+    <h2>10. Minors</h2>
+    <p>Our services are directed to adults. We do not intentionally process personal data of minors without proper authorization and legal basis.</p>
+
+    <h2>11. Policy Updates</h2>
+    <p>We may update this Policy at any time. The current version and effective date will be published on this page.</p>
+
+    <h2>12. Contact</h2>
+    <p>To exercise your rights or ask questions about this Policy, contact: <a href="mailto:info@capitaleme.com">info@capitaleme.com</a>.</p>
+  </section>
+</Layout>
+
