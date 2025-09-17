@@ -227,43 +227,11 @@ const getRelativeTime = (dateString: string) => {
       </div>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50">
-      <div class="flex items-center justify-around py-3 px-4">
-        <!-- Share Button -->
-        <button class="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors">
-          <ShareIcon className="w-5 h-5" />
-          <span>{lang === 'es' ? 'Compartir' : 'Share'}</span>
-        </button>
-
-        <!-- Export PDF -->
-        <button class="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors">
-          <DocumentArrowDownIcon className="w-5 h-5" />
-          <span>PDF</span>
-        </button>
-
-        <!-- TOC Toggle -->
-        {hasHeadings && (
-          <button id="mobile-toc-toggle" class="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-900 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-            <span>{lang === 'es' ? 'Secciones' : 'Sections'}</span>
-          </button>
-        )}
-
-        <!-- Book Consultation -->
-        <a href="https://calendly.com/capital-m-law/programmed-initial-consultation" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors">
-          <CalendarIcon className="w-5 h-5" />
-          <span>{lang === 'es' ? 'Consulta' : 'Book'}</span>
-        </a>
-
-        <!-- WhatsApp -->
-        <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center gap-1 text-xs text-green-600 hover:text-green-700 transition-colors">
-          <ChatBubbleLeftRightIcon className="w-5 h-5" />
-          <span>WhatsApp</span>
-        </a>
-      </div>
+    <!-- WhatsApp Floating Action Button -->
+    <div class="lg:hidden fixed bottom-4 right-4 z-40">
+      <a href="https://wa.me/573146022411" target="_blank" rel="noopener noreferrer" class="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105">
+        <ChatBubbleLeftRightIcon className="w-6 h-6" />
+      </a>
     </div>
 
     <!-- Mobile TOC Panel -->

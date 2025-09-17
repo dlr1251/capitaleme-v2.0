@@ -201,16 +201,17 @@ const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
         </div>
       </div>
 
-      {/* Floating Action Buttons */}
-      <div className="lg:hidden fixed bottom-20 right-4 z-40 flex flex-col space-y-2">
-        {/* Go Up Button */}
-        <button
-          onClick={scrollToTop}
-          className="w-10 h-10 bg-secondary text-white rounded-full shadow-lg hover:bg-primary transition-all duration-200 flex items-center justify-center hover:scale-105"
-          aria-label={lang === 'es' ? 'Subir al inicio' : 'Scroll to top'}
+      {/* WhatsApp Floating Action Button */}
+      <div className="lg:hidden fixed bottom-4 right-4 z-40">
+        <a
+          href={`https://wa.me/?text=${encodeURIComponent(`${title || document.title} ${currentUrl}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105"
+          aria-label={lang === 'es' ? 'Compartir en WhatsApp' : 'Share on WhatsApp'}
         >
-          <ChevronUpIcon className="w-4 h-4" />
-        </button>
+          <ChatBubbleLeftRightIcon className="w-6 h-6" />
+        </a>
       </div>
     </>
   );
