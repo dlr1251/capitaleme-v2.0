@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import YouTubeChannelSection from '../../components/contact/YouTubeChannelSection.astro';
-import ContactPageCard from '../../components/contact/ContactPageCard.astro';
+import ContactForm from '../../components/ui/forms/ContactForm.tsx';
 import { UserIcon, EnvelopeIcon, DevicePhoneMobileIcon, BriefcaseIcon, ChatBubbleLeftRightIcon, PaperAirplaneIcon, InformationCircleIcon, MapPinIcon, ChatBubbleOvalLeftEllipsisIcon, CalendarIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { getAllContentData } from '../../server/lib/contentData.js';
 
@@ -32,8 +32,26 @@ const menuData = await getAllContentData('es');
     </div>
 
     <!-- Main Content -->
-    <!-- Insert the same main content structure as the English version here, translating only the visible text. -->
-    <ContactPageCard lang="es" />
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div class="grid lg:grid-cols-3 gap-12">
+        <div class="lg:col-span-1">
+          <!-- Info card intentionally omitted in ES for brevity; can mirror EN if needed -->
+        </div>
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div class="text-center mb-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                Envíanos tu consulta
+              </h2>
+              <p class="text-gray-600 max-w-2xl mx-auto">
+                Completa el formulario y nuestro equipo se pondrá en contacto contigo para analizar tu caso y proponer la mejor solución legal.
+              </p>
+            </div>
+            <ContactForm lang="es" client:load />
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- <YouTubeChannelSection lang="es" /> -->
   </div>
 </Layout>
