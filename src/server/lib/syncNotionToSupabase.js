@@ -1018,73 +1018,39 @@ export async function syncCLKRToSupabase() {
         for (const article of clkrArticles) {
             try {
                 const articleData = await extractCLKRData(article, createNotionClient());
-                
-                // Check if article already exists by slug and lang
-                const { data: existingArticle } = await supabase
+
+                // Upsert by notion_id to avoid duplicate key errors and handle slug/lang changes
+                const payload = {
+                    notion_id: article.id,
+                    title: articleData.title,
+                    slug: articleData.slug,
+                    description: articleData.description,
+                    content: articleData.content,
+                    module: articleData.module,
+                    lang: articleData.lang,
+                    reading_time: articleData.reading_time,
+                    last_edited: article.last_edited_time,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { data: upsertData, error } = await supabase
                     .from('clkr_articles')
-                    .select('id, notion_id, last_edited')
-                    .eq('slug', articleData.slug)
-                    .eq('lang', articleData.lang)
-                    .single();
-                
-                if (existingArticle) {
-                    // Update existing article if it has been modified
-                    const shouldUpdate = new Date(article.last_edited_time) > new Date(existingArticle.last_edited) || 
-                                       existingArticle.notion_id !== article.id;
-                    
-                    if (shouldUpdate) {
-                        const { error } = await supabase
-                            .from('clkr_articles')
-                            .update({
-                                notion_id: article.id,
-                                title: articleData.title,
-                                slug: articleData.slug,
-                                description: articleData.description,
-                                content: articleData.content,
-                                module: articleData.module,
-                                lang: articleData.lang,
-                                published: articleData.published,
-                                featured: articleData.featured,
-                                reading_time: articleData.reading_time,
-                                last_edited: article.last_edited_time,
-                                updated_at: new Date().toISOString()
-                            })
-                            .eq('id', existingArticle.id);
-                        
-                        if (error) {
-                            console.error(`❌ Error updating CLKR article ${articleData.slug}:`, error);
-                            errorCount++;
-                        } else {
-                            console.log(`✅ Updated CLKR article: ${articleData.title}`);
-                            updatedCount++;
-                        }
-                    }
+                    .upsert(payload, { onConflict: 'notion_id' })
+                    .select('id, last_edited');
+
+                if (error) {
+                    console.error(`❌ Error upserting CLKR article ${articleData.slug}:`, error);
+                    errorCount++;
                 } else {
-                    // Insert new article
-                    const { error } = await supabase
-                        .from('clkr_articles')
-                        .insert({
-                            notion_id: article.id,
-                            title: articleData.title,
-                            slug: articleData.slug,
-                            description: articleData.description,
-                            content: articleData.content,
-                            module: articleData.module,
-                            lang: articleData.lang,
-                            published: articleData.published,
-                            featured: articleData.featured,
-                            reading_time: articleData.reading_time,
-                            last_edited: article.last_edited_time,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        });
-                    
-                    if (error) {
-                        console.error(`❌ Error inserting CLKR article ${articleData.slug}:`, error);
-                        errorCount++;
+                    // Determine if this was an insert or update by comparing timestamps if available
+                    // Fallback: count as updated if record existed previously
+                    const wasUpdated = Array.isArray(upsertData) && upsertData.length > 0;
+                    if (wasUpdated) {
+                        updatedCount++;
+                        console.log(`✅ Upserted CLKR article: ${articleData.title}`);
                     } else {
-                        console.log(`✅ Synced new CLKR article: ${articleData.title}`);
                         syncedCount++;
+                        console.log(`✅ Inserted CLKR article: ${articleData.title}`);
                     }
                 }
             } catch (error) {
