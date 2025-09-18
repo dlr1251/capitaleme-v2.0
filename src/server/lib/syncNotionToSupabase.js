@@ -1138,8 +1138,9 @@ async function extractCLKRData(article, notion) {
                  p.Language?.select?.name || 
                  'en').toLowerCase();
     
-    // Extract module with fallbacks
-    const module = p.Module?.select?.name || 
+    // Extract module with fallbacks - handle multi_select
+    const module = p.Module?.multi_select?.[0]?.name || 
+                  p.Module?.select?.name || 
                   p.Category?.select?.name || 
                   p.Type?.select?.name || 
                   'General';
