@@ -4,6 +4,7 @@ import TableOfContents from '../components/core/navigation/TableOfContents.astro
 import VisaSidebarFilters from '../components/visas/VisaSidebarFilters.tsx';
 import SocialSharing from '../components/core/common/SocialSharing.tsx';
 import VisasMobileNavigation from '../components/visas/VisasMobileNavigation.tsx';
+import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
 import ArticleActions from '../components/shared/ArticleActions.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
 import { 
@@ -86,6 +87,15 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 		headings={headings}
 		visas={allVisas}
 		currentSlug={currentSlug}
+	/>
+
+	<!-- Mobile Bottom Navigation -->
+	<MobileBottomNavigation 
+		client:load
+		lang={lang as 'en' | 'es'}
+		title={title}
+		content={articleContent}
+		pathname={pathname}
 	/>
 	
 	<div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 mt-[74px]">

@@ -4,6 +4,7 @@ import TableOfContents from '../components/core/navigation/TableOfContents.astro
 import { getAllContentData } from '../server/lib/contentData.js';
 import { getBlogPostsFromSupabase } from '../lib/blogData.ts';
 import BlogMobileNavigation from '../components/blog/BlogMobileNavigation.tsx';
+import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
 import ArticleActions from '../components/shared/ArticleActions.tsx';
 import { 
@@ -171,6 +172,15 @@ const customBreadcrumbs = [
       url: `/${lang}/blog/${post.slug}`
     }))}
     currentSlug={Astro.params.slug}
+  />
+
+  <!-- Mobile Bottom Navigation -->
+  <MobileBottomNavigation 
+    client:load
+    lang={lang as 'en' | 'es'}
+    title={title}
+    content={articleContent}
+    pathname={pathname}
   />
   
   <div class="bg-white">

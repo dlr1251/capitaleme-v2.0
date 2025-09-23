@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Logo from '../../../assets/logo/color-horizontal.svg';
 import LanguageDropdown from '../../shared/LanguageDropdown.tsx';
+import MobileBottomNavigation from './MobileBottomNavigation.tsx';
 import type { Lang } from '../../../context/LanguageContext.tsx';
 import { 
   XMarkIcon, 
@@ -13,6 +14,8 @@ interface NavbarMobileProps {
   lang: Lang;
   pathname: string;
   menuData?: any;
+  title?: string;
+  content?: string;
 }
 
 // Mobile Menu Subcomponent
@@ -162,7 +165,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, lang, p
       
       {/* Full screen mobile menu */}
       <div className="lg:hidden fixed inset-0 z-[60] bg-white top-0 overflow-y-auto">
-        <style jsx>{`
+        <style>{`
           .scrollbar-thin {
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 #f1f5f9;
@@ -369,7 +372,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, lang, p
 
 // Enhanced Mobile Navigation removed - now handled by specific layout components
 
-const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData }) => {
+const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData, title, content }) => {
   // Mobile mega menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
@@ -388,33 +391,43 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData })
   ];
 
   return (
-    <div className="relative">
-      {/* Hamburger button for mobile */}
-      <button
-        type="button"
-        className="lg:hidden inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg hover:bg-gray-100 order-3 focus:outline-none transition-colors"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        aria-controls="mobile-menu"
-        aria-expanded={mobileMenuOpen}
-      >
-        <span className="sr-only">Open main menu</span>
-        {mobileMenuOpen ? (
-          <XMarkIcon className="w-6 h-6" />
-        ) : (
-          <Bars3Icon className="w-6 h-6" />
-        )}
-      </button>
+    <>
+      <div className="relative">
+        {/* Hamburger button for mobile */}
+        <button
+          type="button"
+          className="lg:hidden inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg hover:bg-gray-100 order-3 focus:outline-none transition-colors"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-controls="mobile-menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          <span className="sr-only">Open main menu</span>
+          {mobileMenuOpen ? (
+            <XMarkIcon className="w-6 h-6" />
+          ) : (
+            <Bars3Icon className="w-6 h-6" />
+          )}
+        </button>
 
-      {/* Mobile menu dropdown */}
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={handleMobileMenuClose}
-        links={links}
+        {/* Mobile menu dropdown */}
+        <MobileMenu
+          isOpen={mobileMenuOpen}
+          onClose={handleMobileMenuClose}
+          links={links}
+          lang={lang}
+          pathname={pathname}
+          menuData={menuData}
+        />
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNavigation
         lang={lang}
+        title={title}
+        content={content}
         pathname={pathname}
-        menuData={menuData}
       />
-    </div>
+    </>
   );
 };
 

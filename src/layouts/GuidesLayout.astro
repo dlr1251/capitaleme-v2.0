@@ -6,6 +6,7 @@ import { BookOpenIcon, ClockIcon, UserIcon, CalendarIcon, ArrowRightIcon, ShareI
 import SEOHead from '../components/core/SEOHead.astro';
 import GuidesMobileNavigation from '../components/guides/GuidesMobileNavigation.tsx';
 import GuidesBottomNavigation from '../components/guides/GuidesBottomNavigation.tsx';
+import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
 import ArticleActions from '../components/shared/ArticleActions.tsx';
 import { 
   generateSEOTitle, 
@@ -104,6 +105,15 @@ const seoData: SEOData = {
       content={articleContent}
     />
   )}
+
+  <!-- Mobile Bottom Navigation -->
+  <MobileBottomNavigation 
+    client:load
+    lang={lang as 'en' | 'es'}
+    title={title}
+    content={articleContent}
+    pathname={pathname}
+  />
 
   <div class="bg-white">
     <!-- Hero Section -->
