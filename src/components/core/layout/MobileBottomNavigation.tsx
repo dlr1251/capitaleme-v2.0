@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ShareIcon, 
-  DocumentArrowDownIcon, 
-  DocumentTextIcon, 
   ChatBubbleLeftRightIcon,
   XMarkIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
   CalendarDaysIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
-import { generatePDF, showPDFConfirmation, showMarkdownConfirmation } from '../../../utils/pdfUtils.js';
 import ContactForm from '../../ui/forms/ContactForm.tsx';
 
 interface MobileBottomNavigationProps {
@@ -30,19 +25,16 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isContactDialerOpen, setIsContactDialerOpen] = useState(false);
   const [isCalendlyModalOpen, setIsCalendlyModalOpen] = useState(false);
+  const [calendlyScriptLoaded, setCalendlyScriptLoaded] = useState(false);
 
   // Text content based on language
   const textContent = {
     en: {
       share: 'Share',
-      pdf: 'PDF',
-      md: 'MD',
       contact: 'Contact',
       whatsapp: 'WhatsApp',
       shareOn: 'Share on',
       copyLink: 'Copy Link',
-      downloadPDF: 'Download PDF',
-      copyMarkdown: 'Copy Markdown',
       contactUs: 'Contact Us',
       bookConsultation: 'Book Consultation',
       contactForm: 'Contact Form',
@@ -56,14 +48,10 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
     },
     es: {
       share: 'Compartir',
-      pdf: 'PDF',
-      md: 'MD',
       contact: 'Contacto',
       whatsapp: 'WhatsApp',
       shareOn: 'Compartir en',
       copyLink: 'Copiar Enlace',
-      downloadPDF: 'Descargar PDF',
-      copyMarkdown: 'Copiar Markdown',
       contactUs: 'Contáctanos',
       bookConsultation: 'Reservar Consulta',
       contactForm: 'Formulario de Contacto',
@@ -111,64 +99,31 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
     setIsShareOpen(false);
   };
 
-  // PDF download functionality
-  const handlePDFDownload = async () => {
-    try {
-      const confirmed = await showPDFConfirmation(title || 'Content', lang);
-      if (!confirmed) return;
-      
-      const articleContent = typeof document !== 'undefined' ? 
-        (document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose')) : 
-        null;
-      if (!articleContent) {
-        throw new Error('No content found to generate PDF');
-      }
-      
-      const contentWithTitle = `
-        <h1 style="font-size: 24px; margin-bottom: 20px; color: #1f2937;">${title || 'Content'}</h1>
-        ${articleContent.innerHTML}
-      `;
-      
-      await generatePDF({
-        title: title || 'Content',
-        content: contentWithTitle,
-        lang,
-        filename: title
-      });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
-
-  // Markdown copy functionality
-  const handleMarkdownCopy = async () => {
-    try {
-      const confirmed = await showMarkdownConfirmation(title || 'Content', lang);
-      if (!confirmed) return;
-      
-      const articleContent = typeof document !== 'undefined' ? 
-        (document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose')) : 
-        null;
-      if (!articleContent) {
-        throw new Error('No content found to copy');
-      }
-      
-      // Convert HTML to Markdown (simplified)
-      let markdown = `# ${title || 'Content'}\n\n`;
-      markdown += articleContent.textContent || articleContent.innerText;
-      
-      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(markdown);
-      }
-    } catch (error) {
-      console.error('Error copying markdown:', error);
-    }
-  };
 
   // Calendly modal functionality
   const openCalendlyModal = () => {
     setIsCalendlyModalOpen(true);
     setIsContactDialerOpen(false);
+    
+    // Load Calendly script if not already loaded
+    if (!calendlyScriptLoaded && typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://assets.calendly.com/assets/external/widget.js';
+      script.async = true;
+      script.onload = () => {
+        setCalendlyScriptLoaded(true);
+        // Initialize Calendly widget after script loads
+        if ((window as any).Calendly) {
+          (window as any).Calendly.initInlineWidget({
+            url: 'https://calendly.com/capitalmlaw/standard-consultation',
+            parentElement: document.querySelector('.calendly-inline-widget'),
+            prefill: {},
+            utm: {}
+          });
+        }
+      };
+      document.head.appendChild(script);
+    }
   };
 
   const closeCalendlyModal = () => {
@@ -185,7 +140,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
     setIsContactOpen(false);
   };
 
-  // Close modals on escape key
+  // Close modals on escape key and click outside
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -196,11 +151,54 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
       }
     };
 
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Element;
+      
+      // Close share popup if clicking outside
+      if (isShareOpen && !target.closest('[data-share-container]')) {
+        setIsShareOpen(false);
+      }
+      
+      // Close contact dialer if clicking outside
+      if (isContactDialerOpen && !target.closest('[data-contact-container]')) {
+        setIsContactDialerOpen(false);
+      }
+      
+      // Close contact form modal if clicking outside
+      if (isContactOpen && !target.closest('[data-contact-modal]')) {
+        setIsContactOpen(false);
+      }
+      
+      // Close Calendly modal if clicking outside
+      if (isCalendlyModalOpen && !target.closest('[data-calendly-modal]')) {
+        setIsCalendlyModalOpen(false);
+      }
+    };
+
     if (typeof document !== 'undefined') {
       document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
     }
-  }, []);
+  }, [isShareOpen, isContactDialerOpen, isContactOpen, isCalendlyModalOpen]);
+
+  // Initialize Calendly widget when modal opens and script is loaded
+  useEffect(() => {
+    if (isCalendlyModalOpen && calendlyScriptLoaded && typeof window !== 'undefined') {
+      const widget = document.querySelector('.calendly-inline-widget');
+      if (widget && (window as any).Calendly) {
+        (window as any).Calendly.initInlineWidget({
+          url: 'https://calendly.com/capitalmlaw/standard-consultation',
+          parentElement: widget,
+          prefill: {},
+          utm: {}
+        });
+      }
+    }
+  }, [isCalendlyModalOpen, calendlyScriptLoaded]);
 
   return (
     <>
@@ -208,7 +206,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="flex items-center justify-around px-4 py-2">
           {/* Share Button */}
-          <div className="relative">
+          <div className="relative" data-share-container>
             <button
               onClick={() => setIsShareOpen(!isShareOpen)}
               className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -220,7 +218,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
 
             {/* Share Dropdown */}
             {isShareOpen && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-10">
                 <div className="px-3 py-2 text-xs font-medium text-gray-500 border-b border-gray-100">
                   {contentData.shareOn}
                 </div>
@@ -263,28 +261,8 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
             )}
           </div>
 
-          {/* PDF Download Button */}
-          <button
-            onClick={handlePDFDownload}
-            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-red-600 hover:bg-red-50"
-            aria-label={contentData.downloadPDF}
-          >
-            <DocumentArrowDownIcon className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">{contentData.pdf}</span>
-          </button>
-
-          {/* Markdown Copy Button */}
-          <button
-            onClick={handleMarkdownCopy}
-            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-green-600 hover:bg-green-50"
-            aria-label={contentData.copyMarkdown}
-          >
-            <DocumentTextIcon className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">{contentData.md}</span>
-          </button>
-
           {/* Contact Button with Dialer */}
-          <div className="relative">
+          <div className="relative" data-contact-container>
             <button
               onClick={() => setIsContactDialerOpen(!isContactDialerOpen)}
               className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50"
@@ -296,7 +274,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
 
             {/* Contact Dialer */}
             {isContactDialerOpen && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-3">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-3 z-10">
                 <div className="px-4 py-2 text-sm font-medium text-gray-900 text-center border-b border-gray-100">
                   {contentData.contactUs}
                 </div>
@@ -346,8 +324,8 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
 
       {/* Contact Form Modal */}
       {isContactOpen && (
-        <div className="fixed inset-0 z-[60] bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[60] bg-black bg-opacity-50 flex items-center justify-center p-4" onClick={closeContactForm}>
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" data-contact-modal onClick={(e) => e.stopPropagation()}>
             <div className="p-6 border-b border-gray-100">
               <div className="flex justify-between items-center">
                 <div className="text-center flex-1">
@@ -375,8 +353,8 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
 
       {/* Calendly Modal */}
       {isCalendlyModalOpen && (
-        <div className="fixed inset-0 z-[60] bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[60] bg-black bg-opacity-50 flex items-center justify-center p-4" onClick={closeCalendlyModal}>
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" data-calendly-modal onClick={(e) => e.stopPropagation()}>
             <div className="p-6 border-b border-gray-100">
               <div className="flex justify-between items-center">
                 <div className="text-center flex-1">
@@ -414,13 +392,6 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
         </div>
       )}
 
-      {/* Load Calendly script when modal opens */}
-      {isCalendlyModalOpen && (
-        <script
-          src="https://assets.calendly.com/assets/external/widget.js"
-          async
-        />
-      )}
     </>
   );
 };
