@@ -404,18 +404,6 @@ const VisasMobileNavigation: React.FC<VisasMobileNavigationProps> = ({
         </div>
       </div>
 
-      {/* WhatsApp Floating Action Button */}
-      <div className="lg:hidden fixed bottom-20 right-4 z-[60]">
-        <a
-          href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about: ${title || document.title}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105"
-          aria-label={lang === 'es' ? 'Consultar en WhatsApp' : 'Inquire on WhatsApp'}
-        >
-          <ChatBubbleLeftRightIcon className="w-6 h-6" />
-        </a>
-      </div>
     </>
   );
 };
