@@ -320,7 +320,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
 
             {/* Share Dropdown */}
             {isShareOpen && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-52 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-10">
+              <div className="absolute bottom-full left-0 mb-2 w-52 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-10">
                 <div className="px-3 py-2 text-xs font-medium text-gray-500 border-b border-gray-100">
                   {contentData.shareOn}
                 </div>
