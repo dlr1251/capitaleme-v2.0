@@ -39,11 +39,11 @@ const content = currentLang === 'es' ? {
   mainHeading: {
     line1: "Colombian",
     line2: "bilingual attorneys",
-    line3: "working for you",
-    line4: "restlessly"
+    line3: "working hard",
+    line4: "for you"
   },
-  subtitle: "Fast, Reliable, Bilingual",
-  description: "We work for you restlessly.",
+  subtitle: "Fast, reliable, bilingual",
+  description: "We are glad to help you.",
   servicesTitle: "Our services",
   calendlyUrl: "https://calendly.com/capitalmlaw/standard-consultation",
   cta: {
@@ -135,16 +135,16 @@ const content = currentLang === 'es' ? {
         <!-- Services List - Mobile Optimized (Cleaner Design) -->
         <div class="space-y-3 fade-in-up" style="animation-delay: 0.4s">
           {services.map((service, index) => (
-            <div class="service-item group flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all duration-300">
-              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300 flex-shrink-0">
+            <div class="service-item group flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200 transition-all duration-300">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center  transition-colors duration-300 flex-shrink-0">
                 {index === 0 && (
-                  <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                  <CheckCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 )}
                 {index === 1 && (
-                  <HomeModernIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                  <HomeModernIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 )}
                                   {index === 2 && (
-                    <DocumentTextIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                    <DocumentTextIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   )}
               </div>
               <span class="text-gray-900 font-medium text-sm sm:text-base">{service}</span>
@@ -159,7 +159,7 @@ const content = currentLang === 'es' ? {
               <!-- Calendly Button - Mobile -->
               <button 
                 onclick="openCalendlyModal()"
-                class="inline-flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 text-sm font-medium transition-all duration-200 w-full"
+                class="inline-flex items-center justify-center bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary text-sm font-medium transition-all duration-200 w-full"
               >
                 <CalendarIcon className="w-4 h-4 mr-2" />
                 {content.cta.bookConsultation}
@@ -169,7 +169,7 @@ const content = currentLang === 'es' ? {
               <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200">
                 <button 
                   onclick="openContactModal()"
-                  class="inline-flex items-center justify-center bg-gray-800 text-white px-4 py-3 rounded-lg hover:bg-gray-900 text-sm font-medium transition-all duration-200"
+                  class="inline-flex items-center justify-center bg-gray-200 text-gray-900 px-4 py-3 rounded-lg hover:bg-gray-900 text-sm font-medium transition-all duration-200"
                 >
                   <EnvelopeIcon className="w-4 h-4 mr-2" />
                   {content.cta.contact}
