@@ -12,6 +12,7 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline';
 import type { Lang } from '../../context/LanguageContext.tsx';
+import { generatePDF, showPDFConfirmation, showMarkdownConfirmation } from '../../utils/pdfUtils.js';
 
 interface Heading {
   id: string;
@@ -148,38 +149,25 @@ const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
 
   const downloadPDF = async () => {
     try {
-      const [{ jsPDF }, html2canvas] = await Promise.all([
-        import('jspdf'),
-        import('html2canvas')
-      ]);
+      const confirmed = await showPDFConfirmation(title || 'Blog Post', lang);
+      if (!confirmed) return;
       
-      const tempContainer = document.createElement('div');
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      tempContainer.style.top = '0';
-      tempContainer.style.width = '800px';
-      tempContainer.style.padding = '40px';
-      tempContainer.style.backgroundColor = 'white';
-      tempContainer.style.fontFamily = 'Arial, sans-serif';
-      
-      const content = document.querySelector('.prose') || document.querySelector('article') || document.querySelector('main');
-      if (content) {
-        tempContainer.innerHTML = `
-          <h1 style="font-size: 24px; margin-bottom: 20px; color: #1f2937;">${title || document.title}</h1>
-          ${content.innerHTML}
-        `;
-        document.body.appendChild(tempContainer);
-        
-        const canvas = await html2canvas.default(tempContainer);
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const imgWidth = pageWidth - 40;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
-        pdf.save(`${(title || document.title).replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
-        document.body.removeChild(tempContainer);
+      const articleContent = document.querySelector('.prose') || document.querySelector('article') || document.querySelector('main');
+      if (!articleContent) {
+        throw new Error('No content found to generate PDF');
       }
+      
+      const contentWithTitle = `
+        <h1 style="font-size: 24px; margin-bottom: 20px; color: #1f2937;">${title || document.title}</h1>
+        ${articleContent.innerHTML}
+      `;
+      
+      await generatePDF({
+        title: title || 'Blog Post',
+        content: contentWithTitle,
+        lang,
+        filename: title
+      });
     } catch (error) {
       console.error('Error generating PDF:', error);
     }

@@ -4,6 +4,7 @@ import {
   DocumentArrowDownIcon, 
   MagnifyingGlassIcon 
 } from '@heroicons/react/24/outline';
+import { generatePDF, showPDFConfirmation, showMarkdownConfirmation } from '../../utils/pdfUtils.js';
 
 // Custom Markdown icon component
 const MarkdownIcon = () => (
@@ -82,18 +83,37 @@ const CLKRBottomNavigation: React.FC<CLKRBottomNavigationProps> = ({
     setIsShareDropdownOpen(false);
   };
 
-  const onDownloadPDF = () => {
-    // PDF download functionality
-    console.log('PDF download triggered');
-    // You can implement PDF generation here
+  const onDownloadPDF = async () => {
+    try {
+      const confirmed = await showPDFConfirmation(title || 'CLKR Article', lang);
+      if (!confirmed) return;
+      
+      const articleContent = document.querySelector('article') || document.querySelector('main');
+      if (!articleContent) {
+        throw new Error('No content found to generate PDF');
+      }
+      
+      await generatePDF({
+        title: title || 'CLKR Article',
+        content: articleContent.innerHTML,
+        lang,
+        filename: title
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // You could show a toast notification here
+    }
   };
 
   const onCopyMarkdown = async () => {
     if (!content) return;
     
     try {
+      const confirmed = await showMarkdownConfirmation(title || 'CLKR Article', lang);
+      if (!confirmed) return;
+      
       await navigator.clipboard.writeText(content);
-      console.log('Markdown content copied to clipboard');
+      // You could show a success toast notification here
     } catch (err) {
       console.error('Failed to copy markdown:', err);
     }

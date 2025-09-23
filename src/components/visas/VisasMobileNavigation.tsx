@@ -5,22 +5,69 @@ import {
   ChatBubbleLeftRightIcon,
   ChevronUpIcon,
   PhoneIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  Bars3Icon,
+  ListBulletIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 import type { Lang } from '../../context/LanguageContext.tsx';
+import { generatePDF, showPDFConfirmation } from '../../utils/pdfUtils.js';
+
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+interface Visa {
+  slug: string;
+  title: string;
+  description?: string;
+  url: string;
+}
 
 interface VisasMobileNavigationProps {
   lang?: Lang;
   pathname?: string;
   title?: string;
+  headings?: Heading[];
+  visas?: Visa[];
+  currentSlug?: string;
 }
 
 const VisasMobileNavigation: React.FC<VisasMobileNavigationProps> = ({
   lang = 'en',
   pathname = '',
-  title = ''
+  title = '',
+  headings = [],
+  visas = [],
+  currentSlug = ''
 }) => {
+  // Improved heading validation and type conversion
+  const typedHeadings: Heading[] = React.useMemo(() => {
+    if (!Array.isArray(headings) || headings.length === 0) {
+      return [];
+    }
+    
+    return headings
+      .filter((heading: any) => 
+        heading && 
+        typeof heading === 'object' && 
+        'id' in heading && 
+        'text' in heading && 
+        ('level' in heading || 'depth' in heading)
+      )
+      .map((heading: any) => ({
+        id: heading.id,
+        text: heading.text,
+        level: heading.level || heading.depth || 1
+      }));
+  }, [headings]);
+
   const [isShareDropdownOpen, setIsShareDropdownOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isTOCOpen, setIsTOCOpen] = useState(false);
+  const [currentSection, setCurrentSection] = useState('');
   const [currentUrl, setCurrentUrl] = useState<string>('');
 
   // Set current URL on client side only
@@ -29,6 +76,49 @@ const VisasMobileNavigation: React.FC<VisasMobileNavigationProps> = ({
       setCurrentUrl(window.location.href);
     }
   }, []);
+
+  // Update current section as user scrolls
+  useEffect(() => {
+    if (typedHeadings.length === 0) return;
+    
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 120; // Offset for sticky nav
+      let closestHeading: Heading | null = null;
+      let minDistance = Infinity;
+      
+      typedHeadings.forEach((heading) => {
+        const el = document.getElementById(heading.id);
+        if (el) {
+          const distance = Math.abs(el.offsetTop - scrollPosition);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestHeading = heading;
+          }
+        }
+      });
+      
+      // Handle case where closestHeading could be null
+      setCurrentSection(
+        closestHeading?.text || typedHeadings[0]?.text || ''
+      );
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [typedHeadings]);
+
+  // Smooth scroll to heading
+  const scrollToHeading = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      window.scrollTo({
+        top: el.offsetTop - 100, // Offset for sticky nav
+        behavior: 'smooth',
+      });
+      setIsTOCOpen(false);
+    }
+  };
 
   const shareContent = (platform: 'facebook' | 'twitter' | 'whatsapp' | 'copy') => {
     const url = currentUrl || (typeof window !== 'undefined' ? window.location.href : '');
@@ -58,35 +148,20 @@ const VisasMobileNavigation: React.FC<VisasMobileNavigationProps> = ({
 
   const downloadPDF = async () => {
     try {
-      const [{ jsPDF }, html2canvas] = await Promise.all([
-        import('jspdf'),
-        import('html2canvas')
-      ]);
+      const confirmed = await showPDFConfirmation(title || 'Visa Information', lang);
+      if (!confirmed) return;
       
-      const tempContainer = document.createElement('div');
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      tempContainer.style.top = '0';
-      tempContainer.style.width = '800px';
-      tempContainer.style.padding = '40px';
-      tempContainer.style.backgroundColor = 'white';
-      tempContainer.style.fontFamily = 'Arial, sans-serif';
-      
-      const content = document.querySelector('article') || document.querySelector('main');
-      if (content) {
-        tempContainer.innerHTML = content.innerHTML;
-        document.body.appendChild(tempContainer);
-        
-        const canvas = await html2canvas.default(tempContainer);
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const imgWidth = pageWidth - 40;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
-        pdf.save(`${(title || document.title).replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
-        document.body.removeChild(tempContainer);
+      const articleContent = document.querySelector('article') || document.querySelector('main');
+      if (!articleContent) {
+        throw new Error('No content found to generate PDF');
       }
+      
+      await generatePDF({
+        title: title || 'Visa Information',
+        content: articleContent.innerHTML,
+        lang,
+        filename: title
+      });
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
@@ -98,8 +173,140 @@ const VisasMobileNavigation: React.FC<VisasMobileNavigationProps> = ({
     }
   };
 
+  // Text content based on language
+  const textContent = {
+    en: {
+      section: 'Section',
+      visas: 'Visas',
+      close: 'Close',
+      tableOfContents: 'Table of Contents'
+    },
+    es: {
+      section: 'Sección',
+      visas: 'Visas',
+      close: 'Cerrar',
+      tableOfContents: 'Tabla de Contenidos'
+    }
+  };
+
+  const content = textContent[lang as keyof typeof textContent] || textContent.en;
+
   return (
     <>
+      {/* Sticky Bar */}
+      <div className="fixed top-[56px] left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-12 md:hidden">
+        {/* Left: TOC Selector */}
+        <button
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 focus:outline-none"
+          onClick={() => setIsTOCOpen(true)}
+        >
+          <ListBulletIcon className="w-5 h-5 text-blue-600" />
+          <span className="truncate max-w-[120px]">{currentSection || content.section}</span>
+        </button>
+        {/* Right: Visas Drawer */}
+        <button
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 focus:outline-none"
+          onClick={() => setIsDrawerOpen(true)}
+        >
+          <Bars3Icon className="w-5 h-5 text-blue-600" />
+          <span>{content.visas}</span>
+        </button>
+      </div>
+
+      {/* TOC Modal */}
+      {isTOCOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">{content.tableOfContents}</h3>
+              <button
+                onClick={() => setIsTOCOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {typedHeadings.length > 0 ? (
+                <nav className="space-y-2">
+                  {typedHeadings.map((heading) => (
+                    <button
+                      key={heading.id}
+                      onClick={() => scrollToHeading(heading.id)}
+                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                        heading.text === currentSection
+                          ? 'bg-blue-100 text-blue-700 font-medium'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                      style={{ paddingLeft: `${(heading.level - 1) * 16 + 12}px` }}
+                    >
+                      {heading.text}
+                    </button>
+                  ))}
+                </nav>
+              ) : (
+                <div className="text-center py-8">
+                  <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <p className="text-gray-500 text-sm">
+                    {lang === 'es' ? 'No hay secciones disponibles' : 'No sections available'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Visas Drawer Modal */}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">{content.visas}</h3>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {visas.length > 0 ? (
+                <nav className="space-y-2">
+                  {visas.map((visa) => (
+                    <a
+                      key={visa.slug}
+                      href={visa.url}
+                      className={`block px-3 py-2 rounded-md text-sm transition-colors ${
+                        visa.slug === currentSlug
+                          ? 'bg-blue-100 text-blue-700 font-medium'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className="font-medium">{visa.title}</div>
+                      {visa.description && (
+                        <div className="text-xs text-gray-500 mt-1">{visa.description}</div>
+                      )}
+                    </a>
+                  ))}
+                </nav>
+              ) : (
+                <div className="text-center py-8">
+                  <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <p className="text-gray-500 text-sm">
+                    {lang === 'es' ? 'No hay visas disponibles' : 'No visas available'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Visas Mobile Navigation - Bottom Navigation Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="flex items-center justify-around px-2 py-2">
@@ -198,7 +405,7 @@ const VisasMobileNavigation: React.FC<VisasMobileNavigationProps> = ({
       </div>
 
       {/* WhatsApp Floating Action Button */}
-      <div className="lg:hidden fixed bottom-4 right-4 z-40">
+      <div className="lg:hidden fixed bottom-20 right-4 z-[60]">
         <a
           href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about: ${title || document.title}`)}`}
           target="_blank"
