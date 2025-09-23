@@ -6,6 +6,7 @@ import { BookOpenIcon, ClockIcon, UserIcon, CalendarIcon, ArrowRightIcon, ShareI
 import SEOHead from '../components/core/SEOHead.astro';
 import GuidesMobileNavigation from '../components/guides/GuidesMobileNavigation.tsx';
 import GuidesBottomNavigation from '../components/guides/GuidesBottomNavigation.tsx';
+import ArticleActions from '../components/shared/ArticleActions.tsx';
 import { 
   generateSEOTitle, 
   generateSEODescription, 
@@ -39,7 +40,7 @@ const {
   timeToRead = 5,
   author = 'Capital M Law',
   publishedDate,
-  content = '',
+  content: articleContent = '',
   tags = []
 } = Astro.props;
 
@@ -67,7 +68,7 @@ const getRelativeTime = (dateString: string) => {
 // Generate SEO data
 const seoData: SEOData = {
   title: generateSEOTitle(title, 'guide', lang as 'en' | 'es'),
-  description: generateSEODescription(content, 'guide', lang as 'en' | 'es', description),
+  description: generateSEODescription(articleContent, 'guide', lang as 'en' | 'es', description),
   keywords: generateKeywords(['guide', 'expat guide', 'Colombia'], 'guide', lang as 'en' | 'es', tags),
   author,
   publishedTime: publishedDate || lastEdited,
@@ -82,7 +83,7 @@ const seoData: SEOData = {
 ---
 
 <Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData}>
-  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
+  <SEOHead seoData={seoData} content={articleContent} pathname={pathname} slot="head" />
   
   <!-- Mobile Navigation -->
   <GuidesMobileNavigation 
@@ -100,7 +101,7 @@ const seoData: SEOData = {
       lang={lang as 'en' | 'es'}
       pathname={pathname || ''}
       title={title}
-      content={content}
+      content={articleContent}
     />
   )}
 
@@ -244,12 +245,14 @@ const seoData: SEOData = {
       </div>
     </div>
 
-    <!-- WhatsApp Floating Action Button -->
-    <div class="lg:hidden fixed bottom-20 right-4 z-[60]">
-      <a href="https://wa.me/573146022411" target="_blank" rel="noopener noreferrer" class="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105">
-        <ChatBubbleLeftRightIcon className="w-6 h-6" />
-      </a>
-    </div>
+    <!-- Article Actions (Share, PDF, MD, Contact) -->
+    <ArticleActions 
+      client:load
+      title={title}
+      content={articleContent}
+      lang={lang as 'en' | 'es'}
+      type="guide"
+    />
 
   </div>
 </Layout>

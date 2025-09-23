@@ -4,6 +4,7 @@ import TableOfContents from '../components/core/navigation/TableOfContents.astro
 import VisaSidebarFilters from '../components/visas/VisaSidebarFilters.tsx';
 import SocialSharing from '../components/core/common/SocialSharing.tsx';
 import VisasMobileNavigation from '../components/visas/VisasMobileNavigation.tsx';
+import ArticleActions from '../components/shared/ArticleActions.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
 import { 
   generateSEOTitle, 
@@ -39,7 +40,7 @@ const {
 	currentSlug,
 	readingTime,
 	menuData, // <-- add menuData to Astro.props
-	content = '',
+	content: articleContent = '',
 	author = 'Capital M Law',
 	tags = []
 } = Astro.props;
@@ -49,16 +50,16 @@ const {
 
 // Generate SEO data
 const seoData: SEOData = {
-  title: generateSEOTitle(title, 'visa', lang),
-  description: generateSEODescription(content, 'visa', lang, description),
-  keywords: generateKeywords(['visa', 'Colombia visa', 'immigration'], 'visa', lang, tags),
+  title: generateSEOTitle(title, 'visa', lang as 'en' | 'es'),
+  description: generateSEODescription(articleContent, 'visa', lang as 'en' | 'es', description),
+  keywords: generateKeywords(['visa', 'Colombia visa', 'immigration'], 'visa', lang as 'en' | 'es', tags),
   author,
   publishedTime: lastEdited,
   modifiedTime: lastEdited,
   section: 'Colombia Visas',
   tags,
   readingTime,
-  lang,
+  lang: lang as 'en' | 'es',
   type: 'visa',
   canonicalUrl: `https://capitaleme.com${pathname}`
 };
@@ -75,7 +76,7 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 ---
 
 <Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
-  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
+	<SEOHead seoData={seoData} content={articleContent} pathname={pathname} slot="head" />
 	<!-- Visas Mobile Navigation -->
 	<VisasMobileNavigation 
 		client:load
@@ -210,6 +211,15 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 			)}
 		</div>
 	</div>
+
+	<!-- Article Actions (Share, PDF, MD, Contact) -->
+	<ArticleActions 
+		client:load
+		title={title}
+		content={articleContent}
+		lang={lang as 'en' | 'es'}
+		type="visa"
+	/>
 </Layout>
 
 <style>

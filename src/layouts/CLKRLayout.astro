@@ -5,6 +5,7 @@ import CLKRSidebar from '../components/clkr/CLKRSidebar.tsx';
 import CLKRStickyHeader from '../components/clkr/CLKRStickyHeader.tsx';
 import CLKRMobileNavigation from '../components/clkr/CLKRMobileNavigation.tsx';
 import CLKRBottomNavigation from '../components/clkr/CLKRBottomNavigation.tsx';
+import ArticleActions from '../components/shared/ArticleActions.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
 import { 
   generateSEOTitle, 
@@ -43,7 +44,7 @@ const {
   lastEdited,
   readingTime,
   menuData, // <-- add menuData to Astro.props
-  content = '',
+  content: articleContent = '',
   author = 'Capital M Law',
   tags = []
 } = Astro.props;
@@ -67,16 +68,16 @@ const articlesByModule = clkrArticles.reduce((acc: Record<string, any[]>, articl
 
 // Generate SEO data
 const seoData: SEOData = {
-  title: generateSEOTitle(title, 'clkr', lang),
-  description: generateSEODescription(content, 'clkr', lang, description),
-  keywords: generateKeywords(['CLKR', 'legal services', 'Colombia'], 'clkr', lang, tags),
+  title: generateSEOTitle(title, 'clkr', lang as 'en' | 'es'),
+  description: generateSEODescription(articleContent, 'clkr', lang as 'en' | 'es', description),
+  keywords: generateKeywords(['CLKR', 'legal services', 'Colombia'], 'clkr', lang as 'en' | 'es', tags),
   author,
   publishedTime: lastEdited,
   modifiedTime: lastEdited,
   section: 'CLKR Legal Services',
   tags,
   readingTime,
-  lang,
+  lang: lang as 'en' | 'es',
   type: 'clkr',
   canonicalUrl: `https://capitaleme.com${pathname}`
 };
@@ -85,7 +86,7 @@ const seoData: SEOData = {
 ---
 
 <Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
-  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
+  <SEOHead seoData={seoData} content={articleContent} pathname={pathname} slot="head" />
   <!-- Mobile Navigation -->
   <CLKRMobileNavigation 
     client:load
@@ -322,6 +323,15 @@ const seoData: SEOData = {
       )}
     </div>
   </div>
+
+  <!-- Article Actions (Share, PDF, MD, Contact) -->
+  <ArticleActions 
+    client:load
+    title={title}
+    content={articleContent}
+    lang={lang as 'en' | 'es'}
+    type="clkr"
+  />
 </Layout>
 
 <style>

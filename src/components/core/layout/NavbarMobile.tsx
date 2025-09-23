@@ -226,45 +226,63 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, links, lang, p
                 <div key={link.href} className="mobile-menu-item" style={{ animationDelay: `${index * 50}ms` }}>
                   {/* Main menu item */}
                   <div className="relative">
-                    <a
-                      href={link.href}
-                      onClick={onClose}
-                      className={`block p-4 rounded-lg transition-all duration-300 relative overflow-hidden ${
-                        isLinkActive(link.href) 
-                          ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold' 
-                          : 'hover:bg-gray-50 text-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium relative z-10">{link.text}</span>
-                        {hasSubpages && (
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleDropdown(link.text);
-                            }}
-                            className="p-1 rounded-md hover:bg-white/20 transition-colors"
-                          >
+                    {hasSubpages ? (
+                      // For items with subpages, use a div instead of anchor to prevent navigation
+                      <div
+                        className={`block p-4 rounded-lg transition-all duration-300 relative overflow-hidden cursor-pointer ${
+                          isLinkActive(link.href) 
+                            ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold' 
+                            : 'hover:bg-gray-50 text-gray-700'
+                        }`}
+                        onClick={() => toggleDropdown(link.text)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium relative z-10">{link.text}</span>
+                          <div className="p-1 rounded-md hover:bg-white/20 transition-colors">
                             {isExpanded ? (
                               <ChevronDownIcon className="w-5 h-5" />
                             ) : (
                               <ChevronRightIcon className="w-5 h-5" />
                             )}
-                          </button>
+                          </div>
+                        </div>
+                        
+                        {/* Active background gradient */}
+                        {isLinkActive(link.href) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg"></div>
+                        )}
+                        
+                        {/* Hover effect for non-active items */}
+                        {!isLinkActive(link.href) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 hover:opacity-100 transition-all duration-300"></div>
                         )}
                       </div>
-                      
-                      {/* Active background gradient */}
-                      {isLinkActive(link.href) && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg"></div>
-                      )}
-                      
-                      {/* Hover effect for non-active items */}
-                      {!isLinkActive(link.href) && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 hover:opacity-100 transition-all duration-300"></div>
-                      )}
-                    </a>
+                    ) : (
+                      // For items without subpages, use normal anchor
+                      <a
+                        href={link.href}
+                        onClick={onClose}
+                        className={`block p-4 rounded-lg transition-all duration-300 relative overflow-hidden ${
+                          isLinkActive(link.href) 
+                            ? 'bg-gradient-to-r from-primary to-secondary text-white font-semibold' 
+                            : 'hover:bg-gray-50 text-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium relative z-10">{link.text}</span>
+                        </div>
+                        
+                        {/* Active background gradient */}
+                        {isLinkActive(link.href) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg"></div>
+                        )}
+                        
+                        {/* Hover effect for non-active items */}
+                        {!isLinkActive(link.href) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-lg opacity-0 hover:opacity-100 transition-all duration-300"></div>
+                        )}
+                      </a>
+                    )}
                   </div>
 
                   {/* Subpages dropdown */}

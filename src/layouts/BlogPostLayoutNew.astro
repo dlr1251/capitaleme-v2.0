@@ -5,6 +5,7 @@ import { getAllContentData } from '../server/lib/contentData.js';
 import { getBlogPostsFromSupabase } from '../lib/blogData.ts';
 import BlogMobileNavigation from '../components/blog/BlogMobileNavigation.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
+import ArticleActions from '../components/shared/ArticleActions.tsx';
 import { 
   generateSEOTitle, 
   generateSEODescription, 
@@ -46,7 +47,7 @@ const {
   author = 'Capital M Law',
   siteName = 'Capital M Law',
   publishedDate,
-  content = '',
+  content: articleContent = '',
   tags = []
 } = Astro.props;
 
@@ -69,7 +70,7 @@ const hasHeadings = headings && headings.length > 0;
 // Generate SEO data
 const seoData: SEOData = {
   title: generateSEOTitle(title, 'blog', lang as 'en' | 'es'),
-  description: generateSEODescription(content, 'blog', lang as 'en' | 'es', description),
+  description: generateSEODescription(articleContent, 'blog', lang as 'en' | 'es', description),
   keywords: generateKeywords(['blog', 'expat blog', 'Colombia'], 'blog', lang as 'en' | 'es', tags),
   author,
   publishedTime: publishedDate || lastEdited,
@@ -155,7 +156,7 @@ const customBreadcrumbs = [
 ---
 
 <Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
-  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
+  <SEOHead seoData={seoData} content={articleContent} pathname={pathname} slot="head" />
   <!-- Blog Mobile Navigation -->
   <BlogMobileNavigation 
     client:load
@@ -327,14 +328,14 @@ const customBreadcrumbs = [
     </div>
   </div>
 
-  <!-- WhatsApp Floating Action Button -->
-  <div class="lg:hidden fixed bottom-20 right-4 z-[60]">
-    <a href="https://wa.me/573146022411" target="_blank" rel="noopener noreferrer" class="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-      </svg>
-    </a>
-  </div>
+  <!-- Article Actions (Share, PDF, MD, Contact) -->
+  <ArticleActions 
+    client:load
+    title={title}
+    content={articleContent}
+    lang={lang as 'en' | 'es'}
+    type="blog"
+  />
 </Layout>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>
