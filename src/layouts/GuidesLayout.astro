@@ -7,7 +7,6 @@ import SEOHead from '../components/core/SEOHead.astro';
 import GuidesMobileNavigation from '../components/guides/GuidesMobileNavigation.tsx';
 import GuidesBottomNavigation from '../components/guides/GuidesBottomNavigation.tsx';
 import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
-import ArticleActions from '../components/shared/ArticleActions.tsx';
 import { 
   generateSEOTitle, 
   generateSEODescription, 
@@ -256,13 +255,6 @@ const seoData: SEOData = {
     </div>
 
     <!-- Article Actions (Share, PDF, MD, Contact) -->
-    <ArticleActions 
-      client:load
-      title={title}
-      content={articleContent}
-      lang={lang as 'en' | 'es'}
-      type="guide"
-    />
 
   </div>
 </Layout>

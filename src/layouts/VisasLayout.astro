@@ -5,7 +5,6 @@ import VisaSidebarFilters from '../components/visas/VisaSidebarFilters.tsx';
 import SocialSharing from '../components/core/common/SocialSharing.tsx';
 import VisasMobileNavigation from '../components/visas/VisasMobileNavigation.tsx';
 import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
-import ArticleActions from '../components/shared/ArticleActions.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
 import { 
   generateSEOTitle, 
@@ -223,13 +222,6 @@ const safeLang = lang === 'es' ? 'es' : 'en';
 	</div>
 
 	<!-- Article Actions (Share, PDF, MD, Contact) -->
-	<ArticleActions 
-		client:load
-		title={title}
-		content={articleContent}
-		lang={lang as 'en' | 'es'}
-		type="visa"
-	/>
 </Layout>
 
 <style>

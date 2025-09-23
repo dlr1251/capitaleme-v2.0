@@ -6,7 +6,6 @@ import { getBlogPostsFromSupabase } from '../lib/blogData.ts';
 import BlogMobileNavigation from '../components/blog/BlogMobileNavigation.tsx';
 import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
-import ArticleActions from '../components/shared/ArticleActions.tsx';
 import { 
   generateSEOTitle, 
   generateSEODescription, 
@@ -339,13 +338,6 @@ const customBreadcrumbs = [
   </div>
 
   <!-- Article Actions (Share, PDF, MD, Contact) -->
-  <ArticleActions 
-    client:load
-    title={title}
-    content={articleContent}
-    lang={lang as 'en' | 'es'}
-    type="blog"
-  />
 </Layout>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>

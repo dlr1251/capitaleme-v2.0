@@ -6,7 +6,6 @@ import CLKRStickyHeader from '../components/clkr/CLKRStickyHeader.tsx';
 import CLKRMobileNavigation from '../components/clkr/CLKRMobileNavigation.tsx';
 import CLKRBottomNavigation from '../components/clkr/CLKRBottomNavigation.tsx';
 import MobileBottomNavigation from '../components/core/layout/MobileBottomNavigation.tsx';
-import ArticleActions from '../components/shared/ArticleActions.tsx';
 import SEOHead from '../components/core/SEOHead.astro';
 import { 
   generateSEOTitle, 
@@ -335,13 +334,6 @@ const seoData: SEOData = {
   </div>
 
   <!-- Article Actions (Share, PDF, MD, Contact) -->
-  <ArticleActions 
-    client:load
-    title={title}
-    content={articleContent}
-    lang={lang as 'en' | 'es'}
-    type="clkr"
-  />
 </Layout>
 
 <style>
