@@ -82,7 +82,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
   // Share functionality
   const shareContent = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp' | 'copy') => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
-    const text = title || document.title;
+    const text = title || (typeof document !== 'undefined' ? document.title : '');
     
     let shareUrl = '';
     switch (platform) {
@@ -99,7 +99,9 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
         shareUrl = `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`;
         break;
       case 'copy':
-        navigator.clipboard.writeText(url);
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          navigator.clipboard.writeText(url);
+        }
         return;
     }
     
@@ -115,13 +117,15 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
       const confirmed = await showPDFConfirmation(title || 'Content', lang);
       if (!confirmed) return;
       
-      const articleContent = document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose');
+      const articleContent = typeof document !== 'undefined' ? 
+        (document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose')) : 
+        null;
       if (!articleContent) {
         throw new Error('No content found to generate PDF');
       }
       
       const contentWithTitle = `
-        <h1 style="font-size: 24px; margin-bottom: 20px; color: #1f2937;">${title || document.title}</h1>
+        <h1 style="font-size: 24px; margin-bottom: 20px; color: #1f2937;">${title || 'Content'}</h1>
         ${articleContent.innerHTML}
       `;
       
@@ -142,16 +146,20 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
       const confirmed = await showMarkdownConfirmation(title || 'Content', lang);
       if (!confirmed) return;
       
-      const articleContent = document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose');
+      const articleContent = typeof document !== 'undefined' ? 
+        (document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose')) : 
+        null;
       if (!articleContent) {
         throw new Error('No content found to copy');
       }
       
       // Convert HTML to Markdown (simplified)
-      let markdown = `# ${title || document.title}\n\n`;
+      let markdown = `# ${title || 'Content'}\n\n`;
       markdown += articleContent.textContent || articleContent.innerText;
       
-      await navigator.clipboard.writeText(markdown);
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(markdown);
+      }
     } catch (error) {
       console.error('Error copying markdown:', error);
     }
@@ -188,8 +196,10 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
   }, []);
 
   return (
@@ -318,7 +328,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
 
           {/* WhatsApp Button - Always visible */}
           <a
-            href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about: ${title || document.title}`)}`}
+            href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about: ${title || 'this content'}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-300 ${
