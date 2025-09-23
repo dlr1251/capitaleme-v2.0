@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ShareIcon, 
-  DocumentArrowDownIcon,
-  DocumentTextIcon,
   ChatBubbleLeftRightIcon,
   XMarkIcon,
   CalendarDaysIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
-import { generatePDF, showPDFConfirmation, showMarkdownConfirmation } from '../../../utils/pdfUtils.js';
 import ContactForm from '../../ui/forms/ContactForm.tsx';
 
 interface MobileBottomNavigationProps {
@@ -34,14 +31,10 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
   const textContent = {
     en: {
       share: 'Share',
-      pdf: 'PDF',
-      md: 'MD',
       contact: 'Contact',
       whatsapp: 'WhatsApp',
       shareOn: 'Share on',
       copyLink: 'Copy Link',
-      downloadPDF: 'Download PDF',
-      copyMarkdown: 'Copy Markdown',
       contactUs: 'Contact Us',
       bookConsultation: 'Book Consultation',
       contactForm: 'Contact Form',
@@ -55,14 +48,10 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
     },
     es: {
       share: 'Compartir',
-      pdf: 'PDF',
-      md: 'MD',
       contact: 'Contacto',
       whatsapp: 'WhatsApp',
       shareOn: 'Compartir en',
       copyLink: 'Copiar Enlace',
-      downloadPDF: 'Descargar PDF',
-      copyMarkdown: 'Copiar Markdown',
       contactUs: 'Contáctanos',
       bookConsultation: 'Reservar Consulta',
       contactForm: 'Formulario de Contacto',
@@ -108,60 +97,6 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
       window.open(shareUrl, '_blank', 'width=600,height=400');
     }
     setIsShareOpen(false);
-  };
-
-  // PDF download functionality
-  const handlePDFDownload = async () => {
-    try {
-      const confirmed = await showPDFConfirmation(title || 'Content', lang);
-      if (!confirmed) return;
-      
-      const articleContent = typeof document !== 'undefined' ? 
-        (document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose')) : 
-        null;
-      if (!articleContent) {
-        throw new Error('No content found to generate PDF');
-      }
-      
-      const contentWithTitle = `
-        <h1 style="font-size: 24px; margin-bottom: 20px; color: #1f2937;">${title || 'Content'}</h1>
-        ${articleContent.innerHTML}
-      `;
-      
-      await generatePDF({
-        title: title || 'Content',
-        content: contentWithTitle,
-        lang,
-        filename: title
-      });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
-
-  // Markdown copy functionality
-  const handleMarkdownCopy = async () => {
-    try {
-      const confirmed = await showMarkdownConfirmation(title || 'Content', lang);
-      if (!confirmed) return;
-      
-      const articleContent = typeof document !== 'undefined' ? 
-        (document.querySelector('article') || document.querySelector('main') || document.querySelector('.prose')) : 
-        null;
-      if (!articleContent) {
-        throw new Error('No content found to copy');
-      }
-      
-      // Convert HTML to Markdown (simplified)
-      let markdown = `# ${title || 'Content'}\n\n`;
-      markdown += articleContent.textContent || articleContent.innerText;
-      
-      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(markdown);
-      }
-    } catch (error) {
-      console.error('Error copying markdown:', error);
-    }
   };
 
   // Calendly modal functionality
@@ -324,26 +259,6 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
               </div>
             )}
           </div>
-
-          {/* PDF Download Button */}
-          <button
-            onClick={handlePDFDownload}
-            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-red-600 hover:bg-red-50"
-            aria-label={contentData.downloadPDF}
-          >
-            <DocumentArrowDownIcon className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">{contentData.pdf}</span>
-          </button>
-
-          {/* Markdown Copy Button */}
-          <button
-            onClick={handleMarkdownCopy}
-            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-green-600 hover:bg-green-50"
-            aria-label={contentData.copyMarkdown}
-          >
-            <DocumentTextIcon className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">{contentData.md}</span>
-          </button>
 
           {/* Contact Button with Dialer */}
           <div className="relative" data-contact-container>
