@@ -278,6 +278,7 @@ const Navbar: React.FC<NavbarProps> = ({ lang, pathname, onMegaMenuToggle, menuD
             <NavbarMobile
               lang={lang || 'en'}
               pathname={pathname || '/'}
+              menuData={menuData}
             />
           </div>
         </div>
