@@ -15,7 +15,11 @@
     "sync-clkr": "node scripts/sync-clkr.js",
     "sync-visas": "node scripts/sync-visas.js",
     "test-supabase": "node scripts/test-supabase.js",
-    "optimize": "node scripts/optimize-performance.js"
+    "optimize": "node scripts/optimize-performance.js",
+    "migrate-images-local": "node scripts/download-and-store-images.js",
+    "migrate-images-cloudinary": "node scripts/cloudinary-image-migration.js",
+    "process-supabase-images": "node scripts/enhanced-notion-sync-with-images.js",
+    "sync-with-images": "node scripts/sync-with-image-processing.js"
   },
   "resolutions": {
     "whatwg-url": "^5.0.0"

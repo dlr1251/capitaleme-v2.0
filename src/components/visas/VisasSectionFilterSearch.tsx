@@ -201,49 +201,6 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
           </div>
         )}
 
-        {/* Popular Visas Section */}
-        {popularVisas.length > 0 && (
-          <div className="mb-12">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                {content.popularTitle}
-              </h3>
-              <p className="text-gray-600">
-                {content.popularSubtitle}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {popularVisas.slice(0, 6).map((visa) => (
-                <a key={visa.id} href={`/${lang}/visas/${visa.slug}`} className="bg-white rounded p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group block">
-                  <div className="flex items-center justify-between mb-6">
-                    <h4 className="text-xl font-bold text-primary  group-hover:text-primary transition-colors">
-                      {lang === 'es' ? `Visa ${visa.title}` : `${visa.title} Visa`}
-                    </h4>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {visa.beneficiaries && String(visa.beneficiaries).trim() !== '' && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                        {getBeneficiariesLabel(String(visa.beneficiaries), lang)}
-                      </span>
-                    )}
-                    {visa.workPermit && String(visa.workPermit).trim() !== '' && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                        {getWorkPermitLabel(String(visa.workPermit), lang)}
-                      </span>
-                    )}
-                  </div>
-                  {visa.alcance && (
-                    <div className="mb-6">
-                      <p className="text-sm text-gray-700">
-                        {visa.alcance}
-                      </p>
-                    </div>
-                  )}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Filters Section - ONLY Country */}
         <div className="mb-8">

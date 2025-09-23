@@ -4,6 +4,13 @@ import TableOfContents from '../components/core/navigation/TableOfContents.astro
 import VisaSidebarFilters from '../components/visas/VisaSidebarFilters.tsx';
 import SocialSharing from '../components/core/common/SocialSharing.tsx';
 import VisasMobileNavigation from '../components/visas/VisasMobileNavigation.tsx';
+import SEOHead from '../components/core/SEOHead.astro';
+import { 
+  generateSEOTitle, 
+  generateSEODescription, 
+  generateKeywords,
+  type SEOData 
+} from '../utils/seo.js';
 
 export interface Props {
 	title: string;
@@ -16,6 +23,9 @@ export interface Props {
 	currentSlug?: string;
 	readingTime?: number;
 	menuData?: any; // Add menuData to the interface
+	content?: string; // Add content for SEO
+	author?: string; // Add author for SEO
+	tags?: string[]; // Add tags for SEO
 }
 
 const {
@@ -28,11 +38,30 @@ const {
 	showBreadcrumb = false,
 	currentSlug,
 	readingTime,
-	menuData // <-- add menuData to Astro.props
+	menuData, // <-- add menuData to Astro.props
+	content = '',
+	author = 'Capital M Law',
+	tags = []
 } = Astro.props;
 
 // Get optimized menu data
 // Remove: const menuData = await getAllMenuData(lang);
+
+// Generate SEO data
+const seoData: SEOData = {
+  title: generateSEOTitle(title, 'visa', lang),
+  description: generateSEODescription(content, 'visa', lang, description),
+  keywords: generateKeywords(['visa', 'Colombia visa', 'immigration'], 'visa', lang, tags),
+  author,
+  publishedTime: lastEdited,
+  modifiedTime: lastEdited,
+  section: 'Colombia Visas',
+  tags,
+  readingTime,
+  lang,
+  type: 'visa',
+  canonicalUrl: `https://capitaleme.com${pathname}`
+};
 
 // Get visa services for sidebar navigation
 const allVisas = menuData?.allVisas || [];
@@ -45,7 +74,8 @@ const visaTypes = menuData?.visaTypes || [];
 const safeLang = lang === 'es' ? 'es' : 'en';
 ---
 
-<Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
 	<!-- Visas Mobile Navigation -->
 	<VisasMobileNavigation 
 		client:load

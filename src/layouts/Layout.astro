@@ -4,7 +4,6 @@ import Footer from '../components/core/layout/Footer.astro';
 import ContactBar from '../components/core/layout/ContactBar.astro';
 import AnalyticsHead from '../components/core/analytics/AnalyticsHead.astro';
 import AnalyticsScripts from '../components/core/analytics/AnalyticsScripts.tsx';
-import AnalyticsDebug from '../components/core/analytics/AnalyticsDebug.tsx';
 import type { Lang } from '../context/LanguageContext.tsx';
 
 export interface Props {
@@ -54,8 +53,6 @@ const currentPathname = pathname || Astro.url.pathname;
 			pagePath={currentPathname}
 		/>
 		
-		<!-- Analytics Debug (Development Only) -->
-		<AnalyticsDebug client:load />
 	</body>
 </html>
 

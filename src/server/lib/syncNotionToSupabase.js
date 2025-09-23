@@ -973,13 +973,29 @@ async function extractGuideData(guide, notion) {
 }
 
 export async function getGuidesFromSupabase(lang = 'en') {
-  const { data, error } = await supabase
+  // Ensure supabase is initialized
+  const supabaseClient = await initializeSupabase();
+  
+  // Normalize language to handle both 'en'/'En' and 'es'/'Es'
+  const normalizedLang = lang.toLowerCase();
+  
+  const { data, error } = await supabaseClient
     .from('guides')
     .select('*')
-    .eq('lang', lang)
     .eq('published', true)
     .order('last_edited', { ascending: false });
-  return error ? [] : data;
+  
+  if (error) {
+    console.error('Error fetching guides:', error);
+    return [];
+  }
+  
+  // Filter by language (case-insensitive)
+  const filteredGuides = data.filter(guide => 
+    guide.lang && guide.lang.toLowerCase() === normalizedLang
+  );
+  
+  return filteredGuides;
 }
 
 // --- Shared Notion fetch helper ---

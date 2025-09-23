@@ -8,6 +8,7 @@ import ConsultationSection from '../../../components/visas/ConsultationSection.t
 import BlogPageLatest from '../../../components/blog/BlogPageLatest.astro';
 import VisasHero from '../../../components/visas/VisasHero.tsx';
 import ColombiaStayCalculator from "../../../components/visas/ColombiaStayCalculator.tsx";
+import AdditionalServicesSection from '../../../components/visas/AdditionalServicesSection.tsx';
 const lang = 'en';
 const menuData = await getAllContentData(lang);
 
@@ -25,20 +26,25 @@ const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(
 <Layout title="Visa Information - Capital M Law | Colombian Legal Services" lang={lang} menuData={menuData}>
   
   <!-- Hero Section -->
-  <VisasHero client:load popularVisas={popularVisas} guides={featuredGuides} lang="en" />
+  <VisasHero client:load guides={featuredGuides} lang="en" />
   
   <!-- Service Process Section -->
   <div class="py-20">
     <ServiceProcess lang="en" />
   </div>
   
-  <!-- Visa Filter & Search Section -->
+  <!-- Additional Services Section -->
   <div class="py-20 bg-gray-50">
+    <AdditionalServicesSection client:load lang="en" />
+  </div>
+  
+  <!-- Visa Filter & Search Section -->
+  <div class="py-20">
     <VisasSectionFilterSearch  visas={allVisas} lang="en" intro={true} client:visible/>   
   </div>
   
   <!-- Colombia Stay Calculator Section -->
-  <div class="py-20">
+  <div class="py-20 bg-gray-50">
     <ColombiaStayCalculator client:load /> 
   </div>
   

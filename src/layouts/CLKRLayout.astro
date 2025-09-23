@@ -5,6 +5,13 @@ import CLKRSidebar from '../components/clkr/CLKRSidebar.tsx';
 import CLKRStickyHeader from '../components/clkr/CLKRStickyHeader.tsx';
 import CLKRMobileNavigation from '../components/clkr/CLKRMobileNavigation.tsx';
 import CLKRBottomNavigation from '../components/clkr/CLKRBottomNavigation.tsx';
+import SEOHead from '../components/core/SEOHead.astro';
+import { 
+  generateSEOTitle, 
+  generateSEODescription, 
+  generateKeywords,
+  type SEOData 
+} from '../utils/seo.js';
 
 // Define Heading type for type assertion
 interface Heading {
@@ -22,6 +29,9 @@ export interface Props {
   lastEdited?: string;
   readingTime?: number;
   menuData?: any; // Add menuData to the interface
+  content?: string; // Add content for SEO
+  author?: string; // Add author for SEO
+  tags?: string[]; // Add tags for SEO
 }
 
 const { 
@@ -32,7 +42,10 @@ const {
   headings = [],
   lastEdited,
   readingTime,
-  menuData // <-- add menuData to Astro.props
+  menuData, // <-- add menuData to Astro.props
+  content = '',
+  author = 'Capital M Law',
+  tags = []
 } = Astro.props;
 
 // Get CLKR articles for sidebar navigation
@@ -52,10 +65,27 @@ const articlesByModule = clkrArticles.reduce((acc: Record<string, any[]>, articl
 }, {} as Record<string, any[]>);
 
 
+// Generate SEO data
+const seoData: SEOData = {
+  title: generateSEOTitle(title, 'clkr', lang),
+  description: generateSEODescription(content, 'clkr', lang, description),
+  keywords: generateKeywords(['CLKR', 'legal services', 'Colombia'], 'clkr', lang, tags),
+  author,
+  publishedTime: lastEdited,
+  modifiedTime: lastEdited,
+  section: 'CLKR Legal Services',
+  tags,
+  readingTime,
+  lang,
+  type: 'clkr',
+  canonicalUrl: `https://capitaleme.com${pathname}`
+};
+
 // const safeLang = lang === 'es' ? 'es' : 'en'; // Unused variable
 ---
 
-<Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
   <!-- Mobile Navigation -->
   <CLKRMobileNavigation 
     client:load

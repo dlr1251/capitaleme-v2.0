@@ -40,7 +40,7 @@ const CONSULTATION_OPTIONS: ConsultationOption[] = [
   {
     key: 'noHurry',
     label: 'Programmed',
-    price: '$45',
+    price: '$55',
     title: 'Programmed Consultation',
     description: 'Book within 7 days • Planned legal services',
     calendly: 'https://calendly.com/capital-m-law/programmed-consultation?back=1&month=2025-07',

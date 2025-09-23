@@ -8,31 +8,39 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 
+// Import icons for mapping
+const icons = {
+  consultation: 'ChatBubbleLeftRightIcon',
+  documents: 'DocumentTextIcon', 
+  application: 'CheckCircleIcon',
+  completion: 'TrophyIcon'
+};
+
 // Content based on language
 const content = lang === 'es' ? {
   title: "Cómo Funciona Nuestro Servicio",
   subtitle: "Nuestro proceso optimizado asegura que tu solicitud de visa sea manejada de manera eficiente y profesional de principio a fin.",
   steps: [
     {
-      icon: "💬",
+      iconKey: "consultation",
       title: "Consulta Inicial",
       description: "Reserva una consulta de 45 minutos donde evaluaremos tu situación y recomendaremos la mejor opción de visa para ti.",
       features: ["Evaluación personalizada", "Recomendación de categoría de visa", "Planificación de cronograma"]
     },
     {
-      icon: "📄",
+      iconKey: "documents",
       title: "Preparación de Documentos",
       description: "Te guiaremos en la recopilación de todos los documentos necesarios y nos aseguraremos de que todo esté correctamente preparado.",
       features: ["Lista de verificación de documentos", "Servicios de traducción", "Soporte de notarización"]
     },
     {
-      icon: "✅",
+      iconKey: "application",
       title: "Solicitud y Seguimiento",
       description: "Manejamos todo el proceso de solicitud y te mantenemos actualizado sobre su progreso hasta la aprobación.",
       features: ["Presentación de solicitud", "Seguimiento de progreso", "Enlace con el gobierno"]
     },
     {
-      icon: "🏆",
+      iconKey: "completion",
       title: "Conclusión del Servicio y Servicios Futuros",
       description: "Recibe tu visa aprobada y orientación para futuras necesidades legales o migratorias. Permanecemos disponibles para cualquier seguimiento o servicios adicionales.",
       features: ["Entrega y revisión de visa", "Orientación post-aprobación", "Descuentos para clientes recurrentes"]
@@ -61,25 +69,25 @@ const content = lang === 'es' ? {
   subtitle: "Our streamlined process ensures your visa application is handled efficiently and professionally from start to finish.",
   steps: [
     {
-      icon: "💬",
+      iconKey: "consultation",
       title: "Initial Consultation",
       description: "Book a 45-minute consultation where we'll assess your situation and recommend the best visa option for you.",
       features: ["Personalized assessment", "Visa category recommendation", "Timeline planning"]
     },
     {
-      icon: "📄",
+      iconKey: "documents",
       title: "Document Preparation",
       description: "We'll guide you through gathering all necessary documents and ensure everything is properly prepared.",
       features: ["Document checklist", "Translation services", "Notarization support"]
     },
     {
-      icon: "✅",
+      iconKey: "application",
       title: "Application & Follow-up",
       description: "We handle the entire application process and keep you updated on its progress until approval.",
       features: ["Application submission", "Progress tracking", "Government liaison"]
     },
     {
-      icon: "🏆",
+      iconKey: "completion",
       title: "Service Conclusion & Future Services",
       description: "Receive your approved visa and guidance for future legal or migration needs. We remain available for any follow-up or additional services.",
       features: ["Visa delivery & review", "Post-approval guidance", "Discounts for returning clients"]
@@ -126,10 +134,27 @@ const content = lang === 'es' ? {
             <!-- Card -->
             <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 group-hover:scale-105 relative">
               <!-- Icon -->
-              <div class="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mb-6 group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300">
-                <div class="text-3xl">
-                  {step.icon}
-                </div>
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300">
+                {step.iconKey === 'consultation' && (
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                  </svg>
+                )}
+                {step.iconKey === 'documents' && (
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                )}
+                {step.iconKey === 'application' && (
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                )}
+                {step.iconKey === 'completion' && (
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                  </svg>
+                )}
               </div>
               <!-- Content -->
               <h3 class="text-2xl font-bold text-secondary mb-4">

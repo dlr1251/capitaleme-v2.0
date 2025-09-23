@@ -1,0 +1,154 @@
+---
+import type { SEOData } from '../../utils/seo.js';
+import { 
+  generateOpenGraphData, 
+  generateStructuredData, 
+  generateCanonicalUrl 
+} from '../../utils/seo.js';
+
+export interface Props {
+  seoData: SEOData;
+  content?: string;
+  pathname?: string;
+}
+
+const { seoData, content, pathname } = Astro.props;
+
+// Generate Open Graph data
+const ogData = generateOpenGraphData(seoData);
+
+// Generate structured data
+const structuredData = generateStructuredData(seoData, content);
+
+// Generate canonical URL
+const canonicalUrl = generateCanonicalUrl(pathname || '', seoData.lang);
+---
+
+<!-- Primary Meta Tags -->
+<title>{seoData.title}</title>
+<meta name="title" content={seoData.title} />
+<meta name="description" content={seoData.description} />
+<meta name="keywords" content={seoData.keywords.join(', ')} />
+<meta name="author" content={seoData.author || 'Capital M Law'} />
+<meta name="robots" content="index, follow" />
+<meta name="language" content={seoData.lang} />
+<meta name="revisit-after" content="7 days" />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={ogData.ogType} />
+<meta property="og:url" content={ogData.ogUrl} />
+<meta property="og:title" content={ogData.ogTitle} />
+<meta property="og:description" content={ogData.ogDescription} />
+<meta property="og:image" content={ogData.ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={seoData.title} />
+<meta property="og:site_name" content={ogData.ogSiteName} />
+<meta property="og:locale" content={seoData.lang === 'en' ? 'en_US' : 'es_CO'} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content={ogData.twitterCard} />
+<meta property="twitter:url" content={ogData.ogUrl} />
+<meta property="twitter:title" content={ogData.twitterTitle} />
+<meta property="twitter:description" content={ogData.twitterDescription} />
+<meta property="twitter:image" content={ogData.twitterImage} />
+<meta property="twitter:image:alt" content={seoData.title} />
+<meta property="twitter:site" content="@capitalmlaw" />
+<meta property="twitter:creator" content="@capitalmlaw" />
+
+<!-- Additional SEO Meta Tags -->
+<meta name="theme-color" content="#1e40af" />
+<meta name="msapplication-TileColor" content="#1e40af" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Capital M Law" />
+
+<!-- Article specific meta tags -->
+{seoData.type === 'article' && (
+  <>
+    <meta property="article:published_time" content={seoData.publishedTime} />
+    <meta property="article:modified_time" content={seoData.modifiedTime} />
+    <meta property="article:author" content={seoData.author || 'Capital M Law'} />
+    <meta property="article:section" content={seoData.section || 'Legal Services'} />
+    {seoData.tags && seoData.tags.map(tag => (
+      <meta property="article:tag" content={tag} />
+    ))}
+  </>
+)}
+
+<!-- Reading time -->
+{seoData.readingTime && (
+  <meta name="twitter:label1" content={seoData.lang === 'en' ? 'Reading time' : 'Tiempo de lectura'} />
+  <meta name="twitter:data1" content={`${seoData.readingTime} ${seoData.lang === 'en' ? 'min' : 'min'}`} />
+)}
+
+<!-- Target audience -->
+<meta name="audience" content={seoData.lang === 'en' ? 'expats, foreigners, Colombia' : 'extranjeros, expatriados, Colombia'} />
+<meta name="target" content={seoData.lang === 'en' ? 'expats in Colombia' : 'extranjeros en Colombia'} />
+
+<!-- Geo tags for Colombia -->
+<meta name="geo.region" content="CO" />
+<meta name="geo.country" content="Colombia" />
+<meta name="geo.placename" content="Medellín, Colombia" />
+<meta name="ICBM" content="6.2442, -75.5812" />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+<!-- Additional structured data for organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Capital M Law",
+  "url": "https://capitaleme.com",
+  "logo": "https://capitaleme.com/icons/logo.png",
+  "description": "Professional legal services for expats and foreigners in Colombia",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Medellín",
+    "addressCountry": "Colombia"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+57-314-602-2411",
+    "contactType": "customer service",
+    "availableLanguage": ["English", "Spanish"]
+  },
+  "sameAs": [
+    "https://www.facebook.com/capitalmlaw",
+    "https://www.instagram.com/capitalmlaw",
+    "https://www.linkedin.com/company/capital-m-law"
+  ]
+}
+</script>
+
+<!-- Preconnect to external domains for performance -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://assets.calendly.com" />
+
+<!-- DNS prefetch for social media -->
+<link rel="dns-prefetch" href="https://www.facebook.com" />
+<link rel="dns-prefetch" href="https://twitter.com" />
+<link rel="dns-prefetch" href="https://wa.me" />
+
+<!-- Favicon and app icons -->
+<link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.json" />
+
+<!-- Additional meta tags for better SEO -->
+<meta name="format-detection" content="telephone=no" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="Capital M Law" />
+
+<!-- Language alternatives -->
+<link rel="alternate" hreflang="en" href={`https://capitaleme.com/en${pathname?.replace('/es', '') || ''}`} />
+<link rel="alternate" hreflang="es" href={`https://capitaleme.com/es${pathname?.replace('/en', '') || ''}`} />
+<link rel="alternate" hreflang="x-default" href={`https://capitaleme.com/en${pathname?.replace('/es', '') || ''}`} />

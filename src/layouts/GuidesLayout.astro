@@ -1,9 +1,17 @@
 ---
 import Layout from './Layout.astro';
 import TableOfContents from '../components/core/navigation/TableOfContents.astro';
-import MobileTOC from '../components/core/navigation/MobileTOC.astro';
 import { getAllContentData } from '../server/lib/contentData.js';
 import { BookOpenIcon, ClockIcon, UserIcon, CalendarIcon, ArrowRightIcon, ShareIcon, DocumentArrowDownIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import SEOHead from '../components/core/SEOHead.astro';
+import GuidesMobileNavigation from '../components/guides/GuidesMobileNavigation.tsx';
+import GuidesBottomNavigation from '../components/guides/GuidesBottomNavigation.tsx';
+import { 
+  generateSEOTitle, 
+  generateSEODescription, 
+  generateKeywords,
+  type SEOData 
+} from '../utils/seo.js';
 
 export interface Props {
   title: string;
@@ -12,11 +20,12 @@ export interface Props {
   pathname?: string;
   headings?: any[];
   lastEdited?: string;
-  showBreadcrumb?: boolean;
   menuData?: any;
   timeToRead?: number;
   author?: string;
   publishedDate?: string;
+  content?: string; // Add content for SEO
+  tags?: string[]; // Add tags for SEO
 }
 
 const { 
@@ -26,11 +35,12 @@ const {
   pathname,
   headings = [],
   lastEdited,
-  showBreadcrumb = false,
   menuData,
   timeToRead = 5,
   author = 'Capital M Law',
-  publishedDate
+  publishedDate,
+  content = '',
+  tags = []
 } = Astro.props;
 
 // Get optimized menu data if not provided
@@ -53,9 +63,47 @@ const getRelativeTime = (dateString: string) => {
   if (diffInDays < 365) return lang === 'es' ? `Hace ${Math.floor(diffInDays / 30)} meses` : `${Math.floor(diffInDays / 30)} months ago`;
   return lang === 'es' ? `Hace ${Math.floor(diffInDays / 365)} años` : `${Math.floor(diffInDays / 365)} years ago`;
 };
+
+// Generate SEO data
+const seoData: SEOData = {
+  title: generateSEOTitle(title, 'guide', lang as 'en' | 'es'),
+  description: generateSEODescription(content, 'guide', lang as 'en' | 'es', description),
+  keywords: generateKeywords(['guide', 'expat guide', 'Colombia'], 'guide', lang as 'en' | 'es', tags),
+  author,
+  publishedTime: publishedDate || lastEdited,
+  modifiedTime: lastEdited,
+  section: 'Legal Guides',
+  tags,
+  readingTime: timeToRead,
+  lang: lang as 'en' | 'es',
+  type: 'guide',
+  canonicalUrl: `https://capitaleme.com${pathname}`
+};
 ---
 
-<Layout title={title} description={description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData}>
+<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData}>
+  <SEOHead seoData={seoData} content={content} pathname={pathname} slot="head" />
+  
+  <!-- Mobile Navigation -->
+  <GuidesMobileNavigation 
+    client:load
+    headings={headings as any}
+    currentSlug={Astro.params.slug}
+    guides={guidesData}
+    lang={lang}
+  />
+
+  <!-- Guides Bottom Navigation - Only for individual guides (not index) -->
+  {Astro.params.slug && (
+    <GuidesBottomNavigation 
+      client:load
+      lang={lang as 'en' | 'es'}
+      pathname={pathname || ''}
+      title={title}
+      content={content}
+    />
+  )}
+
   <div class="bg-white">
     <!-- Hero Section -->
     <div class="relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-16">
@@ -107,40 +155,9 @@ const getRelativeTime = (dateString: string) => {
       </div>
     </div>
 
-    <!-- Sticky Breadcrumb/TOC Header -->
-    {hasHeadings && (
-      <div id="sticky-header" class="sticky top-[74px] z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 transition-all duration-300">
-        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between py-3">
-            <!-- Breadcrumb -->
-            <nav class="flex items-center space-x-2 text-sm text-slate-500">
-              <a href={`/${lang}`} class="hover:text-slate-700 transition-colors">
-                {lang === 'es' ? 'Inicio' : 'Home'}
-              </a>
-              <ArrowRightIcon className="w-4 h-4" />
-              <a href={`/${lang}/guides`} class="hover:text-slate-700 transition-colors">
-                {lang === 'es' ? 'Guías' : 'Guides'}
-              </a>
-              <ArrowRightIcon className="w-4 h-4" />
-              <span class="text-slate-900 font-medium truncate max-w-xs">{title}</span>
-            </nav>
-
-            <!-- TOC Toggle for Mobile -->
-            <div class="lg:hidden">
-              <button id="toc-toggle" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors">
-                <span>{lang === 'es' ? 'Secciones' : 'Sections'}</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
 
     <!-- Main Content Section -->
-    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[74px] lg:mt-0 pb-20 lg:pb-12">
       <div class="flex gap-8">
         <!-- Left Navigation Panel -->
         <aside class="hidden lg:block w-64 shrink-0">
@@ -211,7 +228,7 @@ const getRelativeTime = (dateString: string) => {
         <!-- Main Content -->
         <article class="flex-1 min-w-0">
           <!-- Content -->
-          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20 prose-slate">
+          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-20 prose-slate prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto prose-img:max-w-full prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-a:font-medium prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-code:bg-slate-100 prose-code:text-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-strong:text-slate-900 prose-strong:font-semibold prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50 prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-ul:list-disc prose-ol:list-decimal prose-li:marker:text-slate-400 prose-table:border-collapse prose-th:border prose-th:border-slate-300 prose-th:bg-slate-50 prose-th:px-4 prose-th:py-2 prose-td:border prose-td:border-slate-300 prose-td:px-4 prose-td:py-2 prose-hr:border-slate-200 prose-hr:my-8">
             <slot />
           </div>
         </article>
@@ -228,14 +245,12 @@ const getRelativeTime = (dateString: string) => {
     </div>
 
     <!-- WhatsApp Floating Action Button -->
-    <div class="lg:hidden fixed bottom-4 right-4 z-40">
+    <div class="lg:hidden fixed bottom-20 right-4 z-[60]">
       <a href="https://wa.me/573146022411" target="_blank" rel="noopener noreferrer" class="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105">
         <ChatBubbleLeftRightIcon className="w-6 h-6" />
       </a>
     </div>
 
-    <!-- Mobile TOC Panel -->
-    {hasHeadings && <MobileTOC />}
   </div>
 </Layout>
 
@@ -247,7 +262,14 @@ const getRelativeTime = (dateString: string) => {
 
   /* Ensure headings have proper scroll margin for navbar offset */
   :global(h2, h3, h4, h5, h6) {
-    scroll-margin-top: 120px;
+    scroll-margin-top: 160px;
+  }
+
+  /* Mobile-specific scroll margin for bottom navigation */
+  @media (max-width: 1023px) {
+    :global(h2, h3, h4, h5, h6) {
+      scroll-margin-top: 200px;
+    }
   }
 
   /* Line clamp utility */
@@ -258,15 +280,213 @@ const getRelativeTime = (dateString: string) => {
     overflow: hidden;
   }
 
-  /* Sticky header shadow */
-  #sticky-header {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
 
   /* Mobile bottom nav padding */
   @media (max-width: 1024px) {
     body {
       padding-bottom: 80px;
+    }
+  }
+
+  /* Content styling improvements */
+  :global(.prose) {
+    /* Handle long strings and prevent layout breaking */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Images responsive handling */
+  :global(.prose img) {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.3s ease;
+  }
+
+  /* Image loading and error states */
+  :global(.prose img[src=""]) {
+    display: none;
+  }
+
+  :global(.prose img:not([src])) {
+    display: none;
+  }
+
+  /* Fallback for broken images */
+  :global(.prose img::before) {
+    content: "🖼️ Image not available";
+    display: block;
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 2rem;
+    background-color: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+  }
+
+  /* Links styling */
+  :global(.prose a) {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  :global(.prose a:hover) {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+
+  /* Code blocks */
+  :global(.prose pre) {
+    background-color: #0f172a;
+    color: #f1f5f9;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  :global(.prose code) {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* Tables responsive */
+  :global(.prose table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+
+  :global(.prose table thead) {
+    display: table-header-group;
+  }
+
+  :global(.prose table tbody) {
+    display: table-row-group;
+  }
+
+  :global(.prose table tr) {
+    display: table-row;
+  }
+
+  :global(.prose table th),
+  :global(.prose table td) {
+    display: table-cell;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+  }
+
+  :global(.prose table th) {
+    background-color: #f8fafc;
+    font-weight: 600;
+  }
+
+  /* Blockquotes */
+  :global(.prose blockquote) {
+    border-left: 4px solid #3b82f6;
+    background-color: #eff6ff;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-style: italic;
+  }
+
+  /* Lists */
+  :global(.prose ul),
+  :global(.prose ol) {
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  :global(.prose li) {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+  }
+
+  /* Headings */
+  :global(.prose h1),
+  :global(.prose h2),
+  :global(.prose h3),
+  :global(.prose h4),
+  :global(.prose h5),
+  :global(.prose h6) {
+    color: #1e293b;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  :global(.prose h1) {
+    font-size: 2.25rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+  }
+
+  :global(.prose h2) {
+    font-size: 1.875rem;
+    color: #3b82f6;
+  }
+
+  :global(.prose h3) {
+    font-size: 1.5rem;
+  }
+
+  /* Paragraphs */
+  :global(.prose p) {
+    margin: 1rem 0;
+    line-height: 1.7;
+    color: #374151;
+  }
+
+  /* Horizontal rules */
+  :global(.prose hr) {
+    border: none;
+    border-top: 2px solid #e2e8f0;
+    margin: 2rem 0;
+  }
+
+  /* Mobile responsive improvements */
+  @media (max-width: 768px) {
+    :global(.prose) {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    :global(.prose h1) {
+      font-size: 1.875rem;
+    }
+
+    :global(.prose h2) {
+      font-size: 1.5rem;
+    }
+
+    :global(.prose h3) {
+      font-size: 1.25rem;
+    }
+
+    :global(.prose img) {
+      margin: 1rem auto;
+    }
+
+    :global(.prose table) {
+      font-size: 0.875rem;
     }
   }
 </style>

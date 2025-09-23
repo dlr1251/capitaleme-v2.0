@@ -86,7 +86,7 @@ function extractHeadings(content: string): { id: string; text: string; depth: nu
 
 const headings = extractHeadings(content);
 
-// Optimized markdown to HTML conversion
+// Enhanced markdown to HTML conversion
 function markdownToHtml(markdown: string): string {
   if (!markdown) return '';
   
@@ -107,28 +107,157 @@ function markdownToHtml(markdown: string): string {
     // Bold and italic
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Code blocks
+    // Code blocks with syntax highlighting
     .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
     .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-    // Images
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-    // Lists
+    // Links with proper attributes
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+      const isExternal = url.startsWith('http') || url.startsWith('www');
+      const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+      return `<a href="${url}"${target}>${text}</a>`;
+    })
+    // Images with proper attributes and responsive handling
+    // Standard markdown format: ![alt](url)
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+      console.log('Image match found:', { match, alt, src });
+      const altText = alt || 'Image';
+      // Handle relative paths by ensuring they start with /
+      let imageSrc = src;
+      if (!src.startsWith('http') && !src.startsWith('/')) {
+        imageSrc = `/${src}`;
+      }
+      const imgTag = `<img src="${imageSrc}" alt="${altText}" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block" onerror="this.style.display='none'; console.error('Failed to load image:', '${imageSrc}');">`;
+      console.log('Generated img tag:', imgTag);
+      return imgTag;
+    })
+    // Alternative format: !image(url) or !image(url "alt")
+    .replace(/!image\(([^)]+)(?:\s+"([^"]+)")?\)/g, (_, src, alt) => {
+      const altText = alt || 'Image';
+      let imageSrc = src;
+      if (!src.startsWith('http') && !src.startsWith('/')) {
+        imageSrc = `/${src}`;
+      }
+      return `<img src="${imageSrc}" alt="${altText}" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block" onerror="this.style.display='none'; console.error('Failed to load image:', '${imageSrc}');">`;
+    })
+    // Simple format: !image:url
+    .replace(/!image:([^\s\n]+)/g, (_, src) => {
+      let imageSrc = src;
+      if (!src.startsWith('http') && !src.startsWith('/')) {
+        imageSrc = `/${src}`;
+      }
+      return `<img src="${imageSrc}" alt="Image" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block" onerror="this.style.display='none'; console.error('Failed to load image:', '${imageSrc}');">`;
+    })
+    // Format: !image url (space separated)
+    .replace(/!image\s+([^\s\n]+)/g, (_, src) => {
+      let imageSrc = src;
+      if (!src.startsWith('http') && !src.startsWith('/')) {
+        imageSrc = `/${src}`;
+      }
+      return `<img src="${imageSrc}" alt="Image" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block" onerror="this.style.display='none'; console.error('Failed to load image:', '${imageSrc}');">`;
+    })
+    // Convert anchor tags with image URLs to proper img tags
+    .replace(/<a\s+href="([^"]+\.(jpg|jpeg|png|gif|webp|svg|avif))"[^>]*>([^<]*)<\/a>/gi, (_, url, ext, linkText) => {
+      console.log('Converting image link to img tag:', { url, linkText, ext });
+      const altText = linkText && linkText.trim() !== 'image' ? linkText.trim() : 'Imagen';
+      return `<img src="${url}" alt="${altText}" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block" onerror="this.style.display='none'; console.error('Failed to load image:', '${url}'); this.nextElementSibling?.style?.display='flex';">`;
+    })
+    // Handle anchor tags that might contain image URLs in different formats
+    .replace(/<a\s+href="([^"]*amazonaws\.com[^"]*)"[^>]*>([^<]*)<\/a>/gi, (_, url, linkText) => {
+      console.log('Converting AWS link to img tag:', { url, linkText });
+      const altText = linkText && linkText.trim() !== 'image' ? linkText.trim() : 'Imagen';
+      
+      // Check if this is an expired S3 URL and create a fallback
+      const isExpiredS3 = url.includes('amazonaws.com') && url.includes('X-Amz-Expires');
+      if (isExpiredS3) {
+        console.warn('Detected potentially expired S3 URL:', url);
+        
+        // Extract expiration date from URL if possible
+        const expiresMatch = url.match(/X-Amz-Date=(\d{8}T\d{6}Z)/);
+        const expiresDate = expiresMatch ? new Date(expiresMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z')) : null;
+        const now = new Date();
+        const daysAgo = expiresDate ? Math.floor((now.getTime() - expiresDate.getTime()) / (1000 * 60 * 60 * 24)) : 'varios';
+        
+        return `<div class="image-fallback-expired" style="display: flex; align-items: center; justify-content: center; min-height: 200px; background-color: #fef3c7; border: 2px dashed #f59e0b; border-radius: 0.5rem; margin: 1.5rem auto; color: #92400e; font-style: italic; text-align: center; padding: 2rem; flex-direction: column;">
+          <div>🖼️ Imagen temporalmente no disponible</div>
+          <div style="font-size: 0.8em; margin-top: 0.5rem; opacity: 0.7;">URL de S3 expirada hace ${daysAgo} días - el contenido necesita actualización</div>
+          <div style="font-size: 0.7em; margin-top: 0.5rem; opacity: 0.6;">La URL de la imagen ha expirado y necesita ser regenerada desde la fuente</div>
+          <a href="${url}" target="_blank" rel="noopener noreferrer" style="font-size: 0.8em; margin-top: 0.5rem; color: #92400e; text-decoration: underline;">Intentar abrir en nueva pestaña</a>
+        </div>`;
+      }
+      
+      return `<img src="${url}" alt="${altText}" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block" onerror="this.style.display='none'; console.error('Failed to load image:', '${url}'); this.nextElementSibling?.style?.display='flex';">`;
+    })
+    // HTML img tags (if already present) - enhance them
+    .replace(/<img([^>]*)>/g, (_, attributes) => {
+      // Add error handling if not already present
+      const hasOnError = attributes.includes('onerror');
+      const errorHandler = hasOnError ? '' : ' onerror="this.style.display=\'none\'; console.error(\'Failed to load image:\', this.src);"';
+      return `<img${attributes} loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block"${errorHandler}>`;
+    })
+    // Lists - handle both unordered and ordered
     .replace(/^\* (.*$)/gim, '<li>$1</li>')
     .replace(/^- (.*$)/gim, '<li>$1</li>')
-    // Paragraphs (simplified)
-    .replace(/\n\n+/g, '</p><p>')
-    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
-    // Clean up
+    .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+    // Blockquotes
+    .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+    // Horizontal rules
+    .replace(/^---$/gim, '<hr>')
+    .replace(/^\*\*\*$/gim, '<hr>')
+    // Tables (basic support)
+    .replace(/\|(.+)\|/g, (_, content) => {
+      const cells = content.split('|').map((cell: string) => cell.trim()).filter((cell: string) => cell);
+      if (cells.length > 1) {
+        return '<tr>' + cells.map((cell: string) => `<td>${cell}</td>`).join('') + '</tr>';
+      }
+      return content;
+    })
+    // Clean up before paragraph wrapping
     .replace(/<p><\/p>/g, '')
     .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
     .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
+    .replace(/<p>(<blockquote>.*<\/blockquote>)<\/p>/g, '$1')
+    .replace(/<p>(<hr>)<\/p>/g, '$1')
+    .replace(/<p>(<img[^>]*>)<\/p>/g, '$1') // Remove paragraph wrapping from images
     .replace(/<ul><ul>/g, '<ul>')
-    .replace(/<\/ul><\/ul>/g, '</ul>');
+    .replace(/<\/ul><\/ul>/g, '</ul>')
+    // Wrap tables
+    .replace(/(<tr>.*<\/tr>)/gs, '<table>$1</table>')
+    // Add table headers if first row looks like headers
+    .replace(/<table>(<tr><td>.*?<\/td><\/tr>)/g, '<table><thead>$1</thead><tbody>')
+    .replace(/<\/table>/g, '</tbody></table>')
+    // Paragraphs (improved) - do this last
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^(?!<[h|li|pre|p|blockquote|hr|tr|td|img]).*$/gim, '<p>$&</p>');
 }
 
 const htmlContent = markdownToHtml(content);
+
+// Debug: Log the content and converted HTML to see what's happening
+console.log('Original content sample:', content.substring(0, 500));
+console.log('Converted HTML sample:', htmlContent.substring(0, 500));
+
+// Debug: Check for any image references in the content
+const imageReferences = content.match(/!\[.*?\]\(.*?\)|!image\(.*?\)|!image:.*?|!image\s+.*?|<img[^>]*>|<a[^>]*href="[^"]*\.(jpg|jpeg|png|gif|webp|svg|avif)[^"]*"[^>]*>.*?<\/a>/gi);
+if (imageReferences && imageReferences.length > 0) {
+  console.log('Found image references in content:', imageReferences);
+} else {
+  console.log('No image references found in content');
+}
+
+// Debug: Check for image patterns in content
+const imagePatterns = [
+  /!\[([^\]]*)\]\(([^)]+)\)/g,
+  /!image\(([^)]+)(?:\s+"([^"]+)")?\)/g,
+  /!image:([^\s\n]+)/g,
+  /!image\s+([^\s\n]+)/g
+];
+
+imagePatterns.forEach((pattern, index) => {
+  const matches = content.match(pattern);
+  if (matches) {
+    console.log(`Image pattern ${index + 1} matches:`, matches);
+  }
+});
 ---
 
 <GuidesLayout 
@@ -136,7 +265,6 @@ const htmlContent = markdownToHtml(content);
   description={description}
   lastEdited={lastEdited}
   headings={headings}
-  showBreadcrumb={true}
   lang="es"
   author={author}
   timeToRead={readingTime}
@@ -152,5 +280,156 @@ const htmlContent = markdownToHtml(content);
   // Log the content when the page loads
   document.addEventListener('DOMContentLoaded', () => {
     // Content loaded
+    
+    // Enhanced image loading and error handling
+    const images = document.querySelectorAll('.prose img') as NodeListOf<HTMLImageElement>;
+    console.log(`Found ${images.length} images in the content`);
+    
+    // Test image accessibility
+    const testImageAccess = async (url: string) => {
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        console.log('Image accessibility test:', {
+          url,
+          status: response.status,
+          statusText: response.statusText,
+          contentType: response.headers.get('content-type'),
+          contentLength: response.headers.get('content-length')
+        });
+        return response.ok;
+      } catch (error) {
+        console.error('Image accessibility test failed:', { url, error });
+        return false;
+      }
+    };
+
+    // Check for expired S3 URLs and suggest refresh
+    const checkForExpiredS3Urls = () => {
+      const s3Images = Array.from(images).filter(img => 
+        img.src.includes('amazonaws.com') && img.src.includes('X-Amz-Expires')
+      );
+      
+      if (s3Images.length > 0) {
+        console.warn(`Found ${s3Images.length} S3 images that may be expired`);
+        
+        // Show a notification to refresh the page
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #fef3c7;
+          border: 1px solid #f59e0b;
+          border-radius: 8px;
+          padding: 12px 16px;
+          color: #92400e;
+          font-size: 14px;
+          z-index: 1000;
+          max-width: 300px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        `;
+        notification.innerHTML = `
+          <div style="font-weight: 500; margin-bottom: 4px;">🖼️ Imágenes expiradas</div>
+          <div style="font-size: 12px; margin-bottom: 8px;">URLs de S3 expiradas hace ~5 días. El contenido necesita actualización desde la fuente.</div>
+          <button onclick="window.location.reload()" style="background: #f59e0b; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">Actualizar Página</button>
+          <button onclick="this.parentElement.remove()" style="background: transparent; border: none; color: #92400e; margin-left: 8px; cursor: pointer; font-size: 16px;">×</button>
+        `;
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 10000);
+      }
+    };
+    
+    images.forEach(async (img, index) => {
+      console.log(`Image ${index + 1}:`, {
+        src: img.src,
+        alt: img.alt,
+        complete: img.complete,
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight
+      });
+      
+      // Test image accessibility first
+      const isAccessible = await testImageAccess(img.src);
+      console.log(`Image ${index + 1} accessibility:`, isAccessible);
+      
+      // Add loading state
+      img.addEventListener('load', () => {
+        console.log(`Image ${index + 1} loaded successfully:`, img.src);
+        img.style.opacity = '1';
+      });
+      
+      // Add error handling
+      img.addEventListener('error', (event) => {
+        console.error(`Image ${index + 1} failed to load:`, {
+          src: img.src,
+          alt: img.alt,
+          error: event,
+          naturalWidth: img.naturalWidth,
+          naturalHeight: img.naturalHeight,
+          complete: img.complete
+        });
+        
+        // Check if URL is accessible
+        fetch(img.src, { method: 'HEAD' })
+          .then(response => {
+            console.log(`Image ${index + 1} URL accessibility check:`, {
+              url: img.src,
+              status: response.status,
+              statusText: response.statusText,
+              headers: Object.fromEntries(response.headers.entries())
+            });
+          })
+          .catch(error => {
+            console.error(`Image ${index + 1} URL fetch error:`, error);
+          });
+        
+        img.style.display = 'none';
+        
+        // Create fallback element
+        const fallback = document.createElement('div');
+        fallback.className = 'image-fallback';
+        fallback.style.cssText = `
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 200px;
+          background-color: #f9fafb;
+          border: 2px dashed #d1d5db;
+          border-radius: 0.5rem;
+          margin: 1.5rem auto;
+          color: #6b7280;
+          font-style: italic;
+          text-align: center;
+          padding: 2rem;
+          flex-direction: column;
+        `;
+        
+        const errorText = document.createElement('div');
+        errorText.textContent = `🖼️ Imagen no disponible: ${img.alt || 'Sin título'}`;
+        
+        const urlText = document.createElement('div');
+        urlText.style.cssText = 'font-size: 0.8em; margin-top: 0.5rem; word-break: break-all; opacity: 0.7;';
+        urlText.textContent = img.src;
+        
+        fallback.appendChild(errorText);
+        fallback.appendChild(urlText);
+        
+        if (img.parentNode) {
+          img.parentNode.insertBefore(fallback, img);
+        }
+      });
+      
+      // Set initial loading state
+      img.style.opacity = '0.7';
+    });
+    
+    // Check for expired S3 URLs after processing all images
+    setTimeout(checkForExpiredS3Urls, 1000);
   });
 </script> 

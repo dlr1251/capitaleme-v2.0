@@ -347,9 +347,22 @@ function notionBlocksToMarkdown(blocks) {
           return '```' + (block.code?.language || '') + '\n' + (block.code?.rich_text || []).map(t => t.plain_text).join('') + '\n```';
           
         case 'image':
-          return block.image
-            ? `![image](${block.image.type === 'external' ? block.image.external.url : block.image.file.url})`
-            : '';
+          if (!block.image) return '';
+          
+          const image = block.image;
+          let imageUrl = '';
+          
+          if (image.type === 'external') {
+            imageUrl = image.external.url;
+          } else if (image.type === 'file') {
+            imageUrl = image.file.url;
+          }
+          
+          if (!imageUrl) return '';
+          
+          // For now, return the original URL but log it for processing
+          console.log(`📸 Image found in Notion: ${imageUrl}`);
+          return `![image](${imageUrl})`;
             
         case 'callout':
           return '> [!NOTE] ' + (block.callout?.rich_text || []).map(t => t.plain_text).join('');

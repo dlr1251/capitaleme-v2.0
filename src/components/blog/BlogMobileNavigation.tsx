@@ -6,23 +6,69 @@ import {
   ChevronUpIcon,
   BookOpenIcon,
   MagnifyingGlassIcon,
-  HeartIcon
+  HeartIcon,
+  ListBulletIcon,
+  Bars3Icon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 import type { Lang } from '../../context/LanguageContext.tsx';
+
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+interface BlogPost {
+  slug: string;
+  title: string;
+  description?: string;
+  url: string;
+}
 
 interface BlogMobileNavigationProps {
   lang?: Lang;
   pathname?: string;
   title?: string;
+  headings?: Heading[];
+  blogPosts?: BlogPost[];
+  currentSlug?: string;
 }
 
 const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
   lang = 'en',
   pathname = '',
-  title = ''
+  title = '',
+  headings = [],
+  blogPosts = [],
+  currentSlug = ''
 }) => {
   const [isShareDropdownOpen, setIsShareDropdownOpen] = useState(false);
+  const [isTOCOpen, setIsTOCOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [currentSection, setCurrentSection] = useState('');
   const [currentUrl, setCurrentUrl] = useState<string>('');
+
+  // Improved heading validation and type conversion
+  const typedHeadings: Heading[] = React.useMemo(() => {
+    if (!Array.isArray(headings) || headings.length === 0) {
+      return [];
+    }
+    
+    return headings
+      .filter((heading: any) => 
+        heading && 
+        typeof heading === 'object' && 
+        'id' in heading && 
+        'text' in heading && 
+        ('level' in heading || 'depth' in heading)
+      )
+      .map((heading: any) => ({
+        id: heading.id,
+        text: heading.text,
+        level: heading.level || heading.depth || 1
+      }));
+  }, [headings]);
 
   // Set current URL on client side only
   useEffect(() => {
@@ -30,6 +76,49 @@ const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
       setCurrentUrl(window.location.href);
     }
   }, []);
+
+  // Update current section as user scrolls
+  useEffect(() => {
+    if (typedHeadings.length === 0) return;
+    
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 120; // Offset for sticky nav
+      let closestHeading: Heading | null = null;
+      let minDistance = Infinity;
+      
+      typedHeadings.forEach((heading) => {
+        const el = document.getElementById(heading.id);
+        if (el) {
+          const distance = Math.abs(el.offsetTop - scrollPosition);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestHeading = heading;
+          }
+        }
+      });
+      
+      // Handle case where closestHeading could be null
+      setCurrentSection(
+        closestHeading?.text || typedHeadings[0]?.text || ''
+      );
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [typedHeadings]);
+
+  // Smooth scroll to heading
+  const scrollToHeading = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      window.scrollTo({
+        top: el.offsetTop - 100, // Offset for sticky nav
+        behavior: 'smooth',
+      });
+      setIsTOCOpen(false);
+    }
+  };
 
   const shareContent = (platform: 'facebook' | 'twitter' | 'whatsapp' | 'copy') => {
     const url = currentUrl || (typeof window !== 'undefined' ? window.location.href : '');
@@ -102,8 +191,144 @@ const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
     }
   };
 
+  // Text content based on language
+  const textContent = {
+    en: {
+      section: 'Section',
+      blog: 'Blog',
+      close: 'Close',
+      tableOfContents: 'Table of Contents',
+      recentArticles: 'Recent Articles',
+      noSections: 'No sections available'
+    },
+    es: {
+      section: 'Sección',
+      blog: 'Blog',
+      close: 'Cerrar',
+      tableOfContents: 'Tabla de Contenidos',
+      recentArticles: 'Artículos Recientes',
+      noSections: 'No hay secciones disponibles'
+    }
+  };
+
+  const content = textContent[lang as keyof typeof textContent] || textContent.en;
+
   return (
     <>
+      {/* Sticky Bar */}
+      <div className="fixed top-[56px] left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-12 md:hidden">
+        {/* Left: TOC Selector */}
+        <button
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 focus:outline-none"
+          onClick={() => setIsTOCOpen(true)}
+        >
+          <ListBulletIcon className="w-5 h-5 text-blue-600" />
+          <span className="truncate max-w-[120px]">{currentSection || content.section}</span>
+        </button>
+        {/* Right: Blog Drawer */}
+        <button
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 focus:outline-none"
+          onClick={() => setIsDrawerOpen(true)}
+        >
+          <Bars3Icon className="w-5 h-5 text-blue-600" />
+          <span>{content.blog}</span>
+        </button>
+      </div>
+
+      {/* TOC Modal */}
+      {isTOCOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">{content.tableOfContents}</h3>
+              <button
+                onClick={() => setIsTOCOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {typedHeadings.length > 0 ? (
+                <nav className="space-y-2">
+                  {typedHeadings.map((heading) => (
+                    <button
+                      key={heading.id}
+                      onClick={() => scrollToHeading(heading.id)}
+                      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                        heading.text === currentSection
+                          ? 'bg-blue-100 text-blue-700 font-medium'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                      style={{ paddingLeft: `${(heading.level - 1) * 16 + 12}px` }}
+                    >
+                      {heading.text}
+                    </button>
+                  ))}
+                </nav>
+              ) : (
+                <div className="text-center py-8">
+                  <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <p className="text-gray-500 text-sm">
+                    {content.noSections}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blog Posts Drawer */}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">{content.recentArticles}</h3>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {blogPosts.length > 0 ? (
+                <nav className="space-y-2">
+                  {blogPosts.slice(0, 15).map((post) => (
+                    <a
+                      key={post.slug}
+                      href={post.url}
+                      className={`block px-3 py-2 text-sm rounded-md transition-colors ${
+                        post.slug === currentSlug
+                          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
+                      }`}
+                    >
+                      <div className="font-medium line-clamp-2">{post.title}</div>
+                      {post.description && (
+                        <div className="text-xs text-gray-500 mt-1 line-clamp-1">
+                          {post.description}
+                        </div>
+                      )}
+                    </a>
+                  ))}
+                </nav>
+              ) : (
+                <div className="text-center py-8">
+                  <BookOpenIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">
+                    {lang === 'es' ? 'No hay artículos disponibles' : 'No articles available'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Blog Mobile Navigation - Bottom Navigation Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="flex items-center justify-around px-2 py-2">
@@ -187,31 +412,16 @@ const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
             <span className="text-xs font-medium">{lang === 'es' ? 'Blog' : 'Blog'}</span>
           </a>
 
-          {/* WhatsApp Share */}
-          <a
-            href={`https://wa.me/?text=${encodeURIComponent(`${title || document.title} ${currentUrl}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-green-600 hover:text-green-700 hover:bg-green-50"
-            aria-label="WhatsApp"
+          {/* Scroll to Top */}
+          <button
+            onClick={scrollToTop}
+            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            aria-label={lang === 'es' ? 'Ir arriba' : 'Scroll to top'}
           >
-            <ChatBubbleLeftRightIcon className="w-4 h-4 mb-1" />
-            <span className="text-xs font-medium">WhatsApp</span>
-          </a>
+            <ChevronUpIcon className="w-4 h-4 mb-1" />
+            <span className="text-xs font-medium">{lang === 'es' ? 'Arriba' : 'Top'}</span>
+          </button>
         </div>
-      </div>
-
-      {/* WhatsApp Floating Action Button */}
-      <div className="lg:hidden fixed bottom-4 right-4 z-40">
-        <a
-          href={`https://wa.me/?text=${encodeURIComponent(`${title || document.title} ${currentUrl}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center hover:scale-105"
-          aria-label={lang === 'es' ? 'Compartir en WhatsApp' : 'Share on WhatsApp'}
-        >
-          <ChatBubbleLeftRightIcon className="w-6 h-6" />
-        </a>
       </div>
     </>
   );
