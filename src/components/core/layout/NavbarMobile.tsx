@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Logo from '../../../assets/logo/color-horizontal.svg';
 import LanguageDropdown from '../../shared/LanguageDropdown.tsx';
-import MobileBottomNavigation from './MobileBottomNavigation.tsx';
 import type { Lang } from '../../../context/LanguageContext.tsx';
 import { 
   XMarkIcon, 
@@ -420,13 +419,6 @@ const NavbarMobile: React.FC<NavbarMobileProps> = ({ lang, pathname, menuData, t
         />
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNavigation
-        lang={lang}
-        title={title}
-        content={content}
-        pathname={pathname}
-      />
     </>
   );
 };

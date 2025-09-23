@@ -1,6 +1,5 @@
 ---
 import Layout from './Layout.astro';
-import HomeMobileNavigation from '../components/home/HomeMobileNavigation.tsx';
 import type { Lang } from '../context/LanguageContext.tsx';
 
 export interface Props {
@@ -17,13 +16,6 @@ const currentPathname = pathname || Astro.url.pathname;
 ---
 
 <Layout title={title} description={description} lang={currentLang} pathname={currentPathname} menuData={menuData}>
-  <!-- Home Mobile Navigation -->
-  <HomeMobileNavigation 
-    client:load
-    lang={currentLang}
-    pathname={currentPathname}
-  />
-  
   <main>
     <slot />
   </main>
