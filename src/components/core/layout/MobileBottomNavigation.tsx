@@ -305,7 +305,13 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
   return (
     <>
       {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
+      <div 
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg" 
+        style={{ 
+          paddingBottom: 'max(env(safe-area-inset-bottom), 8px)',
+          minHeight: 'calc(4rem + max(env(safe-area-inset-bottom), 8px))'
+        }}
+      >
         <div className="flex items-center justify-around px-4 py-2">
           {/* Share Button */}
           <div className="relative" data-share-container>
