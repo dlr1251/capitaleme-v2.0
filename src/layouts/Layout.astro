@@ -2,9 +2,11 @@
 import Navbar from '../components/core/layout/Navbar.tsx';
 import Footer from '../components/core/layout/Footer.astro';
 import ContactBar from '../components/core/layout/ContactBar.astro';
+import WhatsAppButton from '../components/shared/WhatsAppButton.astro';
 import AnalyticsHead from '../components/core/analytics/AnalyticsHead.astro';
 import AnalyticsScripts from '../components/core/analytics/AnalyticsScripts.tsx';
 import type { Lang } from '../context/LanguageContext.tsx';
+import { getWhatsAppButtonProps } from '../utils/whatsappMessages.js';
 
 export interface Props {
 	title: string;
@@ -19,6 +21,9 @@ const currentLang = lang || (Astro.url.pathname.startsWith('/es') ? 'es' : 'en')
 
 // Get current pathname from props or use Astro.url.pathname
 const currentPathname = pathname || Astro.url.pathname;
+
+// Generate WhatsApp button props based on current page context
+const whatsappProps = getWhatsAppButtonProps(currentPathname, title, currentLang);
 
 ---
 
@@ -45,6 +50,15 @@ const currentPathname = pathname || Astro.url.pathname;
 			<slot />
 		</main>
 		<Footer lang={currentLang} />
+		
+		<!-- WhatsApp Floating Button -->
+		<WhatsAppButton 
+			message={whatsappProps.message}
+			lang={whatsappProps.lang}
+			pageType={whatsappProps.pageType}
+			pageTitle={whatsappProps.pageTitle}
+			category={whatsappProps.category}
+		/>
 		
 		<!-- Analytics Tracking Scripts -->
 		<AnalyticsScripts 

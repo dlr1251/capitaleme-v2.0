@@ -1,10 +1,100 @@
 ---
+export interface Props {
+  message?: string;
+  lang?: 'en' | 'es';
+  pageType?: 'home' | 'clkr' | 'visa' | 'blog' | 'guide' | 'contact' | 'about' | 'real-estate';
+  pageTitle?: string;
+  category?: string;
+}
 
+const { 
+  message, 
+  lang = 'en', 
+  pageType = 'home', 
+  pageTitle = '', 
+  category = '' 
+} = Astro.props;
+
+// Generate default message based on page type and language
+function generateWhatsAppMessage(
+  pageType: string, 
+  pageTitle: string, 
+  category: string, 
+  lang: string
+): string {
+  const baseMessage = lang === 'es' 
+    ? 'Hola Capital M Team, estuve visitando su sitio web'
+    : 'Hello Capital M Team, I was visiting your website';
+
+  switch (pageType) {
+    case 'home':
+      return lang === 'es'
+        ? 'Hola Capital M Team, estuve visitando su sitio web y tengo preguntas sobre sus servicios'
+        : 'Hello Capital M Team, I was visiting your website and have questions on your services';
+    
+    case 'clkr':
+      return lang === 'es'
+        ? `Hola Capital M Team, estuve leyendo su artículo sobre "${pageTitle}" y tengo algunas preguntas al respecto`
+        : `Hello Capital M Team, I was reading your article on "${pageTitle}" and have some questions about it`;
+    
+    case 'visa':
+      return lang === 'es'
+        ? `Hola Capital M Team, estuve leyendo sobre ${category || pageTitle} y me gustaría hablar con ustedes`
+        : `Hello Capital M Team, I was reading on the ${category || pageTitle} and would like to talk with you`;
+    
+    case 'blog':
+      return lang === 'es'
+        ? `Hola Capital M Team, estuve leyendo su artículo "${pageTitle}" y tengo algunas preguntas`
+        : `Hello Capital M Team, I was reading your article "${pageTitle}" and have some questions`;
+    
+    case 'guide':
+      return lang === 'es'
+        ? `Hola Capital M Team, estuve leyendo su guía "${pageTitle}" y necesito más información`
+        : `Hello Capital M Team, I was reading your guide "${pageTitle}" and need more information`;
+    
+    case 'real-estate':
+      return lang === 'es'
+        ? `Hola Capital M Team, estuve viendo la propiedad "${pageTitle}" y me interesa conocer más`
+        : `Hello Capital M Team, I was viewing the property "${pageTitle}" and I'm interested in learning more`;
+    
+    case 'contact':
+      return lang === 'es'
+        ? 'Hola Capital M Team, me gustaría contactarlos para más información sobre sus servicios'
+        : 'Hello Capital M Team, I would like to contact you for more information about your services';
+    
+    case 'about':
+      return lang === 'es'
+        ? 'Hola Capital M Team, estuve leyendo sobre ustedes y me gustaría conocer más sobre sus servicios'
+        : 'Hello Capital M Team, I was reading about you and would like to learn more about your services';
+    
+    default:
+      return lang === 'es'
+        ? 'Hola Capital M Team, tengo preguntas sobre sus servicios'
+        : 'Hello Capital M Team, I have questions about your services';
+  }
+}
+
+// Use provided message or generate one based on context
+const whatsappMessage = message || generateWhatsAppMessage(pageType, pageTitle, category, lang);
+const encodedMessage = encodeURIComponent(whatsappMessage);
+const whatsappUrl = `https://wa.me/573146022411?text=${encodedMessage}`;
 ---
-<a href="https://wa.me/573146022411?text=👋%20Hi%20there!%20I%20was%20checking%20your%20website%20and%20I%20want%20to%20talk%20with%20you%20" class="fixed bottom-5 sm:bottom-10 right-5 sm:right-10 text-white rounded-full text-center text-3xl w-15 h-15 flex items-center justify-center z-50">
-    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0,0,256,256"
-    style="fill:#000000;">
-    <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M128,222.72c-52.31241,0 -94.72,-42.40759 -94.72,-94.72v0c0,-52.31241 42.40759,-94.72 94.72,-94.72v0c52.31241,0 94.72,42.40759 94.72,94.72v0c0,52.31241 -42.40759,94.72 -94.72,94.72z" id="shape"></path></g><g fill="#00aa81" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M25,2c-12.682,0 -23,10.318 -23,23c0,3.96 1.023,7.854 2.963,11.29l-2.926,10.44c-0.096,0.343 -0.003,0.711 0.245,0.966c0.191,0.197 0.451,0.304 0.718,0.304c0.08,0 0.161,-0.01 0.24,-0.029l10.896,-2.699c3.327,1.786 7.074,2.728 10.864,2.728c12.682,0 23,-10.318 23,-23c0,-12.682 -10.318,-23 -23,-23zM36.57,33.116c-0.492,1.362 -2.852,2.605 -3.986,2.772c-1.018,0.149 -2.306,0.213 -3.72,-0.231c-0.857,-0.27 -1.957,-0.628 -3.366,-1.229c-5.923,-2.526 -9.791,-8.415 -10.087,-8.804c-0.295,-0.389 -2.411,-3.161 -2.411,-6.03c0,-2.869 1.525,-4.28 2.067,-4.864c0.542,-0.584 1.181,-0.73 1.575,-0.73c0.394,0 0.787,0.005 1.132,0.021c0.363,0.018 0.85,-0.137 1.329,1.001c0.492,1.168 1.673,4.037 1.819,4.33c0.148,0.292 0.246,0.633 0.05,1.022c-0.196,0.389 -0.294,0.632 -0.59,0.973c-0.296,0.341 -0.62,0.76 -0.886,1.022c-0.296,0.291 -0.603,0.606 -0.259,1.19c0.344,0.584 1.529,2.493 3.285,4.039c2.255,1.986 4.158,2.602 4.748,2.894c0.59,0.292 0.935,0.243 1.279,-0.146c0.344,-0.39 1.476,-1.703 1.869,-2.286c0.393,-0.583 0.787,-0.487 1.329,-0.292c0.542,0.194 3.445,1.604 4.035,1.896c0.59,0.292 0.984,0.438 1.132,0.681c0.148,0.242 0.148,1.41 -0.344,2.771z"></path></g></g>
+
+<a 
+  href={whatsappUrl} 
+  class="fixed bottom-5 sm:bottom-10 right-5 sm:right-10 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center z-50 group"
+  aria-label={lang === 'es' ? 'Contactar por WhatsApp' : 'Contact via WhatsApp'}
+  title={lang === 'es' ? 'Contáctanos por WhatsApp' : 'Contact us via WhatsApp'}
+>
+  <!-- WhatsApp Icon -->
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="currentColor"
+    class="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform duration-300"
+  >
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
     </svg>
 </a>
-  
