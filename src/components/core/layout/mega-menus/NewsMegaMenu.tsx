@@ -112,22 +112,6 @@ const BlogMegaMenu: React.FC<BlogMegaMenuProps> = ({ lang, menuData = {} }) => {
           }
         },
         { 
-          title: lang === 'en' ? 'Colombian Business Visa Guide' : 'Guía de Visa de Negocios Colombiana', 
-          href: lang === 'en' ? '/en/blog/business-visa' : '/es/blog/visa-negocios',
-          image: '/blog/counting-your-days/img-2.webp',
-          date: '2024',
-          excerpt: lang === 'en' ? 'Complete guide to Colombian business visa requirements' : 'Guía completa de requisitos para visa de negocios colombiana',
-          readingTime: 8,
-          pubDate: '2024-01-05',
-          createdDate: '2024-01-05',
-          lastEdited: '2024-01-12',
-          author: {
-            name: 'Harold Zuluaga',
-            avatar: '/images/team/harold.jpeg',
-            role: 'Legal Intern'
-          }
-        },
-        { 
           title: lang === 'en' ? 'Digital Nomad Lifestyle in Colombia' : 'Estilo de Vida Nómada Digital en Colombia', 
           href: lang === 'en' ? '/en/blog/digital-nomad' : '/es/blog/nomada-digital',
           image: '/blog/dnv-confusion/img-2.webp',

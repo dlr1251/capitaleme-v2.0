@@ -5,6 +5,7 @@ export interface Props {
   pageType?: 'home' | 'clkr' | 'visa' | 'blog' | 'guide' | 'contact' | 'about' | 'real-estate';
   pageTitle?: string;
   category?: string;
+  hideOnMobile?: boolean;
 }
 
 const { 
@@ -12,7 +13,8 @@ const {
   lang = 'en', 
   pageType = 'home', 
   pageTitle = '', 
-  category = '' 
+  category = '',
+  hideOnMobile = false
 } = Astro.props;
 
 // Generate default message based on page type and language
@@ -82,7 +84,7 @@ const whatsappUrl = `https://wa.me/573146022411?text=${encodedMessage}`;
 
 <a 
   href={whatsappUrl} 
-  class="fixed bottom-5 sm:bottom-10 right-5 sm:right-10 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center z-50 group"
+  class={`fixed bottom-5 sm:bottom-10 right-5 sm:right-10 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 w-14 h-14 sm:w-16 sm:h-16 items-center justify-center z-50 group ${hideOnMobile ? 'hidden lg:flex' : 'flex'}`}
   aria-label={lang === 'es' ? 'Contactar por WhatsApp' : 'Contact via WhatsApp'}
   title={lang === 'es' ? 'Contáctanos por WhatsApp' : 'Contact us via WhatsApp'}
 >

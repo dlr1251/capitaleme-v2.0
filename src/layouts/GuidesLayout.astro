@@ -82,7 +82,7 @@ const seoData: SEOData = {
 };
 ---
 
-<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData}>
+<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={optimizedMenuData} hideWhatsAppOnMobile={true}>
   <SEOHead seoData={seoData} content={articleContent} pathname={pathname} slot="head" />
   
   <!-- Mobile Navigation -->

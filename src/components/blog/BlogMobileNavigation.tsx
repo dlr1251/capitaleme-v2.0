@@ -400,15 +400,17 @@ const BlogMobileNavigation: React.FC<BlogMobileNavigationProps> = ({
             <span className="text-xs font-medium">{lang === 'es' ? 'Blog' : 'Blog'}</span>
           </a>
 
-          {/* Scroll to Top */}
-          <button
-            onClick={scrollToTop}
-            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-            aria-label={lang === 'es' ? 'Ir arriba' : 'Scroll to top'}
+          {/* WhatsApp Inquiry */}
+          <a
+            href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about: ${title || document.title}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-green-600 hover:text-green-700 hover:bg-green-50"
+            aria-label="WhatsApp"
           >
-            <ChevronUpIcon className="w-4 h-4 mb-1" />
-            <span className="text-xs font-medium">{lang === 'es' ? 'Arriba' : 'Top'}</span>
-          </button>
+            <ChatBubbleLeftRightIcon className="w-4 h-4 mb-1" />
+            <span className="text-xs font-medium">WhatsApp</span>
+          </a>
         </div>
       </div>
     </>

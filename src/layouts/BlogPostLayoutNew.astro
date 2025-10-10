@@ -155,7 +155,7 @@ const customBreadcrumbs = [
 ];
 ---
 
-<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData}>
+<Layout title={seoData.title} description={seoData.description} lang={lang as 'en' | 'es'} pathname={pathname} menuData={menuData} hideWhatsAppOnMobile={true}>
   <SEOHead seoData={seoData} content={articleContent} pathname={pathname} slot="head" />
   <!-- Blog Mobile Navigation -->
   <BlogMobileNavigation 

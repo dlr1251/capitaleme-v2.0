@@ -14,9 +14,10 @@ export interface Props {
 	lang?: Lang;
 	pathname?: string;
 	menuData?: any; // Add menuData prop for CLKR layout
+	hideWhatsAppOnMobile?: boolean;
 }
 
-const { title, description, lang = 'en', pathname, menuData } = Astro.props;
+const { title, description, lang = 'en', pathname, menuData, hideWhatsAppOnMobile = false } = Astro.props;
 const currentLang = lang || (Astro.url.pathname.startsWith('/es') ? 'es' : 'en');
 
 // Get current pathname from props or use Astro.url.pathname
@@ -51,14 +52,15 @@ const whatsappProps = getWhatsAppButtonProps(currentPathname, title, currentLang
 		</main>
 		<Footer lang={currentLang} />
 		
-		<!-- WhatsApp Floating Button -->
-		<WhatsAppButton 
-			message={whatsappProps.message}
-			lang={whatsappProps.lang}
-			pageType={whatsappProps.pageType}
-			pageTitle={whatsappProps.pageTitle}
-			category={whatsappProps.category}
-		/>
+	<!-- WhatsApp Floating Button -->
+	<WhatsAppButton 
+		message={whatsappProps.message}
+		lang={whatsappProps.lang}
+		pageType={whatsappProps.pageType}
+		pageTitle={whatsappProps.pageTitle}
+		category={whatsappProps.category}
+		hideOnMobile={hideWhatsAppOnMobile}
+	/>
 		
 		<!-- Analytics Tracking Scripts -->
 		<AnalyticsScripts 

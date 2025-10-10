@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   ShareIcon, 
   DocumentArrowDownIcon, 
-  MagnifyingGlassIcon 
+  MagnifyingGlassIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 import { generatePDF, showPDFConfirmation, showMarkdownConfirmation } from '../../utils/pdfUtils.js';
 
@@ -231,6 +232,18 @@ const GuidesBottomNavigation: React.FC<GuidesBottomNavigationProps> = ({
             <MagnifyingGlassIcon className="w-4 h-4 mb-1" />
             <span className="text-xs font-medium">{lang === 'es' ? 'Buscar' : 'Search'}</span>
           </button>
+
+          {/* WhatsApp Inquiry */}
+          <a
+            href={`https://wa.me/573146022411?text=${encodeURIComponent(`Hello! I want to inquire about: ${title || 'this content'}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 text-green-600 hover:text-green-700 hover:bg-green-50"
+            aria-label="WhatsApp"
+          >
+            <ChatBubbleLeftRightIcon className="w-4 h-4 mb-1" />
+            <span className="text-xs font-medium">WhatsApp</span>
+          </a>
         </div>
       </div>
 
