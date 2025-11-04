@@ -39,9 +39,10 @@ export default function CLKRForm({
       <div className="border-t border-gray-200 pt-6 space-y-6">
         <h3 className="text-lg font-medium text-gray-900">Additional CLKR Information</h3>
 
+        {/* Module */}
         <div>
           <label htmlFor="module" className="block text-sm font-medium text-gray-700 mb-2">
-            Module *
+            Module
           </label>
           <Input
             id="module"
@@ -49,11 +50,12 @@ export default function CLKRForm({
             onChange={(e) =>
               setAdditionalData({ ...additionalData, module: e.target.value })
             }
-            placeholder="e.g., Legal Services, Business Setup"
-            required
+            placeholder="e.g., Module 1, Module 2, etc."
           />
+          <p className="mt-1 text-xs text-gray-500">The CLKR module this article belongs to</p>
         </div>
 
+        {/* Featured */}
         <div>
           <label className="flex items-center gap-2">
             <input
@@ -66,9 +68,9 @@ export default function CLKRForm({
             />
             <span className="text-sm font-medium text-gray-700">Mark as Featured</span>
           </label>
+          <p className="mt-1 text-xs text-gray-500">Featured articles appear prominently in the CLKR section</p>
         </div>
       </div>
     </div>
   );
 }
-

@@ -17,7 +17,7 @@ export default function GuideForm({
 }: GuideFormProps) {
   const [additionalData, setAdditionalData] = useState({
     category: initialData?.category || '',
-    author: initialData?.author || '',
+    author: initialData?.author || 'danielluque',
     featured: initialData?.featured || false,
   });
 
@@ -40,36 +40,37 @@ export default function GuideForm({
       <div className="border-t border-gray-200 pt-6 space-y-6">
         <h3 className="text-lg font-medium text-gray-900">Additional Guide Information</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              Category
-            </label>
-            <Input
-              id="category"
-              value={additionalData.category}
-              onChange={(e) =>
-                setAdditionalData({ ...additionalData, category: e.target.value })
-              }
-              placeholder="e.g., Legal, Business"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
-              Author
-            </label>
-            <Input
-              id="author"
-              value={additionalData.author}
-              onChange={(e) =>
-                setAdditionalData({ ...additionalData, author: e.target.value })
-              }
-              placeholder="Author name"
-            />
-          </div>
+        {/* Category */}
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+            Category
+          </label>
+          <Input
+            id="category"
+            value={additionalData.category}
+            onChange={(e) =>
+              setAdditionalData({ ...additionalData, category: e.target.value })
+            }
+            placeholder="e.g., Visa, Immigration, Legal"
+          />
         </div>
 
+        {/* Author */}
+        <div>
+          <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
+            Author
+          </label>
+          <Input
+            id="author"
+            value={additionalData.author}
+            onChange={(e) =>
+              setAdditionalData({ ...additionalData, author: e.target.value })
+            }
+            placeholder="Author name or ID"
+          />
+        </div>
+
+        {/* Featured */}
         <div>
           <label className="flex items-center gap-2">
             <input
@@ -82,9 +83,9 @@ export default function GuideForm({
             />
             <span className="text-sm font-medium text-gray-700">Mark as Featured</span>
           </label>
+          <p className="mt-1 text-xs text-gray-500">Featured guides appear prominently on the guides page</p>
         </div>
       </div>
     </div>
   );
 }
-

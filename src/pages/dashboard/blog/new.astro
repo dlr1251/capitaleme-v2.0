@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import DashboardWrapper from '../../../components/dashboard/DashboardWrapper';
+import BlogFormPage from '../../../components/dashboard/BlogFormPage';
+---
+
+<DashboardLayout title="New Blog Post">
+  <DashboardWrapper client:load currentPage="blog">
+    <BlogFormPage />
+  </DashboardWrapper>
+</DashboardLayout>
+

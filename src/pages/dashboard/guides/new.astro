@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import DashboardWrapper from '../../../components/dashboard/DashboardWrapper';
+import GuideFormPage from '../../../components/dashboard/GuideFormPage';
+---
+
+<DashboardLayout title="New Guide">
+  <DashboardWrapper client:load currentPage="guides">
+    <GuideFormPage />
+  </DashboardWrapper>
+</DashboardLayout>
+

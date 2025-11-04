@@ -17,8 +17,8 @@ export default function BlogForm({
 }: BlogFormProps) {
   const [additionalData, setAdditionalData] = useState({
     category: initialData?.category || '',
-    author: initialData?.author || '',
-    pub_date: initialData?.pub_date || '',
+    author: initialData?.author || 'danielluque',
+    pub_date: initialData?.pub_date ? new Date(initialData.pub_date).toISOString().split('T')[0] : '',
     image: initialData?.image || '',
     featured: initialData?.featured || false,
   });
@@ -27,6 +27,7 @@ export default function BlogForm({
     await onSubmit({
       ...baseData,
       ...additionalData,
+      pub_date: additionalData.pub_date ? new Date(additionalData.pub_date).toISOString() : null,
     });
   };
 
@@ -42,64 +43,68 @@ export default function BlogForm({
       <div className="border-t border-gray-200 pt-6 space-y-6">
         <h3 className="text-lg font-medium text-gray-900">Additional Blog Information</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              Category
-            </label>
-            <Input
-              id="category"
-              value={additionalData.category}
-              onChange={(e) =>
-                setAdditionalData({ ...additionalData, category: e.target.value })
-              }
-              placeholder="e.g., News, Guide"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
-              Author
-            </label>
-            <Input
-              id="author"
-              value={additionalData.author}
-              onChange={(e) =>
-                setAdditionalData({ ...additionalData, author: e.target.value })
-              }
-              placeholder="Author name"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="pub_date" className="block text-sm font-medium text-gray-700 mb-2">
-              Publication Date
-            </label>
-            <Input
-              id="pub_date"
-              type="datetime-local"
-              value={additionalData.pub_date ? new Date(additionalData.pub_date).toISOString().slice(0, 16) : ''}
-              onChange={(e) =>
-                setAdditionalData({ ...additionalData, pub_date: e.target.value ? new Date(e.target.value).toISOString() : '' })
-              }
-            />
-          </div>
-
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-              Image URL
-            </label>
-            <Input
-              id="image"
-              value={additionalData.image}
-              onChange={(e) =>
-                setAdditionalData({ ...additionalData, image: e.target.value })
-              }
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
+        {/* Category */}
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+            Category
+          </label>
+          <Input
+            id="category"
+            value={additionalData.category}
+            onChange={(e) =>
+              setAdditionalData({ ...additionalData, category: e.target.value })
+            }
+            placeholder="e.g., Legal, Immigration, Real Estate"
+          />
         </div>
 
+        {/* Author */}
+        <div>
+          <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
+            Author
+          </label>
+          <Input
+            id="author"
+            value={additionalData.author}
+            onChange={(e) =>
+              setAdditionalData({ ...additionalData, author: e.target.value })
+            }
+            placeholder="Author name or ID"
+          />
+        </div>
+
+        {/* Publication Date */}
+        <div>
+          <label htmlFor="pub_date" className="block text-sm font-medium text-gray-700 mb-2">
+            Publication Date
+          </label>
+          <Input
+            id="pub_date"
+            type="date"
+            value={additionalData.pub_date}
+            onChange={(e) =>
+              setAdditionalData({ ...additionalData, pub_date: e.target.value })
+            }
+          />
+          <p className="mt-1 text-xs text-gray-500">Leave empty to use current date when publishing</p>
+        </div>
+
+        {/* Featured Image */}
+        <div>
+          <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+            Featured Image URL
+          </label>
+          <Input
+            id="image"
+            value={additionalData.image}
+            onChange={(e) =>
+              setAdditionalData({ ...additionalData, image: e.target.value })
+            }
+            placeholder="https://example.com/image.jpg"
+          />
+        </div>
+
+        {/* Featured */}
         <div>
           <label className="flex items-center gap-2">
             <input
@@ -112,9 +117,9 @@ export default function BlogForm({
             />
             <span className="text-sm font-medium text-gray-700">Mark as Featured</span>
           </label>
+          <p className="mt-1 text-xs text-gray-500">Featured posts appear prominently on the blog homepage</p>
         </div>
       </div>
     </div>
   );
 }
-
