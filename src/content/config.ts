@@ -131,16 +131,24 @@ async function rateLimitedApiCall<T>(apiCall: () => Promise<T>): Promise<T> {
   return apiCall();
 }
 
-async function fetchNestedBlocks(blockId: string, indentLevel: number = 0): Promise<ExtendedBlock[]> {
+async function fetchNestedBlocks(blockId: string, indentLevel: number = 0, maxDepth: number = 10): Promise<ExtendedBlock[]> {
+  // Prevent infinite recursion by limiting depth
+  if (indentLevel >= maxDepth) {
+    console.log(`Max depth reached (${maxDepth}) for block ${blockId}`);
+    return [];
+  }
+
   const blocks: ExtendedBlock[] = [];
   let hasMore = true;
   let nextCursor: string | undefined;
 
   while (hasMore) {
-    const response = await notion.blocks.children.list({
-      block_id: blockId,
-      start_cursor: nextCursor,
-    });
+    const response = await rateLimitedApiCall(() =>
+      notion.blocks.children.list({
+        block_id: blockId,
+        start_cursor: nextCursor,
+      })
+    );
 
     blocks.push(...response.results as ExtendedBlock[]);
     hasMore = response.has_more;
@@ -149,8 +157,8 @@ async function fetchNestedBlocks(blockId: string, indentLevel: number = 0): Prom
 
   // Recursively fetch children for blocks that have them
   for (const block of blocks) {
-    if (block.has_children) {
-      block.children = await fetchNestedBlocks(block.id, indentLevel + 1);
+    if (block.has_children && indentLevel < maxDepth) {
+      block.children = await fetchNestedBlocks(block.id, indentLevel + 1, maxDepth);
     }
   }
 

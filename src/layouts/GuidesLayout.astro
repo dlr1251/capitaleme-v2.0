@@ -13,6 +13,7 @@ import {
   generateKeywords,
   type SEOData 
 } from '../utils/seo.js';
+import { formatDateTime, getRelativeTime } from '../utils/dateFormatting.js';
 
 export interface Props {
   title: string;
@@ -52,18 +53,6 @@ const guidesData = optimizedMenuData?.allGuides || [];
 const hasHeadings = headings && headings.length > 0;
 
 // Get relative time
-const getRelativeTime = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  
-  if (diffInDays === 0) return lang === 'es' ? 'Hoy' : 'Today';
-  if (diffInDays === 1) return lang === 'es' ? 'Ayer' : 'Yesterday';
-  if (diffInDays < 7) return lang === 'es' ? `Hace ${diffInDays} días` : `${diffInDays} days ago`;
-  if (diffInDays < 30) return lang === 'es' ? `Hace ${Math.floor(diffInDays / 7)} semanas` : `${Math.floor(diffInDays / 7)} weeks ago`;
-  if (diffInDays < 365) return lang === 'es' ? `Hace ${Math.floor(diffInDays / 30)} meses` : `${Math.floor(diffInDays / 30)} months ago`;
-  return lang === 'es' ? `Hace ${Math.floor(diffInDays / 365)} años` : `${Math.floor(diffInDays / 365)} years ago`;
-};
 
 // Generate SEO data
 const seoData: SEOData = {
@@ -153,10 +142,15 @@ const seoData: SEOData = {
               <span>{timeToRead} {lang === 'en' ? 'min read' : 'min de lectura'}</span>
             </div>
             {lastEdited && (
-              <div class="flex items-center gap-2">
-                <CalendarIcon className="w-4 h-4" />
-                <span>
-                  {lang === 'es' ? 'Actualizado' : 'Updated'}: {getRelativeTime(lastEdited)}
+              <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  <span class="font-medium">
+                    {lang === 'es' ? 'Actualizado' : 'Updated'}: {formatDateTime(lastEdited, lang)}
+                  </span>
+                </div>
+                <span class="text-xs text-slate-400 ml-6">
+                  {getRelativeTime(lastEdited, lang)}
                 </span>
               </div>
             )}

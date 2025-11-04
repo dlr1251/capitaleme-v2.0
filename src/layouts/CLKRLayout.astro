@@ -13,6 +13,7 @@ import {
   generateKeywords,
   type SEOData 
 } from '../utils/seo.js';
+import { formatDateTime, getRelativeTime } from '../utils/dateFormatting.js';
 
 // Define Heading type for type assertion
 interface Heading {
@@ -154,10 +155,15 @@ const seoData: SEOData = {
           {(lastEdited || readingTime) && (
             <div class="flex items-center gap-6 text-sm text-gray-500">
               {lastEdited && (
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                  <span>
-                    {lang === 'es' ? 'Última actualización' : 'Last updated'}: {new Date(lastEdited).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US')}
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                    <span class="font-medium">
+                      {lang === 'es' ? 'Última actualización' : 'Last updated'}: {formatDateTime(lastEdited, lang)}
+                    </span>
+                  </div>
+                  <span class="text-xs text-gray-400 ml-4">
+                    {getRelativeTime(lastEdited, lang)}
                   </span>
                 </div>
               )}

@@ -162,28 +162,39 @@ async function fetchPageContent(pageId) {
   }
 }
 
-async function fetchBlocksRecursively(pageId, depth = 0) {
+async function fetchBlocksRecursively(pageId, depth = 0, maxDepth = 10) {
+  // Prevent infinite recursion by limiting depth
+  if (depth >= maxDepth) {
+    console.log(`Max depth reached (${maxDepth}) for block ${pageId}`);
+    return [];
+  }
+
   const allBlocks = [];
   
   try {
     console.log(`Fetching blocks for ${pageId} at depth ${depth}`);
     
-    const response = await notion.blocks.children.list({
-      block_id: pageId,
-      page_size: 100
-    });
-    
-    console.log(`Fetched ${response.results.length} blocks`);
-    
-    for (const block of response.results) {
-      allBlocks.push(block);
+    let cursor;
+    do {
+      const response = await notion.blocks.children.list({
+        block_id: pageId,
+        page_size: 100,
+        start_cursor: cursor
+      });
       
-      if (block.has_children) {
-        console.log(`Fetching children for ${block.type} block`);
-        const childBlocks = await fetchBlocksRecursively(block.id, depth + 1);
-        allBlocks.push(...childBlocks);
+      console.log(`Fetched ${response.results.length} blocks`);
+      
+      for (const block of response.results) {
+        allBlocks.push(block);
+        
+        if (block.has_children && depth < maxDepth) {
+          console.log(`Fetching children for ${block.type} block`);
+          block.children = await fetchBlocksRecursively(block.id, depth + 1, maxDepth);
+        }
       }
-    }
+      
+      cursor = response.has_more ? response.next_cursor : null;
+    } while (cursor);
     
     return allBlocks;
   } catch (error) {
@@ -192,17 +203,36 @@ async function fetchBlocksRecursively(pageId, depth = 0) {
   }
 }
 
-async function notionBlocksToMarkdown(blocks) {
+async function notionBlocksToMarkdown(blocks, indentLevel = 0) {
   let markdown = '';
+  const indent = '  '.repeat(indentLevel);
+  let numberedListCounter = 0;
   
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
     console.log(`Processing block ${i + 1}/${blocks.length}: ${block.type}`);
     
+    // Reset numbered list counter if the next block is not a numbered_list_item
+    if (block.type !== 'numbered_list_item' && numberedListCounter > 0) {
+      numberedListCounter = 0;
+    }
+    
     try {
-      const blockMarkdown = await processBlock(block);
+      const blockMarkdown = await processBlock(block, indentLevel, numberedListCounter);
       if (blockMarkdown) {
         markdown += blockMarkdown + '\n\n';
+      }
+      
+      if (block.type === 'numbered_list_item') {
+        numberedListCounter++;
+      }
+      
+      // Process nested children
+      if (block.children && block.children.length > 0) {
+        const childrenMarkdown = await notionBlocksToMarkdown(block.children, indentLevel + 1);
+        if (childrenMarkdown) {
+          markdown += childrenMarkdown + '\n\n';
+        }
       }
     } catch (error) {
       console.error(`Error processing block ${block.type}:`, error);
@@ -212,10 +242,12 @@ async function notionBlocksToMarkdown(blocks) {
   return markdown.trim();
 }
 
-async function processBlock(block) {
+async function processBlock(block, indentLevel = 0, numberedListCounter = 0) {
+  const indent = '  '.repeat(indentLevel);
+  
   switch (block.type) {
     case 'paragraph':
-      return block.paragraph.rich_text.map(text => text.plain_text).join('');
+      return indent + block.paragraph.rich_text.map(text => text.plain_text).join('');
       
     case 'heading_1':
       return `# ${block.heading_1.rich_text.map(text => text.plain_text).join('')}`;
@@ -227,13 +259,22 @@ async function processBlock(block) {
       return `### ${block.heading_3.rich_text.map(text => text.plain_text).join('')}`;
       
     case 'bulleted_list_item':
-      return `- ${block.bulleted_list_item.rich_text.map(text => text.plain_text).join('')}`;
+      return `${indent}- ${block.bulleted_list_item.rich_text.map(text => text.plain_text).join('')}`;
       
     case 'numbered_list_item':
-      return `1. ${block.numbered_list_item.rich_text.map(text => text.plain_text).join('')}`;
+      return `${indent}${numberedListCounter + 1}. ${block.numbered_list_item.rich_text.map(text => text.plain_text).join('')}`;
+      
+    case 'to_do':
+      const todoChecked = block.to_do.checked ? 'x' : ' ';
+      return `${indent}- [${todoChecked}] ${block.to_do.rich_text.map(text => text.plain_text).join('')}`;
       
     case 'quote':
-      return `> ${block.quote.rich_text.map(text => text.plain_text).join('')}`;
+      const quoteText = block.quote.rich_text.map(text => text.plain_text).join('');
+      return `> ${quoteText}`;
+      
+    case 'callout':
+      const calloutText = block.callout.rich_text.map(text => text.plain_text).join('');
+      return `> [!NOTE] ${calloutText}`;
       
     case 'code':
       return `\`\`\`${block.code.language || ''}\n${block.code.rich_text.map(text => text.plain_text).join('')}\n\`\`\``;
@@ -260,24 +301,34 @@ async function processBlock(block) {
       return `![image](${imageUrl})`;
       
     case 'table':
-      // Handle table blocks
+      // Handle table blocks - process children
+      if (block.children && block.children.length > 0) {
+        const rows = block.children
+          .filter(child => child.type === 'table_row')
+          .map(child => {
+            const cells = (child.table_row?.cells || []).map(cell =>
+              (cell || []).map(t => t.plain_text).join('')
+            );
+            return '| ' + cells.join(' | ') + ' |';
+          });
+        return rows.join('\n');
+      }
       return '';
       
     case 'table_row':
-      // Handle table row blocks
-      return '';
+      const cells = (block.table_row?.cells || []).map(cell =>
+        (cell || []).map(t => t.plain_text).join('')
+      );
+      return '| ' + cells.join(' | ') + ' |';
       
     case 'column_list':
-      // Handle column list blocks
-      return '';
-      
     case 'column':
-      // Handle column blocks
+      // Process children in column structures
       return '';
       
     case 'toggle':
       const toggleText = block.toggle.rich_text.map(text => text.plain_text).join('');
-      return `<details><summary>${toggleText}</summary>\n\n\n</details>`;
+      return `<details><summary>${toggleText}</summary>`;
       
     default:
       console.log(`Unhandled block type: ${block.type}`);

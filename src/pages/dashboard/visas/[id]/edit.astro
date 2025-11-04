@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import DashboardWrapper from '../../../../components/dashboard/DashboardWrapper';
+import VisaEditPage from '../../../../components/dashboard/VisaEditPage';
+---
+
+<DashboardLayout title="Edit Visa">
+  <DashboardWrapper client:load currentPage="visas">
+    <VisaEditPage client:load id={Astro.params.id!} />
+  </DashboardWrapper>
+</DashboardLayout>
+

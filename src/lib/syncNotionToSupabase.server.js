@@ -234,6 +234,8 @@ export async function getVisasFromSupabase(lang = 'en') {
             .from('visas')
             .select('*')
             .eq('lang', lang)
+            .eq('published', true)
+            .or('archived.is.null,archived.eq.false')
             .order('title');
         if (error) {
             return [];
@@ -252,6 +254,8 @@ export async function getVisaBySlugFromSupabase(slug, lang = 'en') {
             .select('*')
             .eq('slug', slug)
             .eq('lang', lang)
+            .eq('published', true)
+            .or('archived.is.null,archived.eq.false')
             .single();
         if (error) {
             return null;
@@ -282,6 +286,8 @@ export async function getCLKRArticlesFromSupabase(lang = 'en') {
             .from('clkr_articles')
             .select('*')
             .eq('lang', lang)
+            .eq('published', true)
+            .or('archived.is.null,archived.eq.false')
             .order('last_edited', { ascending: false });
         
         const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
@@ -304,7 +310,7 @@ export async function getCLKRArticlesFromSupabase(lang = 'en') {
 }
 
 // --- Notion Block to Markdown Serializer ---
-function notionBlocksToMarkdown(blocks) {
+function notionBlocksToMarkdown(blocks, indentLevel = 0) {
   console.log('Blocks passed to notionBlocksToMarkdown:', JSON.stringify(blocks, null, 2));
   
   if (!blocks || blocks.length === 0) {
@@ -312,15 +318,27 @@ function notionBlocksToMarkdown(blocks) {
     return '';
   }
 
+  const indent = '  '.repeat(indentLevel);
+  let numberedListCounter = 0;
+
   const markdownBlocks = blocks.map((block, index) => {
     console.log(`Processing block ${index + 1}/${blocks.length}:`, block.type);
     
     try {
+      // Reset numbered list counter if the next block is not a numbered_list_item
+      if (block.type !== 'numbered_list_item' && numberedListCounter > 0) {
+        numberedListCounter = 0;
+      }
+
       switch (block.type) {
         case 'paragraph':
           const paragraphText = (block.paragraph?.rich_text || []).map(t => t.plain_text).join('');
           console.log(`Paragraph text: "${paragraphText}"`);
-          return paragraphText || '\n'; // Return newline for empty paragraphs
+          const paragraphContent = paragraphText || '\n';
+          const paragraphChildren = block.children && block.children.length > 0 
+            ? '\n' + notionBlocksToMarkdown(block.children, indentLevel + 1) 
+            : '';
+          return indent + paragraphContent + paragraphChildren;
           
         case 'heading_1':
           return '# ' + (block.heading_1?.rich_text || []).map(t => t.plain_text).join('');
@@ -332,16 +350,37 @@ function notionBlocksToMarkdown(blocks) {
           return '### ' + (block.heading_3?.rich_text || []).map(t => t.plain_text).join('');
           
         case 'bulleted_list_item':
-          return '- ' + (block.bulleted_list_item?.rich_text || []).map(t => t.plain_text).join('');
+          const bulletedText = (block.bulleted_list_item?.rich_text || []).map(t => t.plain_text).join('');
+          const bulletedContent = `${indent}- ${bulletedText}`;
+          const bulletedChildren = block.children && block.children.length > 0 
+            ? '\n' + notionBlocksToMarkdown(block.children, indentLevel + 1) 
+            : '';
+          return bulletedContent + bulletedChildren;
           
         case 'numbered_list_item':
-          return '1. ' + (block.numbered_list_item?.rich_text || []).map(t => t.plain_text).join('');
+          numberedListCounter++;
+          const numberedText = (block.numbered_list_item?.rich_text || []).map(t => t.plain_text).join('');
+          const numberedContent = `${indent}${numberedListCounter}. ${numberedText}`;
+          const numberedChildren = block.children && block.children.length > 0 
+            ? '\n' + notionBlocksToMarkdown(block.children, indentLevel + 1) 
+            : '';
+          return numberedContent + numberedChildren;
           
         case 'to_do':
-          return `- [${block.to_do?.checked ? 'x' : ' '}] ` + (block.to_do?.rich_text || []).map(t => t.plain_text).join('');
+          const todoText = (block.to_do?.rich_text || []).map(t => t.plain_text).join('');
+          const todoContent = `${indent}- [${block.to_do?.checked ? 'x' : ' '}] ${todoText}`;
+          const todoChildren = block.children && block.children.length > 0 
+            ? '\n' + notionBlocksToMarkdown(block.children, indentLevel + 1) 
+            : '';
+          return todoContent + todoChildren;
           
         case 'quote':
-          return '> ' + (block.quote?.rich_text || []).map(t => t.plain_text).join('');
+          const quoteText = (block.quote?.rich_text || []).map(t => t.plain_text).join('');
+          const quoteContent = `> ${quoteText}`;
+          const quoteChildren = block.children && block.children.length > 0 
+            ? '\n' + notionBlocksToMarkdown(block.children, indentLevel).split('\n').map(line => line ? '> ' + line : '').join('\n')
+            : '';
+          return quoteContent + (quoteChildren ? '\n' + quoteChildren : '');
           
         case 'code':
           return '```' + (block.code?.language || '') + '\n' + (block.code?.rich_text || []).map(t => t.plain_text).join('') + '\n```';
@@ -365,27 +404,32 @@ function notionBlocksToMarkdown(blocks) {
           return `![image](${imageUrl})`;
             
         case 'callout':
-          return '> [!NOTE] ' + (block.callout?.rich_text || []).map(t => t.plain_text).join('');
+          const calloutText = (block.callout?.rich_text || []).map(t => t.plain_text).join('');
+          const calloutContent = `> [!NOTE] ${calloutText}`;
+          const calloutChildren = block.children && block.children.length > 0 
+            ? '\n' + notionBlocksToMarkdown(block.children, indentLevel).split('\n').map(line => line ? '> ' + line : '').join('\n')
+            : '';
+          return calloutContent + (calloutChildren ? '\n' + calloutChildren : '');
           
         case 'toggle':
           const toggleText = (block.toggle?.rich_text || []).map(t => t.plain_text).join('');
-          const toggleContent = block.children ? notionBlocksToMarkdown(block.children) : '';
+          const toggleContent = block.children ? notionBlocksToMarkdown(block.children, indentLevel) : '';
           return `<details><summary>${toggleText}</summary>\n\n${toggleContent}\n\n</details>`;
           
         case 'divider':
           return '---';
           
         case 'column_list':
-          return block.children ? notionBlocksToMarkdown(block.children) : '';
+          return block.children ? notionBlocksToMarkdown(block.children, indentLevel) : '';
           
         case 'column':
-          return block.children ? notionBlocksToMarkdown(block.children) : '';
+          return block.children ? notionBlocksToMarkdown(block.children, indentLevel) : '';
           
         case 'table':
           if (!block.children) return '';
           const rows = block.children
             .filter(child => child.type === 'table_row')
-            .map(child => notionBlocksToMarkdown([child]));
+            .map(child => notionBlocksToMarkdown([child], indentLevel));
           return rows.join('\n');
           
         case 'table_row':
@@ -410,10 +454,10 @@ function notionBlocksToMarkdown(blocks) {
           return block.video?.external?.url ? `[Video](${block.video.external.url})` : '';
           
         case 'synced_block':
-          return block.children ? notionBlocksToMarkdown(block.children) : '';
+          return block.children ? notionBlocksToMarkdown(block.children, indentLevel) : '';
           
         case 'template':
-          return block.children ? notionBlocksToMarkdown(block.children) : '';
+          return block.children ? notionBlocksToMarkdown(block.children, indentLevel) : '';
           
         case 'link_preview':
           return block.link_preview?.url ? `[Link](${block.link_preview.url})` : '';
@@ -424,6 +468,10 @@ function notionBlocksToMarkdown(blocks) {
           
         default:
           console.log(`Unknown block type: ${block.type}`, block);
+          // For unknown block types, try to process children if they exist
+          if (block.children && block.children.length > 0) {
+            return notionBlocksToMarkdown(block.children, indentLevel);
+          }
           return `[Unknown block type: ${block.type}]`;
       }
     } catch (error) {
@@ -959,6 +1007,7 @@ export async function getGuidesFromSupabase(lang = 'en') {
     .select('*')
     .eq('lang', lang)
     .eq('published', true)
+    .or('archived.is.null,archived.eq.false')
     .order('last_edited', { ascending: false });
   return error ? [] : data;
 }

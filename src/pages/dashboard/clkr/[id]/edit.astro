@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import DashboardWrapper from '../../../../components/dashboard/DashboardWrapper';
+import CLKREditPage from '../../../../components/dashboard/CLKREditPage';
+---
+
+<DashboardLayout title="Edit CLKR Article">
+  <DashboardWrapper client:load currentPage="clkr">
+    <CLKREditPage client:load id={Astro.params.id!} />
+  </DashboardWrapper>
+</DashboardLayout>
+

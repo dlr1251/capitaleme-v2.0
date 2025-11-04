@@ -235,35 +235,63 @@ function logToFile(message, data) {
 
 export async function getVisasFromSupabase(lang = 'en') {
     try {
-        const { data, error } = await supabase
+        const supabaseClient = await initializeSupabase();
+        if (!supabaseClient) {
+            console.error(`[getVisasFromSupabase] Failed to initialize Supabase client for lang: ${lang}`);
+            return [];
+        }
+        
+        console.log(`[getVisasFromSupabase] Fetching visas for lang: ${lang}`);
+        const { data, error } = await supabaseClient
             .from('visas')
             .select('*')
             .eq('lang', lang)
+            .eq('published', true)
+            .or('archived.is.null,archived.eq.false')
             .order('title');
+            
         if (error) {
+            console.error(`[getVisasFromSupabase] Error fetching visas for ${lang}:`, error);
             return [];
         }
+        
+        console.log(`[getVisasFromSupabase] Successfully fetched ${data?.length || 0} visas for ${lang}`);
         return data || [];
     }
     catch (error) {
+        console.error(`[getVisasFromSupabase] Exception fetching visas for ${lang}:`, error);
         return [];
     }
 }
 
 export async function getVisaBySlugFromSupabase(slug, lang = 'en') {
     try {
-        const { data, error } = await supabase
+        const supabaseClient = await initializeSupabase();
+        if (!supabaseClient) {
+            console.error(`[getVisaBySlugFromSupabase] Failed to initialize Supabase client for slug: ${slug}, lang: ${lang}`);
+            return null;
+        }
+        
+        console.log(`[getVisaBySlugFromSupabase] Fetching visa with slug: ${slug}, lang: ${lang}`);
+        const { data, error } = await supabaseClient
             .from('visas')
             .select('*')
             .eq('slug', slug)
             .eq('lang', lang)
+            .eq('published', true)
+            .or('archived.is.null,archived.eq.false')
             .single();
+            
         if (error) {
+            console.error(`[getVisaBySlugFromSupabase] Error fetching visa ${slug} for ${lang}:`, error);
             return null;
         }
+        
+        console.log(`[getVisaBySlugFromSupabase] Successfully fetched visa: ${slug} for ${lang}`);
         return data;
     }
     catch (error) {
+        console.error(`[getVisaBySlugFromSupabase] Exception fetching visa ${slug} for ${lang}:`, error);
         return null;
     }
 }
@@ -287,6 +315,8 @@ export async function getCLKRArticlesFromSupabase(lang = 'en') {
             .from('clkr_articles')
             .select('*')
             .eq('lang', lang)
+            .eq('published', true)
+            .or('archived.is.null,archived.eq.false')
             .gt('reading_time', 2) // Only articles with reading time > 1 minute
             .order('last_edited', { ascending: false });
         
@@ -983,6 +1013,7 @@ export async function getGuidesFromSupabase(lang = 'en') {
     .from('guides')
     .select('*')
     .eq('published', true)
+    .or('archived.is.null,archived.eq.false')
     .order('last_edited', { ascending: false });
   
   if (error) {
@@ -1465,7 +1496,7 @@ async function fetchAllBlocksSuperOptimized(notion, blockId, depth = 0) {
   return allBlocks;
 }
 
-function notionBlocksToMarkdownSuperOptimized(blocks) {
+function notionBlocksToMarkdownSuperOptimized(blocks, indentLevel = 0) {
   if (!blocks || blocks.length === 0) return '';
   
   // Pre-allocate string capacity for better performance
@@ -1475,16 +1506,27 @@ function notionBlocksToMarkdownSuperOptimized(blocks) {
   
   // Use more efficient string building
   const parts = [];
+  const indent = '  '.repeat(indentLevel);
+  let numberedListCounter = 0;
   
   for (const block of blocks) {
     try {
+      // Reset numbered list counter if the next block is not a numbered_list_item
+      if (block.type !== 'numbered_list_item' && numberedListCounter > 0) {
+        numberedListCounter = 0;
+      }
+
       switch (block.type) {
         case 'paragraph':
           if (block.paragraph.rich_text.length > 0) {
             const text = block.paragraph.rich_text.map(rt => rt.plain_text).join('');
-            parts.push(text, '\n\n');
+            parts.push(indent + text, '\n\n');
           } else {
             parts.push('\n');
+          }
+          // Process nested children
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel + 1));
           }
           break;
           
@@ -1505,12 +1547,31 @@ function notionBlocksToMarkdownSuperOptimized(blocks) {
           
         case 'bulleted_list_item':
           const bulletText = block.bulleted_list_item.rich_text.map(rt => rt.plain_text).join('');
-          parts.push(`* ${bulletText}\n`);
+          parts.push(`${indent}- ${bulletText}\n`);
+          // Process nested children
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel + 1));
+          }
           break;
           
         case 'numbered_list_item':
+          numberedListCounter++;
           const numberedText = block.numbered_list_item.rich_text.map(rt => rt.plain_text).join('');
-          parts.push(`1. ${numberedText}\n`);
+          parts.push(`${indent}${numberedListCounter}. ${numberedText}\n`);
+          // Process nested children
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel + 1));
+          }
+          break;
+          
+        case 'to_do':
+          const todoText = block.to_do.rich_text.map(rt => rt.plain_text).join('');
+          const todoChecked = block.to_do.checked ? 'x' : ' ';
+          parts.push(`${indent}- [${todoChecked}] ${todoText}\n`);
+          // Process nested children
+          if (block.children && block.children.length > 0) {
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel + 1));
+          }
           break;
           
         case 'code':
@@ -1522,6 +1583,21 @@ function notionBlocksToMarkdownSuperOptimized(blocks) {
         case 'quote':
           const quoteText = block.quote.rich_text.map(rt => rt.plain_text).join('');
           parts.push(`> ${quoteText}\n\n`);
+          // Process nested children
+          if (block.children && block.children.length > 0) {
+            const quoteChildren = notionBlocksToMarkdownSuperOptimized(block.children, indentLevel);
+            parts.push(quoteChildren.split('\n').map(line => line ? '> ' + line : '').join('\n') + '\n\n');
+          }
+          break;
+          
+        case 'callout':
+          const calloutText = block.callout.rich_text.map(rt => rt.plain_text).join('');
+          parts.push(`> [!NOTE] ${calloutText}\n\n`);
+          // Process nested children
+          if (block.children && block.children.length > 0) {
+            const calloutChildren = notionBlocksToMarkdownSuperOptimized(block.children, indentLevel);
+            parts.push(calloutChildren.split('\n').map(line => line ? '> ' + line : '').join('\n') + '\n\n');
+          }
           break;
           
         case 'divider':
@@ -1532,7 +1608,7 @@ function notionBlocksToMarkdownSuperOptimized(blocks) {
           const toggleText = block.toggle.rich_text.map(rt => rt.plain_text).join('');
           parts.push(`<details><summary>${toggleText}</summary>\n\n`);
           if (block.children && block.children.length > 0) {
-            parts.push(notionBlocksToMarkdownSuperOptimized(block.children));
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel));
           }
           parts.push('</details>\n\n');
           break;
@@ -1540,13 +1616,13 @@ function notionBlocksToMarkdownSuperOptimized(blocks) {
         case 'column_list':
         case 'column':
           if (block.children && block.children.length > 0) {
-            parts.push(notionBlocksToMarkdownSuperOptimized(block.children));
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel));
           }
           break;
           
         default:
           if (block.children && block.children.length > 0) {
-            parts.push(notionBlocksToMarkdownSuperOptimized(block.children));
+            parts.push(notionBlocksToMarkdownSuperOptimized(block.children, indentLevel));
           }
           break;
       }

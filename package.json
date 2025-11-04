@@ -12,14 +12,17 @@
     "preview": "astro preview",
     "astro": "astro",
     "sync-notion-algolia": "ts-node --loader ts-node/esm src/lib/syncNotionToAlgolia.ts",
-    "sync-clkr": "node scripts/sync-clkr.js",
-    "sync-visas": "node scripts/sync-visas.js",
-    "test-supabase": "node scripts/test-supabase.js",
-    "optimize": "node scripts/optimize-performance.js",
-    "migrate-images-local": "node scripts/download-and-store-images.js",
-    "migrate-images-cloudinary": "node scripts/cloudinary-image-migration.js",
-    "process-supabase-images": "node scripts/enhanced-notion-sync-with-images.js",
-    "sync-with-images": "node scripts/sync-with-image-processing.js"
+    "sync:all": "node scripts/sync/sync-all.js",
+    "sync:visas": "node scripts/sync/sync-visas.js",
+    "sync:clkr": "node scripts/sync/sync-clkr.js",
+    "sync:guides": "node scripts/sync/sync-guides.js",
+    "test:connection": "node scripts/utils/test-connection.js",
+    "images:download": "node scripts/images/download-images.js",
+    "images:migrate": "node scripts/images/migrate-cloudinary.js",
+    "images:sync": "node scripts/images/sync-with-images.js",
+    "maintenance:fix-imports": "node scripts/maintenance/fix-imports.js",
+    "maintenance:cleanup": "node scripts/maintenance/cleanup.js",
+    "optimize": "node scripts/utils/optimize-code.js"
   },
   "resolutions": {
     "whatwg-url": "^5.0.0"

@@ -1,7 +1,8 @@
 ---
-export const prerender = true; // SSG: esta página se pre-renderiza. Recomendado revalidar cada 30 minutos en el hosting.
+export const prerender = false; // SSR: Obtener visas dinámicamente desde Supabase
 import Layout from "../../../layouts/Layout.astro";
 import { getAllContentData } from '../../../server/lib/contentData.js';
+import { getAllVisas } from '../../../server/lib/getVisa.js';
 import VisasHero from '../../../components/visas/VisasHero.tsx';
 import ServiceProcess from '../../../components/visas/ServiceProcess.astro';
 import ConsultationSection from '../../../components/visas/ConsultationSection.tsx';
@@ -11,10 +12,12 @@ import ColombiaStayCalculator from '../../../components/visas/ColombiaStayCalcul
 import AdditionalServicesSection from '../../../components/visas/AdditionalServicesSection.tsx';
 
 const lang = 'es';
-const menuData = await getAllContentData(lang);
 
-// Get data from menuData with null checks
-const allVisas = menuData?.allVisas || [];
+// Obtener visas directamente desde Supabase
+const allVisas = await getAllVisas(lang, false);
+
+// Obtener datos del menú para navegación en sidebar
+const menuData = await getAllContentData(lang);
 const allGuides = menuData?.allGuides || [];
 
 // Get popular visas

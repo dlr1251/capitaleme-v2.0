@@ -76,10 +76,13 @@ capitaleme/
 Create a `.env` file in the root directory with the following variables:
 
 ```bash
-# Supabase Configuration
+# Supabase Configuration (Server-side)
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-SUPABASE_ANON_KEY=your_anon_key
+
+# Supabase Configuration (Client-side - for Dashboard Auth)
+PUBLIC_SUPABASE_URL=your_supabase_project_url
+PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
 # Notion Configuration
 NOTION_API_KEY=your_notion_integration_token
@@ -131,12 +134,14 @@ npm run build            # Build for production
 npm run preview          # Preview production build
 
 # Content Synchronization
-npm run sync-clkr        # Sync CLKR content from Notion
-npm run sync-visas       # Sync visa content from Notion
+npm run sync:all         # Sync all content types from Notion
+npm run sync:clkr        # Sync CLKR content from Notion
+npm run sync:visas       # Sync visa content from Notion
+npm run sync:guides      # Sync guides content from Notion
 npm run sync-notion-algolia  # Sync content to Algolia
 
 # Testing & Debugging
-npm run test-supabase    # Test Supabase connection
+npm run test:connection  # Test Supabase and Notion connections
 npm run optimize         # Performance optimization
 ```
 
@@ -342,8 +347,10 @@ npm run test-supabase
 # Verify API key permissions
 # Check database IDs in environment
 # Run sync scripts manually
-npm run sync-visas
-npm run sync-clkr
+npm run sync:visas
+npm run sync:clkr
+npm run sync:guides
+npm run sync:all
 ```
 
 #### Build Errors
@@ -359,7 +366,7 @@ npm run build
 ### Debug Scripts
 - `debug-clkr.astro` - CLKR module debugging
 - `debug-visas.astro` - Visa system debugging
-- `test-supabase.js` - Database connection testing
+- `scripts/utils/test-connection.js` - Database and service connection testing
 
 ## 📚 Development Resources
 

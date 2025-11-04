@@ -14,26 +14,63 @@ console.log(`   - SUPABASE_SERVICE_ROLE_KEY: ${supabaseServiceKey ? '✅ Set' : 
 // Check if environment variables are set
 let supabase;
 if (!supabaseUrl || !supabaseServiceKey) {
-    console.log('⚠️  Using mock Supabase client due to missing environment variables');
-    // Mock client that returns empty results
+    console.error('❌ CRITICAL: Supabase environment variables are missing!');
+    console.error('   Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env file');
+    console.error('   Without these, the dashboard will not be able to access the database.');
+    
+    // Mock client that returns errors instead of empty results
     supabase = {
+        auth: {
+            getUser: () => Promise.resolve({ 
+                data: { user: null }, 
+                error: { message: 'Supabase not configured - missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' } 
+            }),
+        },
         from: () => ({
             select: () => ({
                 eq: () => ({
-                    not: () => ({
-                        order: () => Promise.resolve({ data: [], error: null })
+                    single: () => Promise.resolve({ 
+                        data: null, 
+                        error: { message: 'Supabase not configured' } 
+                    }),
+                    or: () => ({
+                        order: () => Promise.resolve({ 
+                            data: null, 
+                            error: { message: 'Supabase not configured - please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env' } 
+                        })
+                    }),
+                    order: () => Promise.resolve({ 
+                        data: null, 
+                        error: { message: 'Supabase not configured - please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env' } 
                     })
+                }),
+                order: () => Promise.resolve({ 
+                    data: null, 
+                    error: { message: 'Supabase not configured - please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env' } 
                 })
             }),
-            insert: () => Promise.resolve({ error: new Error('Supabase not configured') }),
-            update: () => Promise.resolve({ error: new Error('Supabase not configured') }),
-            delete: () => Promise.resolve({ error: new Error('Supabase not configured') })
+            insert: () => Promise.resolve({ 
+                data: null, 
+                error: { message: 'Supabase not configured' } 
+            }),
+            update: () => Promise.resolve({ 
+                data: null, 
+                error: { message: 'Supabase not configured' } 
+            }),
+            delete: () => Promise.resolve({ 
+                data: null, 
+                error: { message: 'Supabase not configured' } 
+            })
         })
     };
-}
-else {
+} else {
     console.log('✅ Creating real Supabase client');
-    supabase = createClient(supabaseUrl, supabaseServiceKey);
+    supabase = createClient(supabaseUrl, supabaseServiceKey, {
+        auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+        }
+    });
 }
 export { supabase };
 // CLKR Articles table schema:

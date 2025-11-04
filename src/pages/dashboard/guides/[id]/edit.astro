@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import DashboardWrapper from '../../../../components/dashboard/DashboardWrapper';
+import GuideEditPage from '../../../../components/dashboard/GuideEditPage';
+---
+
+<DashboardLayout title="Edit Guide">
+  <DashboardWrapper client:load currentPage="guides">
+    <GuideEditPage client:load id={Astro.params.id!} />
+  </DashboardWrapper>
+</DashboardLayout>
+

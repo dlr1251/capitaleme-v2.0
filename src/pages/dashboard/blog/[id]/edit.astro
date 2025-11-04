@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import DashboardWrapper from '../../../../components/dashboard/DashboardWrapper';
+import BlogEditPage from '../../../../components/dashboard/BlogEditPage';
+---
+
+<DashboardLayout title="Edit Blog Post">
+  <DashboardWrapper client:load currentPage="blog">
+    <BlogEditPage client:load id={Astro.params.id!} />
+  </DashboardWrapper>
+</DashboardLayout>
+

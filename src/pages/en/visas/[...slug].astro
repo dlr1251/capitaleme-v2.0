@@ -1,38 +1,22 @@
 ---
-export const prerender = true;
+export const prerender = false;
 import VisasLayout from '../../../layouts/VisasLayout.astro';
-import { getVisasFromSupabase, getVisaBySlugFromSupabase } from '../../../server/lib/syncNotionToSupabase.js';
+import { getVisaBySlug, type Visa } from '../../../server/lib/getVisa.js';
 
-interface Visa {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content: string;
-  last_edited?: string;
-  updated_at?: string;
+// SSR: Get visa dynamically based on slug
+const slug = Astro.params.slug;
+const lang = 'en';
+
+if (!slug) {
+  return Astro.redirect('/en/visas');
 }
 
-export async function getStaticPaths() {
-  const visas = await getVisasFromSupabase('en') as Visa[];
-  
-  return visas.map((visa: Visa) => {
-    const slug = visa.slug;
-    if (!slug) {
-      return null;
-    }
-    
-    return {
-      params: { slug },
-      props: { visa }
-    };
-  }).filter(Boolean);
-}
-
-const { visa } = Astro.props as { visa: Visa };
+// Fetch visa from Supabase
+const visa = await getVisaBySlug(slug, lang);
 
 if (!visa) {
-  throw new Error('Visa not found');
+  console.warn(`[visas/en] Visa not found for slug: ${slug}`);
+  return Astro.redirect('/en/visas');
 }
 
 const title = visa.title;
@@ -46,10 +30,27 @@ const menuData = await getAllContentData('en');
 // Convert content to markdown if needed
 const content = visa.content || '';
 
-// Markdown to HTML conversion (same as CLKR)
+// Markdown to HTML conversion with improved image handling
 function markdownToHtml(markdown: string): string {
   if (!markdown) return '';
-  return markdown
+  
+  // Process images FIRST, before paragraphs, to avoid wrapping them in <p> tags
+  let processed = markdown
+    // Images with proper attributes and responsive handling - PROCESS FIRST
+    // Standard markdown format: ![alt](url)
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+      const altText = alt || 'Image';
+      let imageSrc = src.trim();
+      // Ensure URLs are properly formatted
+      if (!imageSrc.startsWith('http') && !imageSrc.startsWith('/') && !imageSrc.startsWith('data:')) {
+        imageSrc = `/${imageSrc}`;
+      }
+      // Return image with a placeholder to identify it later
+      return `__IMAGE_PLACEHOLDER__${imageSrc}__ALT__${altText}__END__`;
+    });
+  
+  // Now process the rest of markdown
+  processed = processed
     // Headings with ID generation
     .replace(/^### (.*$)/gim, (_, text) => {
       const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -71,20 +72,28 @@ function markdownToHtml(markdown: string): string {
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     // Links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-    // Images
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
     // Lists
     .replace(/^\* (.*$)/gim, '<li>$1</li>')
     .replace(/^- (.*$)/gim, '<li>$1</li>')
-    // Paragraphs (simplified)
+    // Paragraphs - exclude images, headings, lists, code blocks
     .replace(/\n\n+/g, '</p><p>')
-    .replace(/^(?!<[h|li|pre|p]).*$/gim, '<p>$&</p>')
+    .replace(/^(?!<[h|li|pre|p]|__IMAGE_PLACEHOLDER__).*$/gim, '<p>$&</p>')
     // Clean up
     .replace(/<p><\/p>/g, '')
     .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
     .replace(/<p>(<li>.*<\/li>)<\/p>/g, '<ul>$1</ul>')
     .replace(/<ul><ul>/g, '<ul>')
     .replace(/<\/ul><\/ul>/g, '</ul>');
+  
+  // Now replace image placeholders with actual img tags (outside of paragraphs)
+  processed = processed.replace(/__IMAGE_PLACEHOLDER__([^_]+)__ALT__([^_]+)__END__/g, (match, src, alt) => {
+    return `<img src="${src}" alt="${alt}" loading="lazy" class="max-w-full h-auto rounded-lg shadow-md mx-auto block my-4" onerror="console.error('Failed to load image:', '${src}'); this.style.display='none';">`;
+  });
+  
+  // Remove any <p> tags that might have wrapped images
+  processed = processed.replace(/<p>(<img[^>]*>)<\/p>/g, '$1');
+  
+  return processed;
 }
 
 const htmlContent = markdownToHtml(content);
