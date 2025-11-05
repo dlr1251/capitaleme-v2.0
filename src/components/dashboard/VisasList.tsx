@@ -207,6 +207,7 @@ export default function VisasList() {
         onUnpublish={handleUnpublish}
         onArchive={handleArchive}
         onDelete={handleDelete}
+        onRefresh={loadItems}
         loading={loading}
       />
 

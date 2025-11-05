@@ -116,6 +116,7 @@ export default function GuidesList() {
         onUnpublish={handleUnpublish}
         onArchive={handleArchive}
         onDelete={handleDelete}
+        onRefresh={loadItems}
         loading={loading}
       />
 

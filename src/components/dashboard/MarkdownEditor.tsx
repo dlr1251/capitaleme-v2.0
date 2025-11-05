@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getAuthToken } from '../../lib/dashboard/auth-token.js';
 import {
   BoldIcon,
@@ -246,7 +247,9 @@ export default function MarkdownEditor({
               Uploading file...
             </div>
           )}
-          <ReactMarkdown>{value || '*No content*'}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {value || '*No content*'}
+          </ReactMarkdown>
         </div>
       ) : (
         <div className="relative">

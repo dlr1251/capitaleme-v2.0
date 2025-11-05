@@ -187,7 +187,7 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6">
             {content.title}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            <span className="text-secondary">
               {content.subtitle}
             </span>
           </h2>
@@ -265,9 +265,9 @@ const HomeVisaAssistanceSection = ({ visas = [], guides = [], lang = 'en' }: Hom
             </div>
             
             <div className="text-left mt-12">
-              <a 
+              <a
                 href={`/${lang}/visas`}
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold text-lg group"
+                className="inline-flex items-center px-8 py-4 bg-primary text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold text-lg group"
               >
                 {content.discoverAll}
                 <ArrowTopRightOnSquareIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

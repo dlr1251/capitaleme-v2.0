@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import crypto from 'node:crypto';
 import { requireAuth } from '../../../lib/middleware/auth.js';
 import { supabase } from '../../../lib/supabase.server.js';
 import { calculateReadingTimeFromText } from '../../../utils/readingTime.js';
@@ -92,7 +93,6 @@ export const POST: APIRoute = requireAuth(async (context, user) => {
       module,
       lang,
       published = false,
-      featured = false,
     } = body;
 
     if (!title || !slug || !lang) {
@@ -116,9 +116,11 @@ export const POST: APIRoute = requireAuth(async (context, user) => {
       module,
       lang,
       published: published || false,
-      featured: featured || false,
       reading_time,
       archived: false,
+      notion_id: body?.notion_id && typeof body.notion_id === 'string' && body.notion_id.trim() !== ''
+        ? body.notion_id
+        : crypto.randomUUID(),
       last_edited: new Date().toISOString(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -186,6 +188,11 @@ export const PUT: APIRoute = requireAuth(async (context, user) => {
       updated_at: new Date().toISOString(),
       last_edited: new Date().toISOString(),
     };
+
+    // Ensure we don't try to update non-existent columns
+    if ('featured' in updateData) {
+      delete updateData.featured;
+    }
 
     // Recalculate reading time if content changed
     if (updateData.content) {

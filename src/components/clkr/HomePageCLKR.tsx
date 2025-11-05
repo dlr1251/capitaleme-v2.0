@@ -240,7 +240,7 @@ const HomePageCLKR: React.FC<HomePageCLKRProps> = ({ lang = 'en', clkrServices =
             {lang === 'en' ? 'AI-Generated & Attorney-Reviewed' : 'Generado por IA y Revisado por Abogados'}
           </div>
           <h2 className="text-4xl font-bold text-primary mb-4">
-            {lang === 'en' ? 'Colombian Legal Repository' : 'Repositorio Legal Colombiano'}
+            {lang === 'en' ? 'CLKR - Colombian Legal Knowledge Repository' : 'CLKR - Repositorio de Conocimiento Legal Colombiano'}
           </h2>
           <p className="text-xl text-gray-600">
             {lang === 'en' 

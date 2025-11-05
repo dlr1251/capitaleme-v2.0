@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getAuthToken } from '../../lib/dashboard/auth-token.js';
 import { Input } from '../ui/Input.js';
 import { generateSlug } from '../../lib/dashboard/utils.js';
 import { validateTitle, validateSlug, validateLang } from '../../lib/dashboard/validations.js';
@@ -16,6 +17,7 @@ interface ContentFormProps {
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
+  enableGrok?: boolean;
 }
 
 export default function ContentForm({
@@ -23,6 +25,7 @@ export default function ContentForm({
   onSubmit,
   onCancel,
   loading = false,
+  enableGrok = false,
 }: ContentFormProps) {
   console.log('[ContentForm] ========== COMPONENT RENDERED ==========');
   console.log('[ContentForm] ContentForm component rendering');
@@ -43,6 +46,7 @@ export default function ContentForm({
   const [isSlugManual, setIsSlugManual] = useState(false);
   const [generalError, setGeneralError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   
   console.log('[ContentForm] Initial state:', {
     title,
@@ -185,6 +189,45 @@ export default function ContentForm({
     } finally {
       setIsSubmitting(false);
       console.log('[ContentForm] Submission process completed, isSubmitting set to false');
+    }
+  };
+
+  const handleGrokGenerate = async () => {
+    if (!enableGrok) return;
+    if (!title || title.trim().length === 0) {
+      setGeneralError('Please enter a title before generating a draft with Grok');
+      return;
+    }
+
+    try {
+      setGeneralError('');
+      setIsGenerating(true);
+      const token = await getAuthToken();
+
+      const res = await fetch('/api/dashboard/grok-generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Generation failed' }));
+        throw new Error(err.error || 'Generation failed');
+      }
+
+      const data = await res.json();
+      if (!data?.markdown) {
+        throw new Error('Empty response from generator');
+      }
+
+      setContent(data.markdown);
+    } catch (error: any) {
+      setGeneralError(error.message || 'Failed to generate with Grok');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -339,6 +382,18 @@ export default function ContentForm({
         >
           Cancel
         </button>
+        {enableGrok && (
+          <button
+            type="button"
+            onClick={handleGrokGenerate}
+            disabled={loading || isSubmitting || isGenerating}
+            title="Generates a complete Markdown draft using Grok based on the title."
+            className="px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:opacity-90"
+            style={{ backgroundColor: '#16345F' }}
+          >
+            {isGenerating ? 'Generating…' : 'Create draft with Grok'}
+          </button>
+        )}
         <button
           type="button"
           onClick={(e) => {
