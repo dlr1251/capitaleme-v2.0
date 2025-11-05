@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabaseClient } from '../lib/supabase-client.js';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -21,6 +21,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Track if we've already checked admin role for the current user
+  const adminCheckedForUser = useRef<string | null>(null);
+  const initialSessionChecked = useRef(false);
+  const isInitializing = useRef(false); // Prevent multiple simultaneous initializations
 
   console.log('[useAuth] Initial state:', {
     hasUser: !!user,
@@ -30,16 +35,82 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
+    // Prevent multiple simultaneous initializations, but allow re-initialization after SIGNED_IN
+    if (isInitializing.current && !initialSessionChecked.current) {
+      console.log('[useAuth] Already initializing, skipping duplicate useEffect');
+      return;
+    }
+    
+    // If we already have a session and user, and admin is checked, don't re-initialize
+    if (session && user && initialSessionChecked.current && adminCheckedForUser.current === user.id) {
+      console.log('[useAuth] Session and user already exist with admin checked, skipping re-initialization');
+      // Ensure loading is false if we have everything
+      if (loading) {
+        setLoading(false);
+      }
+      return;
+    }
+    
+    isInitializing.current = true;
     console.log('[useAuth] useEffect triggered - starting auth check');
     console.log('[useAuth] Getting initial session from Supabase...');
     
-    // Get initial session
+    // Get initial session - NEVER clear session here unless explicitly logged out
     supabaseClient.auth.getSession().then(({ data: { session }, error }) => {
       console.log('[useAuth] getSession completed');
+      
       if (error) {
         console.error('[useAuth] Error getting session:', error);
-        console.log('[useAuth] Setting loading to false due to error');
-        setLoading(false);
+        // Don't clear session on error - try to recover first
+        // Only clear if it's a truly unrecoverable error
+        const isUnrecoverable = 
+          error.message?.includes('refresh_token_not_found') ||
+          error.message?.includes('refresh token expired') ||
+          error.message?.includes('Invalid refresh token') ||
+          error.code === 'invalid_refresh_token';
+        
+        if (isUnrecoverable) {
+          console.log('[useAuth] Unrecoverable session error - clearing session');
+          setSession(null);
+          setUser(null);
+          setIsAdmin(false);
+          setLoading(false);
+          adminCheckedForUser.current = null;
+        } else {
+          // Temporary error - try to refresh session
+          console.log('[useAuth] Temporary session error - attempting recovery...');
+          supabaseClient.auth.refreshSession().then(({ data: { session: refreshedSession }, error: refreshError }) => {
+            if (!refreshError && refreshedSession) {
+              console.log('[useAuth] Session recovered after error');
+              setSession(refreshedSession);
+              setUser(refreshedSession.user ?? null);
+              initialSessionChecked.current = true;
+              if (refreshedSession.user) {
+                const userId = refreshedSession.user.id;
+                adminCheckedForUser.current = userId;
+                checkAdminRole(userId);
+              } else {
+                setLoading(false);
+              }
+            } else {
+              // Even refresh failed, but only clear if truly expired
+              const isTrulyExpired = refreshError?.message?.includes('refresh_token_not_found') ||
+                refreshError?.message?.includes('refresh token expired');
+              if (isTrulyExpired) {
+                console.log('[useAuth] Refresh token expired - clearing session');
+                setSession(null);
+                setUser(null);
+                setIsAdmin(false);
+                setLoading(false);
+                adminCheckedForUser.current = null;
+              } else {
+                // Keep existing state, just set loading to false
+                console.log('[useAuth] Could not recover session, but keeping existing state');
+                setLoading(false);
+              }
+            }
+          });
+        }
         return;
       }
       
@@ -49,15 +120,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userId: session?.user?.id,
         userEmail: session?.user?.email,
       });
+      
+      // Always update session state - even if null, it's the current state
       setSession(session);
       setUser(session?.user ?? null);
+      initialSessionChecked.current = true;
+      
       if (session?.user) {
         console.log('[useAuth] User found, checking admin role - loading will remain true');
-        checkAdminRole(session.user.id);
+        const userId = session.user.id;
+        adminCheckedForUser.current = userId; // Set before check to prevent duplicates
+        checkAdminRole(userId);
       } else {
-        console.log('[useAuth] No user found, setting loading to false');
+        // No session - this is normal if user hasn't logged in
+        // Only clear state if we're sure there's no session in storage
+        console.log('[useAuth] No session found - this is normal if user is not logged in');
+        // Don't clear existing session state if user was already logged in
+        // Only set loading to false
         setLoading(false);
+        // Only clear admin check tracker if we're sure there's no user
+        if (!session && !user) {
+          adminCheckedForUser.current = null;
+        }
       }
+      
+      isInitializing.current = false;
     });
 
     // Listen for auth changes with better token refresh handling
@@ -73,15 +160,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setIsAdmin(false);
         setLoading(false);
+        adminCheckedForUser.current = null;
+        return;
+      }
+      
+      // Ignore INITIAL_SESSION event - we already handled it in the useEffect above
+      // But ensure state is synced in case useEffect hasn't completed yet
+      if (event === 'INITIAL_SESSION') {
+        console.log('[useAuth] INITIAL_SESSION event - syncing state (already handled in useEffect)');
+        // Sync state if session exists, but don't re-check admin role unless needed
+        if (session?.user) {
+          const userId = session.user.id;
+          
+          // Update session and user state
+          setSession(session);
+          setUser(session.user);
+          initialSessionChecked.current = true;
+          
+          // Only check admin role if we haven't checked it yet
+          // This handles the case where INITIAL_SESSION fires before useEffect completes
+          if (adminCheckedForUser.current !== userId) {
+            console.log('[useAuth] Admin role not checked yet for INITIAL_SESSION, checking now...');
+            adminCheckedForUser.current = userId;
+            checkAdminRole(userId);
+          } else {
+            console.log('[useAuth] Admin role already checked for this user, skipping');
+          }
+        } else if (!session) {
+          // No session in INITIAL_SESSION - only clear if we're sure there's no session
+          // Don't aggressively clear - user might just not be logged in
+          console.log('[useAuth] No session in INITIAL_SESSION - user not logged in');
+          // Only update if state is different to avoid unnecessary re-renders
+          setSession((prev) => prev !== null ? null : prev);
+          setUser((prev) => prev !== null ? null : prev);
+          setIsAdmin(false);
+          setLoading(false);
+          adminCheckedForUser.current = null;
+        }
         return;
       }
       
       if (event === 'TOKEN_REFRESHED') {
         console.log('[useAuth] Token refreshed successfully');
-        // Token was refreshed, update session
+        // Token was refreshed, update session but don't re-check admin role
+        // This prevents unnecessary database queries and potential race conditions
         if (session) {
           setSession(session);
           setUser(session.user ?? null);
+          // Keep current admin status - don't re-check
         }
         return;
       }
@@ -90,8 +216,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('[useAuth] User signed in or updated');
         setSession(session);
         setUser(session?.user ?? null);
+        // Reset initialization flag so useEffect can run if needed
+        isInitializing.current = false;
+        
         if (session?.user) {
+          // Reset admin check tracker for new user
+          adminCheckedForUser.current = null;
+          // Check admin role - this will set loading to false when complete
           await checkAdminRole(session.user.id);
+        } else {
+          // No user in session - set loading to false immediately
+          setLoading(false);
         }
         return;
       }
@@ -100,52 +235,100 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await checkAdminRole(session.user.id);
+        // Only check admin role if we haven't checked for this user yet
+        const userId = session.user.id;
+        if (adminCheckedForUser.current !== userId) {
+          await checkAdminRole(userId);
+        } else {
+          // Already checked for this user, just ensure loading is false
+          setLoading(false);
+        }
       } else {
         setIsAdmin(false);
         setLoading(false);
+        adminCheckedForUser.current = null;
       }
     });
     
-    // Set up periodic session refresh check (every 60 minutes)
+    // Set up periodic session refresh check (every 5 minutes)
     // This proactively refreshes tokens before they expire to prevent random logouts
+    // Access tokens typically expire in 1 hour, so checking every 5 minutes ensures we refresh in time
     let refreshInterval: NodeJS.Timeout | null = null;
+    let isRefreshing = false; // Prevent multiple simultaneous refreshes
+    
     if (typeof window !== 'undefined') {
       refreshInterval = setInterval(async () => {
-      try {
-        const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
-        if (currentSession) {
-          // Check if token is close to expiring (within 5 minutes)
+        // Skip if already refreshing
+        if (isRefreshing) {
+          console.log('[useAuth] Refresh already in progress, skipping...');
+          return;
+        }
+        
+        try {
+          const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
+          if (!currentSession) {
+            console.log('[useAuth] No session found during periodic check');
+            return;
+          }
+          
+          // Check if token is close to expiring (within 10 minutes)
           const expiresAt = currentSession.expires_at;
-          if (expiresAt) {
-            const expiresIn = expiresAt - Math.floor(Date.now() / 1000);
-            console.log('[useAuth] Token check - expires in:', expiresIn, 'seconds');
-            if (expiresIn < 300) { // Less than 5 minutes
-              console.log('[useAuth] Token expiring soon, refreshing proactively...');
+          if (!expiresAt) {
+            console.log('[useAuth] No expiration time found, skipping refresh');
+            return;
+          }
+          
+          const expiresIn = expiresAt - Math.floor(Date.now() / 1000);
+          console.log('[useAuth] Token check - expires in:', expiresIn, 'seconds');
+          
+          // Only refresh if token expires within 10 minutes
+          if (expiresIn < 600) {
+            isRefreshing = true;
+            console.log('[useAuth] Token expiring soon, refreshing proactively...');
+            
+            try {
               const { data: { session: refreshedSession }, error } = await supabaseClient.auth.refreshSession();
+              
               if (error) {
                 console.error('[useAuth] Error refreshing session:', error);
-                // If refresh fails, clear session to trigger re-login
-                if (error.message?.includes('refresh_token_not_found') || error.message?.includes('expired')) {
-                  console.log('[useAuth] Refresh token expired, clearing session');
+                // ONLY clear session if refresh token is TRULY expired/invalid
+                // NEVER clear on temporary errors, network issues, or other recoverable errors
+                const isTokenExpired = 
+                  error.message?.includes('refresh_token_not_found') || 
+                  error.message?.includes('refresh token expired') ||
+                  error.message?.includes('Invalid refresh token') ||
+                  error.code === 'invalid_refresh_token';
+                
+                if (isTokenExpired) {
+                  console.log('[useAuth] Refresh token expired - clearing session (ONLY when token truly expired)');
                   setSession(null);
                   setUser(null);
                   setIsAdmin(false);
+                  adminCheckedForUser.current = null;
+                } else {
+                  // Temporary error - KEEP existing session, don't clear anything
+                  console.warn('[useAuth] Temporary refresh error - KEEPING existing session:', error.message);
+                  // Don't touch session state at all - let Supabase's auto-refresh handle it
                 }
               } else if (refreshedSession) {
                 console.log('[useAuth] Session refreshed successfully');
-                setSession(refreshedSession);
-                setUser(refreshedSession.user ?? null);
+                // Don't manually update state here - let onAuthStateChange handle it
+                // This prevents race conditions and double updates
+              } else {
+                console.warn('[useAuth] Refresh succeeded but no session returned - keeping existing session');
+                // Don't clear - keep existing session
               }
+            } finally {
+              isRefreshing = false;
             }
+          } else {
+            console.log('[useAuth] Token still valid, no refresh needed');
           }
-        } else {
-          console.log('[useAuth] No session found during periodic check');
+        } catch (error) {
+          console.error('[useAuth] Error checking session:', error);
+          isRefreshing = false;
         }
-      } catch (error) {
-        console.error('[useAuth] Error checking session:', error);
-      }
-      }, 60 * 60 * 1000); // Check every 60 minutes
+      }, 5 * 60 * 1000); // Check every 5 minutes
     }
 
     return () => {
@@ -153,13 +336,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (refreshInterval) {
         clearInterval(refreshInterval);
       }
+      // Reset initialization flag when component unmounts
+      isInitializing.current = false;
     };
   }, []);
 
   async function checkAdminRole(userId: string) {
+    // Prevent duplicate checks for the same user, but allow if loading is still true (means we need to finish)
+    if (adminCheckedForUser.current === userId && !loading) {
+      console.log('[useAuth] Already checked admin role for user:', userId, '- skipping');
+      // Ensure loading is false
+      setLoading(false);
+      return;
+    }
+    
     try {
       console.log('[useAuth] ========== CHECKING ADMIN ROLE ==========');
       console.log('[useAuth] Checking admin role for user:', userId);
+      
+      // Mark as checked to prevent duplicates
+      adminCheckedForUser.current = userId;
       
       // Add timeout to prevent hanging (reduced to 3 seconds)
       const timeoutPromise = new Promise((_, reject) => {
@@ -177,13 +373,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         // Log error but don't block - allow user to proceed
-        console.warn('Error checking admin role (non-blocking):', {
+        console.warn('[useAuth] Error checking admin role (non-blocking):', {
           message: error.message,
           code: error.code,
         });
         // Default to false but don't block the app
         setIsAdmin(false);
         setLoading(false);
+        console.log('[useAuth] ========== ADMIN CHECK COMPLETE (error) ==========');
       } else if (data) {
         const isAdminUser = data.role === 'admin' || data.role === 'super_admin';
         console.log('[useAuth] Admin check result:', { role: data.role, isAdmin: isAdminUser });
@@ -211,23 +408,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signIn(email: string, password: string) {
     try {
-      console.log('Calling supabaseClient.auth.signInWithPassword...');
+      console.log('[useAuth] Calling supabaseClient.auth.signInWithPassword...');
       const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
       
-      console.log('Sign in response:', { data, error });
+      console.log('[useAuth] Sign in response:', { data, error });
       
       if (error) {
-        console.error('Supabase auth error:', error);
+        console.error('[useAuth] Supabase auth error:', error);
         return { error };
       }
       
-      // Session will be updated via onAuthStateChange listener
+      // Immediately get session and update state if available
+      // This ensures the state updates right away, not waiting for onAuthStateChange
+      if (data?.session) {
+        console.log('[useAuth] Session available immediately, updating state...');
+        setSession(data.session);
+        setUser(data.session.user ?? null);
+        isInitializing.current = false;
+        
+        if (data.session.user) {
+          // Reset admin check tracker for new user
+          adminCheckedForUser.current = null;
+          // Check admin role - this will set loading to false when complete
+          checkAdminRole(data.session.user.id);
+        } else {
+          setLoading(false);
+        }
+      }
+      
+      // Session will also be updated via onAuthStateChange listener (backup)
       return { error: null };
     } catch (err: any) {
-      console.error('Exception in signIn:', err);
+      console.error('[useAuth] Exception in signIn:', err);
       return { error: err };
     }
   }

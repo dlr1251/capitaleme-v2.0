@@ -108,35 +108,47 @@ export const POST: APIRoute = requireAuth(async (context, user) => {
     // Calculate reading time from content
     const reading_time = content ? calculateReadingTimeFromText(content) : null;
 
+    const insertData = {
+      title,
+      slug,
+      description,
+      content,
+      module,
+      lang,
+      published: published || false,
+      featured: featured || false,
+      reading_time,
+      archived: false,
+      last_edited: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log('[API:clkr] POST - Inserting CLKR article:', { title, slug, lang, published });
+
     const { data, error } = await supabase
       .from('clkr_articles')
-      .insert({
-        title,
-        slug,
-        description,
-        content,
-        module,
-        lang,
-        published: published || false,
-        featured: featured || false,
-        reading_time,
-        archived: false,
-        last_edited: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
+      console.error('[API:clkr] POST - Error inserting CLKR article:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
       return new Response(
-        JSON.stringify({ error: error.message }),
+        JSON.stringify({ error: error.message || 'Failed to create CLKR article' }),
         {
           status: 500,
           headers: { 'Content-Type': 'application/json' },
         }
       );
     }
+
+    console.log('[API:clkr] POST - CLKR article created successfully:', data?.id);
 
     return new Response(JSON.stringify({ data }), {
       status: 201,

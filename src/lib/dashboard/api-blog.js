@@ -56,7 +56,10 @@ export async function getBlogPostById(id) {
 
 export async function createBlogPost(postData) {
   try {
+    console.log('[api-blog] createBlogPost called with:', { title: postData.title, slug: postData.slug, published: postData.published });
     const token = await getAuthToken();
+    console.log('[api-blog] Got auth token, making POST request');
+    
     const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
@@ -66,15 +69,27 @@ export async function createBlogPost(postData) {
       body: JSON.stringify(postData),
     });
 
+    console.log('[api-blog] Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create blog post');
+      let errorMessage = 'Failed to create blog post';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+        console.error('[api-blog] API error:', errorMessage);
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        console.error('[api-blog] Failed to parse error response:', e);
+      }
+      return { data: null, error: errorMessage };
     }
 
     const result = await response.json();
+    console.log('[api-blog] Blog post created successfully:', result.data?.id);
     return { data: result.data, error: null };
   } catch (error) {
-    return { data: null, error: error.message };
+    console.error('[api-blog] Exception creating blog post:', error);
+    return { data: null, error: error.message || 'Failed to create blog post' };
   }
 }
 

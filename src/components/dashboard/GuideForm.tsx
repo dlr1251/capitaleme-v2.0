@@ -15,6 +15,15 @@ export default function GuideForm({
   onCancel,
   loading,
 }: GuideFormProps) {
+  console.log('[GuideForm] ========== COMPONENT RENDERED ==========');
+  console.log('[GuideForm] GuideForm component rendering');
+  console.log('[GuideForm] Props:', {
+    hasInitialData: !!initialData,
+    hasOnSubmit: typeof onSubmit === 'function',
+    hasOnCancel: typeof onCancel === 'function',
+    loading,
+  });
+  
   const [additionalData, setAdditionalData] = useState({
     category: initialData?.category || '',
     author: initialData?.author || 'danielluque',
@@ -22,14 +31,20 @@ export default function GuideForm({
   });
 
   const handleSubmit = async (baseData: any) => {
-    await onSubmit({
+    console.log('[GuideForm] handleSubmit called with baseData:', baseData);
+    const combinedData = {
       ...baseData,
       ...additionalData,
-    });
+    };
+    console.log('[GuideForm] Calling onSubmit with combined data:', combinedData);
+    await onSubmit(combinedData);
   };
 
+  console.log('[GuideForm] Rendering JSX...');
+  
   return (
     <div className="space-y-6">
+      {console.log('[GuideForm] About to render ContentForm component')}
       <ContentForm
         initialData={initialData}
         onSubmit={handleSubmit}

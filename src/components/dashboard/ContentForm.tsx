@@ -24,6 +24,15 @@ export default function ContentForm({
   onCancel,
   loading = false,
 }: ContentFormProps) {
+  console.log('[ContentForm] ========== COMPONENT RENDERED ==========');
+  console.log('[ContentForm] ContentForm component rendering');
+  console.log('[ContentForm] Props:', { 
+    hasInitialData: !!initialData, 
+    loading, 
+    hasOnSubmit: typeof onSubmit === 'function',
+    hasOnCancel: typeof onCancel === 'function',
+  });
+  
   const [title, setTitle] = useState(initialData?.title || '');
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -32,6 +41,18 @@ export default function ContentForm({
   const [status, setStatus] = useState<'draft' | 'published'>(initialData?.published ? 'published' : 'draft');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSlugManual, setIsSlugManual] = useState(false);
+  const [generalError, setGeneralError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  console.log('[ContentForm] Initial state:', {
+    title,
+    slug,
+    lang,
+    status,
+    hasContent: !!content,
+    loading,
+    isSubmitting,
+  });
 
   useEffect(() => {
     if (!isSlugManual && title) {
@@ -62,26 +83,118 @@ export default function ContentForm({
       newErrors.lang = langValidation.error || '';
     }
 
+    // Content is only required when publishing, not for drafts
+    if (status === 'published' && (!content || content.trim().length === 0)) {
+      newErrors.content = 'Content is required for published posts';
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const handleSubmit = async () => {
+    console.log('[ContentForm] ========== HANDLE SUBMIT CALLED ==========');
+    console.log('[ContentForm] handleSubmit function executed');
+    console.log('[ContentForm] Form submission started');
+    console.log('[ContentForm] Current status:', status);
+    console.log('[ContentForm] Will be published:', status === 'published');
+    console.log('[ContentForm] Button was:', status === 'published' ? 'Save & Publish' : 'Save as Draft');
+    console.log('[ContentForm] Current loading state:', loading);
+    console.log('[ContentForm] Current isSubmitting state:', isSubmitting);
+    
+    // Prevent multiple simultaneous submissions
+    if (isSubmitting || loading) {
+      console.warn('[ContentForm] Already submitting, ignoring click');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setGeneralError('');
+    
+    try {
+      // Validate first and capture errors
+      console.log('[ContentForm] Starting validation...');
+      const validation = validate();
+      console.log('[ContentForm] Validation result:', {
+        isValid: validation.isValid,
+        errors: validation.errors,
+        errorCount: Object.keys(validation.errors).length,
+      });
+      
+      if (!validation.isValid) {
+        console.warn('[ContentForm] Validation failed:', validation.errors);
+        const errorFields = Object.keys(validation.errors);
+        if (errorFields.length > 0) {
+          const errorMessages = errorFields.map(field => {
+            const fieldName = field === 'title' ? 'Title' : 
+                             field === 'slug' ? 'Slug' : 
+                             field === 'lang' ? 'Language' : 
+                             field === 'content' ? 'Content' : field;
+            return `${fieldName}: ${validation.errors[field]}`;
+          }).join(', ');
+          console.error('[ContentForm] Setting general error:', errorMessages);
+          setGeneralError(`Please fix the following errors: ${errorMessages}`);
+        } else {
+          const requiredFields = status === 'published' 
+            ? 'Title, Slug, Language, and Content are required' 
+            : 'Title, Slug, and Language are required (Content is optional for drafts)';
+          console.error('[ContentForm] Setting general error:', requiredFields);
+          setGeneralError(`Please fill in all required fields: ${requiredFields}`);
+        }
+        console.log('[ContentForm] Validation failed, stopping submission');
+        setIsSubmitting(false);
+        return;
+      }
 
-    await onSubmit({
-      title,
-      slug,
-      description,
-      content,
-      lang,
-      published: status === 'published',
-    });
+      console.log('[ContentForm] Validation passed, preparing submit data...');
+      
+      const submitData = {
+        title,
+        slug,
+        description,
+        content,
+        lang,
+        published: status === 'published',
+      };
+      
+      console.log('[ContentForm] ========== SUBMITTING DATA ==========');
+      console.log('[ContentForm] Submit data:', {
+        title,
+        slug,
+        lang,
+        status,
+        published: submitData.published,
+        hasDescription: !!description,
+        descriptionLength: description?.length || 0,
+        hasContent: !!content,
+        contentLength: content?.length || 0,
+        fullData: submitData,
+      });
+      
+      console.log('[ContentForm] Calling onSubmit callback...');
+      await onSubmit(submitData);
+      console.log('[ContentForm] onSubmit callback completed successfully');
+    } catch (error: any) {
+      console.error('[ContentForm] ========== SUBMIT ERROR ==========');
+      console.error('[ContentForm] Error in handleSubmit:', error);
+      console.error('[ContentForm] Error message:', error.message);
+      console.error('[ContentForm] Error stack:', error.stack);
+      const errorMessage = error.message || 'Failed to save. Please try again.';
+      setGeneralError(errorMessage);
+      // Don't re-throw - handle it here to prevent page reload
+    } finally {
+      setIsSubmitting(false);
+      console.log('[ContentForm] Submission process completed, isSubmitting set to false');
+    }
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+    <form onSubmit={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('[ContentForm] Form onSubmit prevented - using button onClick instead');
+      return false;
+    }} className="space-y-6">
       {/* Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -193,15 +306,29 @@ export default function ContentForm({
       {/* Content */}
       <div>
         <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-          Content *
+          Content {status === 'published' ? '*' : ''}
         </label>
-        <MarkdownEditor
-          value={content}
-          onChange={setContent}
-          placeholder="Write your content in Markdown..."
-        />
-        <p className="mt-1 text-xs text-gray-500">Markdown supported. Use the toolbar to format text and upload images/files.</p>
+        <div className={errors.content ? 'border border-red-300 rounded-lg' : ''}>
+          <MarkdownEditor
+            value={content}
+            onChange={setContent}
+            placeholder="Write your content in Markdown..."
+          />
+        </div>
+        {errors.content && <p className="mt-1 text-sm text-red-600">{errors.content}</p>}
+        <p className="mt-1 text-xs text-gray-500">
+          {status === 'published' 
+            ? 'Content is required for published posts. Markdown supported. Use the toolbar to format text and upload images/files.'
+            : 'Markdown supported. Use the toolbar to format text and upload images/files. Content can be added later for drafts.'}
+        </p>
       </div>
+
+      {/* General Error Message */}
+      {generalError && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-800">{generalError}</p>
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
@@ -214,12 +341,45 @@ export default function ContentForm({
         </button>
         <button
           type="button"
-          onClick={handleSubmit}
-          disabled={loading}
-          className="px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 transition-all shadow-sm hover:opacity-90"
+          onClick={(e) => {
+            console.log('[ContentForm] ========== BUTTON CLICKED ==========');
+            console.log('[ContentForm] Button clicked event fired');
+            console.log('[ContentForm] Event details:', {
+              type: e.type,
+              target: e.target,
+              currentTarget: e.currentTarget,
+            });
+            
+            // Prevent any default behavior
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[ContentForm] Event prevented and stopped');
+            
+            console.log('[ContentForm] Button type:', status === 'published' ? 'Save & Publish' : 'Save as Draft');
+            console.log('[ContentForm] Current form state:', {
+              title,
+              slug,
+              lang,
+              status,
+              hasContent: !!content,
+              contentLength: content?.length || 0,
+              loading,
+              isSubmitting,
+              disabled: loading || isSubmitting,
+            });
+            console.log('[ContentForm] Validation errors:', errors);
+            console.log('[ContentForm] Calling handleSubmit...');
+            
+            // Call handleSubmit (it's async but we don't await to prevent blocking)
+            handleSubmit().catch((error) => {
+              console.error('[ContentForm] Unhandled error in button onClick:', error);
+            });
+          }}
+          disabled={loading || isSubmitting}
+          className="px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:opacity-90"
           style={{ backgroundColor: status === 'published' ? '#16345F' : '#6B7280' }}
         >
-          {loading 
+          {(loading || isSubmitting)
             ? (status === 'published' ? 'Publishing...' : 'Saving...') 
             : (status === 'published' ? 'Save & Publish' : 'Save as Draft')}
         </button>

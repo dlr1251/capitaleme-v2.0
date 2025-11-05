@@ -55,7 +55,10 @@ export async function getGuideById(id) {
 
 export async function createGuide(guideData) {
   try {
+    console.log('[api-guides] createGuide called with:', { title: guideData.title, slug: guideData.slug, published: guideData.published });
     const token = await getAuthToken();
+    console.log('[api-guides] Got auth token, making POST request');
+    
     const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
@@ -65,15 +68,27 @@ export async function createGuide(guideData) {
       body: JSON.stringify(guideData),
     });
 
+    console.log('[api-guides] Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create guide');
+      let errorMessage = 'Failed to create guide';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+        console.error('[api-guides] API error:', errorMessage);
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        console.error('[api-guides] Failed to parse error response:', e);
+      }
+      return { data: null, error: errorMessage };
     }
 
     const result = await response.json();
+    console.log('[api-guides] Guide created successfully:', result.data?.id);
     return { data: result.data, error: null };
   } catch (error) {
-    return { data: null, error: error.message };
+    console.error('[api-guides] Exception creating guide:', error);
+    return { data: null, error: error.message || 'Failed to create guide' };
   }
 }
 

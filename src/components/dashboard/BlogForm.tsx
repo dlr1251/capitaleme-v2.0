@@ -15,6 +15,15 @@ export default function BlogForm({
   onCancel,
   loading,
 }: BlogFormProps) {
+  console.log('[BlogForm] ========== COMPONENT RENDERED ==========');
+  console.log('[BlogForm] BlogForm component rendering');
+  console.log('[BlogForm] Props:', {
+    hasInitialData: !!initialData,
+    hasOnSubmit: typeof onSubmit === 'function',
+    hasOnCancel: typeof onCancel === 'function',
+    loading,
+  });
+  
   const [additionalData, setAdditionalData] = useState({
     category: initialData?.category || '',
     author: initialData?.author || 'danielluque',
@@ -24,15 +33,21 @@ export default function BlogForm({
   });
 
   const handleSubmit = async (baseData: any) => {
-    await onSubmit({
+    console.log('[BlogForm] handleSubmit called with baseData:', baseData);
+    const combinedData = {
       ...baseData,
       ...additionalData,
       pub_date: additionalData.pub_date ? new Date(additionalData.pub_date).toISOString() : null,
-    });
+    };
+    console.log('[BlogForm] Calling onSubmit with combined data:', combinedData);
+    await onSubmit(combinedData);
   };
 
+  console.log('[BlogForm] Rendering JSX...');
+  
   return (
     <div className="space-y-6">
+      {console.log('[BlogForm] About to render ContentForm component')}
       <ContentForm
         initialData={initialData}
         onSubmit={handleSubmit}

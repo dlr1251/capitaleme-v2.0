@@ -15,20 +15,35 @@ export default function CLKRForm({
   onCancel,
   loading,
 }: CLKRFormProps) {
+  console.log('[CLKRForm] ========== COMPONENT RENDERED ==========');
+  console.log('[CLKRForm] CLKRForm component rendering');
+  console.log('[CLKRForm] Props:', {
+    hasInitialData: !!initialData,
+    hasOnSubmit: typeof onSubmit === 'function',
+    hasOnCancel: typeof onCancel === 'function',
+    loading,
+  });
+  
   const [additionalData, setAdditionalData] = useState({
     module: initialData?.module || '',
     featured: initialData?.featured || false,
   });
 
   const handleSubmit = async (baseData: any) => {
-    await onSubmit({
+    console.log('[CLKRForm] handleSubmit called with baseData:', baseData);
+    const combinedData = {
       ...baseData,
       ...additionalData,
-    });
+    };
+    console.log('[CLKRForm] Calling onSubmit with combined data:', combinedData);
+    await onSubmit(combinedData);
   };
 
+  console.log('[CLKRForm] Rendering JSX...');
+  
   return (
     <div className="space-y-6">
+      {console.log('[CLKRForm] About to render ContentForm component')}
       <ContentForm
         initialData={initialData}
         onSubmit={handleSubmit}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth.js';
 
 export default function LoginForm() {
@@ -6,7 +6,37 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, loading: authLoading, isAdmin } = useAuth();
+  
+  // Track if we just logged in to trigger redirect
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
+  
+  // Redirect to dashboard once auth is ready after login
+  useEffect(() => {
+    console.log('[LoginForm] Auth state check:', { 
+      hasUser: !!user, 
+      authLoading, 
+      isAdmin, 
+      justLoggedIn 
+    });
+    
+    if (user && !authLoading && isAdmin && justLoggedIn) {
+      console.log('[LoginForm] User authenticated and admin verified, redirecting...');
+      window.location.href = '/dashboard/admin';
+    }
+  }, [user, authLoading, isAdmin, justLoggedIn]);
+  
+  // Fallback: redirect after 3 seconds if we have user but admin check is taking too long
+  useEffect(() => {
+    if (justLoggedIn && user && !isAdmin) {
+      const timeout = setTimeout(() => {
+        console.log('[LoginForm] Fallback: Redirecting after timeout (admin check may be slow)...');
+        window.location.href = '/dashboard/admin';
+      }, 3000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [justLoggedIn, user, isAdmin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,11 +54,10 @@ export default function LoginForm() {
         setError(errorMessage);
         setLoading(false);
       } else {
-        console.log('Sign in successful, redirecting...');
-        // Wait a bit for session to be set, then redirect
-        setTimeout(() => {
-          window.location.href = '/dashboard/admin';
-        }, 1000);
+        console.log('[LoginForm] Sign in successful - waiting for auth state to update...');
+        setJustLoggedIn(true);
+        // Don't redirect here - let the useEffect handle it once auth state is ready
+        // This ensures the session and admin check are complete before redirecting
       }
     } catch (err: any) {
       console.error('Sign in exception:', err);

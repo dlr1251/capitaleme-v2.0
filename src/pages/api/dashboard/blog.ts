@@ -107,37 +107,49 @@ export const POST: APIRoute = requireAuth(async (context, user) => {
       );
     }
 
+    const insertData = {
+      title,
+      slug,
+      description,
+      content,
+      category,
+      author,
+      lang,
+      pub_date: pub_date || (published ? new Date().toISOString() : null),
+      image,
+      published: published || false,
+      featured: featured || false,
+      archived: false,
+      last_edited: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log('[API:blog] POST - Inserting blog post:', { title, slug, lang, published });
+
     const { data, error } = await supabase
       .from('blog_posts')
-      .insert({
-        title,
-        slug,
-        description,
-        content,
-        category,
-        author,
-        lang,
-        pub_date: pub_date || (published ? new Date().toISOString() : null),
-        image,
-        published: published || false,
-        featured: featured || false,
-        archived: false,
-        last_edited: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
+      console.error('[API:blog] POST - Error inserting blog post:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
       return new Response(
-        JSON.stringify({ error: error.message }),
+        JSON.stringify({ error: error.message || 'Failed to create blog post' }),
         {
           status: 500,
           headers: { 'Content-Type': 'application/json' },
         }
       );
     }
+
+    console.log('[API:blog] POST - Blog post created successfully:', data?.id);
 
     return new Response(JSON.stringify({ data }), {
       status: 201,

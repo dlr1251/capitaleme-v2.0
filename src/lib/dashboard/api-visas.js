@@ -100,7 +100,10 @@ export async function getVisaById(id) {
 
 export async function createVisa(visaData) {
   try {
+    console.log('[api-visas] createVisa called with:', { title: visaData.title, slug: visaData.slug, published: visaData.published });
     const token = await getAuthToken();
+    console.log('[api-visas] Got auth token, making POST request');
+    
     const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
@@ -110,15 +113,27 @@ export async function createVisa(visaData) {
       body: JSON.stringify(visaData),
     });
 
+    console.log('[api-visas] Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create visa');
+      let errorMessage = 'Failed to create visa';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+        console.error('[api-visas] API error:', errorMessage);
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        console.error('[api-visas] Failed to parse error response:', e);
+      }
+      return { data: null, error: errorMessage };
     }
 
     const result = await response.json();
+    console.log('[api-visas] Visa created successfully:', result.data?.id);
     return { data: result.data, error: null };
   } catch (error) {
-    return { data: null, error: error.message };
+    console.error('[api-visas] Exception creating visa:', error);
+    return { data: null, error: error.message || 'Failed to create visa' };
   }
 }
 

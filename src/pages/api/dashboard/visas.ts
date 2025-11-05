@@ -199,44 +199,55 @@ export const POST: APIRoute = requireAuth(async (context, user) => {
       );
     }
 
+    const insertData = {
+      title,
+      slug,
+      description,
+      content,
+      category: category || 'Visitor',
+      country,
+      countries: countries || [],
+      is_popular: is_popular || false,
+      beneficiaries,
+      work_permit,
+      processing_time,
+      requirements,
+      emoji,
+      alcance,
+      duration,
+      lang,
+      published: published || false,
+      archived: false,
+      last_edited: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log('[API:visas] POST - Inserting visa:', { title, slug, lang, published });
+
     const { data, error } = await supabase
       .from('visas')
-      .insert({
-        title,
-        slug,
-        description,
-        content,
-        category,
-        country,
-        countries: countries || [],
-        is_popular: is_popular || false,
-        beneficiaries,
-        work_permit,
-        processing_time,
-        requirements,
-        emoji,
-        alcance,
-        duration,
-        lang,
-        category: category || 'Visitor',
-        published: published || false,
-        archived: false,
-        last_edited: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
+      console.error('[API:visas] POST - Error inserting visa:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
       return new Response(
-        JSON.stringify({ error: error.message }),
+        JSON.stringify({ error: error.message || 'Failed to create visa' }),
         {
           status: 500,
           headers: { 'Content-Type': 'application/json' },
         }
       );
     }
+
+    console.log('[API:visas] POST - Visa created successfully:', data?.id);
 
     return new Response(JSON.stringify({ data }), {
       status: 201,

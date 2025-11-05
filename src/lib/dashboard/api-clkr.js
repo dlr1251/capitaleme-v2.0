@@ -56,7 +56,10 @@ export async function getCLKRArticleById(id) {
 
 export async function createCLKRArticle(articleData) {
   try {
+    console.log('[api-clkr] createCLKRArticle called with:', { title: articleData.title, slug: articleData.slug, published: articleData.published });
     const token = await getAuthToken();
+    console.log('[api-clkr] Got auth token, making POST request');
+    
     const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
@@ -66,15 +69,27 @@ export async function createCLKRArticle(articleData) {
       body: JSON.stringify(articleData),
     });
 
+    console.log('[api-clkr] Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create CLKR article');
+      let errorMessage = 'Failed to create CLKR article';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+        console.error('[api-clkr] API error:', errorMessage);
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        console.error('[api-clkr] Failed to parse error response:', e);
+      }
+      return { data: null, error: errorMessage };
     }
 
     const result = await response.json();
+    console.log('[api-clkr] CLKR article created successfully:', result.data?.id);
     return { data: result.data, error: null };
   } catch (error) {
-    return { data: null, error: error.message };
+    console.error('[api-clkr] Exception creating CLKR article:', error);
+    return { data: null, error: error.message || 'Failed to create CLKR article' };
   }
 }
 
