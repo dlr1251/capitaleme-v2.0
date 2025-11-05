@@ -61,56 +61,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error('[useAuth] Error getting session:', error);
-        // Don't clear session on error - try to recover first
-        // Only clear if it's a truly unrecoverable error
-        const isUnrecoverable = 
-          error.message?.includes('refresh_token_not_found') ||
-          error.message?.includes('refresh token expired') ||
-          error.message?.includes('Invalid refresh token') ||
-          error.code === 'invalid_refresh_token';
-        
-        if (isUnrecoverable) {
-          console.log('[useAuth] Unrecoverable session error - clearing session');
-          setSession(null);
-          setUser(null);
-          setIsAdmin(false);
-          setLoading(false);
-          adminCheckedForUser.current = null;
-        } else {
-          // Temporary error - try to refresh session
-          console.log('[useAuth] Temporary session error - attempting recovery...');
-          supabaseClient.auth.refreshSession().then(({ data: { session: refreshedSession }, error: refreshError }) => {
-            if (!refreshError && refreshedSession) {
-              console.log('[useAuth] Session recovered after error');
-              setSession(refreshedSession);
-              setUser(refreshedSession.user ?? null);
-              initialSessionChecked.current = true;
-              if (refreshedSession.user) {
-                const userId = refreshedSession.user.id;
-                adminCheckedForUser.current = userId;
-                checkAdminRole(userId);
-              } else {
-                setLoading(false);
-              }
+        // NEVER clear session on error - always try to recover and keep existing state
+        // User must manually sign out to close session
+        console.log('[useAuth] Session error - attempting recovery without clearing state...');
+        supabaseClient.auth.refreshSession().then(({ data: { session: refreshedSession }, error: refreshError }) => {
+          if (!refreshError && refreshedSession) {
+            console.log('[useAuth] Session recovered after error');
+            setSession(refreshedSession);
+            setUser(refreshedSession.user ?? null);
+            initialSessionChecked.current = true;
+            if (refreshedSession.user) {
+              const userId = refreshedSession.user.id;
+              adminCheckedForUser.current = userId;
+              checkAdminRole(userId);
             } else {
-              // Even refresh failed, but only clear if truly expired
-              const isTrulyExpired = refreshError?.message?.includes('refresh_token_not_found') ||
-                refreshError?.message?.includes('refresh token expired');
-              if (isTrulyExpired) {
-                console.log('[useAuth] Refresh token expired - clearing session');
-                setSession(null);
-                setUser(null);
-                setIsAdmin(false);
-                setLoading(false);
-                adminCheckedForUser.current = null;
-              } else {
-                // Keep existing state, just set loading to false
-                console.log('[useAuth] Could not recover session, but keeping existing state');
-                setLoading(false);
-              }
+              setLoading(false);
             }
-          });
-        }
+          } else {
+            // Even refresh failed - but NEVER clear session automatically
+            // Keep existing state and let user manually sign out if needed
+            console.log('[useAuth] Could not recover session, but keeping existing state (user must manually sign out)');
+            setLoading(false);
+            // Don't clear session/user state - preserve it for user to decide
+          }
+        });
         return;
       }
       
@@ -154,8 +128,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('[useAuth] Auth state changed:', event, session?.user?.id);
       
       // Handle different auth events
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('[useAuth] User signed out or deleted');
+      // Only clear session on explicit SIGNED_OUT event (when user clicks sign out button)
+      // Never clear on other events automatically
+      if (event === 'SIGNED_OUT') {
+        console.log('[useAuth] User explicitly signed out via signOut()');
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+        setLoading(false);
+        adminCheckedForUser.current = null;
+        return;
+      }
+      
+      if (event === 'USER_DELETED') {
+        console.log('[useAuth] User deleted - clearing session');
         setSession(null);
         setUser(null);
         setIsAdmin(false);
@@ -253,6 +239,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set up periodic session refresh check (every 5 minutes)
     // This proactively refreshes tokens before they expire to prevent random logouts
     // Access tokens typically expire in 1 hour, so checking every 5 minutes ensures we refresh in time
+    // IMPORTANT: Never clear session automatically - only refresh tokens
     let refreshInterval: NodeJS.Timeout | null = null;
     let isRefreshing = false; // Prevent multiple simultaneous refreshes
     
@@ -267,7 +254,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const { data: { session: currentSession } } = await supabaseClient.auth.getSession();
           if (!currentSession) {
-            console.log('[useAuth] No session found during periodic check');
+            console.log('[useAuth] No session found during periodic check - keeping existing state');
+            // Don't clear state - user might have session in storage
             return;
           }
           
@@ -291,25 +279,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               
               if (error) {
                 console.error('[useAuth] Error refreshing session:', error);
-                // ONLY clear session if refresh token is TRULY expired/invalid
-                // NEVER clear on temporary errors, network issues, or other recoverable errors
-                const isTokenExpired = 
-                  error.message?.includes('refresh_token_not_found') || 
-                  error.message?.includes('refresh token expired') ||
-                  error.message?.includes('Invalid refresh token') ||
-                  error.code === 'invalid_refresh_token';
-                
-                if (isTokenExpired) {
-                  console.log('[useAuth] Refresh token expired - clearing session (ONLY when token truly expired)');
-                  setSession(null);
-                  setUser(null);
-                  setIsAdmin(false);
-                  adminCheckedForUser.current = null;
-                } else {
-                  // Temporary error - KEEP existing session, don't clear anything
-                  console.warn('[useAuth] Temporary refresh error - KEEPING existing session:', error.message);
-                  // Don't touch session state at all - let Supabase's auto-refresh handle it
-                }
+                // NEVER clear session automatically - only user can close session via signOut button
+                // Keep existing session state even on errors - let Supabase handle token refresh automatically
+                console.warn('[useAuth] Refresh error - KEEPING existing session (user must manually sign out):', error.message);
+                // Don't touch session state at all - let Supabase's auto-refresh handle it
               } else if (refreshedSession) {
                 console.log('[useAuth] Session refreshed successfully');
                 // Don't manually update state here - let onAuthStateChange handle it
@@ -326,6 +299,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (error) {
           console.error('[useAuth] Error checking session:', error);
+          // Never clear session on errors - keep existing state
           isRefreshing = false;
         }
       }, 5 * 60 * 1000); // Check every 5 minutes

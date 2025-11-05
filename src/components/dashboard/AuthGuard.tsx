@@ -26,9 +26,20 @@ export default function AuthGuard({ children, requireAdmin = true }: AuthGuardPr
     // Wait a bit longer before redirecting to allow admin check to complete
     if (loading) return;
     
+    // Only redirect if user is explicitly null (not just temporarily undefined during loading)
+    // Don't redirect on errors - let user manually sign out if needed
     if (!user) {
-      window.location.href = '/dashboard';
-      return;
+      // Only redirect if we're sure there's no session (after waiting a bit)
+      // This prevents redirecting during temporary auth state changes
+      const timeoutId = setTimeout(() => {
+        // Double-check user state before redirecting
+        if (!user) {
+          console.log('[AuthGuard] No user found after delay - redirecting to login');
+          window.location.href = '/dashboard';
+        }
+      }, 1000); // Give 1 second to allow auth state to stabilize
+      
+      return () => clearTimeout(timeoutId);
     }
     
     // If admin check is still loading or failed, give it more time

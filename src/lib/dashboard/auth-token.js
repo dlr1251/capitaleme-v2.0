@@ -100,29 +100,9 @@ export async function getAuthToken() {
     return session.access_token;
   } catch (error) {
     console.error('[auth-token] getAuthToken exception:', error);
-    // Only redirect if refresh token is truly expired/invalid
-    // Don't redirect on every error - let the calling code handle it gracefully
-    const errorMessage = error.message || '';
-    const shouldRedirect = errorMessage.includes('refresh_token_not_found') || 
-        errorMessage.includes('refresh token expired') ||
-        errorMessage.includes('Invalid refresh token') ||
-        errorMessage.includes('JWT expired');
-    
-    if (shouldRedirect) {
-      console.log('[auth-token] Token truly expired/invalid, will redirect to login');
-      // Use setTimeout with longer delay to avoid interrupting file uploads
-      if (typeof window !== 'undefined') {
-        setTimeout(() => {
-          // Only redirect if we're still in an error state
-          // Check session one more time before redirecting
-          supabaseClient.auth.getSession().then(({ data: { session } }) => {
-            if (!session) {
-              window.location.href = '/dashboard';
-            }
-          });
-        }, 500);
-      }
-    }
+    // NEVER redirect automatically - user must manually sign out to close session
+    // Let the calling code handle errors gracefully without forcing logouts
+    console.warn('[auth-token] Error getting token - but NOT redirecting (user must manually sign out):', error.message);
     // Always throw the error so calling code can handle it
     throw error;
   }
