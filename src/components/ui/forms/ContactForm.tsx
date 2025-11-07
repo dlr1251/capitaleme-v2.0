@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { EnvelopeIcon, PhoneIcon, UserIcon, PaperClipIcon, ChatBubbleLeftRightIcon, ListBulletIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 
 interface ContactFormProps {
@@ -13,13 +13,16 @@ export default function ContactForm({ lang = 'en', compact = false }: ContactFor
     phone: '',
     service: '',
     message: '',
-    accepted: false
+    accepted: false,
+    website: '' // Honeypot field
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const formStartTime = useRef<number>(Date.now());
+  const [formToken, setFormToken] = useState<string>('');
 
   const content = lang === 'es' ? {
     title: "Hablemos de tu caso",
@@ -121,6 +124,13 @@ export default function ContactForm({ lang = 'en', compact = false }: ContactFor
     "Other"
   ];
 
+  // Generate form token on mount
+  useEffect(() => {
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    setFormToken(token);
+    formStartTime.current = Date.now();
+  }, []);
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
@@ -166,6 +176,29 @@ export default function ContactForm({ lang = 'en', compact = false }: ContactFor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Honeypot check - if website field is filled, it's a bot
+    if (formData.website) {
+      console.warn('Bot detected via honeypot');
+      // Silently fail - don't let the bot know it was caught
+      return;
+    }
+
+    // Time-based validation - form should take at least 3 seconds to complete
+    const timeSpent = Date.now() - formStartTime.current;
+    const minTime = 3000; // 3 seconds
+    if (timeSpent < minTime) {
+      setSubmitError(lang === 'es' 
+        ? 'Por favor, tómate tu tiempo para completar el formulario.'
+        : 'Please take your time to complete the form.');
+      return;
+    }
+
+    // Token validation
+    if (!formToken) {
+      setSubmitError(content.error);
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
@@ -181,6 +214,8 @@ export default function ContactForm({ lang = 'en', compact = false }: ContactFor
       form.append('service', formData.service);
       form.append('message', formData.message);
       form.append('accepted', formData.accepted ? 'true' : 'false');
+      form.append('token', formToken);
+      form.append('timeSpent', timeSpent.toString());
       attachments.forEach((file) => {
         form.append('files', file, file.name);
       });
@@ -282,7 +317,20 @@ export default function ContactForm({ lang = 'en', compact = false }: ContactFor
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 lg:p-8" encType="multipart/form-data">
+        <form onSubmit={handleSubmit} className="p-6 lg:p-8 relative" encType="multipart/form-data">
+          {/* Honeypot Field - Hidden from users but visible to bots */}
+          <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none', visibility: 'hidden' }} aria-hidden="true">
+            <label htmlFor="website">Website (leave blank)</label>
+            <input
+              type="text"
+              id="website"
+              name="website"
+              value={formData.website}
+              onChange={handleInputChange}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
           <div className={`grid gap-6 ${compact ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-1'}`}>
             {/* Left Column */}
             <div className="space-y-6">
@@ -469,6 +517,7 @@ export default function ContactForm({ lang = 'en', compact = false }: ContactFor
                   <p className="text-red-500 text-sm mt-1">{errors.accepted}</p>
                 )}
               </div>
+
             </div>
           </div>
 

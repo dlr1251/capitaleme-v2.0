@@ -1,6 +1,43 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 
+// Simple in-memory rate limiting (in production, use Redis or similar)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
+const MAX_REQUESTS_PER_HOUR = 5;
+
+function getClientIP(request: Request): string {
+  // Try various headers that might contain the real IP
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP) {
+    return realIP;
+  }
+  // Fallback (won't work in production but useful for development)
+  return 'unknown';
+}
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now > record.resetTime) {
+    // Create new record or reset expired one
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_HOUR) {
+    return false; // Rate limit exceeded
+  }
+
+  record.count++;
+  return true;
+}
+
 export const POST: APIRoute = async ({ request }) => {
   if (!process.env.RESEND_API_KEY) {
     return new Response('Missing RESEND_API_KEY', { status: 500 });
@@ -8,12 +45,48 @@ export const POST: APIRoute = async ({ request }) => {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
+    // Rate limiting
+    const clientIP = getClientIP(request);
+    if (!checkRateLimit(clientIP)) {
+      console.warn(`Rate limit exceeded for IP: ${clientIP}`);
+      return new Response('Too many requests. Please try again later.', { status: 429 });
+    }
+
     const contentType = request.headers.get('content-type') || '';
     if (!contentType.includes('multipart/form-data')) {
       return new Response('Unsupported content type', { status: 400 });
     }
 
     const form = await request.formData();
+    
+    // Anti-spam validations
+    // 1. Honeypot check
+    const website = String(form.get('website') || '').trim();
+    if (website) {
+      console.warn('Bot detected via honeypot field');
+      // Silently return success to not let bot know it was caught
+      return new Response(JSON.stringify({ ok: true }), { 
+        status: 200, 
+        headers: { 'content-type': 'application/json' } 
+      });
+    }
+
+    // 2. Time-based validation
+    const timeSpent = parseInt(String(form.get('timeSpent') || '0'));
+    const minTime = 3000; // 3 seconds minimum
+    if (timeSpent < minTime) {
+      console.warn('Form submitted too quickly - possible bot');
+      return new Response('Invalid form submission', { status: 400 });
+    }
+
+    // 3. Token validation
+    const token = String(form.get('token') || '').trim();
+    if (!token || token.length < 10) {
+      console.warn('Missing or invalid form token');
+      return new Response('Invalid form submission', { status: 400 });
+    }
+
+    // Extract form data
     const name = String(form.get('name') || '').trim();
     const email = String(form.get('email') || '').trim();
     const phone = String(form.get('phone') || '').trim();
@@ -21,8 +94,33 @@ export const POST: APIRoute = async ({ request }) => {
     const message = String(form.get('message') || '').trim();
     const accepted = String(form.get('accepted') || '') === 'true';
 
+    // Basic validation
     if (!name || !email || !phone || !message || !accepted) {
       return new Response('Validation error', { status: 400 });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response('Invalid email format', { status: 400 });
+    }
+
+    // Message length validation (prevent spam)
+    if (message.length > 5000) {
+      return new Response('Message is too long', { status: 400 });
+    }
+
+    // Check for suspicious patterns (common spam indicators)
+    const spamPatterns = [
+      /http[s]?:\/\/[^\s]+/gi, // URLs
+      /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi, // Multiple emails
+    ];
+    
+    const messageLower = message.toLowerCase();
+    const suspiciousWordCount = (messageLower.match(/\b(buy|sell|discount|cheap|free|click here|viagra|casino|loan|credit)\b/gi) || []).length;
+    if (suspiciousWordCount > 3) {
+      console.warn('Suspicious message content detected');
+      return new Response('Invalid message content', { status: 400 });
     }
 
     const files = form.getAll('files');

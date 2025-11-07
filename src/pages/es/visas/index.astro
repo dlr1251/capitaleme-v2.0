@@ -4,12 +4,9 @@ import Layout from "../../../layouts/Layout.astro";
 import { getAllContentData } from '../../../server/lib/contentData.js';
 import { getAllVisas } from '../../../server/lib/getVisa.js';
 import VisasHero from '../../../components/visas/VisasHero.tsx';
-import ServiceProcess from '../../../components/visas/ServiceProcess.astro';
-import ConsultationSection from '../../../components/visas/ConsultationSection.tsx';
 import BlogPageLatest from '../../../components/blog/BlogPageLatest.astro';
-import VisasSectionFilterSearch from '../../../components/visas/VisasSectionFilterSearch.tsx';
-import ColombiaStayCalculator from '../../../components/visas/ColombiaStayCalculator.tsx';
-import AdditionalServicesSection from '../../../components/visas/AdditionalServicesSection.tsx';
+import ServicesSection from '../../../components/visas/ServicesSection.tsx';
+import ToolsSection from '../../../components/visas/ToolsSection.tsx';
 
 const lang = 'es';
 
@@ -28,39 +25,17 @@ const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(
 ---
 
 <Layout title="Visa Information - Capital M Law | Colombian Legal Services" lang={lang} menuData={menuData}>
-  <!-- Modern Hero Section -->
+  <!-- Hero Section -->
   <VisasHero client:load guides={featuredGuides} lang="es" />
   
-  <!-- How Our Service Works Section -->
-  <ServiceProcess lang="es" />
+  <!-- Services Section (with tabs: Nuestro Servicio, Servicios Adicionales, Preguntas Frecuentes) -->
+  <ServicesSection client:load lang="es" />
   
-  <!-- Additional Services Section -->
+  <!-- Tools Section (with tabs: Explorador de Visas, Calculadora de Días) -->
+  <ToolsSection client:load visas={allVisas} lang="es" />
+  
+  <!-- Latest Blog Posts Section -->
   <div class="py-20 bg-gray-50">
-    <AdditionalServicesSection client:load lang="es" />
+    <BlogPageLatest/>
   </div>
-  
-  <!-- Visa Categories with Filtering -->
-  <section class="py-20 bg-muted/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-8">
-        <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
-          Descubre Todas las Categorías de Visa
-        </h2>
-        <p class="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Encuentra la opción de visa perfecta para tu situación. Usa nuestro filtro interactivo para reducir tus opciones basado en tu país, necesidades y preferencias.
-        </p>
-      </div>
-      <div class="bg-white border border-muted rounded-2xl shadow-lg p-8">
-        <VisasSectionFilterSearch visas={allVisas} lang="es" client:visible />
-      </div>
-    </div>
-  </section>
-
-  <!-- Full-Width Consultation Section -->
-          <ConsultationSection client:load lang="es" />
-  
-  <BlogPageLatest/>
-  
-  <!-- Colombia Stay Calculator -->
-  <ColombiaStayCalculator client:load />
 </Layout> 

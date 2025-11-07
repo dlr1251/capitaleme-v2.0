@@ -188,14 +188,14 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Intro Section */}
         {intro && (
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
               {content.title}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                 {content.subtitle}
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               {content.description}
             </p>
           </div>
@@ -203,15 +203,15 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
 
 
         {/* Filters Section - ONLY Country */}
-        <div className="mb-8">
+        <div className="mb-12">
           <div className="text-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
               {content.filterTitle}
             </h3>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Country Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -220,7 +220,7 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
                 <select
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white text-gray-900 font-medium text-sm"
                 >
                   <option value="">{lang === 'es' ? 'Todos los países' : 'All countries'}</option>
                   {countries
@@ -248,8 +248,8 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
         </div>
 
         {/* Results Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="flex items-center justify-between mb-8">
             <h3 className="text-2xl font-bold text-primary">
               {lang === 'es' ? 'Resultados' : 'Results'} ({displayedVisas.length})
             </h3>
@@ -261,28 +261,30 @@ const VisasSectionFilterSearch = ({ visas = [], lang = 'es', intro = true }: Vis
               <a
                 key={visa.id}
                 href={`/${lang}/visas/${visa.slug}`}
-                className="bg-white rounded p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group block"
+                className="bg-white rounded-lg p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group block h-full flex flex-col"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-xl font-bold text-primary  group-hover:text-primary transition-colors">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-xl font-bold text-primary group-hover:text-primary transition-colors leading-tight">
                     {lang === 'es' ? `Visa ${visa.title}` : `${visa.title} Visa`}
                   </h4>
                 </div>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {visa.beneficiaries && String(visa.beneficiaries).trim() !== '' && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                      {getBeneficiariesLabel(String(visa.beneficiaries), lang)}
-                    </span>
-                  )}
-                  {visa.workPermit && String(visa.workPermit).trim() !== '' && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                      {getWorkPermitLabel(String(visa.workPermit), lang)}
-                    </span>
-                  )}
-                </div>
+                {(visa.beneficiaries || visa.workPermit) && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {visa.beneficiaries && String(visa.beneficiaries).trim() !== '' && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                        {getBeneficiariesLabel(String(visa.beneficiaries), lang)}
+                      </span>
+                    )}
+                    {visa.workPermit && String(visa.workPermit).trim() !== '' && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                        {getWorkPermitLabel(String(visa.workPermit), lang)}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {visa.alcance && (
-                  <div className="mb-6">
-                    <p className="text-sm text-gray-700">
+                  <div className="mt-auto">
+                    <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
                       {visa.alcance}
                     </p>
                   </div>

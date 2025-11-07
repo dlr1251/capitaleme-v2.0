@@ -71,7 +71,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
     documentPreparation: "Preparación de Documentos",
     familyApplications: "Solicitudes Familiares"
   } : {
-    title: "Your visa journey,",
+    title: "Your visa application,",
     subtitle: "with legal advice",
     tagline: "We do visas differently",
     description: "As attorneys we not only focus on your paperwork. We procure to understand your needs and legal risks when moving abroad to ensure your best strategy with the highest success rate possible.",
@@ -92,11 +92,11 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4">
             {content.title}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            <span className="text-secondary">
               {content.subtitle}
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-primary font-semibold mb-6">
+          <p className="text-xl md:text-2xl text-primary font-semibold mb-4">
             {content.tagline}
           </p>
           <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
@@ -107,8 +107,8 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {topFeatures.map((feature, index) => (
-            <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300">
-              <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mb-4">
+            <div key={index} className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 h-full flex flex-col">
+              <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mb-4 flex-shrink-0">
                 <div className="text-white">
                   {feature.icon}
                 </div>
@@ -116,7 +116,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
               <h3 className="text-lg font-semibold text-primary mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 {feature.description}
               </p>
             </div>
@@ -126,18 +126,18 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
         {/* Guides Section */}
         {guides.length > 0 && (
           <div>
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                 {content.guides}
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 {lang === 'es' ? 'Recursos útiles para tu proceso de visa' : 'Useful resources for your visa process'}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {guides.slice(0, 3).map((guide) => (
-                <div key={guide.id} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div key={guide.id} className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm h-full flex flex-col">
                   <div className="flex items-center justify-between mb-4">
                     <DocumentTextIcon className="w-6 h-6 text-primary" />
                     <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">
@@ -147,12 +147,12 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {guide.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-grow">
                     {guide.description}
                   </p>
                   <a 
                     href={`/${lang}/guides/${guide.slug}`}
-                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium text-sm transition-colors"
+                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium text-sm transition-colors mt-auto"
                   >
                     {lang === 'es' ? 'Leer guía' : 'Read guide'}
                     <EyeIcon className="w-4 h-4 ml-1" />
@@ -161,7 +161,7 @@ const VisasHero = ({ popularVisas = [], guides = [], lang = 'en' }: VisasHeroPro
               ))}
             </div>
             
-            <div className="text-center mt-8">
+            <div className="text-center">
               <a 
                 href={`/${lang}/guides`}
                 className="inline-flex items-center px-6 py-3 border border-primary text-primary rounded-xl hover:bg-primary hover:text-white transition-colors font-medium"

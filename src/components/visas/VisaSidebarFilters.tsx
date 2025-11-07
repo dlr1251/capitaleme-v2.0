@@ -27,9 +27,8 @@ interface VisaSidebarFiltersProps {
 }
 
 const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries, visaTypes }: VisaSidebarFiltersProps) => {
-  const [filters, setFilters] = useState<{ country: string; visaType: string }>({
+  const [filters, setFilters] = useState<{ country: string }>({
     country: '',
-    visaType: 'All',
   });
   const [filteredVisas, setFilteredVisas] = useState<Visa[]>(visas);
 
@@ -90,20 +89,15 @@ const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries
       }
     }
 
-    // Filter by visa type
-    if (filters.visaType && filters.visaType !== 'All') {
-      filtered = filtered.filter((visa: Visa) => visa.type === filters.visaType);
-    }
-
     setFilteredVisas(filtered);
   }, [visas, filters]);
 
-  const handleFilterChange = (filterType: 'country' | 'visaType', value: string) => {
+  const handleFilterChange = (filterType: 'country', value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }));
   };
 
   const resetFilters = () => {
-    setFilters({ country: '', visaType: 'All' });
+    setFilters({ country: '' });
   };
 
   return (
@@ -125,35 +119,19 @@ const VisaSidebarFilters = ({ visas, currentSlug, lang, countries: visaCountries
           <select
             value={filters.country}
             onChange={(e) => handleFilterChange('country', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-600 text-sm bg-white text-gray-900 font-medium"
           >
-            <option value="">{lang === 'es' ? 'Selecciona país de origen' : 'Select country of origin'}</option>
+            <option value="" className="text-gray-900">{lang === 'es' ? 'Selecciona país de origen' : 'Select country of origin'}</option>
             {countries
               .sort((a, b) => (lang === 'en' ? (a.nameEn || a.name).localeCompare(b.nameEn || b.name) : (a.name || a.nameEn).localeCompare(b.name || b.nameEn)))
               .map((country: Country) => (
-                <option key={country.name} value={lang === 'en' ? country.nameEn : country.name}>
+                <option key={country.name} value={lang === 'en' ? country.nameEn : country.name} className="text-gray-900">
                   {lang === 'en' ? country.nameEn : country.name}
                 </option>
               ))}
           </select>
         </div>
 
-        {/* Visa Type Filter */}
-        <div>
-          
-          <select
-            value={filters.visaType}
-            onChange={(e) => handleFilterChange('visaType', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
-            <option value="All">{lang === 'es' ? 'Selecciona tipo de Visa' : 'Select Visa Type'}</option>
-            {visaTypes.map((type: string) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       {/* Results Count and Clear Filters */}

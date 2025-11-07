@@ -3,13 +3,10 @@ export const prerender = false; // SSR: Get visas dynamically from Supabase
 import Layout from "../../../layouts/Layout.astro";
 import { getAllContentData } from '../../../server/lib/contentData.js';
 import { getAllVisas } from '../../../server/lib/getVisa.js';
-import ServiceProcess from '../../../components/visas/ServiceProcess.astro';
-import VisasSectionFilterSearch from '../../../components/visas/VisasSectionFilterSearch.tsx';
-import ConsultationSection from '../../../components/visas/ConsultationSection.tsx';
 import BlogPageLatest from '../../../components/blog/BlogPageLatest.astro';
 import VisasHero from '../../../components/visas/VisasHero.tsx';
-import ColombiaStayCalculator from "../../../components/visas/ColombiaStayCalculator.tsx";
-import AdditionalServicesSection from '../../../components/visas/AdditionalServicesSection.tsx';
+import ServicesSection from '../../../components/visas/ServicesSection.tsx';
+import ToolsSection from '../../../components/visas/ToolsSection.tsx';
 
 const lang = 'en';
 
@@ -32,25 +29,11 @@ const featuredGuides = allGuides.filter((guide: any) => guide.isFeatured).slice(
   <!-- Hero Section -->
   <VisasHero client:load guides={featuredGuides} lang="en" />
   
-  <!-- Service Process Section -->
-  <div class="py-20">
-    <ServiceProcess lang="en" />
-  </div>
+  <!-- Services Section (with tabs: Our Service, Additional Services, FAQ) -->
+  <ServicesSection client:load lang="en" />
   
-  <!-- Additional Services Section -->
-  <div class="py-20 bg-gray-50">
-    <AdditionalServicesSection client:load lang="en" />
-  </div>
-  
-  <!-- Visa Filter & Search Section -->
-  <div class="py-20">
-    <VisasSectionFilterSearch  visas={allVisas} lang="en" intro={true} client:visible/>   
-  </div>
-  
-  <!-- Colombia Stay Calculator Section -->
-  <div class="py-20 bg-gray-50">
-    <ColombiaStayCalculator client:load /> 
-  </div>
+  <!-- Tools Section (with tabs: Visa Explorer, Days Calculator) -->
+  <ToolsSection client:load visas={allVisas} lang="en" />
   
   <!-- Latest Blog Posts Section -->
   <div class="py-20 bg-gray-50">

@@ -11,9 +11,10 @@ import {
 
 interface AdditionalServicesSectionProps {
   lang?: 'en' | 'es';
+  showHeader?: boolean;
 }
 
-const AdditionalServicesSection = ({ lang = 'en' }: AdditionalServicesSectionProps) => {
+const AdditionalServicesSection = ({ lang = 'en', showHeader = true }: AdditionalServicesSectionProps) => {
   const content = lang === 'es' ? {
     title: "Servicios Adicionales",
     subtitle: "Complementa tu proceso de visa con nuestros servicios especializados",
@@ -98,24 +99,24 @@ const AdditionalServicesSection = ({ lang = 'en' }: AdditionalServicesSectionPro
     ]
   };
 
-  return (
-    <section className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
+  const contentWrapper = (
+    <>
+      {showHeader && (
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             {content.title}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             {content.subtitle}
           </p>
         </div>
+      )}
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Services Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {content.services.map((service, index) => (
-            <div key={index} className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center mb-6">
+            <div key={index} className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm h-full flex flex-col">
+              <div className="w-16 h-16 bg-secondary rounded-xl flex items-center justify-center mb-6 flex-shrink-0">
                 <div className="text-white">
                   {service.icon}
                 </div>
@@ -125,53 +126,35 @@ const AdditionalServicesSection = ({ lang = 'en' }: AdditionalServicesSectionPro
                 {service.title}
               </h3>
               
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-gray-600 mb-6 leading-relaxed flex-grow">
                 {service.description}
               </p>
               
-              <div className="space-y-2">
+              <div className="space-y-2 mb-6">
                 {service.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex items-center text-sm text-gray-700">
                     <div className="w-2 h-2 bg-secondary rounded-full mr-3 flex-shrink-0"></div>
                     {feature}
                   </div>
                 ))}
-              </div>
-              
-              <div className="mt-6">
-                <button className="w-full bg-primary text-white py-3 px-6 rounded-xl font-medium hover:bg-primary/90 transition-colors">
-                  {lang === 'es' ? 'Solicitar Información' : 'Request Information'}
-                </button>
-              </div>
+              </div>                       
             </div>
           ))}
         </div>
-
-        {/* CTA Section */}
-        <div className="text-center mt-16">
-          <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
-            <h3 className="text-2xl font-bold text-primary mb-4">
-              {lang === 'es' ? '¿Necesitas ayuda con alguno de estos servicios?' : 'Need help with any of these services?'}
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              {lang === 'es' 
-                ? 'Nuestro equipo de abogados especializados puede ayudarte con cualquiera de estos servicios adicionales para complementar tu proceso de visa.'
-                : 'Our team of specialized attorneys can help you with any of these additional services to complement your visa process.'
-              }
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-primary text-white py-3 px-8 rounded-xl font-medium hover:bg-primary/90 transition-colors">
-                {lang === 'es' ? 'Consulta Gratuita' : 'Free Consultation'}
-              </button>
-              <button className="border border-primary text-primary py-3 px-8 rounded-xl font-medium hover:bg-primary hover:text-white transition-colors">
-                {lang === 'es' ? 'Más Información' : 'More Information'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </>
   );
+
+  if (showHeader) {
+    return (
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {contentWrapper}
+        </div>
+      </section>
+    );
+  }
+
+  return <div>{contentWrapper}</div>;
 };
 
 export default AdditionalServicesSection;
