@@ -77,18 +77,50 @@ const ServicesSection = ({ lang = 'en' }: ServicesSectionProps) => {
           </nav>
         </div>
 
-        {/* Mobile Tabs - Select dropdown */}
+        {/* Mobile Tabs - Horizontal buttons */}
         <div className="md:hidden mb-8">
-          <select
-            value={activeTab}
-            onChange={(e) => setActiveTab(e.target.value as 'service' | 'additional' | 'faq')}
-            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg text-base font-medium text-gray-900 bg-white focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20"
-            aria-label="Select service section"
+          <nav
+            className="flex gap-3 overflow-x-auto pb-2"
+            aria-label="Services tabs mobile"
+            role="tablist"
           >
-            <option value="service">{tabs.service}</option>
-            <option value="additional">{tabs.additional}</option>
-            <option value="faq">{tabs.faq}</option>
-          </select>
+            <button
+              onClick={() => setActiveTab('service')}
+              className={`flex-1 min-w-[200px] px-4 py-3 rounded-lg text-sm font-semibold transition-colors border ${
+                activeTab === 'service'
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-primary/40 hover:text-primary'
+              }`}
+              aria-selected={activeTab === 'service'}
+              role="tab"
+            >
+              {tabs.service}
+            </button>
+            <button
+              onClick={() => setActiveTab('additional')}
+              className={`flex-1 min-w-[200px] px-4 py-3 rounded-lg text-sm font-semibold transition-colors border ${
+                activeTab === 'additional'
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-primary/40 hover:text-primary'
+              }`}
+              aria-selected={activeTab === 'additional'}
+              role="tab"
+            >
+              {tabs.additional}
+            </button>
+            <button
+              onClick={() => setActiveTab('faq')}
+              className={`flex-1 min-w-[200px] px-4 py-3 rounded-lg text-sm font-semibold transition-colors border ${
+                activeTab === 'faq'
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-primary/40 hover:text-primary'
+              }`}
+              aria-selected={activeTab === 'faq'}
+              role="tab"
+            >
+              {tabs.faq}
+            </button>
+          </nav>
         </div>
 
         {/* Tab Content */}

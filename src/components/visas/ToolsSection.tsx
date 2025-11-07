@@ -63,17 +63,38 @@ const ToolsSection = ({ visas, lang = 'en' }: ToolsSectionProps) => {
           </nav>
         </div>
 
-        {/* Mobile Tabs - Select dropdown */}
+        {/* Mobile Tabs - Horizontal buttons */}
         <div className="md:hidden mb-8">
-          <select
-            value={activeTab}
-            onChange={(e) => setActiveTab(e.target.value as 'explorer' | 'calculator')}
-            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg text-base font-medium text-gray-900 bg-white focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20"
-            aria-label="Select tool"
+          <nav
+            className="flex gap-3 overflow-x-auto pb-2"
+            aria-label="Tools tabs mobile"
+            role="tablist"
           >
-            <option value="explorer">{tabs.explorer}</option>
-            <option value="calculator">{tabs.calculator}</option>
-          </select>
+            <button
+              onClick={() => setActiveTab('explorer')}
+              className={`flex-1 min-w-[200px] px-4 py-3 rounded-lg text-sm font-semibold transition-colors border ${
+                activeTab === 'explorer'
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-primary/40 hover:text-primary'
+              }`}
+              aria-selected={activeTab === 'explorer'}
+              role="tab"
+            >
+              {tabs.explorer}
+            </button>
+            <button
+              onClick={() => setActiveTab('calculator')}
+              className={`flex-1 min-w-[200px] px-4 py-3 rounded-lg text-sm font-semibold transition-colors border ${
+                activeTab === 'calculator'
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-primary/40 hover:text-primary'
+              }`}
+              aria-selected={activeTab === 'calculator'}
+              role="tab"
+            >
+              {tabs.calculator}
+            </button>
+          </nav>
         </div>
 
         {/* Tab Content */}

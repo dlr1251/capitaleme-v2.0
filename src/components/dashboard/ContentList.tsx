@@ -6,7 +6,6 @@ import { formatDate, formatDateTime, getRelativeTime } from '../../lib/dashboard
 import {
   PencilIcon,
   DocumentDuplicateIcon,
-  ArchiveBoxIcon,
   TrashIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -22,7 +21,6 @@ interface ContentListProps {
   onDuplicate: (id: string) => void;
   onPublish: (id: string) => Promise<void>;
   onUnpublish: (id: string) => Promise<void>;
-  onArchive: (id: string) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onRefresh?: () => void;
   loading?: boolean;
@@ -35,7 +33,6 @@ export default function ContentList({
   onDuplicate,
   onPublish,
   onUnpublish,
-  onArchive,
   onDelete,
   onRefresh,
   loading = false,
@@ -79,7 +76,6 @@ export default function ContentList({
     if (filterLang !== 'all' && item.lang !== filterLang) return false;
     if (filterStatus === 'published' && !item.published) return false;
     if (filterStatus === 'draft' && item.published) return false;
-    if (filterStatus === 'archived' && !item.archived) return false;
     if (filterModule !== 'all' && item.module !== filterModule) return false;
     if (searchQuery && !item.title?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
@@ -99,10 +95,8 @@ export default function ContentList({
         bValue = b.lang || '';
         break;
       case 'status':
-        const aStatus = a.archived ? 'archived' : a.published ? 'published' : 'draft';
-        const bStatus = b.archived ? 'archived' : b.published ? 'published' : 'draft';
-        aValue = aStatus;
-        bValue = bStatus;
+        aValue = a.published ? 'published' : 'draft';
+        bValue = b.published ? 'published' : 'draft';
         break;
       case 'updated_at':
       default:
@@ -186,10 +180,6 @@ export default function ContentList({
           await onUnpublish(id);
           setToast({ message: 'Unpublished successfully', type: 'success' });
           break;
-        case 'archive':
-          await onArchive(id);
-          setToast({ message: 'Archived successfully', type: 'success' });
-          break;
         case 'delete':
           await onDelete(id);
           setToast({ message: 'Deleted successfully', type: 'success' });
@@ -243,7 +233,6 @@ export default function ContentList({
             <option value="all">All Status</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
           </select>
           {type === 'clkr' && availableModules.length > 0 && (
             <select
@@ -395,13 +384,7 @@ export default function ContentList({
                         title={`Click to ${item.published ? 'unpublish' : 'publish'}`}
                       >
                         <StatusBadge
-                          status={
-                            item.archived
-                              ? 'archived'
-                              : item.published
-                              ? 'published'
-                              : 'draft'
-                          }
+                          status={item.published ? 'published' : 'draft'}
                         />
                       </button>
                     </td>
@@ -430,21 +413,6 @@ export default function ContentList({
                         >
                           <DocumentDuplicateIcon className="h-5 w-5" />
                         </button>
-                        {!item.archived && (
-                          <button
-                            onClick={() =>
-                              setConfirmAction({
-                                type: 'archive',
-                                id: item.id,
-                                title: item.title,
-                              })
-                            }
-                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                            title="Archive"
-                          >
-                            <ArchiveBoxIcon className="h-5 w-5" />
-                          </button>
-                        )}
                         <button
                           onClick={() =>
                             setConfirmAction({
