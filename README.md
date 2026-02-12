@@ -1,4 +1,4 @@
-# CapitalEme Website - Technical Documentation
+# Capital M Website - Technical Documentation
 
 ## Project Overview
 
